@@ -45,6 +45,13 @@ jobs:
       - name: Render site
         run: quarto render
 
+      # Quarto never runs OJS cells, so a widget that is broken in the browser
+      # still renders. Open every OJS page in Chrome and fail before deploying.
+      - name: Check every widget renders
+        run: |
+          uv pip install playwright
+          .venv/bin/python tools/check_widgets.py _site
+
       - name: Deploy to Cloudflare
         # Cloudflare rejects the whole deploy with `Asset too large.` if any
         # single file in _site exceeds 25 MiB. That is a per-file cap, not a

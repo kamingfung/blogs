@@ -109,8 +109,6 @@ Ammonium nitrate needs both ammonia and nitric acid, so move the fertiliser slid
 ```{ojs}
 //| echo: false
 viewof fertPct = Inputs.range([50, 200], {value: 100, step: 10, label: "Global fertilizer application (%)"})
-// Inputs.select silently hangs the whole OJS program when the Map values are
-// numbers, so the option values stay strings, exactly as the <select> did.
 viewof noxOption = Inputs.select(new Map([
   ["Current High NOx (Abundant HNO3)", "1.0"],
   ["Strict Clean Air NOx Controls (-50%)", "0.5"],

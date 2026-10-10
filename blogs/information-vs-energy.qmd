@@ -364,11 +364,7 @@ Compute the minimum heat released by erasing bits at temperatures from the cosmi
 
 ```{ojs}
 //| echo: false
-// Inputs.text, not Inputs.number: Inputs.number hangs the whole OJS program
-// on this page. Every cell stays in ojs-in-a-box-waiting-for-module-import
-// with no error logged anywhere, so the page renders the card frame and
-// nothing inside it. Verified by bisecting this cell out and swapping only
-// this one call. Number() on the way out keeps the maths identical.
+// Number() on the way out keeps the maths identical to the original widget.
 viewof bits = Inputs.text({value: "1e6", label: "Information erased N (bits)"})
 viewof tempPreset = Inputs.radio([2.73, 77, 300, "custom"], {
   value: 300,
