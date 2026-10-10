@@ -79,7 +79,7 @@ parts:
   - title: "Fertiliser and the atmosphere"
     modules:
       - id: air-land-climate/fertiliser-nitrogen-and-aerosol-cooling-in-cesm2
-        title: "Fertiliser nitrogen and aerosol cooling in CESM2"
+        title: "Fertiliser ammonia in CESM2"
         level: advanced
         path: blogs/cesm2-fertilizer-climate-feedback.md
         requires:

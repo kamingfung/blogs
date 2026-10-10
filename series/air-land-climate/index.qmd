@@ -53,7 +53,7 @@ description: "Air pollution, the nitrogen cycle, farming, and how land and atmos
 ## Part 6 · Fertiliser and the atmosphere
 
 <ul class="syl">
-<li class="w"><a href="/blogs/cesm2-fertilizer-climate-feedback.html">Fertiliser nitrogen and aerosol cooling in CESM2</a><span class="m">Advanced</span></li>
+<li class="w"><a href="/blogs/cesm2-fertilizer-climate-feedback.html">Fertiliser ammonia in CESM2</a><span class="m">Advanced</span></li>
 <li class="g">N2O, the forgotten greenhouse gas<span class="m">Intermediate · not written</span></li>
 <li class="g">Emission factors<span class="m">Intermediate · not written</span></li>
 </ul>
