@@ -6,14 +6,14 @@ description: "Tabular machine learning for time series, from framing the problem
 <dl class="syl-meta">
 <div><dt>Level</dt><dd>Introductory to advanced</dd></div>
 <div><dt>Parts</dt><dd>15</dd></div>
-<div><dt>Modules</dt><dd>7 of 34 written</dd></div>
+<div><dt>Modules</dt><dd>9 of 34 written</dd></div>
 <div class="wide"><dt>Assumes</dt><dd>Python and pandas. Basic statistics. No prior forecasting.</dd></div>
 </dl>
 
 ## Part 1 · Framing a forecast
 
 <ul class="syl">
-<li class="g">Horizon, frequency and target<span class="m">Introductory · not written</span></li>
+<li class="w"><a href="/blogs/horizon-frequency-and-target.html">Horizon, frequency and target</a><span class="m">Introductory</span></li>
 <li class="g">Leakage<span class="m">Introductory · not written</span></li>
 <li class="g">Backtesting properly<span class="m">Intermediate · not written</span></li>
 </ul>
@@ -30,7 +30,7 @@ description: "Tabular machine learning for time series, from framing the problem
 
 <ul class="syl">
 <li class="g">Baselines first<span class="m">Introductory · not written</span></li>
-<li class="g">Gradient boosting for tabular time series<span class="m">Intermediate · not written</span></li>
+<li class="w"><a href="/blogs/forecast/gradient_boosting_for_time_series.html">Gradient boosting for tabular time series</a><span class="m">Intermediate</span></li>
 <li class="w"><a href="/blogs/forecast/2_ensemble_models.html">Ensemble models</a><span class="m">Intermediate</span></li>
 </ul>
 

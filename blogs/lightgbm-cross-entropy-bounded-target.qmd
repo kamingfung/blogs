@@ -12,7 +12,7 @@ categories:
 ---
 
 <!-- CURRICULUM_HEADER_START -->
-<div class="mh"><p class="mh-crumb"><a href="/series/forecasting/index.html">Forecasting with Machine Learning</a><span class="sep">·</span>Part 7 · Awkward targets</p><p class="mh-facts"><span class="lvl lvl-advanced">Advanced</span></p><p class="mh-assumes">Assumes <span class="unwritten" title="not written yet">Gradient boosting for tabular time series</span> and <span class="unwritten" title="not written yet">Log and Box–Cox transforms</span>.</p></div>
+<div class="mh"><p class="mh-crumb"><a href="/series/forecasting/index.html">Forecasting with Machine Learning</a><span class="sep">·</span>Part 7 · Awkward targets</p><p class="mh-facts"><span class="lvl lvl-advanced">Advanced</span></p><p class="mh-assumes">Assumes <a href="/blogs/forecast/gradient_boosting_for_time_series.html">Gradient boosting for tabular time series</a> and <span class="unwritten" title="not written yet">Log and Box–Cox transforms</span>.</p></div>
 <!-- CURRICULUM_HEADER_END -->
 
 ::: {.callout-note appearance="simple" icon=false}

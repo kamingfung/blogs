@@ -12,7 +12,7 @@ categories:
 ---
 
 <!-- CURRICULUM_HEADER_START -->
-<div class="mh"><p class="mh-crumb"><a href="/series/air-land-climate/index.html">Air, Land and Climate</a><span class="sep">·</span>Part 6 · Fertiliser and the atmosphere</p><p class="mh-facts"><span class="lvl lvl-advanced">Advanced</span></p><p class="mh-assumes">Assumes <span class="unwritten" title="not written yet">What an Earth system model is</span>, <span class="unwritten" title="not written yet">Fixed nitrogen</span> and <a href="/blogs/kohler-theory.html">Köhler theory</a>.</p></div>
+<div class="mh"><p class="mh-crumb"><a href="/series/air-land-climate/index.html">Air, Land and Climate</a><span class="sep">·</span>Part 6 · Fertiliser and the atmosphere</p><p class="mh-facts"><span class="lvl lvl-advanced">Advanced</span></p><p class="mh-assumes">Assumes <span class="unwritten" title="not written yet">What an Earth system model is</span>, <a href="/blogs/fixed-nitrogen.html">Fixed nitrogen</a> and <a href="/blogs/kohler-theory.html">Köhler theory</a>.</p></div>
 <!-- CURRICULUM_HEADER_END -->
 
 ::: {.callout-note appearance="simple" icon=false}

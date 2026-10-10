@@ -9,7 +9,7 @@ categories:
 ---
 
 <!-- CURRICULUM_HEADER_START -->
-<div class="mh"><p class="mh-crumb"><a href="/series/earth-data/index.html">Earth Data in Python and R</a><span class="sep">·</span>Part 5 · Vector data</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Assumes <span class="unwritten" title="not written yet">GeoPandas basics</span>.</p></div>
+<div class="mh"><p class="mh-crumb"><a href="/series/earth-data/index.html">Earth Data in Python and R</a><span class="sep">·</span>Part 5 · Vector data</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Assumes <a href="/blogs/geopandas-basics/geopandas_basics.html">GeoPandas basics</a>.</p></div>
 <!-- CURRICULUM_HEADER_END -->
 
 ::: {.callout-note appearance="simple" icon=false}
@@ -182,6 +182,6 @@ buildings_in_aoi_gdf.plot()
 - Check the result with `.plot()` or `.explore()` before using it downstream.
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/regional-analysis-r/index.html"><span>Previous</span>Regional analysis in R</a><a class="mf-up" href="/series/earth-data/index.html"><span>Series</span>Earth Data in Python and R</a><a class="mf-next" href="/blogs/pm25/plot_pm25_usa_by_county.html"><span>Next</span>Mapping PM2.5 by county</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/regional-analysis-r/index.html"><span>Previous</span>Regional analysis in R</a><a class="mf-up" href="/series/earth-data/index.html"><span>Series</span>Earth Data in Python and R</a><a class="mf-next" href="/blogs/geopandas-basics/geopandas_basics.html"><span>Next</span>GeoPandas basics</a></div>
 <!-- CURRICULUM_FOOTER_END -->
 

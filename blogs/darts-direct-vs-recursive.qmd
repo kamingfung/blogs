@@ -5,7 +5,7 @@ date: 2026-05-09
 ---
 
 <!-- CURRICULUM_HEADER_START -->
-<div class="mh"><p class="mh-crumb"><a href="/series/forecasting/index.html">Forecasting with Machine Learning</a><span class="sep">·</span>Part 5 · Multi-step forecasting</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Assumes <span class="unwritten" title="not written yet">Horizon, frequency and target</span> and <span class="unwritten" title="not written yet">Backtesting properly</span>.</p></div>
+<div class="mh"><p class="mh-crumb"><a href="/series/forecasting/index.html">Forecasting with Machine Learning</a><span class="sep">·</span>Part 5 · Multi-step forecasting</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Assumes <a href="/blogs/horizon-frequency-and-target.html">Horizon, frequency and target</a> and <span class="unwritten" title="not written yet">Backtesting properly</span>.</p></div>
 <!-- CURRICULUM_HEADER_END -->
 
 ::: {.callout-note appearance="simple" icon=false}
