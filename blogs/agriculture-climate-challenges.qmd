@@ -200,7 +200,7 @@ html`<div style="font-size:0.9em;background:rgba(16,185,129,0.1);border-left:4px
 
 ## References
 
-[^1]: Ainsworth, E. A., Yendrek, C. R., Sitch, S., Collins, W. J. & Emberson, L. D. The effects of tropospheric ozone on net primary productivity and implications for climate change. *Annu. Rev. Plant Biol.* **63**, 637–661 (2012). https://doi.org/10.1146/annurev-arplant-042811-105518
+[^1]: Ainsworth, E. A., Yendrek, C. R., Sitch, S., Collins, W. J. & Emberson, L. D. The effects of tropospheric ozone on net primary productivity and implications for climate change. *Annu. Rev. Plant Biol.* **63**, 637–661 (2012). https://doi.org/10.1146/annurev-arplant-042110-103829
 [^2]: Tai, A. P. K., Martin, M. V. & Heald, C. L. Threat to future global food security from climate change and ozone air pollution. *Nature Clim. Change* **4**, 817–821 (2014). https://doi.org/10.1038/nclimate2317
 [^3]: Fung, K. M., Saikawa, E. & Tai, A. P. K. Agriculture and food supply challenges in a changing climate. *Front. Clim.* **4**, 1113825 (2023). https://doi.org/10.3389/fclim.2022.1113825
 [^4]: Lobell, D. B. et al. The critical role of extreme heat for maize production in the United States. *Nature Clim. Change* **3**, 497–501 (2013). https://doi.org/10.1038/nclimate1832
