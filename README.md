@@ -1,12 +1,13 @@
-# blogs-mirror
+# blogs
 
-A full [Quarto](https://quarto.org) mirror of the MkDocs Material site at
-**<https://blogs.kamingfung.workers.dev>**. Every post, every series and the
-homepage, rendered by a different static site generator and deployed to its own
-Cloudflare Worker at **<https://blogs-mirror.kamingfung.workers.dev>**.
+Source for the technical blog at **<https://blogs.kamingfung.workers.dev>**, built
+with [Quarto](https://quarto.org) and deployed to Cloudflare Workers.
 
-The MkDocs site remains canonical. Content is authored there; this repo is a
-port of it. If the two disagree, the MkDocs site is right.
+This replaced an MkDocs Material site on the same URL. That site is archived,
+read-only, at <https://blogs-mirror.kamingfung.workers.dev>, from the
+`kamingfung/blogs` repository. Content is now authored here.
+
+Old MkDocs URLs keep working: `/blogs/<post>/` redirects to `/blogs/<post>`.
 
 ## Structure
 

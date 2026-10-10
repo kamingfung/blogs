@@ -10,7 +10,7 @@ categories:
 ---
 
 <!-- CURRICULUM_HEADER_START -->
-<div class="mh"><p class="mh-crumb"><a href="/series/earth-data/index.html">Earth Data in Python and R</a><span class="sep">·</span>Part 3 · Regridding</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Assumes <span class="unwritten" title="not written yet">Conservative vs bilinear</span>.</p></div>
+<div class="mh"><p class="mh-crumb"><a href="/series/earth-data/index.html">Earth Data in Python and R</a><span class="sep">·</span>Part 3 · Regridding</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Assumes <a href="/blogs/regridding/conservative_vs_bilinear.html">Conservative vs bilinear</a>.</p></div>
 <!-- CURRICULUM_HEADER_END -->
 
 ::: {.callout-note appearance="simple" icon=false}
@@ -245,6 +245,6 @@ regrid_crop_data <- function(nc_path, var_name, layer_idx = 1, target_res = c(1.
 - Plot source and target side by side on the same colour scale before trusting the output.
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/partial-scaling-netcdf/index.html"><span>Previous</span>Scaling a NetCDF subset</a><a class="mf-up" href="/series/earth-data/index.html"><span>Series</span>Earth Data in Python and R</a><a class="mf-next" href="/blogs/regional-analysis-r/index.html"><span>Next</span>Regional analysis in R</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/xarray-basics/dimensions_coordinates_attributes.html"><span>Previous</span>Dimensions, coordinates and attributes</a><a class="mf-up" href="/series/earth-data/index.html"><span>Series</span>Earth Data in Python and R</a><a class="mf-next" href="/blogs/regridding/conservative_vs_bilinear.html"><span>Next</span>Conservative vs bilinear</a></div>
 <!-- CURRICULUM_FOOTER_END -->
 

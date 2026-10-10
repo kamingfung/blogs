@@ -6,7 +6,7 @@ description: "The tools for gridded, vector and image data in the Earth sciences
 <dl class="syl-meta">
 <div><dt>Level</dt><dd>Introductory to intermediate</dd></div>
 <div><dt>Parts</dt><dd>11</dd></div>
-<div><dt>Modules</dt><dd>12 of 26 written</dd></div>
+<div><dt>Modules</dt><dd>14 of 26 written</dd></div>
 <div class="wide"><dt>Assumes</dt><dd>Some programming in any language.</dd></div>
 </dl>
 
@@ -20,7 +20,7 @@ description: "The tools for gridded, vector and image data in the Earth sciences
 
 <ul class="syl">
 <li class="w"><a href="/blogs/partial-scaling-netcdf/index.html">Scaling a NetCDF subset</a><span class="m">Intermediate</span></li>
-<li class="g">Dimensions, coordinates and attributes<span class="m">Introductory · not written</span></li>
+<li class="w"><a href="/blogs/xarray-basics/dimensions_coordinates_attributes.html">Dimensions, coordinates and attributes</a><span class="m">Introductory</span></li>
 <li class="g">Resampling and grouping in time<span class="m">Intermediate · not written</span></li>
 </ul>
 
@@ -29,7 +29,7 @@ description: "The tools for gridded, vector and image data in the Earth sciences
 <ul class="syl">
 <li class="w"><a href="/blogs/r-regridding/index.html">Regridding crop data for climate models</a><span class="m">Intermediate</span></li>
 <li class="g">Regridding in Python with xESMF<span class="m">Intermediate · not written</span></li>
-<li class="g">Conservative vs bilinear<span class="m">Intermediate · not written</span></li>
+<li class="w"><a href="/blogs/regridding/conservative_vs_bilinear.html">Conservative vs bilinear</a><span class="m">Intermediate</span></li>
 </ul>
 
 ## Part 4 · Regions and masks

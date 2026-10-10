@@ -140,9 +140,13 @@ parts:
       - id: air-land-climate/what-an-earth-system-model-is
         title: "What an Earth system model is"
         level: introductory
+        path: blogs/what-an-earth-system-model-is.md
       - id: air-land-climate/the-land-model-clm
         title: "The land model: CLM"
         level: intermediate
+        path: blogs/the-land-model-clm.md
+        requires:
+          - air-land-climate/what-an-earth-system-model-is
       - id: air-land-climate/coupling-land-and-atmosphere
         title: "Coupling land and atmosphere"
         level: advanced

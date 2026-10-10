@@ -126,3 +126,4 @@ This is why the rest of this part follows the atom rather than the problem. The 
 <!-- CURRICULUM_FOOTER_START -->
 <div class="mf"><a class="mf-prev" href="/blogs/organic-aerosols-health-climate.html"><span>Previous</span>Organic aerosols: health versus climate</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/where-ammonia-comes-from.html"><span>Next</span>Where ammonia comes from</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+

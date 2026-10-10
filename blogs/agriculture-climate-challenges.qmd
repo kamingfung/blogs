@@ -206,6 +206,6 @@ html`<div style="font-size:0.9em;background:rgba(16,185,129,0.1);border-left:4px
 [^4]: Lobell, D. B. et al. The critical role of extreme heat for maize production in the United States. *Nature Clim. Change* **3**, 497–501 (2013). https://doi.org/10.1038/nclimate1832
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/enhanced-rock-weathering-nitrogen.html"><span>Previous</span>Enhanced rock weathering</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/enhanced-rock-weathering-nitrogen.html"><span>Previous</span>Enhanced rock weathering</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/what-an-earth-system-model-is.html"><span>Next</span>What an Earth system model is</a></div>
 <!-- CURRICULUM_FOOTER_END -->
 

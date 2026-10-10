@@ -26,6 +26,7 @@ parts:
       - id: earth-data/dimensions-coordinates-and-attributes
         title: "Dimensions, coordinates and attributes"
         level: introductory
+        path: blogs/xarray-basics/dimensions_coordinates_attributes.ipynb
       - id: earth-data/resampling-and-grouping-in-time
         title: "Resampling and grouping in time"
         level: intermediate
@@ -48,6 +49,9 @@ parts:
       - id: earth-data/conservative-vs-bilinear
         title: "Conservative vs bilinear"
         level: intermediate
+        path: blogs/regridding/conservative_vs_bilinear.ipynb
+        requires:
+          - earth-data/dimensions-coordinates-and-attributes
   - title: "Regions and masks"
     modules:
       - id: earth-data/regional-analysis-in-r

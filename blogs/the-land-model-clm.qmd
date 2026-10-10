@@ -1,0 +1,168 @@
+---
+title: 'The land model: CLM'
+description: What the Community Land Model computes for CESM, how it divides each grid cell into land units, columns and patches, and where its nitrogen cycle sits.
+date: 2026-10-09
+categories:
+- land surface modeling
+- climate modeling
+- biogeochemistry
+- nitrogen cycle
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/air-land-climate/index.html">Air, Land and Climate</a><span class="sep">·</span>Part 10 · Earth system models</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Assumes <a href="/blogs/what-an-earth-system-model-is.html">What an Earth system model is</a>.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+A climate model's atmosphere rests on a lower boundary that decides, every time step, how absorbed sunlight splits into sensible heat, evaporation and heat conducted into the ground, and how rain splits into evaporation, runoff and storage. Over land that boundary is too varied to treat as one surface per grid cell. The Community Land Model (CLM), the land component of CESM, handles this with a subgrid hierarchy: each grid cell holds land units (vegetated, crop, lake, urban, glacier), each land unit holds columns that carry soil and snow state, and each column holds patches of plant or crop functional types. Fluxes are computed per patch and area-weighted up to the grid cell before the coupler hands them to the atmosphere. On top of that physics, CLM5 carries carbon and nitrogen through plants, litter and soil, and runs an interactive crop model with fertiliser and irrigation. Afterwards you should be able to place any CLM variable in the hierarchy, list what the land sends and receives through the coupler, and say which nitrogen routines the enhanced rock weathering work had to change, and why soil pH was the missing piece.
+:::
+
+## What the land surface decides
+
+[What an Earth system model is](what-an-earth-system-model-is.qmd) described components that exchange fluxes through a coupler. CLM is the land component, and version 5 (CLM5) is the default land model in CESM2[^1]<sup>,</sup>[^2]. Its job is to answer two accounting questions for every land grid cell, every 30-minute model time step[^1].
+
+The first is where the energy goes. Radiation absorbed at the surface has to leave again, and the surface chooses how:
+
+$$R_\text{n} = H + \lambda E + G$$
+
+where $R_\text{n}$ is net radiation (absorbed solar plus incoming minus emitted longwave), $H$ is the sensible heat flux that warms the air directly, $\lambda E$ is the latent heat flux carried away by evaporated water ($\lambda$ is the latent heat of vaporisation, $E$ the evaporation rate), and $G$ is the heat conducted into soil, snow or water. The equation ignores small terms such as heat stored in the canopy. A wet forest and a dry pavement can absorb the same radiation and still heat the boundary layer very differently, because one spends it on $\lambda E$ and the other on $H$.
+
+The second is where the water goes:
+
+$$P = ET + Q + \frac{\text{d}S}{\text{d}t}$$
+
+where $P$ is precipitation, $ET$ is evapotranspiration (transpiration through leaves, evaporation of water intercepted on the canopy, and evaporation from the soil), $Q$ is surface and subsurface runoff, and $S$ is water stored in the canopy, snowpack, surface water and soil. Runoff leaves CLM for the river model, MOSART, which CESM2 treats as a separate component that routes it to the ocean[^1].
+
+The two budgets are linked. Every kilogram of water evaporated costs $\lambda$ of energy, so soil moisture controls how much of $R_\text{n}$ can go to $\lambda E$, and stomata, which open to take in $\text{CO}_2$ and lose water in the process, sit at the junction. That is why a land model built for climate also has to model plants.
+
+What CLM receives from the atmosphere and returns to it through the coupler, from the CLM5 technical description[^3]:
+
+| Direction | Fields |
+|---|---|
+| Atmosphere to land | wind, temperature, potential temperature, specific humidity and pressure at the lowest atmospheric level; reference and surface height; incident longwave; direct and diffuse solar, each split into visible and near-infrared; rain and snow; $\text{CO}_2$ concentration; aerosol deposition; nitrogen deposition; lightning frequency |
+| Land to atmosphere | sensible heat, latent heat and water vapour fluxes; zonal and meridional momentum fluxes; emitted longwave; direct and diffuse albedos in visible and near-infrared; absorbed solar; radiative temperature; 2 m temperature and humidity; 10 m wind; snow water equivalent; aerodynamic resistance; friction velocity; dust fluxes; net ecosystem exchange of $\text{CO}_2$ |
+
+Two details matter for anyone coupling new fields. The albedos CLM sends are computed for the solar zenith angle at the *next* time step, so the atmosphere's radiation code can use them[^3]. And nitrogen deposition arrives as a single total flux of reduced and oxidised nitrogen, passed every half hour in coupled runs, which CLM adds to its soil ammonium pool[^3]. Ammonia emitted from soil is not on the outgoing list at all; [Fertiliser nitrogen and aerosol cooling in CESM2](cesm2-fertilizer-climate-feedback.qmd) is an example of adding it.
+
+## Grid cells, land units, columns, patches
+
+A land grid cell in a global CESM2 run is commonly about $1^\circ$ across[^4] and can contain a forest, wheat fields, a town and a lake. CLM5 does not average these into one surface. It nests them in a three-level subgrid hierarchy: grid cells contain land units, land units contain columns, and columns contain patches, each patch holding one plant functional type (PFT) or crop functional type (CFT)[^1]. In the diagram, the rows below the grid cell are land units, then columns, then patches, and every link down the tree carries an area weight.
+
+```{mermaid}
+flowchart TD
+    G["Grid cell"] --> V["Vegetated"]
+    G --> C["Crop"]
+    G --> U["Urban, per density class"]
+    G --> LI["Lake, glacier"]
+    V -->|"one shared column"| VC["Soil column"]
+    VC --> P1["Tree PFT"]
+    VC --> P2["Grass PFT"]
+    VC --> P3["Bare ground"]
+    C -->|"one column per crop"| CC1["Rainfed maize column"]
+    C -->|"one column per crop"| CC2["Irrigated soybean column"]
+    CC1 --> CP1["Maize CFT"]
+    CC2 --> CP2["Soybean CFT"]
+    U -->|"five columns"| UC["Roof, walls, canyon floor"]
+
+    class G c1
+    class V,C,U,LI c2
+    class VC,CC1,CC2,UC c3
+    class P1,P2,P3,CP1,CP2 c4
+    classDef c1 fill:#1d4a62,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef c2 fill:#d69a2e,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+    classDef c3 fill:#6c2b27,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef c4 fill:#95a87f,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+```
+
+Each level answers a different question.
+
+| Level | What it represents | What lives there | CLM5 specifics |
+|---|---|---|---|
+| Grid cell | the area the atmosphere sees | atmospheric forcing, the area-weighted fluxes sent back | on the land grid; the coupler maps it to the atmosphere's grid if the two differ |
+| Land unit | the broadest kind of surface | which physics applies | vegetated, crop, urban, lake, glacier[^1] |
+| Column | a vertical profile | soil and snow state: temperature, water, ice, carbon, nitrogen | 25 ground layers to about 50 m, of which 5 to 20 are active soil depending on soil thickness (0.4 to 8.5 m); up to 12 snow layers[^1] |
+| Patch | one kind of plant | canopy state and leaf-level fluxes: leaf temperature, photosynthesis, transpiration | 14 natural PFTs plus bare ground on the vegetated land unit[^3]; crop types on the crop land unit |
+
+The arrangement of columns encodes assumptions about competition. On the vegetated land unit every PFT shares one soil column, so trees and grasses draw on the same soil water and nitrogen[^1]. Each crop type, irrigated and rainfed separately, gets its own column, so irrigation water and fertiliser go only where they were applied[^1]<sup>,</sup>[^3]. The urban land unit is split into three density classes (tall building district, high density, medium density), each with five columns for roof, sunlit wall, shaded wall and pervious and impervious canyon floor[^3]. Glaciers are split into elevation classes (10 by default) so that low ice can melt while high ice stays frozen[^1]. Wetlands are not a land unit in CLM5; they are represented through a prognostic surface water store instead[^1].
+
+Fluxes are computed at the patch level and then aggregated upward: a column value is the area-weighted sum over its patches, and the grid-cell flux sent to the coupler is the area-weighted sum over everything below it[^3]. The weights come from surface datasets built from satellite land cover and land-use history, and in CLM5 land-unit weights can change during a run, for example when forest is converted to cropland; energy, water, carbon and nitrogen are conserved across those transitions[^1].
+
+The practical consequence for anyone reading model output: a grid-cell soil moisture or soil nitrogen value is already an average over columns that may behave very differently, and below the active soil depth the bedrock layers hold small fixed values that will drag down a naive vertical average[^1].
+
+## Physics, then biogeochemistry
+
+CLM's processes fall into two groups that run on the same hierarchy.
+
+| | Biogeophysics | Biogeochemistry |
+|---|---|---|
+| Question | where energy, water and momentum go | where carbon and nitrogen go |
+| Main processes | canopy and ground radiation, turbulent fluxes, soil and snow heat with phase change, canopy, soil and snow hydrology, photosynthesis and stomatal conductance | allocation, phenology, respiration, mortality, litter and soil decomposition, nitrogen uptake and fixation, nitrification, denitrification, leaching, fire |
+| State it carries | temperatures, soil water and ice, snow, canopy water | carbon and nitrogen in leaves, stems, roots, litter and soil |
+| Feeds the atmosphere | $H$, $\lambda E$, albedo, momentum | net ecosystem exchange of $\text{CO}_2$ |
+
+Photosynthesis is where the two groups meet. CLM5 computes it separately for sunlit and shaded leaves, using the Farquhar model for C3 plants and the Collatz model for C4 plants, and obtains stomatal conductance from the Medlyn model, which replaced the Ball–Berry model used in CLM4.5[^3]<sup>,</sup>[^1]. Water stress now acts through a plant hydraulics scheme that tracks root, stem and leaf water potential, rather than through an empirical soil-moisture factor[^1]. Because stomatal conductance is tied to photosynthesis, the latent heat flux the atmosphere receives depends on leaf nitrogen and $\text{CO}_2$ as well as on soil water.
+
+CLM can also run with its biogeochemistry switched off. In satellite phenology mode, leaf area index and canopy height are read from monthly data; with biogeochemistry on, they are prognostic, grown from the carbon the plants fix[^1]. Which vegetation grows where is prescribed in both modes, since the default CLM5 is not a dynamic vegetation model[^1].
+
+### Carbon and nitrogen
+
+With biogeochemistry on, CLM5 tracks carbon and nitrogen in plant tissues, litter and soil organic matter, with pool structure based on the Century model and resolved through the soil layers[^1]. Three CLM5 changes are worth knowing because later papers build on them[^1]:
+
+- **FUN** (Fixation and Uptake of Nitrogen) makes plants spend carbon to acquire nitrogen, from symbiotic fixation, mycorrhizal uptake, direct root uptake or retranslocation from old leaves.
+- **Flexible C:N ratios** let plant tissues vary their nitrogen content instead of instantly down-regulating photosynthesis when soil nitrogen runs short.
+- **LUNA** (Leaf Use of Nitrogen for Assimilation) makes $V_{\text{cmax}25}$, the maximum carboxylation rate at $25\,^\circ\text{C}$, prognostic rather than fixed per PFT.
+
+In the soil, mineral nitrogen sits in two pools, ammonium ($\text{NH}_4^+$) and nitrate ($\text{NO}_3^-$), and plant uptake, microbial immobilisation, nitrification and denitrification compete for them according to relative demand[^4]. The transformations follow the Century and DAYCENT schemes[^1]<sup>,</sup>[^4]:
+
+| Process | How CLM5 computes it | What it leaves out |
+|---|---|---|
+| Nitrification ($\text{NH}_4^+ \to \text{NO}_3^-$) | rate proportional to $\text{NH}_4^+$, scaled by temperature, moisture and pH factors; a fixed fraction, $6 \times 10^{-4}$, of the flux is emitted as $\text{N}_2\text{O}$[^3] | pH is fixed at $6.5$ everywhere, because CLM does not compute it[^3] |
+| Denitrification ($\text{NO}_3^- \to \text{N}_2$, $\text{N}_2\text{O}$) | occurs only in the anoxic fraction of the soil, limited by carbon or nitrate; the $\text{N}_2:\text{N}_2\text{O}$ ratio depends on the nitrate-to-$\text{CO}_2$ production ratio, gas diffusivity and water-filled pore space[^3] | no pH dependence[^3] |
+| Leaching | nitrate only, carried by drainage; ammonium is assumed fully adsorbed to minerals[^3] | |
+| Gaseous loss to air | $\text{N}_2\text{O}$ as above | no ammonia volatilisation or soil NO emission in the default scheme[^3] |
+
+### Crops
+
+With the crop model on, which is the default in CLM5's biogeochemistry configuration, eight crop types grow on the crop land unit: temperate and tropical maize, temperate and tropical soybean, spring wheat, cotton, rice and sugarcane[^1]<sup>,</sup>[^4]. Each has its own planting, growth stages and harvest; industrial fertiliser rates and irrigation-equipped area come from the land-use dataset by crop type and region, updated annually, and irrigation is triggered when soil moisture falls below a target[^1]. Fertiliser enters the soil ammonium pool over 20 days once the crop reaches leaf emergence, spread through the top 0.4 m[^4]. From there it enters the same nitrification and denitrification chain as every other ammonium ion in the table above.
+
+## Where rock weathering plugs in
+
+[Enhanced rock weathering](enhanced-rock-weathering-nitrogen.qmd) argues that the nitrogen effect of spreading basalt runs entirely through soil pH. Read against the table above, the problem with default CLM5 is plain: pH is a constant $6.5$, the $\text{N}_2\text{O}$ fraction of nitrification is a constant, denitrification has no pH term, and there is no ammonia or NO flux to change. A model in which pH cannot move cannot show a pH effect.
+
+Val Martin and colleagues changed exactly those routines[^4]:
+
+| Default CLM5 | Modified CLM5 for enhanced rock weathering |
+|---|---|
+| Soil pH fixed at $6.5$ | Soil pH from the Harmonized World Soil Database, distributed through the soil layers, used for the $\text{N}_2\text{O}$ processes |
+| Potential nitrification without a mineralisation term | The mineralisation-dependent term from DAYCENT that earlier CLM5 lacked, nitrifying 20% of mineralised nitrogen |
+| Constant $\text{N}_2\text{O}$ fraction of nitrification | pH-dependent fraction from a meta-analysis (Inatomi and colleagues) |
+| Denitrification without pH | Blanc-Betes and colleagues' scheme: pH controls both total denitrification and the $\text{N}_2:\text{N}_2\text{O}$ ratio |
+| No soil NO | NO from an NO:$\text{N}_2\text{O}$ ratio set by soil gas diffusivity, with a pulse after rain on dry soil and a canopy reduction factor |
+| No ammonia volatilisation | The ammonia scheme from Fung and colleagues[^5], with a pH factor added; its baseline pH stays at $6.5$, because spatially varying pH overestimated ammonia from alkaline soils |
+| No weathering | The pH change from basalt, computed by a separate weathering model and added to CLM5's soil pH |
+
+Two points are easy to miss. The weathering chemistry itself does not run inside CLM5: a separate rock weathering model computes the soil pH change from alkalinity budgets, using nitrogen fluxes CLM5 supplies, and the two are coupled asynchronously[^4]. And all of this happens on the crop columns. Because each crop has its own column, basalt and fertiliser change the pH and nitrogen of maize or soybean soil without touching the natural vegetation column in the same grid cell, and the area weights then decide how much of that signal reaches the grid-cell flux the atmosphere sees.
+
+The next module in this part follows those fluxes across the coupler.
+
+## Key takeaways
+
+- CLM is CESM's land component. Every 30-minute time step it splits net radiation into sensible, latent and ground heat, and precipitation into evapotranspiration, runoff and storage, and returns fluxes, albedos and surface temperature to the atmosphere through the coupler.
+- Each grid cell nests land units (vegetated, crop, urban, lake, glacier), columns (soil and snow profiles) and patches (plant or crop functional types). Fluxes are computed per patch and area-weighted upward.
+- Natural PFTs share one soil column and compete for water and nitrogen; each crop type has its own column, so management stays where it is applied.
+- Biogeophysics moves energy and water; biogeochemistry moves carbon and nitrogen. Photosynthesis and stomatal conductance link them.
+- Default CLM5 fixes soil pH at $6.5$, emits a constant fraction of nitrification as $\text{N}_2\text{O}$, and has no ammonia or NO emission. Making soil pH vary, and making nitrogen gas fluxes respond to it, is what the enhanced rock weathering work changed.
+
+## References
+
+[^1]: Lawrence, D. M. et al. The Community Land Model version 5: description of new features, benchmarking, and impact of forcing uncertainty. *J. Adv. Model. Earth Syst.* **11**, 4245–4287 (2019). https://doi.org/10.1029/2018MS001583
+[^2]: Danabasoglu, G. et al. The Community Earth System Model version 2 (CESM2). *J. Adv. Model. Earth Syst.* **12**, e2019MS001916 (2020). https://doi.org/10.1029/2019MS001916
+[^3]: Lawrence, D. et al. *Technical Description of Version 5.0 of the Community Land Model (CLM)*. (National Center for Atmospheric Research, Boulder, 2018). https://www2.cesm.ucar.edu/models/cesm2/land/CLM50_Tech_Note.pdf
+[^4]: Val Martin, M. et al. Improving nitrogen cycling in a land surface model (CLM5) to quantify soil N<sub>2</sub>O, NO, and NH<sub>3</sub> emissions from enhanced rock weathering with croplands. *Geosci. Model Dev.* **16**, 5783–5801 (2023). https://doi.org/10.5194/gmd-16-5783-2023
+[^5]: Fung, K. M., Val Martin, M. & Tai, A. P. K. Modeling the interinfluence of fertilizer-induced NH<sub>3</sub> emission, nitrogen deposition, and aerosol radiative effects using modified CESM2. *Biogeosciences* **19**, 1635–1655 (2022). https://doi.org/10.5194/bg-19-1635-2022
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/what-an-earth-system-model-is.html"><span>Previous</span>What an Earth system model is</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a></div>
+<!-- CURRICULUM_FOOTER_END -->

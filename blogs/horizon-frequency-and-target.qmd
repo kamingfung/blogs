@@ -102,3 +102,4 @@ Leakage of this kind is invisible in the training score and only partly visible 
 <!-- CURRICULUM_FOOTER_START -->
 <div class="mf"><a class="mf-up" href="/series/forecasting/index.html"><span>Series</span>Forecasting with Machine Learning</a><a class="mf-next" href="/blogs/forecast/1_feature_engineering.html"><span>Next</span>Feature engineering with feature_engine</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+
