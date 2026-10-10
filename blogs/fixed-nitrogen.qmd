@@ -1,0 +1,128 @@
+---
+title: Fixed nitrogen
+description: Why the nitrogen in air is useless to life, the three ways it gets broken into a usable form, and the compounds it becomes once it is.
+date: 2026-10-09
+categories:
+- biogeochemistry
+- nitrogen
+- agriculture
+- atmospheric chemistry
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/air-land-climate/index.html">Air, Land and Climate</a><span class="sep">·</span>Part 4 · The nitrogen cascade</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">School chemistry. Parts 1 and 5 of Clouds and Aerosols help but are not required.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Air is 78% nitrogen, yet nitrogen limits plant growth on most of the planet, because almost all of it is locked in the $\text{N}_2$ molecule and its triple bond is among the strongest in chemistry. "Fixing" nitrogen means breaking that bond and attaching the atoms to hydrogen or oxygen, and only three things do it at scale: lightning, nitrogen-fixing microbes, and the Haber–Bosch process. Since the mid-twentieth century people have roughly doubled the planet's fixation rate, and every atom fixed then moves through ammonia, nitrate, nitrogen oxides and nitrous oxide before something turns it back into $\text{N}_2$. Afterwards you should be able to say what "reactive nitrogen" means, name its main forms, and explain why one fertiliser atom can cause several unrelated environmental problems in sequence.
+:::
+
+## Why the air's nitrogen is unusable
+
+Every protein and every strand of DNA needs nitrogen, and the atmosphere holds about $4 \times 10^{18}\text{ kg}$ of it. Almost none of that is available to a plant, because atmospheric nitrogen is the diatomic molecule $\text{N}_2$, held together by a triple bond with a dissociation energy of about $945\text{ kJ mol}^{-1}$ — roughly twice that of the double bond in $\text{O}_2$.
+
+Breaking that bond is the whole problem. A nitrogen atom is useful to biology only once it is bonded to something other than another nitrogen: to hydrogen in ammonia ($\text{NH}_3$), to oxygen in nitrate ($\text{NO}_3^-$), or to carbon in an amino acid. Chemists call any nitrogen in such a form **fixed**, and atmospheric chemists use **reactive nitrogen** ($\text{N}_\text{r}$) for the same idea: every nitrogen compound except $\text{N}_2$ itself[^1].
+
+The distinction matters because the two pools behave completely differently:
+
+| | Unreactive nitrogen | Reactive nitrogen |
+|---|---|---|
+| Form | $\text{N}_2$ only | $\text{NH}_3$, $\text{NH}_4^+$, $\text{NO}_3^-$, $\text{NO}_x$, $\text{N}_2\text{O}$, organic N |
+| Size | about $4 \times 10^{18}\text{ kg}$ in air | a small fraction of that, spread through soils, water, biomass and air |
+| Behaviour | inert on human timescales | biologically, chemically and radiatively active |
+| Fate | stays $\text{N}_2$ | cycles until something returns it to $\text{N}_2$ |
+
+So the supply of usable nitrogen is set not by how much nitrogen exists, but by how fast it is fixed.
+
+## Three ways to break the bond
+
+Only three processes fix nitrogen at a scale that matters globally. Each pays the bond's energy cost a different way.
+
+**Lightning** supplies it as heat. A return stroke heats a channel of air to around $30{,}000\text{ K}$, hot enough to split $\text{N}_2$ and $\text{O}_2$; the fragments recombine as nitric oxide ($\text{NO}$), which oxidises to $\text{NO}_2$. Lightning is the main natural source of nitrogen oxides in the free troposphere, but in nitrogen-supply terms it is small.
+
+**Biological fixation** supplies it as chemical energy. A handful of bacteria and archaea carry nitrogenase, an enzyme that reduces $\text{N}_2$ to ammonia at ordinary temperature and pressure:
+
+$$\text{N}_2 + 8\text{H}^+ + 8e^- + 16\,\text{ATP} \longrightarrow 2\,\text{NH}_3 + \text{H}_2 + 16\,\text{ADP} + 16\,\text{P}_\text{i}$$
+
+where ATP is adenosine triphosphate, the cell's energy currency, and $\text{P}_\text{i}$ is inorganic phosphate. Sixteen ATP per molecule is an expensive reaction, which is why fixers are often found in partnerships: rhizobia living in the root nodules of legumes such as soybean, clover and pea are fed sugar by the plant and pay it back in ammonia. That partnership is the reason soybean needs little nitrogen fertiliser, and the reason rotating or intercropping it with maize cuts fertiliser demand.
+
+**Industrial fixation** supplies it as heat, pressure and fossil hydrogen. The Haber–Bosch process passes nitrogen and hydrogen over an iron catalyst at roughly $400$–$500\,^\circ\text{C}$ and $150$–$300\text{ bar}$:
+
+$$\text{N}_2 + 3\,\text{H}_2 \;\rightleftharpoons\; 2\,\text{NH}_3$$
+
+The hydrogen comes mostly from natural gas, so synthetic fertiliser is, at one remove, a fossil fuel product. It is also what feeds a large share of humanity: by one estimate, nitrogen from Haber–Bosch sustained about $48\%$ of the world's population by 2008[^2].
+
+How the three compare, and how much people have added on top of nature:
+
+| Source | Fixation ($\text{Tg N yr}^{-1}$) | Natural or human |
+|---|---:|---|
+| Lightning | $5$ | natural |
+| Biological fixation on land | $58$ | natural |
+| Biological fixation in the ocean | $140$ | natural |
+| Haber–Bosch | $120$ | human |
+| Biological fixation by cultivated crops | $60$ | human |
+| Fossil fuel combustion | $30$ | human |
+
+<small>Estimates for about 2010 from Fowler et al.[^3]; natural terms carry wide uncertainty, the marine term especially. $1\text{ Tg} = 10^{12}\text{ g}$.</small>
+
+The human rows sum to about $210\text{ Tg N yr}^{-1}$, the natural ones to about $200$. People now fix roughly as much nitrogen as the rest of the biosphere, proportionally a far larger change than fossil fuels have made to the carbon cycle. Combustion appears in the human list because a hot engine or boiler does accidentally what lightning does deliberately: it fixes atmospheric $\text{N}_2$ into $\text{NO}_x$, along with whatever nitrogen the fuel itself contained.
+
+## One atom, many problems
+
+Once fixed, a nitrogen atom does not stay put. Microbes, plants, sunlight and water move it between a handful of forms, and each form has its own consequence:
+
+| Form | Formula | Where it comes from | What it does |
+|---|---|---|---|
+| Ammonia, ammonium | $\text{NH}_3$, $\text{NH}_4^+$ | fertiliser, manure, decomposition | feeds plants; volatilises as $\text{NH}_3$ gas and forms fine particles ($\text{PM}_{2.5}$) |
+| Nitrate | $\text{NO}_3^-$ | microbial oxidation of ammonium (nitrification) | feeds plants; leaches into groundwater and rivers, driving algal blooms |
+| Nitrogen oxides | $\text{NO}$, $\text{NO}_2$ ($\text{NO}_x$) | combustion, lightning, soils | produce ground-level ozone and nitric acid |
+| Nitrous oxide | $\text{N}_2\text{O}$ | by-product of nitrification and denitrification | greenhouse gas with about $273$ times the warming of $\text{CO}_2$ over 100 years[^4] |
+| Organic nitrogen | proteins, amino acids, urea | living and dead biomass, manure | the pool most nitrogen passes through on land |
+
+The atom leaves this system only through **denitrification**, in which bacteria short of oxygen use nitrate in place of it and release $\text{N}_2$, with some $\text{N}_2\text{O}$ escaping on the way. Until that happens, the same atom can cause one problem after another. Galloway and colleagues called this the **nitrogen cascade**[^1]:
+
+```{mermaid}
+flowchart LR
+    N2["N2 in the air (unreactive)"] -->|"microbes, Haber–Bosch"| NR["Ammonia and ammonium (NH3, NH4+)"]
+    N2 -->|"combustion, lightning"| NOX["Nitrogen oxides (NOx)"]
+    NOX --> O3["Ground-level ozone"]
+    NR -->|"volatilisation"| PM["Fine particles (PM2.5)"]
+    NR -->|"nitrification"| NO3["Nitrate (NO3-)"]
+    NOX -->|"oxidation to nitric acid"| NO3
+    NO3 -->|"leaching"| WATER["Rivers and coasts (eutrophication)"]
+    NO3 -->|"denitrification"| N2O["N2O (warming)"]
+    NO3 -->|"denitrification"| BACK["N2 again"]
+    N2O --> BACK
+
+    class N2,BACK indigo
+    class NR,NOX,NO3 ochre
+    class PM,O3,WATER,N2O rust
+    classDef indigo fill:#1d4a62,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef rust fill:#a04b2d,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef ochre fill:#d69a2e,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+```
+
+A single nitrogen atom in a urea granule might volatilise as ammonia, combine with nitric acid into an ammonium nitrate particle, be rained out onto a forest, be oxidised to nitrate in the soil, leach into a stream, and finally be denitrified, releasing a puff of $\text{N}_2\text{O}$ on the way. That is four separate environmental problems — particulate air pollution, forest nutrient enrichment, freshwater eutrophication and greenhouse warming — from one atom, and policy usually treats each in a different department.
+
+This is why the rest of this part follows the atom rather than the problem. The next module, [Where ammonia comes from](where-ammonia-comes-from.qmd), follows its first and largest exit to the air.
+
+## Key takeaways
+
+- Atmospheric $\text{N}_2$ is unusable to life; the triple bond ($\approx 945\text{ kJ mol}^{-1}$) has to be broken first. **Fixed** or **reactive** nitrogen is every nitrogen compound except $\text{N}_2$.
+- Three processes fix nitrogen globally: lightning (heat), nitrogenase in microbes (16 ATP per $\text{N}_2$) and Haber–Bosch (heat, pressure and fossil hydrogen).
+- Human activity fixes about $210\text{ Tg N yr}^{-1}$, as much as all natural processes combined.
+- Reactive nitrogen cycles through $\text{NH}_3/\text{NH}_4^+$, $\text{NO}_3^-$, $\text{NO}_x$, $\text{N}_2\text{O}$ and organic forms, each with its own harm.
+- Only denitrification returns it to $\text{N}_2$, so one fixed atom can cause several problems in sequence before it leaves: the nitrogen cascade.
+
+## References
+
+[^1]: Galloway, J. N. et al. The nitrogen cascade. *BioScience* **53**, 341–356 (2003). https://doi.org/10.1641/0006-3568(2003)053%5B0341:TNC%5D2.0.CO;2
+[^2]: Erisman, J. W., Sutton, M. A., Galloway, J., Klimont, Z. & Winiwarter, W. How a century of ammonia synthesis changed the world. *Nat. Geosci.* **1**, 636–639 (2008). https://doi.org/10.1038/ngeo325
+[^3]: Fowler, D. et al. The global nitrogen cycle in the twenty-first century. *Phil. Trans. R. Soc. B* **368**, 20130164 (2013). https://doi.org/10.1098/rstb.2013.0164
+[^4]: Forster, P. et al. in *Climate Change 2021: The Physical Science Basis. Contribution of Working Group I to the Sixth Assessment Report of the Intergovernmental Panel on Climate Change* (eds Masson-Delmotte, V. et al.) 923–1054 (Cambridge Univ. Press, 2021). https://doi.org/10.1017/9781009157896.009
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/organic-aerosols-health-climate.html"><span>Previous</span>Organic aerosols: health versus climate</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/where-ammonia-comes-from.html"><span>Next</span>Where ammonia comes from</a></div>
+<!-- CURRICULUM_FOOTER_END -->

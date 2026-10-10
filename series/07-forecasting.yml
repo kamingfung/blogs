@@ -13,6 +13,7 @@ parts:
       - id: forecasting/horizon-frequency-and-target
         title: "Horizon, frequency and target"
         level: introductory
+        path: blogs/horizon-frequency-and-target.md
       - id: forecasting/leakage
         title: "Leakage"
         level: introductory
@@ -42,6 +43,9 @@ parts:
       - id: forecasting/gradient-boosting-for-tabular-time-series
         title: "Gradient boosting for tabular time series"
         level: intermediate
+        path: blogs/forecast/gradient_boosting_for_time_series.ipynb
+        requires:
+          - forecasting/horizon-frequency-and-target
       - id: forecasting/ensemble-models
         title: "Ensemble models"
         level: intermediate

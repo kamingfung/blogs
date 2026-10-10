@@ -1,0 +1,111 @@
+---
+title: Where ammonia comes from
+description: Most atmospheric ammonia comes from farms. The reason is one acid–base equilibrium, and it explains which practices lose the most nitrogen to the air.
+date: 2026-10-09
+categories:
+- atmospheric chemistry
+- air quality
+- agriculture
+- nitrogen
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/air-land-climate/index.html">Air, Land and Climate</a><span class="sep">·</span>Part 4 · The nitrogen cascade</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">Assumes <a href="/blogs/fixed-nitrogen.html">Fixed nitrogen</a>.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Ammonia ($\text{NH}_3$) is the atmosphere's main alkaline gas and the largest single form in which fixed nitrogen escapes farmland to the air. Roughly two thirds of global emissions come from agriculture — livestock manure first, synthetic fertiliser second. The reason fits in one equilibrium: dissolved ammonium ($\text{NH}_4^+$) turns into volatile $\text{NH}_3$ as pH and temperature rise, and each extra unit of pH raises the volatile share about tenfold. Urea fertiliser and urine raise their own local pH as they break down, which is why they lose so much. Afterwards you should be able to rank emission sources, compute how much of a soil's ammonium is volatile, and say why injecting slurry or adding a urease inhibitor works.
+:::
+
+## Most of it comes from farms
+
+Ammonia is unusual among air pollutants: it does not come mainly from burning anything. A global inventory for 1990 put total emissions at about $54\text{ Tg N yr}^{-1}$[^1]:
+
+| Source | Emission ($\text{Tg N yr}^{-1}$) | Share |
+|---|---:|---:|
+| Livestock (manure and urine) | $\approx 22$ | $\approx 40\%$ |
+| Synthetic fertiliser | $\approx 9$ | $\approx 17\%$ |
+| Oceans | $\approx 8$ | $\approx 15\%$ |
+| Biomass burning | $\approx 6$ | $\approx 11\%$ |
+| Crops (leaves and decaying residue) | $\approx 4$ | $\approx 7\%$ |
+| Human excreta | $\approx 3$ | $\approx 5\%$ |
+| Soils under natural vegetation, wild animals, industry, traffic | the rest | |
+
+<small>1990 baseline from Bouwman et al.[^1], rounded. Fertiliser use and livestock numbers have both grown since, so today's absolute totals are higher; the ranking has not changed.</small>
+
+Livestock, fertiliser and crops together are about two thirds of the total, and nearly all of the part people can manage. Traffic and industry, which dominate most other pollutant inventories, are a few percent.
+
+Inventories like this are built bottom-up: count the animals and the fertiliser, multiply by an emission factor per animal or per kilogram of nitrogen applied. That method misses what nobody reported. When daily ammonia columns from the IASI satellite instrument were averaged over a decade, they exposed hundreds of point-source hotspots — feedlots, fertiliser plants, industrial complexes — many of them absent from inventories or understated by large factors[^2].
+
+## Ammonium turns into ammonia
+
+In soil water, in a puddle of urine and in a slurry tank, ammoniacal nitrogen exists in two forms in equilibrium:
+
+$$\text{NH}_4^+ \;\rightleftharpoons\; \text{NH}_3 + \text{H}^+$$
+
+Only the neutral $\text{NH}_3$ can leave as a gas; the ion stays in solution. The fraction present as $\text{NH}_3$ follows directly from the acid dissociation constant:
+
+$$f_{\text{NH}_3} = \frac{[\text{NH}_3]}{[\text{NH}_3] + [\text{NH}_4^+]} = \frac{1}{1 + 10^{\,\text{p}K_a - \text{pH}}}$$
+
+where $\text{p}K_a = -\log_{10} K_a$. The constant falls as the water warms; a standard empirical fit is[^3]
+
+$$\text{p}K_a = 0.09018 + \frac{2729.92}{T}$$
+
+with $T$ in kelvin, giving $\text{p}K_a = 9.25$ at $25\,^\circ\text{C}$ and $8.95$ at $35\,^\circ\text{C}$. Working the two equations through:
+
+| pH | $5\,^\circ\text{C}$ | $15\,^\circ\text{C}$ | $25\,^\circ\text{C}$ | $35\,^\circ\text{C}$ |
+|---:|---:|---:|---:|---:|
+| 6 | $0.01\%$ | $0.03\%$ | $0.06\%$ | $0.11\%$ |
+| 7 | $0.12\%$ | $0.27\%$ | $0.56\%$ | $1.1\%$ |
+| 8 | $1.2\%$ | $2.7\%$ | $5.4\%$ | $10\%$ |
+| 9 | $11\%$ | $21\%$ | $36\%$ | $53\%$ |
+
+<small>Percentage of total ammoniacal nitrogen ($\text{NH}_3 + \text{NH}_4^+$) present as dissolved $\text{NH}_3$.</small>
+
+Two rules fall out of the table. **Each unit of pH multiplies the volatile share about tenfold**, because pH is logarithmic and the system sits far below its $\text{p}K_a$. **Warmth multiplies it too**: from $5$ to $35\,^\circ\text{C}$ at pH 7 the share rises ninefold. A neutral, cool soil holds its ammonium almost entirely as the ion; a warm, alkaline one holds a third or more as gas waiting to leave.
+
+Leaving still takes a second step. Dissolved $\text{NH}_3$ escapes into the air in proportion to how far the solution is above equilibrium with the air above it, which is why wind, exposed surface area and how long the material sits in the open all matter. Soils and leaves can also *absorb* ammonia when the air holds more than the surface does; the exchange runs both ways, and the balance point is called the **compensation point**[^4].
+
+## Why urea and manure lose so much
+
+If fertiliser were applied as ammonium to a neutral soil, the table says almost none of it would volatilise. The two largest sources lose a lot because they move their own pH.
+
+**Urea** is the world's most used nitrogen fertiliser, and manure's nitrogen is largely urea too, in urine. On contact with the enzyme urease — abundant in soil and in faeces — it hydrolyses:
+
+$$\text{CO(NH}_2\text{)}_2 + 3\,\text{H}_2\text{O} \;\xrightarrow{\text{urease}}\; 2\,\text{NH}_4^+ + \text{HCO}_3^- + \text{OH}^-$$
+
+The reaction makes ammonium and alkalinity at the same moment and in the same place. The zone around a urea granule, or a urine patch, is pushed towards pH 8 to 9, exactly the rows of the table where the volatile share climbs from a few percent to a third. The fertiliser raises the pH that decides how much of itself is lost.
+
+That chemistry explains every standard mitigation, each of which attacks one term:
+
+| Practice | What it changes | Why it works |
+|---|---|---|
+| Inject or incorporate slurry and urea into the soil | exposure | dissolved $\text{NH}_3$ is re-captured by soil before it reaches air |
+| Urease inhibitors | rate of the pH spike | urea hydrolyses slowly, so local pH and $\text{NH}_4^+$ never peak together |
+| Acidify slurry | pH | moves the store several rows up the table |
+| Cover manure stores and lagoons | exposure, wind | slows transfer from surface to air |
+| Apply in cool weather, before rain | temperature, exposure | lowers $f_{\text{NH}_3}$ and washes nitrogen into the soil |
+| Replace some fertiliser with legume fixation | source | less urea applied in the first place — see [Intercropping](intercropping-air-quality.qmd) |
+
+Ammonia that does escape does not travel far as a gas. Within hours it either deposits near its source — onto soils, crops and nearby woodland — or reacts with sulfuric and nitric acid to form ammonium sulfate and ammonium nitrate particles. Those particles live for days, travel hundreds of kilometres, and make up a large part of fine particulate matter ($\text{PM}_{2.5}$) over farming regions. The deposition half of that story continues in [Ammonia deposition and ozone feedbacks](ammonia-deposition-ozone.qmd).
+
+## Key takeaways
+
+- About two thirds of global ammonia emissions are agricultural: livestock manure and urine first, synthetic fertiliser second. Traffic and industry are minor.
+- Ammoniacal nitrogen splits between $\text{NH}_4^+$ (stays in water) and $\text{NH}_3$ (can volatilise): $f_{\text{NH}_3} = 1 / (1 + 10^{\text{p}K_a - \text{pH}})$, with $\text{p}K_a \approx 9.25$ at $25\,^\circ\text{C}$.
+- Each unit of pH raises the volatile share about tenfold; going from $5$ to $35\,^\circ\text{C}$ raises it about ninefold.
+- Urea hydrolysis makes its own alkalinity, which is why urea fertiliser and urine lose far more nitrogen than ammonium applied to neutral soil.
+- Every mitigation practice lowers one term: pH (acidify), temperature (timing), exposure (inject, cover), rate (urease inhibitors) or source (legumes).
+
+## References
+
+[^1]: Bouwman, A. F. et al. A global high-resolution emission inventory for ammonia. *Global Biogeochem. Cycles* **11**, 561–587 (1997). https://doi.org/10.1029/97GB02266
+[^2]: Van Damme, M. et al. Industrial and agricultural ammonia point sources exposed. *Nature* **564**, 99–103 (2018). https://doi.org/10.1038/s41586-018-0747-1
+[^3]: Emerson, K., Russo, R. C., Lund, R. E. & Thurston, R. V. Aqueous ammonia equilibrium calculations: effect of pH and temperature. *J. Fish. Res. Board Can.* **32**, 2379–2383 (1975). https://doi.org/10.1139/f75-274
+[^4]: Sutton, M. A. et al. Towards a climate-dependent paradigm of ammonia emission and deposition. *Phil. Trans. R. Soc. B* **368**, 20130166 (2013). https://doi.org/10.1098/rstb.2013.0166
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/fixed-nitrogen.html"><span>Previous</span>Fixed nitrogen</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/ammonia-deposition-ozone.html"><span>Next</span>Ammonia deposition and ozone feedbacks</a></div>
+<!-- CURRICULUM_FOOTER_END -->

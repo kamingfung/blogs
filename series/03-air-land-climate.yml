@@ -50,9 +50,13 @@ parts:
       - id: air-land-climate/fixed-nitrogen
         title: "Fixed nitrogen"
         level: introductory
+        path: blogs/fixed-nitrogen.md
       - id: air-land-climate/where-ammonia-comes-from
         title: "Where ammonia comes from"
         level: introductory
+        path: blogs/where-ammonia-comes-from.md
+        requires:
+          - air-land-climate/fixed-nitrogen
       - id: air-land-climate/deposition-how-nitrogen-leaves-the-air
         title: "Deposition: how nitrogen leaves the air"
         level: intermediate

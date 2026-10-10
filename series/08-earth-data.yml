@@ -70,6 +70,7 @@ parts:
       - id: earth-data/geopandas-basics
         title: "GeoPandas basics"
         level: introductory
+        path: blogs/geopandas-basics/geopandas_basics.ipynb
       - id: earth-data/projections
         title: "Projections"
         level: introductory

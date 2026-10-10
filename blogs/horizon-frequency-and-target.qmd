@@ -1,0 +1,104 @@
+---
+title: Horizon, frequency and target
+description: The three decisions that define a forecast before any model is chosen, and the one rule they impose on every feature.
+date: 2026-10-09
+categories:
+- forecasting
+- time series
+- machine learning
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/forecasting/index.html">Forecasting with Machine Learning</a><span class="sep">·</span>Part 1 · Framing a forecast</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">Python and pandas. Basic statistics. No prior forecasting.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+A forecasting project is defined by three choices made before any model: the **target** (exactly what number is predicted), the **frequency** (the time step it is predicted at) and the **horizon** (how far ahead of the moment of issue). All three come from the decision the forecast serves, not from the data. Together they fix a rule every feature must obey: a value can only be used if it would actually be known at the forecast origin, so a lag of the target shorter than the horizon is a leak. Get the framing wrong and a model can score well in a backtest and be useless in operation. Afterwards you should be able to write any forecast as $\hat{y}_{t+h \mid t}$, choose a resampling rule for a series, and check a feature list for leakage by inspection.
+:::
+
+## Start from the decision
+
+The target is set by what someone will do with the number. A farm forecasting blueberry harvest might need:
+
+| Decision | Target | Frequency | Horizon |
+|---|---|---|---|
+| How many pickers to book next week | harvested kilograms, per field | weekly | 1–2 weeks |
+| How many trucks and cold-store slots to reserve | harvested kilograms, per packhouse | daily | 3–10 days |
+| What volume to commit to a retailer for the season | season total, per farm | once | 2–4 months |
+
+Same crop, same raw data, three different forecasting problems. A model built for the first row says nothing useful about the third: its errors are measured per week and per field, while the commercial decision lives on one seasonal number per farm.
+
+Pinning the target down means answering four questions explicitly:
+
+- **Which quantity, in which unit?** Fresh weight or packed weight; kilograms or cases.
+- **Aggregated how?** A sum over the period for flows, like harvest; a mean for states, like temperature.
+- **At what level?** Per field, per farm, per region. Forecasting at a fine level and summing is not the same as forecasting the total; the errors combine differently.
+- **On what scale is it modelled?** The target the model fits need not be the reported number. Harvest is multiplicative, so fitting $\log y$ and exponentiating back is common — the [ensemble models](forecast/2_ensemble_models.ipynb) module does exactly that. A fraction bounded in $[0, 1]$ needs a loss that respects the bounds; see [Cross-entropy for bounded targets](lightgbm-cross-entropy-bounded-target.qmd).
+
+## Frequency is a choice
+
+Data arrive at whatever resolution the sensor or ledger produces. The forecasting frequency is chosen. Coarser steps average out noise and shorten the horizon in steps, but they leave fewer training samples and can hide the timing that matters.
+
+Changing frequency is a resampling decision, and the correct rule depends on what the series measures:
+
+| Kind of quantity | Examples | Downsample with |
+|---|---|---|
+| **Flow**: an amount per period | harvest, rainfall, sales | sum |
+| **State**: a level at an instant, averaged | temperature, soil moisture | mean |
+| **Stock**: a level you can read off | inventory, reservoir volume | last value |
+
+Summing temperature or averaging rainfall produces a series with the right length and the wrong meaning, and no model will flag it. A reasonable default is the coarsest frequency that still resolves the decision — weekly for weekly labour planning, not daily because daily data happen to exist.
+
+## Origin, horizon and lead time
+
+Three moments in time are easy to blur, and the notation keeps them apart. Write the forecast as
+
+$$\hat{y}_{t+h \mid t}$$
+
+read "the prediction of $y$ at time $t+h$, made using what was known at time $t$", where
+
+- $t$ is the **forecast origin**: the last time step whose information the forecast may use;
+- $h$ is the **horizon** in steps, $h = 1, 2, \dots, H$;
+- $t + h$ is the **target time**, the period the forecast is about.
+
+Two operational delays then set the minimum useful $h$:
+
+- **Data latency** $d$: if field records reach the database two days late, then at origin $t$ the newest observed value is $y_{t-d}$, not $y_t$.
+- **Decision lead time** $L$: if pickers must be booked five days ahead, a forecast for a given day is worthless unless it is issued at least five days before it.
+
+A one-step-ahead model that scores beautifully is no help when every real decision needs $h \geq 3$. And when one model must cover every step from $1$ to $H$, how it gets there — feeding its own predictions back in, or fitting each step separately — is its own choice, covered in [Direct vs recursive in Darts](darts-direct-vs-recursive.qmd).
+
+## What the model may know at the origin
+
+The three choices above combine into one rule:
+
+> A feature may be used to predict $y_{t+h}$ only if its value would be known at the origin $t$.
+
+Applied to lags of the target, the rule is arithmetic. Suppose a weekly model predicts $h = 4$ weeks ahead. A feature "last week's harvest" is ambiguous: last week relative to *what*?
+
+| Feature, as it might be written | Value used for target week $t+4$ | Known at origin $t$? |
+|---|---|---|
+| target lag 1, indexed from the target | $y_{t+3}$ | **no** — leak |
+| target lag 4, indexed from the target | $y_{t}$ | yes, if latency is zero |
+| target lag 0, indexed from the origin | $y_{t}$ | yes, if latency is zero |
+| same, with two weeks of data latency | $y_{t}$ | **no** — newest known is $y_{t-2}$ |
+
+In general, a lag of $k$ steps counted back from the target time is safe only when $k \geq h + d$. Building lags indexed from the origin rather than the target makes the rule hold automatically, which is how [Feature engineering with feature_engine](forecast/1_feature_engineering.ipynb) constructs them.
+
+The same rule covers external drivers. Observed weather for week $t+4$ does not exist at origin $t$; using it in a backtest makes the model look better than it can ever be in operation. The honest options are a weather forecast archived as it was issued at $t$, or climatology for $t+4$ — the latter is what the ensemble module uses when it rolls forward eight weeks.
+
+Leakage of this kind is invisible in the training score and only partly visible in a careless backtest. Stating target, frequency, origin and horizon before writing any code is the cheapest defence against it.
+
+## Key takeaways
+
+- Define the forecast as $\hat{y}_{t+h \mid t}$: target time $t + h$, using only information available at origin $t$.
+- The target, frequency and horizon come from the decision the forecast serves; the same data can support several different forecasting problems.
+- Resample flows by summing, states by averaging and stocks by taking the last value.
+- Data latency $d$ and decision lead time $L$ set the minimum horizon that is useful in operation.
+- A target lag of $k$ steps back from the target time is safe only if $k \geq h + d$; index lags from the origin to make that automatic, and never feed observed future drivers into a backtest.
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-up" href="/series/forecasting/index.html"><span>Series</span>Forecasting with Machine Learning</a><a class="mf-next" href="/blogs/forecast/1_feature_engineering.html"><span>Next</span>Feature engineering with feature_engine</a></div>
+<!-- CURRICULUM_FOOTER_END -->
