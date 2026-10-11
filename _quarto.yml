@@ -1,4 +1,5 @@
-# Mirror of the MkDocs site at blogs.kamingfung.workers.dev, built with Quarto.
+# The blog, built with Quarto. Replaced the MkDocs Material site on the same URL;
+# that site is archived at blogs-mirror.kamingfung.workers.dev.
 # Source layout is mirrored exactly, so every relative image reference in a post
 # keeps working: docs/blogs/foo.md -> blogs/foo.qmd, assets copied alongside.
 project:
@@ -17,7 +18,7 @@ metadata-files:
 website:
   title: "Blogs"
   description: "Course-style notes on atmospheric science, forecasting and scientific computing."
-  site-url: https://blogs-mirror.kamingfung.workers.dev
+  site-url: https://blogs.kamingfung.workers.dev
   # palette.yml assigns indigo the role "header and footer bars". Without a
   # navbar nothing painted it, so the site lost the blue the MkDocs header
   # carries. background: primary reads $primary from the generated palette.
@@ -37,7 +38,7 @@ website:
     location: navbar
   page-footer:
     background: primary
-    left: "Mirror of [blogs.kamingfung.workers.dev](https://blogs.kamingfung.workers.dev)"
+    left: "Notes by Ka Ming Fung"
     right: "Built with [Quarto](https://quarto.org)"
 
 format:

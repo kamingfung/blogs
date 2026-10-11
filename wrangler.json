@@ -1,5 +1,5 @@
 {
-  "name": "blogs-mirror",
+  "name": "blogs",
   "compatibility_date": "2026-08-01",
   "assets": {
     "directory": "./_site",

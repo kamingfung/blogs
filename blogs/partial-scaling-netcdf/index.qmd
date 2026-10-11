@@ -8,7 +8,7 @@ categories:
 ---
 
 <!-- CURRICULUM_HEADER_START -->
-<div class="mh"><p class="mh-crumb"><a href="/series/earth-data/index.html">Earth Data in Python and R</a><span class="sep">·</span>Part 2 · Gridded data with xarray</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Assumes <a href="/blogs/python-basics-cesm/index.html">Python basics for mapping</a> and <span class="unwritten" title="not written yet">Dimensions, coordinates and attributes</span>.</p></div>
+<div class="mh"><p class="mh-crumb"><a href="/series/earth-data/index.html">Earth Data in Python and R</a><span class="sep">·</span>Part 2 · Gridded data with xarray</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Assumes <a href="/blogs/python-basics-cesm/index.html">Python basics for mapping</a> and <a href="/blogs/xarray-basics/dimensions_coordinates_attributes.html">Dimensions, coordinates and attributes</a>.</p></div>
 <!-- CURRICULUM_HEADER_END -->
 
 ::: {.callout-note appearance="simple" icon=false}
@@ -485,7 +485,9 @@ dms_below30S = ds['DMS_OCEAN'].sel(lat=slice(-90,-30-1e-9)) # we add a small val
 dms_below30S = dms_below30S * 0.5
 
 # Step 3: merge the untouched and scaled data
-ds_partly_scaled = xr.merge([dms_below30S, dms_above30S], compat="no_conflicts")
+# join="outer" is today's default, but xarray warns it will become "exact",
+# which refuses to combine two slices with different latitudes. Say it explicitly.
+ds_partly_scaled = xr.merge([dms_below30S, dms_above30S], compat="no_conflicts", join="outer")
 ```
 
 To ensure our exercise is correct, let's make some plots to compare the DMS concentrations in `ds_partly_scaled` and the original dataset, `ds`.
@@ -936,7 +938,7 @@ Coordinates:
 
 ## Preserving metadata from the original nc file
 
-Not yet! Now the new merged data set is missing the Attributes of the original.
+Not yet. The merged dataset has lost the original file's global attributes: its title, history and model description. Those belong to the Dataset `ds`, not to the `DMS_OCEAN` arrays that were split and merged, so `xr.merge` has nothing to copy them from. (This page was first written with an older xarray, in which the variable's own attributes, such as its units, were dropped as well. In current versions they come through the merge; the global ones still do not.)
 
 To fix this, we need to make a xarray copy of the original to preserve the original information, but with the new scaled values.
 
@@ -1405,12 +1407,11 @@ ds_new.to_netcdf('DMS_lana.geos.1x1.SouthernHalved.nc') # always good to have a 
 ## Key takeaways
 
 - Split the array with `sel(lat=slice(...))` into the part to scale and the part to leave alone; offset the boundary by a tiny amount so no row lands in both.
-- Scale the subset with ordinary arithmetic and rejoin with `xr.merge(..., compat="no_conflicts")`; the coordinates line up because they came from the same file.
-- `xr.merge` drops the global and variable attributes; `ds.copy(data=ds_partly_scaled)` puts the new values into a copy that keeps them.
+- Scale the subset with ordinary arithmetic and rejoin with `xr.merge(..., compat="no_conflicts", join="outer")`; the coordinates line up because they came from the same file. Pass `join` explicitly: its default is set to change from `"outer"` to `"exact"`, which would reject the two slices.
+- `xr.merge` drops the file's global attributes, which belong to the Dataset rather than to any variable; `ds.copy(data=ds_partly_scaled)` puts the new values into a copy that keeps them.
 - Plot the ratio of new to old before saving; a map of 1s and 0.5s is a direct check that only the intended region changed.
 - `da.where(da.lat >= -30, da * 0.5)` does the same split, scale and merge in one expression; `to_netcdf` with a descriptive filename writes the result.
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/python-basics-cesm/index.html"><span>Previous</span>Python basics for mapping</a><a class="mf-up" href="/series/earth-data/index.html"><span>Series</span>Earth Data in Python and R</a><a class="mf-next" href="/blogs/r-regridding/index.html"><span>Next</span>Regridding crop data for climate models</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/python-basics-cesm/index.html"><span>Previous</span>Python basics for mapping</a><a class="mf-up" href="/series/earth-data/index.html"><span>Series</span>Earth Data in Python and R</a><a class="mf-next" href="/blogs/xarray-basics/dimensions_coordinates_attributes.html"><span>Next</span>Dimensions, coordinates and attributes</a></div>
 <!-- CURRICULUM_FOOTER_END -->
-

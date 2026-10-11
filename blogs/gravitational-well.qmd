@@ -1092,8 +1092,8 @@ setTimeout(() => {
 - Two orbiting masses produce a double well whose effective potential has five equilibria: three collinear saddle points ($L_1$ to $L_3$, unstable) and two triangular hills ($L_4$, $L_5$) stabilised by the Coriolis force when $M_1/M_2 > 24.96$.
 - Deepening a well linearly raises the fuel needed to leave it exponentially; a super-Earth twice our radius and mass would make chemical spaceflight impractical.
 
-[^1]: Misner, C. W., Thorne, K. S. & Wheeler, J. A. *Gravitation*. (W. H. Freeman, San Francisco, 1973). https://doi.org/10.1515/9781400889099
-[^2]: Newton, I. *Philosophiae Naturalis Principia Mathematica*. (J. Streater, London, 1687). https://doi.org/10.5479/sil.288219.39088015628391
+[^1]: Misner, C. W., Thorne, K. S. & Wheeler, J. A. *Gravitation*. (W. H. Freeman, San Francisco, 1973).
+[^2]: Newton, I. *Philosophiae Naturalis Principia Mathematica*. (J. Streater, London, 1687).
 [^3]: Tsiolkovsky, K. E. Exploration of outer space by means of rocket devices. *Nauchnoe Obozrenie* **5**, 45–75 (1903).
 [^4]: Schwarzschild, K. Über das Gravitationsfeld eines Massenpunktes nach der Einsteinschen Theorie. *Sitzungsber. Preuss. Akad. Wiss.* **1916**, 189–196 (1916).
 [^5]: Kerr, R. P. Gravitational field of a spinning mass as an example of algebraically special metrics. *Phys. Rev. Lett.* **11**, 237–238 (1963). https://doi.org/10.1103/PhysRevLett.11.237

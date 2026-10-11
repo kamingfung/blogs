@@ -320,6 +320,6 @@ html`<div style="font-size:0.9em;background:rgba(16,185,129,0.1);border-left:4px
 [^5]: Bey, I. et al. Global modeling of tropospheric chemistry with assimilated meteorology: Model description and evaluation. *J. Geophys. Res. Atmos.* **106**, 23073–23095 (2001). https://doi.org/10.1029/2001JD000807
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/cesm2-fertilizer-climate-feedback.html"><span>Previous</span>Fertiliser nitrogen and aerosol cooling in CESM2</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/enhanced-rock-weathering-nitrogen.html"><span>Next</span>Enhanced rock weathering</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/cesm2-fertilizer-climate-feedback.html"><span>Previous</span>Fertiliser ammonia in CESM2</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/enhanced-rock-weathering-nitrogen.html"><span>Next</span>Enhanced rock weathering</a></div>
 <!-- CURRICULUM_FOOTER_END -->
 

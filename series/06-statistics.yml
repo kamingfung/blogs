@@ -68,6 +68,7 @@ parts:
       - id: statistics/what-a-p-value-is-not
         title: "What a p-value is not"
         level: introductory
+        path: blogs/p-values/what_a_p_value_is_not.ipynb
   - title: "Distributions"
     modules:
       - id: statistics/normal-lognormal-poisson

@@ -1,0 +1,150 @@
+---
+title: What an Earth system model is
+description: How an Earth system model differs from a physical climate model, what its components and coupler do, and how such models are spun up and compared in CMIP.
+date: 2026-10-09
+categories:
+- climate modeling
+- earth system science
+- biogeochemistry
+- atmospheric science
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/air-land-climate/index.html">Air, Land and Climate</a><span class="sep">·</span>Part 10 · Earth system models</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">School chemistry. Parts 1 and 5 of Clouds and Aerosols help but are not required.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+A physical climate model solves the equations of motion and energy for the atmosphere and ocean, but reads the long-lived parts of the air's composition, such as carbon dioxide, from a file. An Earth system model also carries the biogeochemical cycles that set that composition — carbon, nitrogen, aerosols, chemistry — so the air can respond to the climate it is helping to produce. That makes a model a set of separate component models, for atmosphere, ocean, land, sea ice and land ice, each on its own grid, which a coupler keeps in step on a shared clock and through which every flux between them passes. Anything smaller than a grid cell, from clouds to soil microbes, has to be parameterised, and those choices matter: they explain much of the spread between models. Before any experiment the model is spun up until its slow reservoirs stop drifting, and models are compared by running the same protocols in the Coupled Model Intercomparison Project. Afterwards you can read a sentence like "we coupled CLM5 to CAM6 inside CESM2" and say what was prescribed before, what is interactive now, and why that changes the answer.
+:::
+
+## Climate model versus Earth system model
+
+Every global climate model starts from a **general circulation model** (GCM): a numerical solution of the equations for fluid motion, energy and water on a rotating sphere, applied to the atmosphere and the ocean. A GCM already computes a great deal of the climate system for itself. Water vapour evaporates, condenses and rains out; clouds form and dissipate; sea ice grows and melts. None of that is prescribed.
+
+What a purely physical climate model does not compute is the slow, chemically and biologically controlled part of the atmosphere's composition. The concentration of carbon dioxide ($\text{CO}_2$), methane and the other long-lived greenhouse gases is read from a file, year by year. Aerosols are often handled the same way, either as prescribed concentrations or as particles made from prescribed emissions. The model can be very good at the physics and still unable to answer a question like "if warming slows plant growth, how much faster does $\text{CO}_2$ rise?", because the $\text{CO}_2$ curve was decided before the run began.
+
+An **Earth system model** (ESM) closes that loop. The definition used by the Coupled Model Intercomparison Project is specific: an ESM is a model that can calculate the atmospheric $\text{CO}_2$ concentration itself, accounting for the fluxes of $\text{CO}_2$ between the atmosphere, the ocean and the biosphere[^1]. In practice the term has widened to cover whatever biogeochemistry is made interactive — the nitrogen cycle, atmospheric chemistry, interactive aerosols, dynamic vegetation:
+
+| Quantity | Physical climate model | Earth system model |
+|---|---|---|
+| Winds, temperature, ocean currents | computed | computed |
+| Water vapour, clouds, sea ice | computed | computed |
+| Atmospheric $\text{CO}_2$ | prescribed concentration | can be computed from emissions and land and ocean uptake |
+| Aerosols and reactive gases | often prescribed | computed from emissions, some of which the model also computes[^4] |
+| Vegetation, soil carbon and nitrogen | absent or fixed | prognostic, responding to climate |
+
+Two consequences follow. First, an ESM is a superset, not a different kind of model: switch the biogeochemistry off, or prescribe its outputs, and a physical climate model is what remains. Second, whether a given run is "Earth system" depends on how it is driven as much as on the code. The same model can be run **concentration-driven**, with $\text{CO}_2$ prescribed, or **emission-driven**, with only human $\text{CO}_2$ emissions prescribed and the concentration left for the model to find[^1]. The emission-driven run can show a carbon–climate feedback; the concentration-driven run cannot, but it lets an ESM be compared fairly against models that have no carbon cycle at all.
+
+## Components and the coupler
+
+An ESM is not one program solving one set of equations. It is several component models, each written for one part of the Earth system, developed largely by its own scientific community, and run on its own grid. The Community Earth System Model version 2 (CESM2), developed at the US National Center for Atmospheric Research (NCAR), is a well-documented example[^2]:
+
+| Domain | CESM2 component | What it carries beyond physics |
+|---|---|---|
+| Atmosphere | Community Atmosphere Model version 6 (CAM6) | aerosols through the four-mode Modal Aerosol Module (MAM4)[^3]; full chemistry in its CAM-chem and WACCM6 configurations[^4]<sup>,</sup>[^5] |
+| Land | Community Land Model version 5 (CLM5) | vegetation and soil carbon and nitrogen cycles, crops and fertilisation, river routing[^6] |
+| Ocean | Parallel Ocean Program version 2 (POP2) | ocean biogeochemistry through the Marine Biogeochemistry Library (MARBL) |
+| Sea ice | Los Alamos sea ice model, CICE version 5 (CICE5) | — |
+| Land ice | Community Ice Sheet Model version 2.1 (CISM2.1) | — |
+| Rivers | Model for Scale Adaptive River Transport (MOSART) | carries runoff from land to ocean |
+| Ocean waves | WAVEWATCH III (WW3) | — |
+
+<small>Component list from Danabasoglu et al.[^2] and the CESM2 documentation[^7]; in CESM2, MOSART runs as a separate river component that receives runoff from CLM5, and was released alongside it[^6]. The atmosphere comes in a "low-top" version reaching about $40\text{ km}$ with limited chemistry, and a "high-top" version, the Whole Atmosphere Community Climate Model (WACCM6), reaching about $130\text{ km}$ with comprehensive chemistry[^2].</small>
+
+The components never call one another. Each talks only to the **coupler** (in CESM, a program called CPL7), which coordinates the time evolution of the whole system and periodically lets the components exchange data: it receives fields from each component, maps them from one grid to another, merges them where a grid cell is part land and part ocean, computes some fluxes itself, and sends the results back[^7].
+
+```{mermaid}
+flowchart LR
+    ATM["Atmosphere<br/>CAM6"]
+    LND["Land<br/>CLM5"]
+    OCN["Ocean<br/>POP2"]
+    ICE["Sea ice<br/>CICE5"]
+    GLC["Land ice<br/>CISM2.1"]
+    ROF["Rivers<br/>MOSART"]
+    CPL{{"Coupler<br/>CPL7: one clock, regridding"}}
+
+    ATM <-->|"rain, sunlight, wind / heat, water vapour, CO2, dust"| CPL
+    LND <-->|"surface fluxes, albedo, runoff"| CPL
+    OCN <-->|"sea surface temperature / heat, fresh water, wind stress, CO2"| CPL
+    ICE <-->|"ice cover, albedo / heat and salt"| CPL
+    GLC <-->|"surface mass balance / ice extent"| CPL
+    ROF <-->|"runoff in / discharge to the ocean"| CPL
+
+    class CPL ochre
+    class ATM indigo
+    class LND,ROF olive
+    class OCN,ICE,GLC sage
+    classDef indigo fill:#1d4a62,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef olive fill:#5b6e34,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef ochre fill:#d69a2e,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+    classDef sage fill:#95a87f,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+```
+
+<small>Hub-and-spoke coupling in CESM2. Every exchange passes through the coupler, which keeps all components on one clock and maps each field between their grids. Edge labels list examples of what flows each way, not a complete inventory.</small>
+
+Three design choices are worth noticing, because they explain what "coupling" means in a research paper.
+
+- **One clock.** The coupler decides when exchanges happen. Between exchanges each component takes its own, often shorter, internal time steps, and a slow component such as the ocean can be set to exchange less often than the fast atmosphere.
+- **Separate grids.** In CESM2 the ocean and sea ice must share a grid, but the atmosphere, land, rivers and land ice can each use a different one[^7]. The coupler's mapping weights translate between them. For a flux, that translation has to conserve the quantity ([Conservative vs bilinear](regridding/conservative_vs_bilinear.ipynb)), so that the heat or water leaving one grid is the heat or water arriving on the other.
+- **Swappable parts.** Any component can be replaced by a **data component** that simply reads a file: a data atmosphere that supplies observed weather, a data ocean that supplies sea surface temperatures[^7]. Much land-model development runs the land model on its own this way, under several alternative atmospheric forcing data sets[^6].
+
+That last point is the key to most "we coupled X" studies. Before coupling, one side of an exchange is a file. After coupling, it is a model that responds. In [Fertiliser ammonia in CESM2](cesm2-fertilizer-climate-feedback.qmd), the file was an offline ammonia emission inventory; coupling replaced it with ammonia that CLM5 volatilises from soil every time step and passes through the coupler into the CAM4-chem atmosphere, which forms aerosol from it and returns nitrogen deposition to the land.
+
+## Grids, time steps and parameterisation
+
+Each component solves its equations on a grid of cells, and everything inside a cell is represented by a single average value per variable. CESM2's standard configuration runs at a nominal horizontal resolution of $1^\circ$[^2]. One degree of latitude is about $111\text{ km}$, so a grid cell is of order $100\text{ km}$ across, much larger than a city and comparable to a small country.
+
+Two constraints follow from the grid.
+
+**The time step is tied to the grid.** An explicit numerical scheme becomes unstable if a signal can cross more than one cell in a single step, so finer grids need shorter time steps. Halving the cell width therefore costs roughly twice as many cells in each horizontal direction and twice as many time steps: about eight times the computation for the same simulated period, before adding any vertical levels.
+
+**Processes smaller than a cell must be parameterised.** A thunderstorm updraft, a cloud droplet, a turbulent eddy near the ground, a leaf's stomata or a soil microbe all operate far below $100\text{ km}$, yet together they set the cell's rainfall, cloud cover, heat flux and $\text{CO}_2$ exchange. A **parameterisation** is a sub-model that estimates the net effect of such unresolved processes from the variables the grid does resolve. Convection is estimated from the cell's temperature and humidity profile; soil ammonia volatilisation from soil temperature, moisture and $\text{pH}$.
+
+So every ESM is two kinds of code: a **dynamical core** that solves the resolved equations of motion, and a large body of **physics and biogeochemistry parameterisations** that close them. The second is where most of the uncertainty lives. CESM2's equilibrium climate sensitivity, the long-term warming after $\text{CO}_2$ is doubled, is $5.1$–$5.3\,^\circ\text{C}$, higher than its predecessor CESM1's, and Danabasoglu et al. attribute the increase mainly to relatively small changes to cloud microphysics and boundary-layer parameters[^2].
+
+## Spin-up and common experiments
+
+A model cannot start an experiment from an arbitrary state. Its ocean, soil carbon, ice sheets and vegetation all have their own preferred equilibrium under a given forcing, and they reach it slowly: the upper ocean adjusts in years, the deep ocean and soil carbon over centuries or longer. If an experiment began before they had settled, the model's slow drift towards its own equilibrium would be indistinguishable from a forced response.
+
+**Spin-up** is the cure. The model is run under constant pre-industrial forcing, conventionally that of 1850, until its climate has come into balance with that forcing; only then does the **pre-industrial control** run (piControl) begin, and every other experiment branches from a point in it[^1]. Some residual drift always remains, so the control is required to continue at least as long as any experiment branched from it, letting that drift be subtracted rather than mistaken for climate change[^1].
+
+Spun-up models are then compared through the **Coupled Model Intercomparison Project** (CMIP), coordinated by the World Climate Research Programme's Working Group on Coupled Modelling. Its sixth phase, CMIP6, asks every participating model to run a small common core called the DECK (Diagnostic, Evaluation and Characterization of Klima) plus a historical simulation, with prescribed forcings and output conventions so that differences between models reflect the models rather than the setup[^1]:
+
+| Experiment | CMIP6 label | What is imposed | Minimum length |
+|---|---|---|---|
+| Atmosphere-only | `amip` | observed sea surface temperatures and sea ice, 1979–2014 | 36 years |
+| Pre-industrial control | `piControl` or `esm-piControl` | constant 1850 conditions | 500 years |
+| Abrupt $\text{CO}_2$ quadrupling | `abrupt-4xCO2` | $\text{CO}_2$ quadrupled and held | 150 years |
+| 1% per year $\text{CO}_2$ rise | `1pctCO2` | $\text{CO}_2$ increased at $1\%$ per year | 150 years |
+| Historical | `historical` or `esm-hist` | observed forcings, 1850–2014 | 165 years |
+
+<small>From Eyring et al.[^1] Labels beginning `esm-` are the emission-driven versions, in which the model computes $\text{CO}_2$ itself.</small>
+
+Each DECK experiment isolates one property. The control measures the model's unforced variability; the abrupt quadrupling yields its equilibrium climate sensitivity; the $1\%$ run its transient climate response; the historical run tests it against the observed record. Beyond the DECK, CMIP6 endorsed 21 further intercomparison projects on particular questions, which modelling groups join at their own discretion[^1]. The shared protocol is what makes "CESM2 warms more than most models" a meaningful sentence: every model was given the same forcing and asked the same question.
+
+The next module, [The land model: CLM](the-land-model-clm.qmd), opens up one component from the table above and follows what CLM5 does inside a single grid cell.
+
+## Key takeaways
+
+- A physical climate model computes winds, temperature, water vapour, clouds and sea ice but prescribes long-lived composition such as $\text{CO}_2$. An Earth system model also carries the biogeochemical cycles, so composition can respond to climate.
+- CMIP's working definition of an ESM is a model that can compute atmospheric $\text{CO}_2$ from its exchanges with ocean and biosphere; the same model can be run concentration-driven or emission-driven.
+- An ESM is a set of component models on separate grids. In CESM2 they are CAM6, CLM5, POP2, CICE5, CISM2.1, MOSART and WW3, and every exchange passes through the coupler, which holds one clock and maps fluxes conservatively between grids.
+- Any component can be swapped for a data component that reads a file. "Coupling" a process usually means replacing such a file with a model that responds.
+- Grid cells about $100\text{ km}$ across force everything smaller to be parameterised, and parameter choices drive real differences: they account for much of CESM2's high climate sensitivity.
+- Models are spun up under 1850 forcing before any experiment, then compared on common CMIP protocols (the DECK and the historical run) so that differences reflect the models, not the setup.
+
+## References
+
+[^1]: Eyring, V. et al. Overview of the Coupled Model Intercomparison Project Phase 6 (CMIP6) experimental design and organization. *Geosci. Model Dev.* **9**, 1937–1958 (2016). https://doi.org/10.5194/gmd-9-1937-2016
+[^2]: Danabasoglu, G. et al. The Community Earth System Model Version 2 (CESM2). *J. Adv. Model. Earth Syst.* **12**, e2019MS001916 (2020). https://doi.org/10.1029/2019MS001916
+[^3]: Liu, X. et al. Description and evaluation of a new four-mode version of the Modal Aerosol Module (MAM4) within version 5.3 of the Community Atmosphere Model. *Geosci. Model Dev.* **9**, 505–522 (2016). https://doi.org/10.5194/gmd-9-505-2016
+[^4]: Emmons, L. K. et al. The chemistry mechanism in the Community Earth System Model Version 2 (CESM2). *J. Adv. Model. Earth Syst.* **12**, e2019MS001882 (2020). https://doi.org/10.1029/2019MS001882
+[^5]: Gettelman, A. et al. The Whole Atmosphere Community Climate Model Version 6 (WACCM6). *J. Geophys. Res. Atmos.* **124**, 12380–12403 (2019). https://doi.org/10.1029/2019JD030943
+[^6]: Lawrence, D. M. et al. The Community Land Model Version 5: description of new features, benchmarking, and impact of forcing uncertainty. *J. Adv. Model. Earth Syst.* **11**, 4245–4287 (2019). https://doi.org/10.1029/2018MS001583
+[^7]: NCAR. CESM2 configurations (CESM2.1). *CESM2.1 documentation* https://escomp.github.io/CESM/release-cesm2/cesm_configurations.html (accessed 9 October 2026).
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/agriculture-climate-challenges.html"><span>Previous</span>Agriculture under climate extremes</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/the-land-model-clm.html"><span>Next</span>The land model: CLM</a></div>
+<!-- CURRICULUM_FOOTER_END -->

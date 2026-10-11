@@ -158,6 +158,6 @@ X.df %>%
 - With region names attached, a regional mean is a `group_by` and `summarize`, and a regional map is a `filter`.
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/r-regridding/index.html"><span>Previous</span>Regridding crop data for climate models</a><a class="mf-up" href="/series/earth-data/index.html"><span>Series</span>Earth Data in Python and R</a><a class="mf-next" href="/blogs/ms-buildings/index.html"><span>Next</span>Downloading building footprints</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/regridding/conservative_vs_bilinear.html"><span>Previous</span>Conservative vs bilinear</a><a class="mf-up" href="/series/earth-data/index.html"><span>Series</span>Earth Data in Python and R</a><a class="mf-next" href="/blogs/ms-buildings/index.html"><span>Next</span>Downloading building footprints</a></div>
 <!-- CURRICULUM_FOOTER_END -->
 
