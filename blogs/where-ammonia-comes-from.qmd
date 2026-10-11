@@ -107,6 +107,6 @@ Ammonia that does escape does not travel far as a gas. Within hours it either de
 [^4]: Sutton, M. A. et al. Towards a climate-dependent paradigm of ammonia emission and deposition. *Phil. Trans. R. Soc. B* **368**, 20130166 (2013). https://doi.org/10.1098/rstb.2013.0166
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/fixed-nitrogen.html"><span>Previous</span>Fixed nitrogen</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/ammonia-deposition-ozone.html"><span>Next</span>Ammonia deposition and ozone feedbacks</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/fixed-nitrogen.html"><span>Previous</span>Fixed nitrogen</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/deposition-how-nitrogen-leaves-the-air.html"><span>Next</span>Deposition: how nitrogen leaves the air</a></div>
 <!-- CURRICULUM_FOOTER_END -->
 

@@ -6,7 +6,7 @@ description: "Ordinary things explained from first principles, with the maths ke
 <dl class="syl-meta">
 <div><dt>Level</dt><dd>Introductory to advanced</dd></div>
 <div><dt>Parts</dt><dd>9</dd></div>
-<div><dt>Modules</dt><dd>5 of 24 written</dd></div>
+<div><dt>Modules</dt><dd>6 of 24 written</dd></div>
 <div class="wide"><dt>Assumes</dt><dd>Curiosity. School physics helps.</dd></div>
 </dl>
 
@@ -68,7 +68,7 @@ description: "Ordinary things explained from first principles, with the maths ke
 
 <ul class="syl">
 <li class="w"><a href="/blogs/information-vs-energy.html">Information exchange versus energy</a><span class="m">Advanced</span></li>
-<li class="g">Landauer&#x27;s limit<span class="m">Intermediate · not written</span></li>
+<li class="w"><a href="/blogs/landauer-s-limit.html">Landauer&#x27;s limit</a><span class="m">Intermediate</span></li>
 <li class="g">Why computers get hot<span class="m">Introductory · not written</span></li>
 </ul>
 

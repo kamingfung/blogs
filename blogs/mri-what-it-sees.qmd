@@ -10,7 +10,7 @@ categories:
 ---
 
 <!-- CURRICULUM_HEADER_START -->
-<div class="mh"><p class="mh-crumb"><a href="/series/waves/index.html">Waves, Sound and Imaging</a><span class="sep">·</span>Part 8 · MRI</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Assumes <span class="unwritten" title="not written yet">NMR basics</span> and <span class="unwritten" title="not written yet">Relaxation: T1 and T2</span>.</p></div>
+<div class="mh"><p class="mh-crumb"><a href="/series/waves/index.html">Waves, Sound and Imaging</a><span class="sep">·</span>Part 8 · MRI</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Assumes <a href="/blogs/nmr-basics.html">NMR basics</a> and <a href="/blogs/relaxation-t1-and-t2.html">Relaxation: T1 and T2</a>.</p></div>
 <!-- CURRICULUM_HEADER_END -->
 
 ::: {.callout-note appearance="simple" icon=false}
@@ -196,6 +196,6 @@ This module covers what MRI is for, how it compares physically to the other moda
 - Haacke, E. M., et al. (1999). *Magnetic Resonance Imaging: Physical Principles and Sequence Design*. Wiley.
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/fourier-transform-audio.html"><span>Previous</span>The Fourier transform and audio</a><a class="mf-up" href="/series/waves/index.html"><span>Series</span>Waves, Sound and Imaging</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/relaxation-t1-and-t2.html"><span>Previous</span>Relaxation: T1 and T2</a><a class="mf-up" href="/series/waves/index.html"><span>Series</span>Waves, Sound and Imaging</a></div>
 <!-- CURRICULUM_FOOTER_END -->
 

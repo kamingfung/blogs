@@ -100,9 +100,11 @@ parts:
   - id: waves/nmr-basics
     title: NMR basics
     level: intermediate
+    path: blogs/nmr-basics.md
   - id: waves/relaxation-t1-and-t2
     title: 'Relaxation: T1 and T2'
     level: intermediate
+    path: blogs/relaxation-t1-and-t2.md
     requires:
     - waves/nmr-basics
 - title: MRI

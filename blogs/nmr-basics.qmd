@@ -1,0 +1,218 @@
+---
+title: NMR basics
+description: How hydrogen nuclei in a magnetic field precess, why a tiny thermal majority of them gives a usable magnetisation, and how a radio pulse turns it into a signal a coil can pick up.
+date: 2026-10-11
+categories:
+- physics
+- mri
+- biomedical engineering
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/waves/index.html">Waves, Sound and Imaging</a><span class="sep">·</span>Part 7 · Spins and resonance</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">School physics and trigonometry.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+A hydrogen nucleus is a spinning charge with a magnetic moment. In a static field $B_0$ that moment precesses at the Larmor frequency $\omega_0 = \gamma B_0$, which for hydrogen-1 is $42.58\text{ MHz}$ per tesla: about $128\text{ MHz}$ in a $3\text{ T}$ scanner. Thermal motion almost cancels the alignment of the spins with the field. At body temperature and $3\text{ T}$ only about ten protons per million make up the net majority, yet a cubic millimetre of water holds so many protons that this is still about $6.6 \times 10^{14}$ of them, enough to form a measurable net magnetisation. A radio-frequency pulse at the Larmor frequency tips that magnetisation away from $B_0$ by a flip angle set by the pulse's strength and length. Once tipped, the magnetisation precesses, and the oscillating flux it produces induces a voltage in a nearby coil: the free induction decay. Afterwards you should be able to compute the Larmor frequency and spin polarisation at any field, explain why the signal must be detected in the transverse plane, and say what a $90^\circ$ or $180^\circ$ pulse does to the magnetisation.
+:::
+
+## Spin, moment and precession
+
+Nuclear magnetic resonance (NMR) was first seen in 1938, in a beam of molecules flying through a vacuum[^1]. In 1946 two groups detected it independently in ordinary bulk matter, Purcell's in paraffin wax and Bloch's in water[^2][^3]. Medical MRI is the same effect, read out from the hydrogen in the body.
+
+A nucleus with spin carries angular momentum $\mathbf{I}$ and, because it is charged, a magnetic moment proportional to it:
+
+$$\boldsymbol{\mu} = \gamma \mathbf{I}$$
+
+where $\boldsymbol{\mu}$ is the magnetic moment ($\text{J T}^{-1}$), $\mathbf{I}$ is the spin angular momentum ($\text{J s}$) and $\gamma$ is the **gyromagnetic ratio** ($\text{rad s}^{-1}\text{ T}^{-1}$), a fixed property of each nuclide. The hydrogen-1 nucleus is a single proton, with spin quantum number $I = 1/2$, so its angular momentum along any chosen axis takes one of two values, $\pm\hbar/2$.
+
+A magnetic field $\mathbf{B}$ exerts a torque $\boldsymbol{\mu} \times \mathbf{B}$ on the moment. Torque is the rate of change of angular momentum, so
+
+$$\frac{d\boldsymbol{\mu}}{dt} = \gamma\, \boldsymbol{\mu} \times \mathbf{B}$$
+
+where $t$ is time (s). The torque is always perpendicular to $\boldsymbol{\mu}$, so it cannot change the moment's length or its angle to the field; it can only swing the moment around the field like a tilted gyroscope. That motion is **precession**, and for a static field of magnitude $B_0$ its angular frequency is the **Larmor frequency**:
+
+$$\omega_0 = \gamma B_0, \qquad f_0 = \frac{\omega_0}{2\pi} = \frac{\gamma}{2\pi} B_0$$
+
+where $\omega_0$ is in $\text{rad s}^{-1}$, $f_0$ is in Hz and $B_0$ is in tesla (T). For a proton, $\gamma$ is positive and the precession runs clockwise when viewed from the tip of $\mathbf{B}_0$.
+
+The 2022 CODATA recommended value for the proton is $\gamma_\text{p} = 2.675\,221\,8708 \times 10^{8}\text{ rad s}^{-1}\text{ T}^{-1}$, or $\gamma_\text{p}/2\pi = 42.577\,478\,461\text{ MHz T}^{-1}$[^4]; every physical constant in this module comes from the same table. Multiplying by the field strengths in clinical use gives:
+
+| $B_0$ | $f_0 = 42.577\,478 \times B_0$ |
+|---|---:|
+| $1.5\text{ T}$ | $63.87\text{ MHz}$ |
+| $3\text{ T}$ | $127.73\text{ MHz}$ |
+| $7\text{ T}$ | $298.04\text{ MHz}$ |
+
+These are radio frequencies, which is why the transmit and receive hardware of an NMR spectrometer or MRI scanner is radio engineering.
+
+Two refinements matter to anyone who goes further. First, the value above is for a bare proton. A proton in a molecule is partly screened from $B_0$ by its own electrons, so it feels a slightly smaller field and precesses slightly slower. CODATA also lists the shielded value for a proton in a sphere of pure water at $25\,^\circ\text{C}$, $42.576\,385\,43\text{ MHz T}^{-1}$, lower by $(42.577\,478\,461 - 42.576\,385\,43)/42.577\,478\,461 = 25.7$ parts per million. That screening differs between molecules, so protons in fat and in water precess at measurably different frequencies. The difference is called the **chemical shift**, and it is what NMR spectroscopy measures. Second, a single proton is not a little arrow that is either "up" or "down"; it is a quantum system that can sit in any superposition of the two states. What the equation above describes exactly is the *average* moment of many identical spins. That average obeys the classical precession equation, so the rest of this module, like the rest of MRI, works with a classical vector.
+
+## A small majority
+
+A moment in a field has energy $E = -\boldsymbol{\mu} \cdot \mathbf{B}_0$. For a spin-$\tfrac12$ nucleus the two states, with angular momentum $+\hbar/2$ and $-\hbar/2$ along $\mathbf{B}_0$, therefore differ in energy by
+
+$$\Delta E = \gamma \hbar B_0 = \hbar \omega_0$$
+
+where $\Delta E$ is in joules and $\hbar = 1.054\,571\,817 \times 10^{-34}\text{ J s}$ is the reduced Planck constant (exact in the SI). The lower-energy state has the moment's component along the field. If spins were left alone in a field at absolute zero, every one would settle into it. At body temperature, thermal motion keeps reshuffling them. In thermal equilibrium the ensemble is fully described by the populations of the two energy states, and those follow the Boltzmann distribution:
+
+$$\frac{N_\uparrow}{N_\downarrow} = \exp\!\left(\frac{\Delta E}{k_\text{B} T}\right), \qquad P \equiv \frac{N_\uparrow - N_\downarrow}{N_\uparrow + N_\downarrow} = \tanh\!\left(\frac{\Delta E}{2 k_\text{B} T}\right) \approx \frac{\gamma \hbar B_0}{2 k_\text{B} T}$$
+
+where $N_\uparrow$ and $N_\downarrow$ are the numbers of spins in the lower and upper energy states, $k_\text{B} = 1.380\,649 \times 10^{-23}\text{ J K}^{-1}$ is the Boltzmann constant (exact), $T$ is the absolute temperature (K) and $P$ is the dimensionless **polarisation**. The approximation holds because $\Delta E \ll k_\text{B} T$, by a factor of about $50\,000$ at $3\text{ T}$, as the numbers below show. This result, the classical behaviour of the average moment and the rotating frame used below are derived in standard texts[^5].
+
+Take $B_0 = 3\text{ T}$ and body temperature, $T = 37\,^\circ\text{C} = 310.15\text{ K}$:
+
+- $\Delta E = (1.054\,572 \times 10^{-34}) \times (2.675\,222 \times 10^{8}) \times 3 = 8.464 \times 10^{-26}\text{ J}$.
+- $k_\text{B} T = (1.380\,649 \times 10^{-23}) \times 310.15 = 4.282 \times 10^{-21}\text{ J}$, larger by $4.282 \times 10^{-21} / 8.464 \times 10^{-26} = 50\,600$ times.
+- $P = 8.464 \times 10^{-26} / (2 \times 4.282 \times 10^{-21}) = 9.88 \times 10^{-6}$.
+
+So out of every million protons, about $500\,005$ sit in the lower state and $499\,995$ in the upper. The difference is ten per million, or five per million above an even split. All the rest cancel in pairs, one in each state. That is the sense in which NMR is a signal-starved technique.
+
+It still works because there are so many protons. Pure water, at $1000\text{ kg m}^{-3}$ and with a molar mass of $2 \times 1.008 + 15.999 = 18.015\text{ g mol}^{-1}$ from IUPAC standard atomic weights[^6], contains
+
+$$n = 2 \times \frac{1000\text{ kg m}^{-3}}{0.018\,015\text{ kg mol}^{-1}} \times 6.022\,140\,76 \times 10^{23}\text{ mol}^{-1} = 6.69 \times 10^{28}\text{ protons m}^{-3}$$
+
+where $n$ is the number density of hydrogen nuclei, the factor 2 counts the two hydrogens per molecule, and $6.022\,140\,76 \times 10^{23}\text{ mol}^{-1}$ is the Avogadro constant (exact). Take a cubic millimetre, $10^{-9}\text{ m}^3$, as a stand-in for one MRI voxel (volume element). It holds $6.69 \times 10^{19}$ protons. Multiplied by $P$, that leaves $6.69 \times 10^{19} \times 9.88 \times 10^{-6} = 6.6 \times 10^{14}$ uncancelled spins in every cubic millimetre. Soft tissue is mostly water, so this is a fair first estimate for it too.
+
+Those uncancelled moments add up to the **net magnetisation** $\mathbf{M}$, the magnetic moment per unit volume. At equilibrium it points along $\mathbf{B}_0$ with magnitude
+
+$$M_0 = n \,\frac{\gamma \hbar}{2}\, P \approx \frac{n \gamma^2 \hbar^2 B_0}{4 k_\text{B} T}$$
+
+where $M_0$ is in $\text{A m}^{-1}$ and $\gamma\hbar/2 = 1.411 \times 10^{-26}\text{ J T}^{-1}$ is the component of one proton's moment along the field. For water at $3\text{ T}$ and $310.15\text{ K}$, $M_0 = 6.69 \times 10^{28} \times 1.411 \times 10^{-26} \times 9.88 \times 10^{-6} = 9.32 \times 10^{-3}\text{ A m}^{-1}$. Expressed as a field, $\mu_0 M_0 = (1.257 \times 10^{-6}\text{ T m A}^{-1}) \times (9.32 \times 10^{-3}\text{ A m}^{-1}) = 1.17 \times 10^{-8}\text{ T}$, where $\mu_0$ is the vacuum permeability. That is $12\text{ nT}$, about four parts per billion of the $3\text{ T}$ field it sits in.
+
+Measuring a $12\text{ nT}$ static field on top of a $3\text{ T}$ one directly would be hopeless, and a static field induces no voltage in a coil anyway. The way round both problems is to tip $\mathbf{M}$ over, so that it precesses.
+
+## Tipping the magnetisation
+
+$\mathbf{M}$ is a sum of moments, so it obeys the same precession equation as one moment. To tip it, NMR adds a second, much weaker magnetic field $\mathbf{B}_1$ perpendicular to $\mathbf{B}_0$ (whose direction defines the $z$ axis), produced by a coil carrying current at radio frequency. The trick is to make $\mathbf{B}_1$ rotate about $\mathbf{B}_0$ at the Larmor frequency.
+
+The cleanest way to see why is to watch from a frame of reference that itself rotates about $\mathbf{B}_0$ at angular frequency $\omega$, in the same sense as the precession. In that **rotating frame** the static field appears reduced to $B_0 - \omega/\gamma$. When $\omega = \omega_0$, the static field vanishes from view altogether, while $\mathbf{B}_1$, rotating in step with the frame, looks like a fixed field along one transverse axis. $\mathbf{M}$ then does the only thing a moment in a static field can do: it precesses about $\mathbf{B}_1$, at the angular frequency $\omega_1 = \gamma B_1$. Seen from the laboratory, it spirals down from the $z$ axis while it precesses rapidly about $\mathbf{B}_0$.
+
+This is the resonance. If the drive is off-resonance by $\Delta\omega = \omega_0 - \omega$, a residual field $\Delta\omega/\gamma$ remains along $z$ in the rotating frame. $\mathbf{M}$ then precesses about a tilted axis, so a pulse that would be $90^\circ$ on resonance no longer lands it in the transverse plane. Once $|\Delta\omega|$ is much larger than $\omega_1$, the axis is almost along $z$ and the pulse barely moves $\mathbf{M}$ at all. This frequency selectivity is what lets an MRI scanner excite one slice and leave the rest of the body alone, as described in [What MRI sees](mri-what-it-sees.qmd). It is the same logic as driving any oscillator at its natural frequency, covered in [Standing waves and resonance](standing-waves.qmd), except that the "oscillator" here is a precessing moment.
+
+On resonance, the angle through which $\mathbf{M}$ turns is the **flip angle**:
+
+$$\alpha = \gamma \int_0^{\tau} B_1(t)\,dt = \gamma B_1 \tau \quad \text{(constant amplitude)}$$
+
+where $\alpha$ is in radians, $B_1$ is the amplitude of the rotating field (T) and $\tau$ is the pulse duration (s). A coil driven with an ordinary oscillating current produces a field that oscillates back and forth along a line. That linear oscillation is the sum of two fields of equal amplitude rotating in opposite directions. Only the component rotating with the spins is on resonance; the other is $2\omega_0$ away and has negligible effect. For example, with $B_1 = 10\,\mu\text{T}$, $\omega_1/2\pi = 42.577\,478 \times 10^{6} \times 10^{-5} = 425.8\text{ Hz}$, and a $90^\circ$ pulse ($\alpha = \pi/2$) lasts $\tau = (\pi/2)/(2.675\,222 \times 10^{8} \times 10^{-5}) = 0.587\text{ ms}$.
+
+Immediately after a pulse much shorter than the time the magnetisation takes to recover, the magnetisation splits into a component along $\mathbf{B}_0$ and one in the transverse plane:
+
+$$M_z = M_0 \cos\alpha, \qquad M_{xy} = M_0 \sin\alpha$$
+
+where $M_z$ is the **longitudinal** magnetisation and $M_{xy}$ the magnitude of the **transverse** magnetisation, both in $\text{A m}^{-1}$. A $90^\circ$ pulse puts all of $M_0$ into the transverse plane and leaves none along $z$. A $180^\circ$ pulse inverts it, $M_z = -M_0$, with nothing transverse; this is the inversion pulse that MRI's inversion-recovery sequences start with. Small flip angles leave most of the magnetisation along $z$ and still tip out a useful transverse part: $\sin 10^\circ = 0.17$ while $\cos 10^\circ = 0.98$.
+
+::: {.sim-card}
+#### Larmor frequency, polarisation and flip angle
+
+$$f_0 = \frac{\gamma}{2\pi}B_0, \qquad P = \tanh\frac{\gamma\hbar B_0}{2k_\text{B}T}, \qquad M_z = M_0\cos\alpha,\ \ M_{xy} = M_0\sin\alpha$$
+
+```{ojs}
+//| echo: false
+viewof B0 = Inputs.range([0.5, 12], {value: 3, step: 0.5, label: "Static field B₀ (T)"})
+viewof alphaDeg = Inputs.range([0, 180], {value: 90, step: 5, label: "Flip angle α (°)"})
+
+// CODATA 2022 proton gyromagnetic ratio and exact SI constants, as cited in the text.
+gammaP = 2.6752218708e8      // rad s^-1 T^-1
+hbar = 1.054571817e-34       // J s
+kB = 1.380649e-23            // J K^-1
+NA = 6.02214076e23           // mol^-1
+T = 310.15                   // K, body temperature
+// Pure water: 1000 kg m^-3, 18.015 g mol^-1, two protons per molecule.
+nH = 2 * (1000 / 0.018015) * NA                 // protons per m^3
+f0 = gammaP * B0 / (2 * Math.PI) / 1e6          // MHz
+P = Math.tanh(gammaP * hbar * B0 / (2 * kB * T))
+excess = nH * 1e-9 * P                          // uncancelled protons per mm^3
+alpha = alphaDeg * Math.PI / 180
+
+sci = x => {
+  const e = Math.floor(Math.log10(x));
+  return html`${(x / 10 ** e).toFixed(2)} × 10<sup>${e}</sup>`;
+}
+
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${card("Larmor frequency", f0.toFixed(2) + " MHz", "#a78bfa")}
+  ${card("Polarisation", (P * 1e6).toFixed(2) + " ppm", "#a78bfa")}
+  ${card("Uncancelled protons per mm³ of water", sci(excess), "#34d399")}
+  ${card("Longitudinal, fraction of M₀", Math.cos(alpha).toFixed(2), "#38bdf8")}
+  ${card("Transverse, fraction of M₀", Math.sin(alpha).toFixed(2), "#f59e0b")}
+</div>`
+
+curves = {
+  const out = [];
+  for (let d = 0; d <= 180; d++) {
+    const a = d * Math.PI / 180;
+    out.push({d, m: Math.cos(a), kind: "M_z / M₀"});
+    out.push({d, m: Math.sin(a), kind: "M_xy / M₀"});
+  }
+  return out;
+}
+
+Plot.plot({
+  height: 300,
+  marginLeft: 50,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, 180], label: "flip angle α (°) →", grid: true},
+  y: {domain: [-1.05, 1.05], label: "↑ fraction of M₀", grid: true},
+  color: {legend: true, domain: ["M_z / M₀", "M_xy / M₀"], range: ["#38bdf8", "#f59e0b"]},
+  marks: [
+    Plot.ruleY([0], {strokeOpacity: 0.4}),
+    Plot.ruleX([alphaDeg], {stroke: "#cbd5e1", strokeOpacity: 0.5, strokeDasharray: "4 3"}),
+    Plot.line(curves, {x: "d", y: "m", stroke: "kind", strokeWidth: 2.5}),
+    Plot.dot([{d: alphaDeg, m: Math.cos(alpha), kind: "M_z / M₀"},
+              {d: alphaDeg, m: Math.sin(alpha), kind: "M_xy / M₀"}],
+             {x: "d", y: "m", fill: "kind", r: 5})
+  ]
+})
+```
+
+At the defaults, $3\text{ T}$ and $90^\circ$, the readouts match the worked numbers above: $127.73\text{ MHz}$, $9.88\text{ ppm}$, $6.61 \times 10^{14}$ uncancelled protons per cubic millimetre, and all of the magnetisation transverse. Doubling $B_0$ doubles both the frequency and the polarisation. The flip angle changes only how $M_0$ is shared between the two axes, never its total.
+:::
+
+## The free induction decay
+
+Once the pulse ends, $\mathbf{B}_1$ is gone and the transverse magnetisation precesses freely about $\mathbf{B}_0$ at $\omega_0$. A coil whose axis lies in the transverse plane sees a magnetic flux through it that oscillates at $\omega_0$. By Faraday's law, a changing flux induces a voltage:
+
+$$\mathcal{E} = -\frac{d\Phi}{dt}$$
+
+where $\mathcal{E}$ is the induced voltage (V) and $\Phi$ the magnetic flux through the coil (Wb). The flux is proportional to $M_{xy}$ and the voltage to its rate of change, so the signal amplitude is proportional to $\omega_0 M_{xy}$. Bloch called this **nuclear induction**[^7]. This is also why the longitudinal magnetisation is invisible: $M_z$ changes at most slowly, as it recovers, and a coil with its axis in the transverse plane collects no flux from it.
+
+The coherence of the motion is what rescues the small polarisation. The $6.6 \times 10^{14}$ uncancelled spins in each cubic millimetre were tipped together and precess in phase, so their contributions add directly; random thermal noise in the coil and the body does not.
+
+Since $M_0 \propto B_0$ and $\omega_0 \propto B_0$, the induced voltage from a given volume grows as $B_0^2$. Noise also grows with frequency, so the gain in signal-to-noise ratio is smaller than that, but the scaling explains the steady push to higher fields[^8]. At these frequencies the receive coil also sits in the near field of the magnetisation: it is centimetres from the tissue, while the free-space wavelength at $127.73\text{ MHz}$ is $299\,792\,458 / (127.73 \times 10^{6}) = 2.35\text{ m}$. The signal is best understood as Faraday induction from a nearby rotating magnet rather than as radio waves emitted by the nuclei[^9].
+
+In practice the receiver does not record the $127.73\text{ MHz}$ waveform of a $3\text{ T}$ scanner directly. It mixes the coil voltage with a reference oscillating at or near $\omega_0$ and keeps the difference frequency, using two channels a quarter-cycle apart so that offsets above and below the reference can be told apart. What remains are the small frequency offsets from $\omega_0$: chemical shifts in a spectrometer, and position labels once an MRI scanner adds field gradients. A Fourier transform of the recorded signal, the tool from [The Fourier transform and audio](fourier-transform-audio.qmd), turns those offsets into a spectrum.
+
+The signal does not last. Its name records what it is: *free* because the transmitter is off, *induction* because Faraday's law produces it, and *decay* because it dies away. Two things happen at once: the spins drift out of phase in the transverse plane, and the magnetisation regrows along $\mathbf{B}_0$ toward $M_0$, ready to be tipped again. How fast each happens, why the two rates differ, and why that difference is where most MRI contrast comes from is the subject of [Relaxation: T1 and T2](relaxation-t1-and-t2.qmd).
+
+## Key takeaways
+
+- A nucleus with spin has a magnetic moment $\boldsymbol{\mu} = \gamma\mathbf{I}$; in a static field it precesses at $\omega_0 = \gamma B_0$. For hydrogen-1, $\gamma/2\pi = 42.577\,478\text{ MHz T}^{-1}$ (CODATA 2022), giving $63.87$, $127.73$ and $298.04\text{ MHz}$ at $1.5$, $3$ and $7\text{ T}$.
+- The spin energy splitting $\hbar\omega_0$ is about $50\,000$ times smaller than $k_\text{B}T$ at $3\text{ T}$ and body temperature, so the polarisation is tiny: $9.88 \times 10^{-6}$ for protons at $3\text{ T}$ and $310.15\text{ K}$, about ten per million.
+- A cubic millimetre of water still holds $6.6 \times 10^{14}$ uncancelled protons, giving a net magnetisation $M_0 = 9.32 \times 10^{-3}\text{ A m}^{-1}$, equivalent to a $12\text{ nT}$ field.
+- An RF field rotating at $\omega_0$ appears static in the rotating frame and tips $\mathbf{M}$ through the flip angle $\alpha = \gamma B_1 \tau$, leaving $M_z = M_0\cos\alpha$ and $M_{xy} = M_0\sin\alpha$. Off-resonance spins are barely moved.
+- The precessing transverse magnetisation induces a voltage in a coil, the free induction decay, with amplitude proportional to $\omega_0 M_{xy}$. Only transverse magnetisation is detectable, and it decays while $M_z$ recovers.
+
+## References
+
+[^1]: Rabi, I. I., Zacharias, J. R., Millman, S. & Kusch, P. A new method of measuring nuclear magnetic moment. *Phys. Rev.* **53**, 318 (1938). https://doi.org/10.1103/PhysRev.53.318
+[^2]: Purcell, E. M., Torrey, H. C. & Pound, R. V. Resonance absorption by nuclear magnetic moments in a solid. *Phys. Rev.* **69**, 37–38 (1946). https://doi.org/10.1103/PhysRev.69.37
+[^3]: Bloch, F., Hansen, W. W. & Packard, M. Nuclear induction. *Phys. Rev.* **69**, 127 (1946). https://doi.org/10.1103/PhysRev.69.127
+[^4]: Mohr, P. J., Newell, D. B., Taylor, B. N. & Tiesinga, E. CODATA recommended values of the fundamental physical constants: 2022. *Rev. Mod. Phys.* **97**, 025002 (2025). https://doi.org/10.1103/RevModPhys.97.025002
+[^5]: Levitt, M. H. *Spin Dynamics: Basics of Nuclear Magnetic Resonance* 2nd edn (Wiley, Chichester, 2008).
+[^6]: Prohaska, T. et al. Standard atomic weights of the elements 2021 (IUPAC Technical Report). *Pure Appl. Chem.* **94**, 573–600 (2022). https://doi.org/10.1515/pac-2019-0603
+[^7]: Bloch, F. Nuclear induction. *Phys. Rev.* **70**, 460–474 (1946). https://doi.org/10.1103/PhysRev.70.460
+[^8]: Hoult, D. I. & Richards, R. E. The signal-to-noise ratio of the nuclear magnetic resonance experiment. *J. Magn. Reson.* **24**, 71–85 (1976). https://doi.org/10.1016/0022-2364(76)90233-X
+[^9]: Hoult, D. I. The origins and present status of the radio wave controversy in NMR. *Concepts Magn. Reson. A* **34A**, 193–216 (2009). https://doi.org/10.1002/cmr.a.20142
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/fourier-transform-audio.html"><span>Previous</span>The Fourier transform and audio</a><a class="mf-up" href="/series/waves/index.html"><span>Series</span>Waves, Sound and Imaging</a><a class="mf-next" href="/blogs/relaxation-t1-and-t2.html"><span>Next</span>Relaxation: T1 and T2</a></div>
+<!-- CURRICULUM_FOOTER_END -->

@@ -51,6 +51,7 @@ parts:
       - id: statistics/least-squares
         title: "Least squares"
         level: introductory
+        path: blogs/least-squares.md
       - id: statistics/is-the-trend-significant
         title: "Is the trend significant?"
         level: intermediate

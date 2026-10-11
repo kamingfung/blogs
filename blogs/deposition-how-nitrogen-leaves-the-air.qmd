@@ -1,0 +1,170 @@
+---
+title: "Deposition: how nitrogen leaves the air"
+description: Reactive nitrogen leaves the atmosphere by being absorbed at the surface or washed out by rain, and the speed of each route decides where it lands and what it does there.
+date: 2026-10-11
+categories:
+- atmospheric chemistry
+- nitrogen
+- nitrogen deposition
+- biogeochemistry
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/air-land-climate/index.html">Air, Land and Climate</a><span class="sep">·</span>Part 4 · The nitrogen cascade</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">School chemistry. Parts 1 and 5 of Clouds and Aerosols help but are not required.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Every atom of reactive nitrogen that enters the air comes back down, by one of two routes. **Dry deposition** is direct uptake at the surface. Its rate is a deposition velocity, the inverse of three resistances in series: turbulence, a thin layer of still air at the surface, and the surface itself. Nitric acid sticks to almost anything, so turbulence alone limits it and it deposits within hours. Fine ammonium nitrate particles barely stick and can travel for days. Ammonia can go either way, because leaves and soils also emit it. **Wet deposition** happens when cloud droplets and falling rain take up soluble gases and particles. It is efficient but arrives in bursts, only when it rains. A multimodel study put global deposition in 2000 at about $116\text{ Tg N yr}^{-1}$, slightly more than half of it reduced nitrogen. Once it lands, that nitrogen fertilises ecosystems that were short of it, acidifies soils and pushes out species adapted to poor soils. Afterwards you should be able to estimate a deposition velocity from resistances, explain why nitric acid and ammonium nitrate behave so differently, and say what a critical load is.
+:::
+
+## Two ways out
+
+The previous two modules followed nitrogen into the air. [Fixed nitrogen](fixed-nitrogen.qmd) introduced the reactive forms and the cascade they move through. [Where ammonia comes from](where-ammonia-comes-from.qmd) traced the largest single emission, ammonia from farms. Nothing that goes up stays up. On a global average, emission and deposition balance each year, so the question is not whether nitrogen comes back down but how fast, and where.
+
+Atmospheric chemists split deposited nitrogen into two families by oxidation state, which also tracks where it mostly comes from:
+
+- **Reduced nitrogen**, $\text{NH}_x = \text{NH}_3 + \text{NH}_4^+$, comes mostly from agriculture: ammonia gas and the ammonium in particles formed when that ammonia neutralises acids.
+- **Oxidised nitrogen**, $\text{NO}_y$, comes mostly from combustion: $\text{NO}_x$ is oxidised to nitric acid ($\text{HNO}_3$), which deposits as itself or as particulate nitrate. In a 23-model study of deposition in the year 2000, $\text{HNO}_3$ and particulate nitrate made up 80–90% of all $\text{NO}_y$ deposition. Most of the rest was $\text{NO}_2$ and organic nitrates.
+
+The same study gives the size of the flux. The ensemble's world-mean deposition was $102.2\text{ mg N m}^{-2}\text{ yr}^{-1}$ of $\text{NO}_y$ and $126.4\text{ mg N m}^{-2}\text{ yr}^{-1}$ of $\text{NH}_x$. Multiplying by Earth's surface area, $4\pi (6.371 \times 10^6\text{ m})^2 = 5.10 \times 10^{14}\text{ m}^2$, gives
+
+$$102.2 \times 10^{-3}\text{ g m}^{-2} \times 5.10 \times 10^{14}\text{ m}^2 = 5.2 \times 10^{13}\text{ g} \approx 52\text{ Tg N yr}^{-1}\ (\text{NO}_y)$$
+
+and in the same way about $64\text{ Tg N yr}^{-1}$ of $\text{NH}_x$, about $116\text{ Tg N yr}^{-1}$ in total. Of that, $22.6\text{ Tg}$ of $\text{NO}_y$ and $23.5\text{ Tg}$ of $\text{NH}_x$ fell on the oceans[^1].
+
+The balance between the two families is shifting. Where $\text{NO}_x$ emissions have been cut, oxidised deposition has fallen while reduced deposition has not. A global assessment of precipitation chemistry found that wet deposition of reduced nitrogen exceeds that of oxidised nitrogen in many parts of the world, and is increasing[^2]. In the United States, wet deposition went from nitrate-dominated in the 1980s to ammonium-dominated. Across 37 sites, reduced nitrogen now makes up about 65% of total inorganic nitrogen deposition[^3].
+
+The routes out of the air:
+
+```{mermaid}
+flowchart LR
+    FARM["Farms: manure and fertiliser"] -->|"volatilisation"| NH3["Ammonia gas (NH3)"]
+    FIRE["Combustion, lightning, soils"] --> NOX["Nitrogen oxides (NOx)"]
+    NOX -->|"oxidation"| HNO3["Nitric acid gas (HNO3)"]
+    NH3 -->|"neutralises acids"| PM["Ammonium nitrate and sulfate particles"]
+    HNO3 -->|"neutralised by NH3"| PM
+    NH3 -->|"near the source"| DRY["Dry deposition"]
+    HNO3 -->|"fast"| DRY
+    PM -->|"slow"| DRY
+    NH3 -->|"dissolves"| WET["Wet deposition"]
+    HNO3 -->|"dissolves"| WET
+    PM -->|"droplets form on them"| WET
+    DRY --> SURF["Soils, vegetation and water"]
+    WET --> SURF
+    SURF -->|"re-emitted above the compensation point"| NH3
+
+    class FARM,FIRE sienna
+    class NH3,NOX,HNO3 ochre
+    class PM plum
+    class DRY,WET indigo
+    class SURF olive
+    classDef indigo fill:#1d4a62,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef sienna fill:#6c2b27,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef plum fill:#48304a,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef olive fill:#5b6e34,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef ochre fill:#d69a2e,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+```
+
+## Dry deposition
+
+Dry deposition is any transfer from air to surface that does not involve precipitation: gases absorbed by leaves, soils and water, and particles that hit a surface and stay there. It is described by a flux proportional to the concentration just above the surface:
+
+$$F = -v_\text{d}\, C(z)$$
+
+where $F$ is the vertical flux ($\text{kg m}^{-2}\text{ s}^{-1}$, positive upwards, so deposition is negative), $C(z)$ is the concentration at a reference height $z$ ($\text{kg m}^{-3}$), and $v_\text{d}$ is the **deposition velocity** ($\text{m s}^{-1}$). The deposition velocity combines everything that limits uptake into one number.
+
+To get that number, dry deposition is treated like current through resistors in series. The resistances are the stages the molecule must pass through on its way to the surface:
+
+$$v_\text{d} = \frac{1}{R_\text{a} + R_\text{b} + R_\text{c}}$$
+
+where each $R$ is a resistance in $\text{s m}^{-1}$. The forms below follow a comparison of five dry deposition schemes[^5]:
+
+- $R_\text{a}$, the **aerodynamic resistance**, is the opposition of turbulent mixing between height $z$ and the surface. It depends on wind, surface roughness and atmospheric stability, and is the same for every gas. In neutral conditions it reduces to $R_\text{a} = \ln(z/z_0)/(\kappa u_*)$, where $z_0$ is the roughness length (m), $\kappa \approx 0.4$ is the von Kármán constant (dimensionless) and $u_*$ is the friction velocity ($\text{m s}^{-1}$).
+- $R_\text{b}$, the **quasi-laminar boundary-layer resistance**, is the opposition of the thin skin of air clinging to each surface. Turbulence dies out there and transport is by molecular diffusion. A common form is $R_\text{b} = (2/\kappa u_*)(\text{Sc}/\text{Pr})^{2/3}$, where $\text{Sc}$ and $\text{Pr}$ are the Schmidt and Prandtl numbers (dimensionless). They are the ratios of the air's kinematic viscosity to the gas's molecular diffusivity and to the air's thermal diffusivity. Unlike $R_\text{a}$, $R_\text{b}$ differs from species to species.
+- $R_\text{c}$, the **surface or canopy resistance**, is the opposition of the surface itself. It combines parallel pathways: into leaves through stomata, onto leaf cuticles, onto the ground and into water films. It depends on the chemistry of the species (how soluble and reactive it is) and on the biology of the canopy (whether the stomata are open). Wesely's 1989 scheme, which builds $R_\text{c}$ from these pathways for each land type, remains one of the standard parameterisations[^4]. In the five-scheme comparison at a forest site, the schemes' differences came mainly from how they treated the stomatal and non-stomatal surface pathways; $R_\text{a}$ and $R_\text{b}$ played only a minor role.
+
+A worked example shows how the three combine. Take a reference height of $z = 2\text{ m}$ over short grass with $z_0 = 0.02\text{ m}$, a moderate breeze giving $u_* = 0.3\text{ m s}^{-1}$, and neutral stability. These are illustrative inputs, not measurements. Then
+
+$$R_\text{a} = \frac{\ln(2/0.02)}{0.4 \times 0.3} = \frac{4.61}{0.12} = 38\text{ s m}^{-1}, \qquad R_\text{b} \approx \frac{2}{0.4 \times 0.3} = 17\text{ s m}^{-1}$$
+
+taking $(\text{Sc}/\text{Pr})^{2/3} \approx 1$. For real gases the factor is of order one rather than exactly one; using the exact value shifts $R_\text{b}$ by some tens of percent and does not change the conclusions below. For a gas the surface absorbs perfectly ($R_\text{c} = 0$), $v_\text{d} = 1/(38 + 17) = 1/55\text{ s m}^{-1} = 0.018\text{ m s}^{-1}$, or $1.8\text{ cm s}^{-1}$. That is the fastest any gas can deposit under these conditions, because turbulence and diffusion alone limit it. If instead $R_\text{c} = 500\text{ s m}^{-1}$, then $v_\text{d} = 1/555\text{ s m}^{-1} = 0.0018\text{ m s}^{-1}$. That is ten times slower, and almost all of the limit now sits in the surface. The flux of such a gas hardly responds to the wind.
+
+**Nitric acid is the first case.** It is very soluble and reactive, and sticks to almost any surface it reaches. When nitric acid deposition to a pasture in Illinois was measured in June 1982, the canopy resistance averaged virtually zero. The daytime deposition velocity was $2.5 \pm 0.9\text{ cm s}^{-1}$, close to our aerodynamic limit and somewhat above it, which is consistent with daytime convection making $R_\text{a}$ smaller than the neutral value. The dry flux matched the wet flux measured nearby[^6]. Models treat it the same way: the five-scheme comparison notes that $v_\text{d}$ for $\text{HNO}_3$ should sit near the aerodynamic maximum because its $R_\text{c}$ is very small. In a well-mixed boundary layer $1000\text{ m}$ deep, $v_\text{d} = 0.018\text{ m s}^{-1}$ empties the layer on a timescale of $1000 / 0.018 = 5.5 \times 10^4\text{ s}$, about 15 hours.
+
+**Ammonium nitrate particles are the opposite case.** Once nitric acid has been neutralised by ammonia into a particle a few hundred nanometres across, the resistance picture changes. Particles reach a surface by Brownian diffusion, impaction, interception and gravitational settling. The Brownian, impaction and interception terms each describe how efficiently the surface collects them[^7]. Accumulation-mode particles, roughly $0.1$ to $1\text{ µm}$, fall into the gap between these mechanisms. They are too large to diffuse quickly like a gas molecule, and too small to settle or to leave the airflow and hit a leaf. Their deposition velocities are therefore far lower than those of soluble gases. The same study's flux measurements suggest they are lower still than many models assume, by up to an order of magnitude over land, with the minimum near $0.1\text{ µm}$ rather than the $1\text{ µm}$ older schemes predict. With the same arithmetic, a deposition velocity ten times smaller than nitric acid's, $0.0018\text{ m s}^{-1}$, stretches the timescale to $1000 / 0.0018 = 5.6 \times 10^5\text{ s}$, about six days. That is why converting ammonia and nitric acid to ammonium nitrate sends nitrogen hundreds of kilometres downwind. Ammonium nitrate is also semi-volatile. Near a surface it can evaporate back to $\text{NH}_3$ and $\text{HNO}_3$, and both then deposit as fast gases, which makes the particles' apparent deposition faster than their size alone would suggest.
+
+**Ammonia breaks the one-way model.** $F = -v_\text{d} C$ assumes the concentration at the absorbing surface is zero. For ammonia that is often false. As the [ammonia module](where-ammonia-comes-from.qmd) showed, leaves and soils hold ammonium in solution, and that solution sets an equilibrium $\text{NH}_3$ concentration of its own. The exchange is then written as a difference between two concentrations[^8]:
+
+$$F = -\frac{\chi_\text{a} - \chi_\text{c}}{R_\text{a} + R_\text{b}}$$
+
+where $\chi_\text{a}$ is the ammonia concentration in air at the reference height and $\chi_\text{c}$ is the **canopy compensation point**, the air concentration at which the net flux is zero (both in $\text{µg m}^{-3}$). $\chi_\text{c}$ rises with the ratio $\Gamma = [\text{NH}_4^+]/[\text{H}^+]$ in the leaf or soil solution and with temperature. When the air holds more ammonia than the compensation point, the surface absorbs it. When it holds less, the surface emits. A heavily fertilised crop can emit while unfertilised woodland downwind absorbs the same plume. In the same framework, setting $\chi_\text{c} = 0$ and moving all the limitation into a canopy resistance recovers the one-way form, which cannot emit at all. How models treat ammonia's dry deposition is a major source of disagreement: the share of $\text{NH}_x$ removed by wet rather than dry deposition ranged from under 40% to over 80% across the 23-model ensemble described above.
+
+## Wet deposition
+
+Wet deposition is removal by precipitation, and it happens in two places.
+
+**In-cloud scavenging** (rainout) takes nitrogen into cloud droplets before any rain falls. Ammonium sulfate and ammonium nitrate particles are hygroscopic, so they serve as the nuclei on which droplets form. They are inside the droplet from the start. Soluble gases dissolve into the droplets as they grow. When the droplets grow into rain or snow, everything in them falls out.
+
+**Below-cloud scavenging** (washout) happens as rain falls through the air beneath the cloud, colliding with particles and absorbing gases. For gases, what matters is solubility, and the nitrogen species are among the most soluble the atmosphere carries:
+
+- Nitric acid dissociates completely in water, $\text{HNO}_3 \rightarrow \text{H}^+ + \text{NO}_3^-$. The nitrate ion cannot return to the gas phase, so uptake is effectively irreversible.
+- Ammonia meets the same equilibrium that governs its emission, run in reverse. Rain is usually acidic, and the ammonia module's equation gives the fraction left as dissolved $\text{NH}_3$ in a pH 5 drop at $25\,^\circ\text{C}$ ($\text{p}K_a = 9.25$[^9]): $f_{\text{NH}_3} = 1/(1 + 10^{9.25 - 5}) = 1/(1 + 1.8 \times 10^4) = 5.6 \times 10^{-5}$. Nearly all the ammonia that dissolves becomes $\text{NH}_4^+$, which keeps the dissolved $\text{NH}_3$ near zero and lets more gas keep dissolving.
+
+Particles in the accumulation mode are collected poorly by falling raindrops, for the same size-gap reason that they dry-deposit slowly. Most of their wet removal therefore happens through in-cloud scavenging, not washout.
+
+Monitoring networks measure wet deposition by collecting precipitation and analysing it. The flux is the product of a volume-weighted concentration and the precipitation depth:
+
+$$F_\text{wet} = c_\text{w} P$$
+
+where $c_\text{w}$ is the volume-weighted mean concentration of nitrogen in precipitation ($\text{mg N L}^{-1}$) and $P$ is the precipitation depth ($\text{mm}$). One millimetre of rain over one square metre is one litre, so the product comes out directly in $\text{mg N m}^{-2}$. With $1000\text{ mm}$ of rain a year, every $1\text{ mg N L}^{-1}$ of average concentration delivers $1000\text{ mg N m}^{-2}\text{ yr}^{-1}$.
+
+Two features set wet deposition apart from dry:
+
+- **It is efficient.** Across the 23 models, wet deposition removed 40–70% of $\text{NO}_y$ globally, and it carries nitrogen in particles that would barely dry-deposit at all.
+- **It is episodic.** Dry deposition runs continuously. Wet deposition runs only when it rains. Between events, soluble nitrogen builds up in the air, and the first rain to fall through it carries the highest concentrations. A large share of a site's annual wet deposition can therefore arrive in a few events. Because rain falls where the weather takes it, wet deposition also delivers nitrogen to remote areas far from any source.
+
+## What deposited nitrogen does
+
+Most land ecosystems are short of nitrogen, which is why the [Fixed nitrogen](fixed-nitrogen.qmd) module called it the nutrient that limits plant growth on most of the planet. Deposition delivers it whether or not anything needs it. The effects run in three stages as the dose rises.
+
+**Fertilisation.** At first, deposited nitrogen is used. Forests in regions of enhanced deposition have grown faster in recent decades, an effect attributed to the deposition rather than to climate or forestry practice, and that extra growth stores carbon[^10]. This is the starting point of [Ammonia deposition and ozone feedbacks](ammonia-deposition-ozone.qmd), where a thicker canopy changes the ozone above it.
+
+**Acidification.** Nitric acid deposits as acid. Ammonium is a subtler case: it arrives as the product of a base, yet soil microbes nitrify it,
+
+$$\text{NH}_4^+ + 2\,\text{O}_2 \longrightarrow \text{NO}_3^- + \text{H}_2\text{O} + 2\,\text{H}^+$$
+
+releasing two hydrogen ions for every ammonium oxidised. If plants take up the nitrate, part of that acidity is neutralised. If the supply exceeds what plants can use, the nitrate leaches away in drainage water, carrying base cations such as calcium and magnesium with it and leaving the acidity behind. A forest receiving more nitrogen than it can retain becomes **nitrogen saturated**: it stops responding to extra nitrogen and leaks nitrate to streams.
+
+**Loss of species.** Long before saturation, nitrogen changes who wins. A synthesis across ecosystem types, from arctic to tropical, found nitrogen accumulation to be the main driver of change in plant species composition, mainly by shifting the competition between species[^11]. A transect of 68 acid grasslands across Great Britain measured the size of the effect. Species richness fell by one species per $4\text{ m}^2$ quadrat for every $2.5\text{ kg N ha}^{-1}\text{ yr}^{-1}$ of chronic deposition. Species adapted to infertile conditions were the ones lost. At central Europe's mean deposition of $17\text{ kg N ha}^{-1}\text{ yr}^{-1}$, that meant 23% fewer species than in the least-affected grasslands[^12].
+
+These effects have thresholds, which policy captures as the **critical load**: the deposition rate below which, on present knowledge, no significant harmful effect on a specified sensitive ecosystem is expected. Critical loads are set ecosystem by ecosystem, and the same synthesis credits the concept with helping European governments reduce nitrogen loads on sensitive habitats. As a single global screening value, the 23-model study used $1000\text{ mg N m}^{-2}\text{ yr}^{-1}$. Since $1\text{ kg ha}^{-1} = 1000\text{ g} / 10^4\text{ m}^2 = 100\text{ mg m}^{-2}$, that is $10\text{ kg N ha}^{-1}\text{ yr}^{-1}$. By that measure, 11% of the world's natural vegetation was above the threshold in 2000. In eastern Europe the figure was 80%, in South Asia 60%, in East Asia 40% and in the United States 20%[^1]. The world-mean deposition of $102.2 + 126.4 = 228.6\text{ mg N m}^{-2}\text{ yr}^{-1}$, or $2.3\text{ kg N ha}^{-1}\text{ yr}^{-1}$, is far below the threshold. The damage comes from where deposition is concentrated, and that geography is set by the speeds described above: ammonia lands near the farm, nitric acid within a day, and ammonium nitrate wherever the next rain falls.
+
+## Key takeaways
+
+- Reactive nitrogen leaves the air by dry deposition (direct uptake at the surface) and wet deposition (removal in cloud and rain). In 2000 the global total was about $116\text{ Tg N yr}^{-1}$, slightly more than half of it reduced ($\text{NH}_x$) and the rest oxidised ($\text{NO}_y$).
+- Dry deposition follows $F = -v_\text{d} C$ with $v_\text{d} = 1/(R_\text{a} + R_\text{b} + R_\text{c})$. Turbulence and the surface air layer set an upper limit, and the surface resistance $R_\text{c}$ decides how close a species comes to it.
+- Nitric acid has $R_\text{c} \approx 0$ and deposits at the aerodynamic limit, within hours. Accumulation-mode ammonium nitrate particles deposit far more slowly and travel for days.
+- Ammonia exchange runs both ways around a canopy compensation point, so a surface can be a source or a sink depending on its ammonium, its pH and its temperature.
+- Wet deposition removes soluble gases and particles efficiently but in bursts, and it reaches remote areas. Reduced nitrogen now dominates wet deposition in many regions as $\text{NO}_x$ falls and ammonia does not.
+- Deposited nitrogen first fertilises, then acidifies and displaces species. Critical loads mark the thresholds, and exceedance is regional rather than global.
+
+## References
+
+[^1]: Dentener, F. et al. Nitrogen and sulfur deposition on regional and global scales: a multimodel evaluation. *Global Biogeochem. Cycles* **20**, GB4003 (2006). https://doi.org/10.1029/2005GB002672
+[^2]: Vet, R. et al. A global assessment of precipitation chemistry and deposition of sulfur, nitrogen, sea salt, base cations, organic acids, acidity and pH, and phosphorus. *Atmos. Environ.* **93**, 3–100 (2014). https://doi.org/10.1016/j.atmosenv.2013.10.060
+[^3]: Li, Y. et al. Increasing importance of deposition of reduced nitrogen in the United States. *Proc. Natl Acad. Sci. USA* **113**, 5874–5879 (2016). https://doi.org/10.1073/pnas.1525736113
+[^4]: Wesely, M. L. Parameterization of surface resistances to gaseous dry deposition in regional-scale numerical models. *Atmos. Environ.* **23**, 1293–1304 (1989). https://doi.org/10.1016/0004-6981(89)90153-4
+[^5]: Wu, Z. et al. Evaluation and intercomparison of five North American dry deposition algorithms at a mixed forest site. *J. Adv. Model. Earth Syst.* **10**, 1571–1586 (2018). https://doi.org/10.1029/2017MS001231
+[^6]: Huebert, B. J. & Robert, C. H. The dry deposition of nitric acid to grass. *J. Geophys. Res.* **90**, 2085–2090 (1985). https://doi.org/10.1029/JD090iD01p02085
+[^7]: Emerson, E. W. et al. Revisiting particle dry deposition and its role in radiative effect estimates. *Proc. Natl Acad. Sci. USA* **117**, 26076–26082 (2020). https://doi.org/10.1073/pnas.2014761117
+[^8]: Sutton, M. A. et al. Towards a climate-dependent paradigm of ammonia emission and deposition. *Phil. Trans. R. Soc. B* **368**, 20130166 (2013). https://doi.org/10.1098/rstb.2013.0166
+[^9]: Emerson, K., Russo, R. C., Lund, R. E. & Thurston, R. V. Aqueous ammonia equilibrium calculations: effect of pH and temperature. *J. Fish. Res. Board Can.* **32**, 2379–2383 (1975). https://doi.org/10.1139/f75-274
+[^10]: Fowler, D. et al. The global nitrogen cycle in the twenty-first century. *Phil. Trans. R. Soc. B* **368**, 20130164 (2013). https://doi.org/10.1098/rstb.2013.0164
+[^11]: Bobbink, R. et al. Global assessment of nitrogen deposition effects on terrestrial plant diversity: a synthesis. *Ecol. Appl.* **20**, 30–59 (2010). https://doi.org/10.1890/08-1140.1
+[^12]: Stevens, C. J., Dise, N. B., Mountford, J. O. & Gowing, D. J. Impact of nitrogen deposition on the species richness of grasslands. *Science* **303**, 1876–1879 (2004). https://doi.org/10.1126/science.1094678
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/where-ammonia-comes-from.html"><span>Previous</span>Where ammonia comes from</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/ammonia-deposition-ozone.html"><span>Next</span>Ammonia deposition and ozone feedbacks</a></div>
+<!-- CURRICULUM_FOOTER_END -->

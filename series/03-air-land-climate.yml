@@ -60,6 +60,7 @@ parts:
       - id: air-land-climate/deposition-how-nitrogen-leaves-the-air
         title: "Deposition: how nitrogen leaves the air"
         level: intermediate
+        path: blogs/deposition-how-nitrogen-leaves-the-air.md
   - title: "Ammonia, forests and ozone"
     modules:
       - id: air-land-climate/ammonia-deposition-and-ozone-feedbacks
