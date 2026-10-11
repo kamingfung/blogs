@@ -1,0 +1,272 @@
+---
+title: Least squares
+description: How a straight line is fitted to data by minimising the sum of squared residuals, why squares are used, and what the fit assumes.
+date: 2026-10-11
+categories:
+- statistics
+- mathematics
+- data science
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/statistics/index.html">Statistics</a><span class="sep">·</span>Part 4 · Regression</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">School maths. Python or R for the notebooks.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+A least-squares fit chooses the parameters that make the sum of squared residuals, the vertical gaps between data and line, as small as possible. For a straight line $y = a + bx$ that minimum has a closed form: the slope is $S_{xy}/S_{xx}$, the covariation of $x$ and $y$ divided by the spread of $x$, and the intercept puts the line through the point of means. Squares are used for two reasons. They make the minimum a matter of solving linear equations, and, if the errors are independent and normally distributed with a common spread, the least-squares line is also the maximum-likelihood line. The price is sensitivity: one wild point can drag the slope, and how far depends on how far that point sits from the middle of the $x$ range. Afterwards you should be able to derive and compute the slope and intercept by hand, explain what the fit minimises, predict how an outlier will move it, and list the assumptions that have to hold before its output can be trusted.
+:::
+
+## The best line
+
+Fitting a line to data means choosing an intercept and a slope. To call one choice better than another needs a single number that measures how badly a line misses the data, and least squares uses the sum of squared vertical misses.
+
+Write the candidate line as $\hat{y} = a + bx$. For each of $n$ data points $(x_i, y_i)$, the **residual** is how far the point sits above the line:
+
+$$r_i = y_i - (a + b x_i)$$
+
+where $a$ is the intercept (the line's value at $x = 0$), $b$ is the slope (the change in $\hat{y}$ per unit of $x$), and $i = 1, \dots, n$ indexes the points. A residual is positive for a point above the line and negative for one below.
+
+The **sum of squared residuals** adds up the squares:
+
+$$S(a, b) = \sum_{i=1}^{n} r_i^2 = \sum_{i=1}^{n} \left( y_i - a - b x_i \right)^2$$
+
+where $S$ is a function of the two parameters only; the data are fixed numbers. The least-squares line is the pair $(\hat{a}, \hat{b})$ that makes $S$ smallest. The hats mark values estimated from data.
+
+The example throughout is eight made-up weekly measurements of a seedling's height: weeks $x = 1, \dots, 8$ and heights $y = 3.8, 4.6, 6.6, 8.5, 8.9, 11.2, 12.4, 14.4$ cm. Move the two sliders and watch $S$. The red segments are the residuals; $S$ is the sum of their squared lengths.
+
+::: {.sim-card}
+#### Fit a line by hand
+
+```{ojs}
+//| echo: false
+viewof userA = Inputs.range([-2, 6], {value: 4, step: 0.05, label: "Intercept a (cm)"})
+viewof userB = Inputs.range([0, 3], {value: 1, step: 0.01, label: "Slope b (cm per week)"})
+
+// The eight points the text uses: week x, height y in cm.
+data = [
+  {x: 1, y: 3.8}, {x: 2, y: 4.6}, {x: 3, y: 6.6}, {x: 4, y: 8.5},
+  {x: 5, y: 8.9}, {x: 6, y: 11.2}, {x: 7, y: 12.4}, {x: 8, y: 14.4}
+]
+
+// Sum of squared residuals S(a, b).
+ssr = (pts, a, b) => d3.sum(pts, d => (d.y - a - b * d.x) ** 2)
+
+// Closed-form least squares: b = Sxy / Sxx, a = ybar - b * xbar.
+lsq = pts => {
+  const xbar = d3.mean(pts, d => d.x), ybar = d3.mean(pts, d => d.y);
+  const sxx = d3.sum(pts, d => (d.x - xbar) ** 2);
+  const sxy = d3.sum(pts, d => (d.x - xbar) * (d.y - ybar));
+  const b = sxy / sxx;
+  return {a: ybar - b * xbar, b};
+}
+
+best = lsq(data)
+
+fmt = v => (v < 0 ? "−" : "") + Math.abs(v).toFixed(3)
+lineText = f => `ŷ = ${fmt(f.a)} + ${fmt(f.b)}x`
+
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${card("Your sum of squares S", ssr(data, userA, userB).toFixed(3) + " cm²", "#38bdf8")}
+  ${card("Least-squares minimum", ssr(data, best.a, best.b).toFixed(3) + " cm²", "#10b981")}
+  ${card("Least-squares line", lineText(best), "#10b981")}
+</div>`
+
+Plot.plot({
+  height: 340,
+  marginLeft: 55,
+  // Plot paints its own white ground otherwise, which the dark card fights.
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, 9], label: "Week →", grid: true},
+  y: {domain: [0, 18], label: "↑ Height (cm)", grid: true},
+  color: {legend: true,
+          domain: ["Data", "Your line", "Least-squares line", "Residual"],
+          range: ["#cbd5e1", "#38bdf8", "#10b981", "#ef4444"]},
+  marks: [
+    Plot.link(data, {x1: "x", x2: "x", y1: "y", y2: d => userA + userB * d.x,
+                     stroke: () => "Residual", strokeWidth: 2, clip: true}),
+    Plot.line([0, 9].map(x => ({x, y: best.a + best.b * x})),
+              {x: "x", y: "y", stroke: () => "Least-squares line", strokeWidth: 2,
+               strokeDasharray: "6 4", clip: true}),
+    Plot.line([0, 9].map(x => ({x, y: userA + userB * x})),
+              {x: "x", y: "y", stroke: () => "Your line", strokeWidth: 3, clip: true}),
+    Plot.dot(data, {x: "x", y: "y", fill: () => "Data", stroke: "#0f172a", strokeWidth: 1.5, r: 5})
+  ]
+})
+```
+
+No setting of the sliders gets below the least-squares minimum.
+:::
+
+The starting line, $a = 4$ and $b = 1$, scores $S = 12.98\text{ cm}^2$ by plain arithmetic: its residuals are $-1.2, -1.4, -0.4, 0.5, -0.1, 1.2, 1.4, 2.4$, and their squares sum to $12.98$, about twelve times the minimum of $1.048$. Lowering the intercept and steepening the slope together shortens the long residuals at both ends, and the sum drops quickly; the last few hundredths are where trial and error gets slow. The next section finds the minimum exactly.
+
+## Solving for the minimum
+
+$S(a, b)$ is a quadratic in $a$ and $b$ with positive squared terms, so its graph over the $(a, b)$ plane is a bowl with a single lowest point, provided the $x_i$ are not all equal. At that point both partial derivatives are zero. Differentiating $S$ with respect to each parameter and setting the result to zero gives the **normal equations**:
+
+$$\frac{\partial S}{\partial a} = -2 \sum_{i=1}^{n} \left( y_i - a - b x_i \right) = 0, \qquad \frac{\partial S}{\partial b} = -2 \sum_{i=1}^{n} x_i \left( y_i - a - b x_i \right) = 0$$
+
+where each derivative follows from the chain rule applied to one squared term at a time.
+
+The first equation says the residuals sum to zero. Dividing it by $n$ gives
+
+$$\bar{y} = a + b \bar{x}$$
+
+where $\bar{x} = \frac{1}{n} \sum x_i$ and $\bar{y} = \frac{1}{n} \sum y_i$ are the sample means. So the fitted line always passes through the point of means $(\bar{x}, \bar{y})$. Substituting $a = \bar{y} - b\bar{x}$ into the second equation and rearranging gives the slope:
+
+$$\hat{b} = \frac{S_{xy}}{S_{xx}}, \qquad \hat{a} = \bar{y} - \hat{b} \bar{x}$$
+
+where
+
+$$S_{xy} = \sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y}), \qquad S_{xx} = \sum_{i=1}^{n} (x_i - \bar{x})^2$$
+
+$S_{xy}$ measures how $x$ and $y$ vary together, and $S_{xx}$ measures how spread out the $x$ values are. Their ratio is the slope. If every $x_i$ were equal, $S_{xx}$ would be zero and no slope could be estimated, which is the algebraic form of the obvious point that you cannot learn how $y$ changes with $x$ without changing $x$.
+
+For the seedling data:
+
+- $\bar{x} = 36/8 = 4.5$ and $\bar{y} = 70.4/8 = 8.8$ cm.
+- $S_{xx} = 2 \times (0.5^2 + 1.5^2 + 2.5^2 + 3.5^2) = 42$.
+- $S_{xy} = 63.7$, from the eight products $(x_i - 4.5)(y_i - 8.8)$.
+- $\hat{b} = 63.7/42 = 1.517$ cm per week, and $\hat{a} = 8.8 - 1.517 \times 4.5 = 1.975$ cm.
+
+The residuals from this line are $0.308, -0.408, 0.075, 0.458, -0.658, 0.125, -0.192, 0.292$ cm. They sum to zero, as the first normal equation requires, and their squares sum to $S(\hat{a}, \hat{b}) = 1.048\text{ cm}^2$, the minimum the widget shows.
+
+### More than two parameters
+
+The same algebra works for any model whose prediction is a weighted sum of fixed functions of $x$, such as a quadratic $\hat{y} = \beta_0 + \beta_1 x + \beta_2 x^2$. Stack the data into matrices and the normal equations become
+
+$$X^\top X \hat{\boldsymbol{\beta}} = X^\top \mathbf{y}$$
+
+where $\mathbf{y}$ is the column of $n$ observations, $\hat{\boldsymbol{\beta}}$ is the column of $p$ fitted parameters, and $X$ is the $n \times p$ **design matrix** whose row $i$ holds the functions evaluated at $x_i$ (for a straight line, $1$ and $x_i$). "Linear" in linear least squares refers to the parameters, not to $x$: a quadratic in $x$ is still a linear least-squares problem, solved in one step.
+
+When a parameter sits inside a nonlinear function, as the time stretch $s_x$ does in $s_y f(s_x (t - \Delta t))$, there are no closed-form normal equations. A numerical optimiser starts from a guess and walks downhill on $S$, and it can stop in a local minimum. Two common extensions keep the same idea. **Weighted least squares** multiplies each squared residual by a weight $w_i$, so that some points count more. **Penalised least squares** adds a term that grows as the parameters move away from preferred values. [Fitting a season from its first weeks](curve-fitting-partial-timeseries.qmd) uses all three: a nonlinear model, weights that favour recent points, and a penalty that holds the fit near the historical curve.
+
+## Why squares
+
+Absolute residuals would also measure misfit, and minimising $\sum |r_i|$, called **least absolute deviations**, is a legitimate method. Squares won for two reasons, one practical and one statistical.
+
+The practical one is calculus. $r^2$ is smooth everywhere, so setting derivatives to zero gives the linear normal equations above. $|r|$ has a corner at $r = 0$, there is no closed-form solution, and the minimum has to be found by a search. For a straight line, a minimising line can always be found among the lines through two of the data points.
+
+The statistical one is likelihood. Suppose each observation is the true line plus an error, $y_i = a + b x_i + \varepsilon_i$, with the errors $\varepsilon_i$ independent and normally distributed with mean zero and a common standard deviation $\sigma$. The log-likelihood of the parameters, the log of the probability density of the observed data given $a$, $b$ and $\sigma$, is
+
+$$\ln L(a, b, \sigma) = -\frac{n}{2} \ln\!\left( 2\pi\sigma^2 \right) - \frac{S(a, b)}{2\sigma^2}$$
+
+where $S(a, b)$ is the same sum of squared residuals as before. For any fixed $\sigma$, the only term that depends on $a$ and $b$ is $-S/(2\sigma^2)$, so the $(a, b)$ that maximises the likelihood is exactly the one that minimises $S$. Gauss gave this argument in 1809, four years after Legendre had published the method as a practical recipe[^1]. The same argument run with errors from a Laplace (double-exponential) distribution leads to least absolute deviations instead.
+
+A weaker condition also favours least squares. If the errors merely have mean zero, a common variance, and are uncorrelated with one another, normal or not, the Gauss–Markov theorem shows that the least-squares estimates have the smallest variance among all unbiased estimators that are linear in the $y_i$.
+
+Squaring also has a cost. A residual twice as large counts four times as much, so the fit works hard to shorten its longest residual, even when that residual belongs to a single bad point. The widget below takes the seedling data, moves one point by a chosen amount, and refits the line both ways.
+
+::: {.sim-card}
+#### One point moved
+
+```{ojs}
+//| echo: false
+viewof outWeek = Inputs.range([1, 8], {value: 8, step: 1, label: "Point to move (week)"})
+viewof outShift = Inputs.range([-8, 8], {value: 8, step: 0.5, label: "Move it by (cm)"})
+
+moved = data.map(d => d.x === outWeek ? {x: d.x, y: d.y + outShift} : d)
+
+// Least absolute deviations: the minimum lies on a line through two data
+// points, so check every pair. Eight points means 28 lines.
+lad = pts => {
+  let bestFit = null;
+  for (let i = 0; i < pts.length; i++)
+    for (let j = i + 1; j < pts.length; j++) {
+      const b = (pts[j].y - pts[i].y) / (pts[j].x - pts[i].x);
+      const a = pts[i].y - b * pts[i].x;
+      const s = d3.sum(pts, d => Math.abs(d.y - a - b * d.x));
+      if (bestFit === null || s < bestFit.s - 1e-9) bestFit = {a, b, s};
+    }
+  return bestFit;
+}
+
+lsMoved = lsq(moved)
+ladMoved = lad(moved)
+ladClean = lad(data)
+
+signed = v => (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(3)
+
+html`<div class="sim-readouts">
+  ${card("Least-squares line", lineText(lsMoved), "#38bdf8")}
+  ${card("Least-squares slope change", signed(lsMoved.b - best.b) + " cm/week", "#38bdf8")}
+  ${card("Least-absolute line", lineText(ladMoved), "#f59e0b")}
+  ${card("Least-absolute slope change", signed(ladMoved.b - ladClean.b) + " cm/week", "#f59e0b")}
+</div>`
+
+Plot.plot({
+  height: 340,
+  marginLeft: 55,
+  // Plot paints its own white ground otherwise, which the dark card fights.
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, 9], label: "Week →", grid: true},
+  y: {domain: [-5, 23], label: "↑ Height (cm)", grid: true},
+  color: {legend: true,
+          domain: ["Original fit", "Least squares", "Least absolute", "Moved point"],
+          range: ["#64748b", "#38bdf8", "#f59e0b", "#ef4444"]},
+  marks: [
+    Plot.line([0, 9].map(x => ({x, y: best.a + best.b * x})),
+              {x: "x", y: "y", stroke: () => "Original fit", strokeWidth: 2, strokeDasharray: "6 4"}),
+    Plot.line([0, 9].map(x => ({x, y: ladMoved.a + ladMoved.b * x})),
+              {x: "x", y: "y", stroke: () => "Least absolute", strokeWidth: 2.5}),
+    Plot.line([0, 9].map(x => ({x, y: lsMoved.a + lsMoved.b * x})),
+              {x: "x", y: "y", stroke: () => "Least squares", strokeWidth: 2.5}),
+    Plot.dot(data.filter(d => d.x === outWeek), {x: "x", y: "y", stroke: "#64748b", strokeWidth: 1.5, r: 5}),
+    Plot.dot(moved.filter(d => d.x !== outWeek), {x: "x", y: "y", fill: "#cbd5e1", stroke: "#0f172a", strokeWidth: 1.5, r: 5}),
+    Plot.dot(moved.filter(d => d.x === outWeek), {x: "x", y: "y", fill: () => "Moved point", stroke: "#0f172a", strokeWidth: 1.5, r: 6})
+  ]
+})
+```
+
+The hollow grey circle marks where the moved point started. Try the same shift on week 8 and on week 4.
+:::
+
+With the week-8 point raised by 8 cm, from $14.4$ to $22.4$, the least-squares line becomes $\hat{y} = -0.025 + 2.183x$: the slope rises by $0.667$ cm per week, 44% of its original $1.517$. The least-absolute line, $\hat{y} = 2.000 + 1.533x$ on the clean data, does not move at all. It passes through the points at weeks 3 and 6, and its optimum depends only on which side of the line each other point lies, not how far away; the week-8 point was already above it, so pushing it further up changes nothing.
+
+Raise the week-4 point by the same 8 cm and the least-squares slope falls by only $0.095$ cm per week, to $1.421$. The difference has a simple source. Because $\hat{b} = S_{xy}/S_{xx}$ is linear in the $y_i$, shifting a single $y_k$ by $\delta$ changes the slope by
+
+$$\Delta \hat{b} = \frac{\delta \, (x_k - \bar{x})}{S_{xx}}$$
+
+where $\delta$ is the shift, $x_k$ is the moved point's $x$ value, and $\bar{x}$ and $S_{xx}$ are as before. For week 8, $8 \times 3.5/42 = 0.667$; for week 4, $8 \times (-0.5)/42 = -0.095$. A point at the edge of the $x$ range acts on the line with a long lever, and a point at $\bar{x}$ would move only the intercept. Statisticians call this **leverage**: a bad point does the most damage where there are fewest other points to hold the line in place.
+
+Least absolute deviations is not a free win. It gives up the closed form, its solution can be non-unique, and when the errors really are normal its estimates are noisier than least squares. Robust losses such as Huber's, quadratic for small residuals and linear for large ones, sit between the two.
+
+## What least squares assumes
+
+Computing $\hat{a}$ and $\hat{b}$ needs no assumptions at all; it is arithmetic. Interpreting them as estimates of a true relationship, or attaching uncertainty to them, does. Each assumption below fails in a recognisable way.
+
+| Assumption | What breaks when it fails | Usual response |
+|---|---|---|
+| The model's shape is right (here, a straight line) | Residuals show a pattern, such as a curve, instead of scatter; predictions are biased, worst outside the range of the data | Change the model; never trust a fitted line far beyond the last $x$ |
+| Errors are independent | Estimates stay unbiased, but the usual standard errors are too small when neighbouring errors are positively correlated, as in most time series, so trends look more certain than they are | Model the correlation, or use standard errors that allow for it |
+| Errors have a common spread | Estimates stay unbiased, but noisy points get as much say as precise ones and the standard errors are wrong | Weighted least squares, with $w_i = 1/\sigma_i^2$ where $\sigma_i$ is each point's error standard deviation |
+| $x$ is measured without error | The slope is biased toward zero, called regression dilution[^2] | Measure $x$ better, or use an errors-in-variables method |
+| No single point dominates | One outlier, especially at the edge of the $x$ range, moves the line, as shown above | Plot the data and residuals; check whether the point is a mistake; compare with a robust fit |
+| Errors are normal | Only exact small-sample intervals and tests, and the likelihood argument, rely on it; the estimates themselves remain unbiased | Usually minor for moderate $n$; heavy tails turn it into the outlier problem |
+
+The first row is the one [Fitting a season from its first weeks](curve-fitting-partial-timeseries.qmd) turns on. A polynomial fitted by least squares to the first quarter of a season can have tiny residuals and still be the wrong shape, and a small sum of squares inside the data says nothing about the error beyond it.
+
+## Key takeaways
+
+- A least-squares fit chooses the parameters that minimise $S = \sum r_i^2$, the sum of squared vertical residuals.
+- For a straight line, $\hat{b} = S_{xy}/S_{xx}$ and $\hat{a} = \bar{y} - \hat{b}\bar{x}$. The line passes through $(\bar{x}, \bar{y})$ and the residuals sum to zero.
+- Any model linear in its parameters, including polynomials, has a closed-form solution through the normal equations $X^\top X \hat{\boldsymbol{\beta}} = X^\top \mathbf{y}$. Nonlinear, weighted and penalised variants minimise a modified $S$ numerically.
+- Squares give a closed form, and they give the maximum-likelihood fit when errors are independent, normal and of equal spread.
+- Squaring lets one bad point pull the fit, and by an amount proportional to its distance from $\bar{x}$. Least absolute deviations resists this at the cost of the closed form.
+- The arithmetic needs no assumptions; trusting the line, and any uncertainty attached to it, needs the right model shape, independent errors of common spread, and $x$ measured without error.
+
+## References
+
+[^1]: Stigler, S. M. Gauss and the invention of least squares. *Ann. Stat.* **9**, 465–474 (1981). https://doi.org/10.1214/aos/1176345451
+[^2]: Frost, C. & Thompson, S. G. Correcting for regression dilution bias: comparison of methods for a single predictor variable. *J. R. Stat. Soc. A* **163**, 173–189 (2000). https://doi.org/10.1111/1467-985X.00164
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/ks_test/ks_test.html"><span>Previous</span>The Kolmogorov–Smirnov test</a><a class="mf-up" href="/series/statistics/index.html"><span>Series</span>Statistics</a><a class="mf-next" href="/blogs/p-values/what_a_p_value_is_not.html"><span>Next</span>What a p-value is not</a></div>
+<!-- CURRICULUM_FOOTER_END -->

@@ -6,7 +6,7 @@ description: "The statistics the other series lean on, kept short and separate s
 <dl class="syl-meta">
 <div><dt>Level</dt><dd>Introductory to intermediate</dd></div>
 <div><dt>Parts</dt><dd>8</dd></div>
-<div><dt>Modules</dt><dd>2 of 19 written</dd></div>
+<div><dt>Modules</dt><dd>3 of 19 written</dd></div>
 <div class="wide"><dt>Assumes</dt><dd>School maths. Python or R for the notebooks.</dd></div>
 </dl>
 
@@ -36,7 +36,7 @@ description: "The statistics the other series lean on, kept short and separate s
 ## Part 4 · Regression
 
 <ul class="syl">
-<li class="g">Least squares<span class="m">Introductory · not written</span></li>
+<li class="w"><a href="/blogs/least-squares.html">Least squares</a><span class="m">Introductory</span></li>
 <li class="g">Is the trend significant?<span class="m">Intermediate · not written</span></li>
 <li class="g">Reading residuals<span class="m">Intermediate · not written</span></li>
 </ul>

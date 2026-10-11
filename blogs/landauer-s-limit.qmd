@@ -1,0 +1,205 @@
+---
+title: Landauer's limit
+description: Why erasing one bit must release a minimum amount of heat, how experiments confirmed it, and why the limit constrains erasure rather than computation.
+date: 2026-10-11
+categories:
+- physics
+- thermodynamics
+- quantum information
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/everyday-physics/index.html">Physics of Everyday Things</a><span class="sep">·</span>Part 8 · Information and energy</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Curiosity. School physics helps.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Erasing one bit of information must release at least $k_B T \ln 2$ of heat into the surroundings, about $2.87 \times 10^{-21}\text{ J}$ at room temperature. The reason is not engineering but bookkeeping: erasure maps two possible states onto one, and because the microscopic laws of motion cannot shrink phase space, the entropy the memory loses has to reappear in its environment. The same argument settles Maxwell's demon: Szilard's one-molecule engine pays for its work not when the demon measures, which can be done reversibly, but when the demon wipes its memory to start again. Since 2012, colloidal beads in optical and feedback traps and nanomagnetic bits have measured the bound directly, and the measured heat approaches it only as the erasure is slowed down. The limit applies to erasure, not to computation as such, and today's most efficient supercomputers sit at least seven orders of magnitude above it. Afterwards you should be able to derive the bound, compute it for any temperature or any partly random bit, and say what it does and does not forbid.
+:::
+
+## Why erasure costs heat
+
+A computer memory is a physical object, and a bit is a physical distinction: charge on a capacitor or not, magnetisation up or down, a bead in the left or right well of a trap. **Erasing** a bit means resetting it to a standard value, say $0$, whatever it held before. That operation is **logically irreversible**: two different inputs, $0$ and $1$, produce the same output, so the output does not tell you the input. Rolf Landauer argued in 1961 that any logically irreversible operation must have a thermodynamic cost[^1].
+
+The argument takes three steps.
+
+1. **Count the states.** Before erasure the memory can be in either well; its information-bearing coordinate occupies a phase-space volume $2\Omega$, where $\Omega$ is the volume of one well. Afterwards it occupies $\Omega$.
+2. **Phase space cannot shrink.** The memory and its surroundings together obey Hamiltonian mechanics, and Liouville's theorem says Hamiltonian flow preserves phase-space volume. If the memory's share halves, the surroundings' share must at least double.
+3. **Convert to heat.** Doubling the accessible volume of the surroundings raises their entropy by at least $k_B \ln 2$. If the surroundings are a heat bath at temperature $T$, that entropy arrives as heat $Q = T\,\Delta S_\text{env}$.
+
+The result is Landauer's limit:
+
+$$Q \ge k_B T \ln 2$$
+
+where $Q$ is the heat released into the bath per bit erased, $k_B$ is the Boltzmann constant and $T$ is the bath temperature in kelvin. The factor $\ln 2$ is the information content of one bit expressed in natural units: one bit is $\ln 2$ nats.
+
+At $T = 300\text{ K}$, with $k_B = 1.380649 \times 10^{-23}\text{ J K}^{-1}$ (exact in the SI since 2019[^2]):
+
+$$Q_\text{min} = (1.380649 \times 10^{-23}) \times 300 \times 0.693147 = 2.871 \times 10^{-21}\text{ J}$$
+
+Dividing by the elementary charge, $1.602176634 \times 10^{-19}\text{ C}$, gives $0.01792\text{ eV}$, which is $0.693$ of the thermal energy $k_B T = 0.02585\text{ eV}$. The number is small: one kilowatt-hour, $3.6 \times 10^{6}\text{ J}$, would pay for erasing $3.6 \times 10^{6} / 2.871 \times 10^{-21} = 1.25 \times 10^{27}$ bits at room temperature.
+
+### The cost is entropy, not bits
+
+The derivation never used the fact that the bit was a fair coin. In general the bound is set by the fall in the memory's Shannon entropy[^3], so
+
+$$Q \ge k_B T\,(H_\text{before} - H_\text{after}), \qquad H = -\sum_i p_i \ln p_i$$
+
+where $H$ is the Shannon entropy of the memory in nats and $p_i$ is the probability that it is in state $i$. Two consequences follow.
+
+- **A biased bit is cheaper to erase.** A bit that holds $1$ with probability $0.1$ has $H = -(0.1 \ln 0.1 + 0.9 \ln 0.9) = 0.325$ nats, so resetting it costs at least $0.325\,k_B T$, $47\%$ of the fair-coin cost. A bit whose value you already know has $H = 0$ and carries no minimum cost, because a reset conditioned on the known value is logically reversible.
+- **A sloppy erasure is cheaper too.** If a fair bit is reset to $0$ with success probability $P$, the final entropy is not zero and the bound becomes[^4]
+
+$$Q \ge k_B T \left[\ln 2 + P \ln P + (1 - P)\ln(1 - P)\right]$$
+
+where $P$ is the probability of ending in the target state. At $P = 0.99$ the bracket is $0.637$; at $P = 0.9$ it is $0.368$, about half the full cost. The bound falls quickly as reliability falls, which is why experiments have to report their success rate alongside their heat.
+
+### Cooling does not beat it
+
+The calculator in [Information exchange versus energy](information-vs-energy.qmd) shows that erasure at $77\text{ K}$ costs only $k_B \times 77 \times \ln 2 = 7.37 \times 10^{-22}\text{ J}$ per bit. That saving is real only if the heat can be dumped at $77\text{ K}$. If it has to be pumped back to a $300\text{ K}$ room, a Carnot refrigerator moving heat $Q_c$ from $T_c$ to $T_h$ needs work $W \ge Q_c (T_h/T_c - 1)$, so the heat delivered to the room is
+
+$$Q_c + W \ge Q_c \frac{T_h}{T_c} = k_B T_c \ln 2 \cdot \frac{T_h}{T_c} = k_B T_h \ln 2$$
+
+where $T_c$ and $T_h$ are the cold and hot temperatures. The cold erasure plus the refrigerator still costs $2.871 \times 10^{-21}\text{ J}$ at the room. The temperature in Landauer's limit is that of wherever the heat finally goes.
+
+## Szilard's engine and the demon
+
+The clearest test of the argument is a machine that seems to break the second law. In 1929 Leo Szilard imagined a box holding a single gas molecule at temperature $T$[^5]. Slide a partition into the middle, find out which side the molecule is on, and attach a piston on that side. The one-molecule gas then pushes the piston isothermally from volume $V/2$ to $V$, delivering work
+
+$$W = \int_{V/2}^{V} \frac{k_B T}{V'}\,dV' = k_B T \ln 2$$
+
+where $V'$ is the instantaneous volume and $k_B T / V'$ is the pressure of one molecule from the ideal gas law. The energy comes from the bath as heat, so each cycle appears to turn heat from a single reservoir entirely into work, which the second law forbids.
+
+Something in the cycle must cost at least $k_B T \ln 2$. For decades the standard answer, from Gabor and Brillouin among others, was that **measurement** costs it: finding out which side the molecule is on needs a photon, and a photon distinguishable from the thermal background costs energy of order $k_B T$. Charles Bennett showed that this answer is wrong[^6][^7]. Copying a value onto a blank register is logically reversible, since the copy can be undone by subtracting the original again, and so it can in principle be done with no minimum dissipation. What cannot be undone is the step that comes later. To run the engine again, the demon's memory, now holding "left" or "right", must be reset to its blank state, and that is an erasure of one random bit:
+
+```{mermaid}
+flowchart LR
+    A["Insert partition"] --> B["Measure side into blank memory"]
+    B -->|"reversible: no minimum cost"| C["Isothermal expansion"]
+    C -->|"work k_BT ln 2 out, heat k_BT ln 2 in"| D["Memory holds L or R"]
+    D -->|"reset: heat ≥ k_BT ln 2 out"| A
+
+    class A indigo
+    class B sage
+    class C olive
+    class D rust
+    classDef indigo fill:#1d4a62,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef rust fill:#a04b2d,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef olive fill:#5b6e34,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef sage fill:#95a87f,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+```
+
+The heat drawn from the bath during expansion is returned during the reset, and the net work over a full cycle is zero or negative. Bennett also points out that Szilard's own detailed analysis, as opposed to his summary, places the entropy increase at the resetting step. The general lesson is that acquiring and processing information have no irreducible cost; destroying it does[^7].
+
+## Measuring the limit
+
+At $0.018\text{ eV}$ per bit, measuring the heat of a single erasure needs a memory small enough that every exchange with its surroundings can be tracked. The first direct test, by Antoine Bérut and colleagues in 2012, used a single colloidal particle in a double-well potential as a one-bit memory. In the group's description of the setup the particle is a silica bead of radius $1.00\text{ µm}$, and the two wells are made by switching a laser optical trap rapidly between two positions about $1\text{ µm}$ apart. One erasure cycle lowers the central barrier from more than $8\,k_B T$ to about $2.2\,k_B T$, moves the fluid cell so that viscous drag tilts the potential toward the target well, and raises the barrier again[^4]. The heat is computed from the bead's tracked trajectory.
+
+The result is that the mean dissipated heat saturates at the Landauer bound in the limit of long erasure cycles[^8]. Fast erasures cost more. Over cycle durations $\tau$ from $5$ to $40\text{ s}$, the mean heat for successful erasures falls as $1/\tau$, as finite-time thermodynamics predicts, and a fit gives[^4]
+
+$$\langle Q \rangle = k_B T \ln 2 + \frac{B}{\tau}, \qquad B = 8.15\,k_B T\text{ s}$$
+
+where $\langle Q \rangle$ is the mean heat per erasure, $\tau$ is the duration of the tilting step and $B$ is a fitted constant that depends on the trap and the protocol. In the same analysis, letting the asymptote float gives $0.72\,k_B T$, close to $\ln 2 = 0.693$. Their longest cycle, at $\tau = 40\text{ s}$, succeeded only about $80\%$ of the time; the partial-erasure bound for $P = 0.8$ is $\ln 2 + 0.8 \ln 0.8 + 0.2 \ln 0.2 = 0.193\,k_B T$, and the measured mean over all trajectories, $0.26\,k_B T$, sits above it as it must.
+
+Two later experiments tightened the picture. Yonggun Jun, Momčilo Gavrilov and John Bechhoefer used a feedback trap, which imposes a virtual potential on a bead by measuring its position and applying a corrective force, and found work extrapolating to $\ln 2$ for a full erasure and to zero for a control cycle that runs the same motions without reducing the number of states[^9]. That control is the point: the cost belongs to the loss of information, not to the mechanical operation. Jeongmin Hong and colleagues reset nanomagnetic bits, the basis of magnetic storage, and measured a dissipation consistent with $k_B T \ln 2$ within two standard deviations[^10].
+
+The widget plots the Bérut fit. It shows what the static calculator cannot: the limit is reached only by erasing infinitely slowly, and how far above it you sit depends on how fast you go.
+
+::: {.sim-card}
+#### Finite-time erasure of one bit
+
+$$\langle Q \rangle = k_B T \ln 2 + B/\tau$$
+
+```{ojs}
+//| echo: false
+viewof tau = Inputs.range([2, 200], {value: 10, step: 1, transform: Math.log, label: "Erasure time τ (s)"})
+viewof B = Inputs.range([1, 20], {value: 8.15, step: 0.05, label: "Excess coefficient B (k_BT·s)"})
+
+// Everything in units of k_BT. B = 8.15 k_BT·s is the Bérut et al. (2015) fit.
+ln2 = Math.LN2
+excess = B / tau
+Q = ln2 + excess
+tau10 = B / (0.1 * ln2)   // τ at which the excess falls to 10% of the bound
+
+curve = d3.range(0, 201).map(i => {
+  const t = 2 * Math.pow(100, i / 200);
+  return {t, q: ln2 + B / t};
+})
+
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${card("Mean heat per bit", Q.toFixed(3) + " k_BT", "#38bdf8")}
+  ${card("Excess over bound", excess.toFixed(3) + " k_BT", "#ef4444")}
+  ${card("Ratio to bound", Q / ln2 >= 10 ? (Q / ln2).toFixed(1) + "×" : (Q / ln2).toFixed(2) + "×", "#a78bfa")}
+  ${card("Time to within 10%", tau10.toFixed(1) + " s", "#10b981")}
+</div>`
+
+Plot.plot({
+  height: 320,
+  marginLeft: 55,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {type: "log", domain: [2, 200], label: "erasure time τ (s) →", grid: true},
+  y: {domain: [0, ln2 + B / 2], label: "↑ mean heat ⟨Q⟩ (k_BT)", grid: true},
+  marks: [
+    // The range of τ the fit was made over; outside it the curve is extrapolation.
+    Plot.rect([{x1: 5, x2: 40}], {x1: "x1", x2: "x2", y1: 0, y2: ln2 + B / 2, fill: "#38bdf8", fillOpacity: 0.08}),
+    Plot.ruleY([ln2], {stroke: "#f59e0b", strokeWidth: 2, strokeDasharray: "4 3"}),
+    Plot.text([{t: 120, q: ln2}], {x: "t", y: "q", text: () => "k_BT ln 2", dy: -10, fill: "#f59e0b"}),
+    Plot.line(curve, {x: "t", y: "q", stroke: "#38bdf8", strokeWidth: 2.5}),
+    Plot.dot([{t: tau, q: Q}], {x: "t", y: "q", fill: "#10b981", r: 6})
+  ]
+})
+```
+
+The dashed line is the Landauer bound and the shaded band is the range of $\tau$ the fit was measured over. At the defaults, $\tau = 10\text{ s}$ and $B = 8.15\,k_B T\text{ s}$, the mean heat is $0.693 + 0.815 = 1.508\,k_B T$, $2.18$ times the bound. Getting within $10\%$ of the bound needs $\tau = 8.15 / 0.0693 = 117.6\text{ s}$, an extrapolation beyond the measured range. Lower $B$ to stand in for a memory that relaxes faster: the curve keeps its shape but reaches the bound sooner.
+:::
+
+$B$ belongs to one bead in water; a transistor has its own, very different, constant. What carries over is the form: the minimum heat is reached only in the quasi-static limit, and any finite erasure speed adds an excess that grows as the erasure gets faster.
+
+## What the limit does and does not say
+
+**It is far below present-day hardware.** The most energy-efficient system on the June 2026 Green500 list, KAIROS at CALMIP and the University of Toulouse, ran the HPL benchmark of 64-bit floating-point operations at $73.282$ billion operations per second per watt[^11]. That is $1 / (73.282 \times 10^{9}) = 1.365 \times 10^{-11}\text{ J}$ per operation, or
+
+$$\frac{1.365 \times 10^{-11}}{2.871 \times 10^{-21}} = 4.75 \times 10^{9}$$
+
+times the Landauer cost of one bit at $300\text{ K}$. One floating-point operation is not one erasure, so this is not a per-gate ratio. But an operation takes two 64-bit inputs, and even charging it with destroying all $128$ of their bits, the machine dissipates $4.75 \times 10^{9} / 128 = 3.7 \times 10^{7}$ times the Landauer minimum for the information it could possibly erase. The heat in a real computer comes from charging and discharging wires and transistor gates, leakage current and moving data, not from the thermodynamics of forgetting.
+
+**It applies to erasure, not to computation.** Bennett showed in 1973 that any computation can be rewritten as a sequence of logically reversible steps, provided it keeps a copy of its input[^12]. Run forward, copy the answer onto a blank register, then run backward to restore the input and clean up the intermediate results: nothing has been erased, and the computation can in principle be carried out with dissipation that approaches zero as it is slowed down. Landauer's limit is therefore a price on forgetting, not on thinking. Conventional computing also wastes more than the bound requires: when a logically irreversible step is applied to data whose value is already determined, the environment gains entropy with no matching loss from the data, which is pure waste. Reversible programming is the way to avoid it[^7].
+
+**It is an average for a large reservoir.** The bound holds for the mean heat; single cycles can dip below it, as the experiments show[^9]. For a finite reservoir the minimum heat is strictly larger than $k_B T \ln 2$, and the simple bound is recovered only as the reservoir becomes infinite[^3].
+
+**It is a statement of the second law, not a new law.** Bennett concedes that Landauer's principle is in a sense a restatement of the second law[^7]. Its value is that it tells you exactly where the entropy goes in an information-processing device, and therefore which step has to pay.
+
+## Key takeaways
+
+- Erasing a bit maps two states onto one; because Hamiltonian dynamics cannot compress phase space, the lost entropy $k_B \ln 2$ must go to the environment as heat $Q \ge k_B T \ln 2$, which is $2.871 \times 10^{-21}\text{ J}$ or $0.0179\text{ eV}$ at $300\text{ K}$.
+- The general bound is $Q \ge k_B T\,\Delta H$, with $H$ the memory's Shannon entropy in nats: biased bits, known bits and imperfect erasures cost less.
+- The temperature that matters is where the heat ends up; cooling the memory and refrigerating the heat back to room temperature recovers $k_B T_\text{room} \ln 2$.
+- Szilard's engine is saved by the cost of resetting the demon's memory, not by the cost of measurement, which can be reversible.
+- Colloidal, feedback-trap and nanomagnetic experiments confirm the bound; the colloidal data approach it as $1/\tau$, so the minimum is reached only by erasing slowly.
+- The most efficient supercomputer in June 2026 dissipated about $4.75 \times 10^{9}$ times $k_B T \ln 2$ per floating-point operation; reversible computing shows the limit constrains erasure, not computation.
+
+## References
+
+[^1]: Landauer, R. Irreversibility and heat generation in the computing process. *IBM J. Res. Dev.* **5**, 183–191 (1961). https://doi.org/10.1147/rd.53.0183
+[^2]: Tiesinga, E., Mohr, P. J., Newell, D. B. & Taylor, B. N. CODATA recommended values of the fundamental physical constants: 2018. *Rev. Mod. Phys.* **93**, 025010 (2021). https://doi.org/10.1103/RevModPhys.93.025010
+[^3]: Reeb, D. & Wolf, M. M. An improved Landauer principle with finite-size corrections. *New J. Phys.* **16**, 103011 (2014). https://doi.org/10.1088/1367-2630/16/10/103011
+[^4]: Bérut, A., Petrosyan, A. & Ciliberto, S. Information and thermodynamics: experimental verification of Landauer's erasure principle. *J. Stat. Mech.* **2015**, P06015 (2015). https://doi.org/10.1088/1742-5468/2015/06/P06015
+[^5]: Szilard, L. Über die Entropieverminderung in einem thermodynamischen System bei Eingriffen intelligenter Wesen. *Z. Phys.* **53**, 840–856 (1929). https://doi.org/10.1007/BF01341281
+[^6]: Bennett, C. H. The thermodynamics of computation — a review. *Int. J. Theor. Phys.* **21**, 905–940 (1982). https://doi.org/10.1007/BF02084158
+[^7]: Bennett, C. H. Notes on Landauer's principle, reversible computation, and Maxwell's demon. *Stud. Hist. Phil. Mod. Phys.* **34**, 501–510 (2003). https://doi.org/10.1016/S1355-2198(03)00039-X
+[^8]: Bérut, A. et al. Experimental verification of Landauer's principle linking information and thermodynamics. *Nature* **483**, 187–189 (2012). https://doi.org/10.1038/nature10872
+[^9]: Jun, Y., Gavrilov, M. & Bechhoefer, J. High-precision test of Landauer's principle in a feedback trap. *Phys. Rev. Lett.* **113**, 190601 (2014). https://doi.org/10.1103/PhysRevLett.113.190601
+[^10]: Hong, J., Lambson, B., Dhuey, S. & Bokor, J. Experimental test of Landauer's principle in single-bit operations on nanomagnetic memory bits. *Sci. Adv.* **2**, e1501492 (2016). https://doi.org/10.1126/sciadv.1501492
+[^11]: TOP500. Green500 list, June 2026. https://www.top500.org/lists/green500/list/2026/06/ (accessed 11 October 2026).
+[^12]: Bennett, C. H. Logical reversibility of computation. *IBM J. Res. Dev.* **17**, 525–532 (1973). https://doi.org/10.1147/rd.176.0525
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/information-vs-energy.html"><span>Previous</span>Information exchange versus energy</a><a class="mf-up" href="/series/everyday-physics/index.html"><span>Series</span>Physics of Everyday Things</a></div>
+<!-- CURRICULUM_FOOTER_END -->

@@ -1415,3 +1415,4 @@ ds_new.to_netcdf('DMS_lana.geos.1x1.SouthernHalved.nc') # always good to have a 
 <!-- CURRICULUM_FOOTER_START -->
 <div class="mf"><a class="mf-prev" href="/blogs/python-basics-cesm/index.html"><span>Previous</span>Python basics for mapping</a><a class="mf-up" href="/series/earth-data/index.html"><span>Series</span>Earth Data in Python and R</a><a class="mf-next" href="/blogs/xarray-basics/dimensions_coordinates_attributes.html"><span>Next</span>Dimensions, coordinates and attributes</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+

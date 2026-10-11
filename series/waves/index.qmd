@@ -6,7 +6,7 @@ description: "One idea, the wave, followed from a plucked string through Fourier
 <dl class="syl-meta">
 <div><dt>Level</dt><dd>Introductory to intermediate</dd></div>
 <div><dt>Parts</dt><dd>11</dd></div>
-<div><dt>Modules</dt><dd>8 of 28 written</dd></div>
+<div><dt>Modules</dt><dd>10 of 28 written</dd></div>
 <div class="wide"><dt>Assumes</dt><dd>School physics and trigonometry.</dd></div>
 </dl>
 
@@ -59,8 +59,8 @@ description: "One idea, the wave, followed from a plucked string through Fourier
 ## Part 7 · Spins and resonance
 
 <ul class="syl">
-<li class="g">NMR basics<span class="m">Intermediate · not written</span></li>
-<li class="g">Relaxation: T1 and T2<span class="m">Intermediate · not written</span></li>
+<li class="w"><a href="/blogs/nmr-basics.html">NMR basics</a><span class="m">Intermediate</span></li>
+<li class="w"><a href="/blogs/relaxation-t1-and-t2.html">Relaxation: T1 and T2</a><span class="m">Intermediate</span></li>
 </ul>
 
 ## Part 8 · MRI

@@ -1,0 +1,209 @@
+---
+title: "Relaxation: T1 and T2"
+description: How tipped nuclear magnetisation returns to equilibrium by two separate processes, why one is always slower than the other, and how a scanner's timing turns the difference into image contrast.
+date: 2026-10-11
+categories:
+- physics
+- mri
+- medical imaging
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/waves/index.html">Waves, Sound and Imaging</a><span class="sep">·</span>Part 7 · Spins and resonance</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Assumes <a href="/blogs/nmr-basics.html">NMR basics</a>.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+After an RF pulse, magnetisation returns to equilibrium by two processes that run side by side. Longitudinal recovery, with time constant $T_1$, rebuilds $M_z$ as spins hand energy to their molecular surroundings. Transverse decay, with time constant $T_2$, destroys $M_{xy}$ as spins drift out of phase. Every process that drives $T_1$ also shortens $T_2$, and slow molecular motion shortens $T_2$ further without speeding up $T_1$ recovery, so in tissue $T_2$ is the shorter of the two, typically by more than a factor of ten. The decay you actually observe, $T_2^*$, is faster still because static field variations add dephasing, but that part can be undone by a spin echo. Grey and white matter differ in both constants, and the scanner's repetition time $\text{TR}$ and echo time $\text{TE}$ decide which difference the image shows. Afterwards you should be able to write down both relaxation curves, explain why $T_2 \le T_1$, say what a spin echo recovers and what it cannot, and pick $\text{TR}$ and $\text{TE}$ for a $T_1$-, $T_2$- or proton-density-weighted image.
+:::
+
+## Two ways back to equilibrium
+
+[NMR basics](nmr-basics.qmd) left the net magnetisation $\mathbf{M}$ tipped away from $B_0$ and precessing, with the free induction decay dying away in the receive coil. What happens next is relaxation, and Bloch described it with two independent rate equations[^1]. In the frame rotating at the Larmor frequency, with the RF switched off:
+
+$$\frac{dM_z}{dt} = -\frac{M_z - M_0}{T_1}, \qquad \frac{dM_{xy}}{dt} = -\frac{M_{xy}}{T_2}$$
+
+where $M_z$ is the component along $B_0$, $M_{xy}$ is the magnitude of the component in the transverse plane, $M_0$ is the equilibrium magnetisation (all three in $\text{A m}^{-1}$), $T_1$ is the longitudinal (spin–lattice) relaxation time and $T_2$ the transverse (spin–spin) relaxation time, both in seconds or milliseconds. After a $90^\circ$ pulse at $t = 0$, which leaves $M_z = 0$ and $M_{xy} = M_0$, the solutions are
+
+$$M_z(t) = M_0\left(1 - e^{-t/T_1}\right), \qquad M_{xy}(t) = M_0\, e^{-t/T_2}$$
+
+with $t$ the time since the pulse. After one time constant $M_z$ has recovered $1 - e^{-1} = 63\%$ of the way; after three it has recovered $1 - e^{-3} = 95\%$. The two curves are not one process seen from two directions. The magnitude of $\mathbf{M}$ is not conserved: $M_{xy}$ usually vanishes long before $M_z$ has grown back, so for most of the recovery the magnetisation is short, not merely tilted.
+
+The two processes have different physical causes.
+
+**$T_1$ is energy exchange.** Spins aligned with $B_0$ sit in the lower of two energy levels. Rebuilding $M_z$ means flipping excess spins back down, which releases a quantum $\hbar\omega_0$ per flip into the surroundings, historically called the lattice. A spin flips only when it is driven by a fluctuating magnetic field that has a component at $\omega_0$ (or $2\omega_0$ for a coupled pair), and in water the dominant source is the dipolar field of neighbouring protons, modulated as molecules tumble.
+
+**$T_2$ is loss of phase coherence.** $M_{xy}$ exists only while the spins precess in step. Each spin feels a slightly different and changing local field from its neighbours, so it precesses slightly faster or slower, and the individual phases fan out until the vector sum is zero. No energy needs to leave the spin system for this to happen.
+
+## Why T2 is shorter than T1
+
+Every spin flip that rebuilds $M_z$ also resets that spin's phase, so every $T_1$ process also destroys transverse magnetisation. Dephasing has one extra cause on top: slow or static field differences shift precession frequencies without flipping anything. Transverse decay therefore has all the causes longitudinal recovery has, and more.
+
+Bloembergen, Purcell and Pound made this quantitative for two like spins at fixed distance in a molecule tumbling with correlation time $\tau_c$[^2]:
+
+$$\frac{1}{T_1} = K\left[J(\omega_0) + 4J(2\omega_0)\right], \qquad \frac{1}{T_2} = \frac{K}{2}\left[3J(0) + 5J(\omega_0) + 2J(2\omega_0)\right], \qquad J(\omega) = \frac{\tau_c}{1 + \omega^2\tau_c^2}$$
+
+where $J(\omega)$ (in s) is the spectral density, the share of the molecular motion that fluctuates at angular frequency $\omega$ (in $\text{rad s}^{-1}$); $\omega_0$ is the Larmor angular frequency; $\tau_c$ (in s) is roughly the time a molecule takes to rotate through a radian; and $K = \tfrac{3}{10}(\mu_0/4\pi)^2\gamma^4\hbar^2/r^6$ (in $\text{s}^{-2}$) is the dipolar coupling strength, with $\mu_0$ the vacuum permeability, $\gamma$ the gyromagnetic ratio, $\hbar$ the reduced Planck constant and $r$ the proton–proton distance.
+
+Three consequences follow.
+
+- **Fast motion gives $T_1 = T_2$.** When $\omega_0\tau_c \ll 1$, every $J$ equals $\tau_c$ and both rates come to $5K\tau_c$. Small, freely tumbling molecules sit in this regime.
+- **Slow motion separates them.** The $J(0) = \tau_c$ term appears only in $1/T_2$, and it keeps growing as motion slows, while $J(\omega_0)$ falls once $\omega_0\tau_c > 1$. Water that spends part of its time attached to proteins and membranes therefore has a $T_2$ far shorter than its $T_1$.
+- **$T_1$ depends on field; the $J(0)$ part of $T_2$ does not.** $1/T_1$ peaks at $\omega_0\tau_c \approx 0.616$ (the maximum of $J(\omega_0) + 4J(2\omega_0)$). At $3\text{ T}$, $\omega_0 = 2\pi \times 42.58\text{ MHz T}^{-1} \times 3\text{ T} = 8.03 \times 10^8\text{ rad s}^{-1}$, so the peak sits at $\tau_c = 0.616 / 8.03 \times 10^8 \approx 0.77\text{ ns}$. Because $J(\omega)$ falls with $\omega$ for any $\tau_c$, raising $B_0$ lengthens $T_1$ except in the fast-motion limit, and most strongly once $\omega_0\tau_c \gtrsim 1$. This is why tissue $T_1$ values measured at one field strength do not carry over to another.
+
+From $J(0) \ge J(\omega_0) \ge J(2\omega_0)$ one finds $1/T_2 - 1/T_1 = \tfrac{3}{2}K\left[J(0) + J(\omega_0) - 2J(2\omega_0)\right] \ge 0$, so in this model $T_2 \le T_1$ always. The fully general bound is looser, $T_2 \le 2T_1$; a longer $T_2$ would let the magnitude of $\mathbf{M}$ exceed its starting value during relaxation[^3]. For water protons in tissue the practical rule is $T_2 < T_1$, by a wide margin.
+
+Real tissue is messier than one pair of spins with one $\tau_c$. Water exchanges between free and macromolecule-bound sites, and transverse decay is often multi-exponential. Treat the model as an explanation of trends, not a fit to tissue. The measured values show the trend:
+
+| Tissue, $3\text{ T}$ | $T_1$ (ms) | $T_2$ (ms) | $T_2 / T_1$ |
+|---|---:|---:|---:|
+| White matter | $657 \pm 18$ | $48 \pm 3$ | $0.073$ |
+| Grey matter | $1136 \pm 82$ | $77 \pm 12$ | $0.068$ |
+
+<small>Means ± standard deviation across 10 healthy volunteers, measured in vivo at $3\text{ T}$ with MR-STAT, a model-based quantitative sequence (Schilder et al., Table 3)[^4]. The same table lists the range reported by other $3\text{ T}$ studies: $T_1$ of $620$–$954\text{ ms}$ in white matter and $790$–$1618\text{ ms}$ in grey matter, $T_2$ of $29$–$120\text{ ms}$ and $53$–$130\text{ ms}$. The method moves the numbers by tens of percent, so compare tissues within one study, as the widget below does.</small>
+
+White matter has the shorter $T_1$ and the shorter $T_2$. The usual explanation is myelin: it holds water close to lipid membranes, which pushes both in the slow-motion direction. Cerebrospinal fluid, which is close to free water, sits far off the scale of this table: the literature values compiled by Ma et al. span $T_1$ of $4.1$–$5.4\text{ s}$ and $T_2$ of $1.8$–$2.5\text{ s}$[^5].
+
+## T2* and the spin echo
+
+The free induction decay does not decay with $T_2$. Every voxel also contains static field variations, from imperfect shimming of the magnet and from susceptibility differences at boundaries between tissue, bone and air, and these add dephasing of their own. The observed decay constant is $T_2^*$:
+
+$$\frac{1}{T_2^*} = \frac{1}{T_2} + \frac{1}{T_2'}$$
+
+where $T_2'$ (in ms) is the time constant of the static, reversible part. The sum of rates is exact when the field offsets within a voxel follow a Lorentzian distribution, and a useful approximation otherwise. As an illustration, take the grey-matter $T_2 = 77\text{ ms}$ from the table and suppose the field spread gives $T_2' = 50\text{ ms}$. Then $T_2^* = 1/(1/77 + 1/50) = 30\text{ ms}$, and by $t = 77\text{ ms}$ the FID has fallen to $e^{-77/30.3} = 0.08$ of its starting value, where true $T_2$ decay alone would leave $e^{-1} = 0.37$.
+
+Hahn showed that the static part can be undone[^6]. A spin in a fixed offset field $\Delta\omega$ (in $\text{rad s}^{-1}$) gains phase $\Delta\omega\,\tau$ during a wait $\tau$. A $180^\circ$ pulse at $t = \tau$ mirrors every spin's phase about the pulse axis, turning a lead of $\Delta\omega\,\tau$ into a lag of the same size. Each spin keeps its own $\Delta\omega$, so it makes up exactly that lag over the next $\tau$. At $t = 2\tau$ all spins are back in step at once, whatever their offset, and the signal reforms as an **echo**. The echo time is $\text{TE} = 2\tau$, and the echo amplitude is $M_0\, e^{-\text{TE}/T_2}$.
+
+What the echo cannot recover is any dephasing that changes during the wait. Fluctuations from molecular motion, the real $T_2$ process, are random from one instant to the next and leave nothing to reverse. Hahn also noted that diffusion through a field gradient weakens the echo, because a spin that moves sees a different $\Delta\omega$ before and after the pulse. That loss, unwanted here, is the signal that diffusion imaging measures. Conversely, gradient-echo BOLD functional MRI has no refocusing pulse and so keeps the $T_2^*$ sensitivity a spin echo removes; that is how it detects changes in blood oxygenation, as [What MRI sees](mri-what-it-sees.qmd) describes.
+
+## From relaxation to contrast
+
+A spin-echo sequence repeats a $90^\circ$–$180^\circ$ pair once every repetition time $\text{TR}$ and records the echo at $\text{TE}$. Following $M_z$ through one repetition (it recovers for $\text{TE}/2$, is inverted by the $180^\circ$ pulse, then recovers for $\text{TR} - \text{TE}/2$) gives the steady-state signal
+
+$$S \propto M_0\left[1 - 2e^{-(\text{TR} - \text{TE}/2)/T_1} + e^{-\text{TR}/T_1}\right] e^{-\text{TE}/T_2} \;\approx\; M_0\left(1 - e^{-\text{TR}/T_1}\right) e^{-\text{TE}/T_2} \quad (\text{TE} \ll \text{TR})$$
+
+where $S$ is the echo amplitude in arbitrary units, $M_0$ is proportional to the density of mobile protons, and $\text{TR}$ and $\text{TE}$ are in the same units as $T_1$ and $T_2$. The equation assumes ideal $90^\circ$ and $180^\circ$ pulses; transverse magnetisation that has fully decayed or been spoiled before each excitation, which needs $\text{TR} \gg T_2$; enough repetitions to reach steady state; single-exponential relaxation; and no flow, diffusion or magnetisation-transfer effects. The first factor is $T_1$ recovery and the second is $T_2$ decay, so each knob controls one clock:
+
+- **Short $\text{TR}$** stops recovery early, while short-$T_1$ tissue is further ahead. That is $T_1$ weighting.
+- **Long $\text{TE}$** waits while transverse magnetisation decays, so long-$T_2$ tissue keeps more signal. That is $T_2$ weighting.
+- **Long $\text{TR}$ and short $\text{TE}$** make both factors close to $1$, leaving $S \approx M_0$. That is proton-density weighting.
+
+Move the sliders below to see this. The widget uses the full bracket and the $3\text{ T}$ values from the table, and gives both tissues the same $M_0$, so any contrast it shows comes from relaxation alone.
+
+::: {.sim-card}
+#### Spin-echo signal of white and grey matter at 3 T
+
+```{ojs}
+//| echo: false
+viewof TR = Inputs.range([200, 5000], {value: 500, step: 10, label: "TR (ms)"})
+viewof TE = Inputs.range([5, 150], {value: 15, step: 1, label: "TE (ms)"})
+
+// 3 T, 10 healthy volunteers: Schilder et al. 2025, Table 3. Same M0 for both by design.
+tissues = [
+  {name: "White matter", T1: 657, T2: 48},
+  {name: "Grey matter", T1: 1136, T2: 77}
+]
+
+// Spin-echo steady state with M0 = 1: recovery bracket times transverse decay.
+signal = (tr, te, t) =>
+  (1 - 2 * Math.exp(-(tr - te / 2) / t.T1) + Math.exp(-tr / t.T1)) * Math.exp(-te / t.T2)
+
+sWM = signal(TR, TE, tissues[0])
+sGM = signal(TR, TE, tissues[1])
+
+// TE at which the two signals cross, by bisection on [0, 150] ms.
+nullTE = {
+  const f = te => signal(TR, te, tissues[1]) - signal(TR, te, tissues[0]);
+  let lo = 0, hi = 150;
+  if (f(lo) * f(hi) > 0) return null;
+  for (let i = 0; i < 50; i++) {
+    const m = (lo + hi) / 2;
+    if (f(lo) * f(m) <= 0) hi = m; else lo = m;
+  }
+  return (lo + hi) / 2;
+}
+
+fmt = x => x.toFixed(3).replace("-", "−")
+
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${card("White matter signal", fmt(sWM), "#38bdf8")}
+  ${card("Grey matter signal", fmt(sGM), "#f59e0b")}
+  ${card("Contrast, GM − WM", fmt(sGM - sWM), "#a78bfa")}
+  ${card("Signals cross at TE", nullTE === null ? "not below 150 ms" : nullTE.toFixed(0) + " ms", "#a78bfa")}
+</div>`
+
+curves = tissues.flatMap(t =>
+  d3.range(0, 151, 1).map(te => ({te, s: signal(TR, te, t), tissue: t.name})))
+
+Plot.plot({
+  height: 260,
+  marginLeft: 50,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, 150], label: "echo time TE (ms) →", grid: true},
+  y: {domain: [0, 1], label: "↑ signal S / M0", grid: true},
+  color: {legend: true, domain: ["White matter", "Grey matter"], range: ["#38bdf8", "#f59e0b"]},
+  marks: [
+    Plot.line(curves, {x: "te", y: "s", stroke: "tissue", strokeWidth: 2.5}),
+    Plot.ruleX([TE], {stroke: "#a78bfa", strokeWidth: 2, strokeDasharray: "4 3"})
+  ]
+})
+
+// Contrast map over the whole TR–TE plane; only the marker depends on the sliders.
+grid = {
+  const out = [];
+  for (let tr = 200; tr < 5000; tr += 120)
+    for (let te = 5; te < 150; te += 5) {
+      const c = signal(tr + 60, te + 2.5, tissues[1]) - signal(tr + 60, te + 2.5, tissues[0]);
+      out.push({tr1: tr, tr2: tr + 120, te1: te, te2: te + 5, c});
+    }
+  return out;
+}
+
+Plot.plot({
+  height: 300,
+  marginLeft: 50,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [200, 5000], label: "repetition time TR (ms) →"},
+  y: {domain: [5, 150], label: "↑ echo time TE (ms)"},
+  color: {type: "linear", domain: [-0.17, 0, 0.17], range: ["#38bdf8", "#334155", "#f59e0b"]},
+  marks: [
+    Plot.rect(grid, {x1: "tr1", x2: "tr2", y1: "te1", y2: "te2", fill: "c", stroke: "c"}),
+    Plot.dot([{TR, TE}], {x: "TR", y: "TE", r: 6, stroke: "#f8fafc", strokeWidth: 2})
+  ]
+})
+```
+
+The top chart shows both signals against $\text{TE}$ at the current $\text{TR}$; the dashed line is the current $\text{TE}$. The map shows the contrast at every setting: blue where white matter is brighter, orange where grey matter is, dark where they match. The white ring is where you are.
+:::
+
+At the default $\text{TR} = 500\text{ ms}$, $\text{TE} = 15\text{ ms}$, white matter gives $0.382$ and grey matter $0.286$: white matter is $0.382/0.286 = 1.34$ times brighter, because its shorter $T_1$ has let it recover further. This is a $T_1$-weighted image. Keep $\text{TR}$ and lengthen $\text{TE}$, and grey matter's longer $T_2$ catches up; the signals cross at $\text{TE} \approx 53\text{ ms}$, the worst echo time for grey–white contrast at this $\text{TR}$, because the two relaxation differences cancel. At $\text{TR} = 4000\text{ ms}$, $\text{TE} = 100\text{ ms}$ the order reverses: grey matter gives $0.264$ against white matter's $0.124$, $2.1$ times brighter. That is $T_2$ weighting, and it is why the same brain can look like its own negative. At $\text{TR} = 4000\text{ ms}$, $\text{TE} = 10\text{ ms}$ the signals are $0.810$ and $0.852$, differing by $0.042$, about $5\%$, because both relaxation factors are near $1$. In a real proton-density image the remaining contrast comes from differences in $M_0$, which this widget leaves out on purpose.
+
+Long $\text{TR}$ has a price. Grey matter needs $3T_1 = 3 \times 1136 = 3408\text{ ms}$ to recover $95\%$ of $M_z$, and the sequence pays that wait once per repetition. [What MRI sees](mri-what-it-sees.qmd) shows how that multiplies into minutes of scan time. Inversion recovery, FLAIR and fast spin echo, which reshape these trade-offs, are the subject of a later module, *Contrast: TR and TE*.
+
+## Key takeaways
+
+- After excitation, $M_z$ recovers as $M_0(1 - e^{-t/T_1})$ through energy exchange with the surroundings, and $M_{xy}$ decays as $M_0 e^{-t/T_2}$ through loss of phase coherence. They are separate processes, and the magnitude of $\mathbf{M}$ is not conserved.
+- Every $T_1$ process also dephases, and slow motion adds dephasing through the $J(0)$ term without adding recovery, so $T_2 \le T_1$ for dipolar relaxation. The general bound is $T_2 \le 2T_1$. In tissue $T_2$ is the smaller one, by a factor of more than ten.
+- $T_1$ depends on field strength, so every tissue value needs its field and method attached. At $3\text{ T}$, one in vivo study gives white matter $T_1 = 657\text{ ms}$, $T_2 = 48\text{ ms}$ and grey matter $1136\text{ ms}$, $77\text{ ms}$, and other studies range widely around these.
+- The FID decays with $T_2^*$, which adds static dephasing to $T_2$. A $180^\circ$ pulse refocuses the static part into an echo at $\text{TE}$, but random fluctuations and diffusion are lost for good.
+- In a spin echo, $S \propto M_0(1 - e^{-\text{TR}/T_1})e^{-\text{TE}/T_2}$: short $\text{TR}$ gives $T_1$ weighting, long $\text{TE}$ gives $T_2$ weighting, and long $\text{TR}$ with short $\text{TE}$ leaves proton density.
+
+## References
+
+[^1]: Bloch, F. Nuclear induction. *Phys. Rev.* **70**, 460–474 (1946). https://doi.org/10.1103/PhysRev.70.460
+[^2]: Bloembergen, N., Purcell, E. M. & Pound, R. V. Relaxation effects in nuclear magnetic resonance absorption. *Phys. Rev.* **73**, 679–712 (1948). https://doi.org/10.1103/PhysRev.73.679
+[^3]: Traficante, D. D. Relaxation. Can $T_2$ be longer than $T_1$? *Concepts Magn. Reson.* **3**, 171–177 (1991). https://doi.org/10.1002/cmr.1820030305
+[^4]: Schilder, M. B. et al. Fast whole brain relaxometry with Magnetic Resonance Spin TomogrAphy in Time-domain (MR-STAT) at 3 T: a retrospective cohort study. *Magn. Reson. Mater. Phys. Biol. Med.* **38**, 333–345 (2025). https://doi.org/10.1007/s10334-025-01237-3
+[^5]: Ma, D. et al. Magnetic resonance fingerprinting. *Nature* **495**, 187–192 (2013). https://doi.org/10.1038/nature11971
+[^6]: Hahn, E. L. Spin echoes. *Phys. Rev.* **80**, 580–594 (1950). https://doi.org/10.1103/PhysRev.80.580
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/nmr-basics.html"><span>Previous</span>NMR basics</a><a class="mf-up" href="/series/waves/index.html"><span>Series</span>Waves, Sound and Imaging</a><a class="mf-next" href="/blogs/mri-what-it-sees.html"><span>Next</span>What MRI sees</a></div>
+<!-- CURRICULUM_FOOTER_END -->

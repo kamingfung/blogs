@@ -12,7 +12,7 @@ categories:
 ---
 
 <!-- CURRICULUM_HEADER_START -->
-<div class="mh"><p class="mh-crumb"><a href="/series/forecasting/index.html">Forecasting with Machine Learning</a><span class="sep">·</span>Part 8 · Curves from partial data</p><p class="mh-facts"><span class="lvl lvl-advanced">Advanced</span></p><p class="mh-assumes">Assumes <span class="unwritten" title="not written yet">Growth curves</span> and <span class="unwritten" title="not written yet">Least squares</span>.</p></div>
+<div class="mh"><p class="mh-crumb"><a href="/series/forecasting/index.html">Forecasting with Machine Learning</a><span class="sep">·</span>Part 8 · Curves from partial data</p><p class="mh-facts"><span class="lvl lvl-advanced">Advanced</span></p><p class="mh-assumes">Assumes <span class="unwritten" title="not written yet">Growth curves</span> and <a href="/blogs/least-squares.html">Least squares</a>.</p></div>
 <!-- CURRICULUM_HEADER_END -->
 
 ::: {.callout-note appearance="simple" icon=false}

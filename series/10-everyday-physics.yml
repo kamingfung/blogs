@@ -98,6 +98,7 @@ parts:
       - id: everyday-physics/landauer-s-limit
         title: "Landauer's limit"
         level: intermediate
+        path: blogs/landauer-s-limit.md
       - id: everyday-physics/why-computers-get-hot
         title: "Why computers get hot"
         level: introductory
