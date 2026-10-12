@@ -371,3 +371,4 @@ This is the core reason early-season forecasts of a season total are uncertain, 
 <!-- CURRICULUM_FOOTER_START -->
 <div class="mf"><a class="mf-prev" href="/blogs/curve-fitting-partial-timeseries.html"><span>Previous</span>Fitting a season from its first weeks</a><a class="mf-up" href="/series/forecasting/index.html"><span>Series</span>Forecasting with Machine Learning</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+

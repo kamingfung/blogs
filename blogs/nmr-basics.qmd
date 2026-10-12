@@ -216,3 +216,4 @@ The signal does not last. Its name records what it is: *free* because the transm
 <!-- CURRICULUM_FOOTER_START -->
 <div class="mf"><a class="mf-prev" href="/blogs/fourier-transform-audio.html"><span>Previous</span>The Fourier transform and audio</a><a class="mf-up" href="/series/waves/index.html"><span>Series</span>Waves, Sound and Imaging</a><a class="mf-next" href="/blogs/relaxation-t1-and-t2.html"><span>Next</span>Relaxation: T1 and T2</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+

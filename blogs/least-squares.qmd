@@ -270,3 +270,4 @@ The first row is the one [Fitting a season from its first weeks](curve-fitting-p
 <!-- CURRICULUM_FOOTER_START -->
 <div class="mf"><a class="mf-prev" href="/blogs/ks_test/ks_test.html"><span>Previous</span>The Kolmogorov–Smirnov test</a><a class="mf-up" href="/series/statistics/index.html"><span>Series</span>Statistics</a><a class="mf-next" href="/blogs/p-values/what_a_p_value_is_not.html"><span>Next</span>What a p-value is not</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+

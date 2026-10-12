@@ -219,3 +219,4 @@ The limit is everything that involves the replaced part. With $\delta = 0.001$, 
 <!-- CURRICULUM_FOOTER_START -->
 <div class="mf"><a class="mf-prev" href="/blogs/darts-size-distribution-forecast.html"><span>Previous</span>Forecasting a size distribution</a><a class="mf-up" href="/series/forecasting/index.html"><span>Series</span>Forecasting with Machine Learning</a><a class="mf-next" href="/blogs/lightgbm-cross-entropy-bounded-target.html"><span>Next</span>Cross-entropy for bounded targets</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+

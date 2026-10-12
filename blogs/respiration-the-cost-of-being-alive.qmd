@@ -187,3 +187,4 @@ The handbook's respiration chapter lists blueberries among the **non-climacteric
 <!-- CURRICULUM_FOOTER_START -->
 <div class="mf"><a class="mf-prev" href="/blogs/photosynthesis-in-one-leaf.html"><span>Previous</span>Photosynthesis, in one leaf</a><a class="mf-up" href="/series/plants/index.html"><span>Series</span>Plant biology, one blueberry at a time</a><a class="mf-next" href="/blogs/the-carbon-budget-of-a-bush.html"><span>Next</span>The carbon budget of a bush</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+
