@@ -5,7 +5,7 @@ with [Quarto](https://quarto.org) and deployed to Cloudflare Workers.
 
 This replaced an MkDocs Material site on the same URL. That site is archived,
 read-only, at <https://blogs-mirror.kamingfung.workers.dev>, from the
-`kamingfung/blogs` repository. Content is now authored here.
+`kamingfung/blogs-mkdocs` repository. Content is now authored here.
 
 Old MkDocs URLs keep working: `/blogs/<post>/` redirects to `/blogs/<post>`.
 
