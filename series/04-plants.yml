@@ -19,6 +19,7 @@ parts:
       - id: plants/respiration-the-cost-of-being-alive
         title: "Respiration: the cost of being alive"
         level: introductory
+        path: blogs/respiration-the-cost-of-being-alive.md
         requires: [plants/photosynthesis-in-one-leaf]
       - id: plants/the-carbon-budget-of-a-bush
         title: The carbon budget of a bush

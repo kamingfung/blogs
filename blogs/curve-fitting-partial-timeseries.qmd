@@ -12,7 +12,7 @@ categories:
 ---
 
 <!-- CURRICULUM_HEADER_START -->
-<div class="mh"><p class="mh-crumb"><a href="/series/forecasting/index.html">Forecasting with Machine Learning</a><span class="sep">·</span>Part 8 · Curves from partial data</p><p class="mh-facts"><span class="lvl lvl-advanced">Advanced</span></p><p class="mh-assumes">Assumes <span class="unwritten" title="not written yet">Growth curves</span> and <a href="/blogs/least-squares.html">Least squares</a>.</p></div>
+<div class="mh"><p class="mh-crumb"><a href="/series/forecasting/index.html">Forecasting with Machine Learning</a><span class="sep">·</span>Part 8 · Curves from partial data</p><p class="mh-facts"><span class="lvl lvl-advanced">Advanced</span></p><p class="mh-assumes">Assumes <a href="/blogs/growth-curves.html">Growth curves</a> and <a href="/blogs/least-squares.html">Least squares</a>.</p></div>
 <!-- CURRICULUM_HEADER_END -->
 
 ::: {.callout-note appearance="simple" icon=false}
@@ -586,6 +586,6 @@ html`<div style="font-size:0.9em;background:rgba(56,189,248,0.1);border-left:4px
 [^3]: Boyd, S. & Vandenberghe, L. *Convex Optimization*. (Cambridge University Press, Cambridge, 2004). https://doi.org/10.1017/CBO9780511804441
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/lightgbm-cross-entropy-bounded-target.html"><span>Previous</span>Cross-entropy for bounded targets</a><a class="mf-up" href="/series/forecasting/index.html"><span>Series</span>Forecasting with Machine Learning</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/lightgbm-cross-entropy-bounded-target.html"><span>Previous</span>Cross-entropy for bounded targets</a><a class="mf-up" href="/series/forecasting/index.html"><span>Series</span>Forecasting with Machine Learning</a><a class="mf-next" href="/blogs/growth-curves.html"><span>Next</span>Growth curves</a></div>
 <!-- CURRICULUM_FOOTER_END -->
 

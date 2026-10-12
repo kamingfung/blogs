@@ -100,6 +100,6 @@ Leakage of this kind is invisible in the training score and only partly visible 
 - A target lag of $k$ steps back from the target time is safe only if $k \geq h + d$; index lags from the origin to make that automatic, and never feed observed future drivers into a backtest.
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-up" href="/series/forecasting/index.html"><span>Series</span>Forecasting with Machine Learning</a><a class="mf-next" href="/blogs/forecast/1_feature_engineering.html"><span>Next</span>Feature engineering with feature_engine</a></div>
+<div class="mf"><a class="mf-up" href="/series/forecasting/index.html"><span>Series</span>Forecasting with Machine Learning</a><a class="mf-next" href="/blogs/leakage/leakage.html"><span>Next</span>Leakage</a></div>
 <!-- CURRICULUM_FOOTER_END -->
 
