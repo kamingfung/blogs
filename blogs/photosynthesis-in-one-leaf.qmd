@@ -64,6 +64,6 @@ RuBisCO is the least selective enzyme a plant depends on. It cannot fully distin
 - Every gram of fruit a bush grows is downstream of this leaf-level chemistry; the next module turns it into a whole-plant carbon budget.
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-up" href="/series/plants/index.html"><span>Series</span>Plant biology, one blueberry at a time</a><a class="mf-next" href="/blogs/the-carbon-budget-of-a-bush.html"><span>Next</span>The carbon budget of a bush</a></div>
+<div class="mf"><a class="mf-up" href="/series/plants/index.html"><span>Series</span>Plant biology, one blueberry at a time</a><a class="mf-next" href="/blogs/respiration-the-cost-of-being-alive.html"><span>Next</span>Respiration: the cost of being alive</a></div>
 <!-- CURRICULUM_FOOTER_END -->
 

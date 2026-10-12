@@ -1,0 +1,374 @@
+---
+title: Growth curves
+description: The logistic, Gompertz and Richards curves, what each parameter means, and why a curve fitted to the first weeks of a season cannot yet say where it will level off.
+date: 2026-10-12
+categories:
+- time series
+- statistics
+- agriculture
+- data science
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/forecasting/index.html">Forecasting with Machine Learning</a><span class="sep">·</span>Part 8 · Curves from partial data</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Python and pandas. Basic statistics. No prior forecasting.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Cumulative harvest, canopy cover and fruit size often trace an S: a slow start, a fast middle and a plateau. Three curve families describe that S with a handful of parameters: an asymptote $K$, the level the curve approaches; a rate $r$; an inflection time $t_m$, when growth is fastest; and, for the Richards curve, a shape $\nu$ that sets how high the inflection sits. The logistic inflects at half its asymptote, the Gompertz at $1/e \approx 0.368$ of it, and the Richards anywhere in between or beyond. The weekly amount, such as harvest per week, is the slope of the cumulative curve, so it rises and falls as a bell that peaks at the inflection. Fitting any of these curves is a nonlinear least-squares problem, and it has a blind spot: before the data pass the inflection, the early exponential rise looks almost the same for a small asymptote reached early and a large one reached late, so the season total is badly constrained. Afterwards you should be able to write down and interpret each family, fit one with SciPy, and say how much a fit to a partial season can be trusted.
+:::
+
+## S-shaped seasons
+
+A block of fruit trees produces little in the first week of harvest, then a great deal, then the last pickings taper off. Plot the running total of harvest against time and the result is an S. Canopy cover through a season traces the same shape, as does the size of a single fruit ([The growth curve of a berry](the-growth-curve-of-a-berry.qmd)). The common mechanism is that growth is first proportional to what is already there, like compound interest, and later limited by something that runs out: space, light, the fruit left to pick.
+
+Two views of the same season matter for planning. The **cumulative** curve $Y(t)$ is the total so far, and its plateau is the season total. The **rate** is its slope,
+
+$$h(t) = \frac{\mathrm{d}Y}{\mathrm{d}t} \approx Y(w) - Y(w - 1)$$
+
+where $Y$ is cumulative harvest in tonnes per hectare (t/ha), $t$ is time in weeks, $h$ is the harvest rate in t/ha per week, and the right-hand side is the weekly harvest in week $w$, the step between consecutive weekly totals. Where the S is steepest, the rate peaks; that point is the **inflection** of the cumulative curve, where it stops bending upward and starts bending toward its ceiling. Packing labour is planned around the rate's peak, and sales around the cumulative plateau.
+
+## Three curve families
+
+All three families below share three parameters, written so that each has a physical reading:
+
+- $K$, the **asymptote**: the value the curve approaches as $t \to \infty$, in the units of $Y$ (t/ha here). For cumulative harvest it is the season total.
+- $r$, the **rate** parameter, per week: how quickly the curve passes from low to high.
+- $t_m$, the **inflection time**, in weeks: when the rate peaks.
+
+### Logistic
+
+$$Y(t) = \frac{K}{1 + e^{-r(t - t_m)}}$$
+
+where $K$, $r$ and $t_m$ are as defined above. Differentiating gives the rate in a revealing form:
+
+$$\frac{\mathrm{d}Y}{\mathrm{d}t} = rY\left(1 - \frac{Y}{K}\right)$$
+
+The rate is the product of what is there, $Y$, and the room left, $K - Y$. With $Y + (K - Y)$ fixed at $K$, that product is largest when the two are equal, at $Y = K/2$, which happens at $t = t_m$. The peak rate is $r \cdot (K/2) \cdot (1/2) = rK/4$. The curve is symmetric about its inflection: it takes $\ln 9 / r \approx 2.197/r$ weeks to climb from 10% of $K$ to 50%, and the same from 50% to 90%.
+
+### Gompertz
+
+$$Y(t) = K \exp\!\left(-e^{-r(t - t_m)}\right)$$
+
+with the same three parameters. The curve is named after Benjamin Gompertz, whose 1825 law of human mortality has this double-exponential form[^1]; it is now just as often used as a growth curve. Its rate is
+
+$$\frac{\mathrm{d}Y}{\mathrm{d}t} = rY \ln\frac{K}{Y}$$
+
+To find the inflection, set the derivative of $Y \ln(K/Y)$ with respect to $Y$ to zero: $\ln(K/Y) - 1 = 0$, so $Y = K/e$. The Gompertz curve inflects at $e^{-1} = 0.368$ of its asymptote, again at $t = t_m$, and its peak rate is $rK/e$. It is lopsided. Solving $Y/K = \exp(-e^{-r(t - t_m)})$ for $t$ at 10% and 90% of $K$ gives $0.834/r$ weeks from 10% to the inflection and $2.250/r$ weeks from the inflection to 90%, a tail 2.7 times as long as the rise. Since only 36.8% of the total has arrived at the peak, 63.2% comes afterwards.
+
+### Richards
+
+F. J. Richards proposed a more flexible curve for plant growth data, an extension of von Bertalanffy's growth function, intended for empirical fitting[^2]. Written in the same parameters plus one more, it is
+
+$$Y(t) = K\left[1 + \nu\, e^{-r(t - t_m)}\right]^{-1/\nu}$$
+
+where $\nu > 0$ is a dimensionless **shape** parameter and the other symbols are as before. Its rate is
+
+$$\frac{\mathrm{d}Y}{\mathrm{d}t} = \frac{r}{\nu}\, Y\left[1 - \left(\frac{Y}{K}\right)^{\nu}\right]$$
+
+Setting $\nu = 1$ recovers the logistic. Letting $\nu \to 0$, the bracket $[1 - (Y/K)^\nu]/\nu$ tends to $\ln(K/Y)$ and the Gompertz returns. Writing $u = \nu e^{-r(t - t_m)}$, the rate is proportional to $u(1 + u)^{-1/\nu - 1}$, which peaks at $u = \nu$, that is at $t = t_m$, where
+
+$$\frac{Y(t_m)}{K} = (1 + \nu)^{-1/\nu}$$
+
+This fraction is $1/2$ at $\nu = 1$, tends to $e^{-1}$ as $\nu \to 0$, and is $3^{-1/2} = 0.577$ at $\nu = 2$. The shape parameter therefore sets where the inflection sits: a small $\nu$ gives an early, Gompertz-like peak and a long tail, and a large $\nu$ a late peak and an abrupt finish.
+
+| Family | Inflection height $Y(t_m)/K$ | Peak rate | Share of total after the peak |
+|---|---:|---:|---:|
+| Gompertz ($\nu \to 0$) | $e^{-1} = 0.368$ | $rK/e$ | 63.2% |
+| Logistic ($\nu = 1$) | $0.5$ | $rK/4$ | 50% |
+| Richards | $(1 + \nu)^{-1/\nu}$ | $rK(1 + \nu)^{-(1 + \nu)/\nu}$ | $1 - (1 + \nu)^{-1/\nu}$ |
+
+The same curves appear in many other parameterisations, for example with a lag time or a constant $b = e^{r t_m}$ in place of $t_m$. Zwietering and colleagues rewrote the logistic, Gompertz, Richards and two other families so that each parameter is biologically interpretable, and compared them on bacterial growth data[^3]. One trap survives any parameterisation: $r$ means a different thing in each family. With the same $K$ and $r$, the Gompertz peaks at $rK/e$ and the logistic at $rK/4$, so compare peak rates, not values of $r$.
+
+The widget draws all three with $K = 30$ t/ha, $r = 0.45$ per week and $t_m = 10$ weeks, the cumulative curve on top and its rate below.
+
+::: {.sim-card}
+#### Where the S bends
+
+```{ojs}
+//| echo: false
+viewof nu = Inputs.range([0, 3], {value: 0.5, step: 0.05, label: "Richards shape ν"})
+
+// K = 30 t/ha, r = 0.45 per week, tm = week 10 for every curve.
+// ν = 0 is the Gompertz limit; ν = 1 is the logistic.
+richards = (t, v) => v === 0
+  ? 30 * Math.exp(-Math.exp(-0.45 * (t - 10)))
+  : 30 * Math.pow(1 + v * Math.exp(-0.45 * (t - 10)), -1 / v)
+
+// Rate dY/dt = (r/ν) Y [1 − (Y/K)^ν]; its ν → 0 limit is r Y ln(K/Y).
+richardsRate = (t, v) => {
+  const y = richards(t, v);
+  return v === 0 ? 0.45 * y * Math.log(30 / y) : 0.45 / v * y * (1 - Math.pow(y / 30, v));
+}
+
+inflFrac = nu === 0 ? Math.exp(-1) : Math.pow(1 + nu, -1 / nu)
+peakRate = 30 * 0.45 * (nu === 0 ? Math.exp(-1) : Math.pow(1 + nu, -(1 + nu) / nu))
+
+shapeCurves = [["Gompertz", 0], ["Logistic", 1], ["Richards at ν", nu]].flatMap(([name, v]) =>
+  d3.range(0, 25.01, 0.1).map(t => ({t, y: richards(t, v), rate: richardsRate(t, v), name})))
+
+shapeCard = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${shapeCard("Inflection height, share of K", inflFrac.toFixed(3), "#38bdf8")}
+  ${shapeCard("Peak rate", peakRate.toFixed(2) + " t/ha per week", "#38bdf8")}
+  ${shapeCard("Share of total after the peak", (100 * (1 - inflFrac)).toFixed(1) + "%", "#38bdf8")}
+</div>`
+
+shapeColour = ({legend: true, domain: ["Gompertz", "Logistic", "Richards at ν"],
+                range: ["#f59e0b", "#10b981", "#38bdf8"]})
+
+Plot.plot({
+  height: 260,
+  marginLeft: 55,
+  // Plot paints its own white ground otherwise, which the dark card fights.
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, 25], label: "Week →", grid: true},
+  y: {domain: [0, 31], label: "↑ Cumulative (t/ha)", grid: true},
+  color: shapeColour,
+  marks: [
+    Plot.ruleX([10], {stroke: "#64748b", strokeDasharray: "4 4"}),
+    Plot.line(shapeCurves, {x: "t", y: "y", stroke: "name", strokeWidth: d => d.name === "Richards at ν" ? 3 : 2}),
+    Plot.dot([{t: 10, y: 30 * inflFrac}], {x: "t", y: "y", fill: "#38bdf8", stroke: "#0f172a", r: 6})
+  ]
+})
+
+Plot.plot({
+  height: 220,
+  marginLeft: 55,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, 25], label: "Week →", grid: true},
+  y: {domain: [0, 6.5], label: "↑ Rate (t/ha per week)", grid: true},
+  color: {domain: shapeColour.domain, range: shapeColour.range},
+  marks: [
+    Plot.ruleX([10], {stroke: "#64748b", strokeDasharray: "4 4"}),
+    Plot.line(shapeCurves, {x: "t", y: "rate", stroke: "name", strokeWidth: d => d.name === "Richards at ν" ? 3 : 2})
+  ]
+})
+```
+
+The dashed line marks the inflection time $t_m$, the same for every curve. Every rate curve peaks on it, at a different height.
+:::
+
+At the starting setting, $\nu = 0.5$, the inflection sits at $1.5^{-2} = 0.444$ of $K$ and the peak rate is $30 \times 0.45 \times 1.5^{-3} = 4.00$ t/ha per week, between the logistic's $0.45 \times 30/4 = 3.375$ and the Gompertz's $0.45 \times 30/e = 4.97$.
+
+## Fitting part of a season
+
+Given weekly observations $(t_i, y_i)$, fitting a growth curve means choosing its parameters to minimise the sum of squared residuals, exactly as in [Least squares](least-squares.qmd):
+
+$$S(K, r, t_m) = \sum_{i=1}^{n} \left( y_i - Y(t_i; K, r, t_m) \right)^2$$
+
+where $y_i$ is the observed cumulative value in week $t_i$, $Y(t_i; K, r, t_m)$ is the curve's value there, and $n$ is the number of weeks observed. Because $r$ and $t_m$ sit inside an exponential, there are no closed-form normal equations. The standard method, Gauss–Newton, replaces the curve by its tangent plane at the current guess, solves that linear least-squares problem for a step, and repeats. Levenberg–Marquardt adds a damping term that shortens the step whenever the linearisation misleads, and it is what SciPy's `curve_fit` uses by default when no bounds are given.
+
+Iterative methods need a starting guess, and a poor one can stall in the wrong valley. One parameter helps: $K$ enters the logistic linearly, as $K \cdot g(t)$ with $g(t) = 1/(1 + e^{-r(t - t_m)})$. For fixed $r$ and $t_m$ the best $K$ is therefore a one-parameter least-squares fit, $\hat{K} = \sum y_i g_i / \sum g_i^2$, with $g_i = g(t_i)$. Scanning a grid of $(r, t_m)$ values with $K$ solved exactly at each gives a dependable start.
+
+```python
+import numpy as np
+from scipy.optimize import curve_fit
+
+# Synthetic cumulative harvest (t/ha), weeks 1-20: a logistic with K = 30,
+# r = 0.45, tm = 10, plus noise of standard deviation 0.5.
+harvest = np.array([0.68, 1.21, 1.40, 1.24, 3.31, 4.48, 5.91, 8.96, 11.86, 15.15,
+                    18.33, 21.60, 23.45, 25.66, 26.90, 28.41, 28.79, 29.05, 29.10, 29.54])
+weeks = np.arange(1, 21)
+
+def logistic(t, K, r, tm):
+    return K / (1 + np.exp(-r * (t - tm)))
+
+for n in (8, 12):
+    t, y = weeks[:n], harvest[:n]
+    p, cov = curve_fit(logistic, t, y, p0=[2 * y[-1], 0.5, n])
+    se = np.sqrt(np.diag(cov))
+    print(f"{n} weeks: K = {p[0]:.1f} ± {se[0]:.1f} t/ha, tm = {p[2]:.1f} ± {se[2]:.1f} weeks")
+```
+
+```
+8 weeks: K = 446.8 ± 10717.1 t/ha, tm = 18.3 ± 67.5 weeks
+12 weeks: K = 30.8 ± 2.0 t/ha, tm = 10.1 ± 0.3 weeks
+```
+
+The data are synthetic: a logistic season with $K = 30$ t/ha, $r = 0.45$ per week and $t_m = 10$ weeks, plus independent normal noise of standard deviation $\sigma = 0.5$ t/ha drawn with a fixed seed. With twelve weeks the fit lands within 1 t/ha of the true total. With eight it forecasts a season total of 447 t/ha, about fifteen times the truth, and the reported standard error, $10{,}717$ t/ha, says the fit knows almost nothing. That figure rests on the tangent-plane approximation, which breaks down when the uncertainty is this large, so the widget measures it a sturdier way.
+
+For each candidate asymptote $K$ it refits $r$ and $t_m$ with $K$ held fixed, and keeps every $K$ whose best sum of squares is within $3.84\,\sigma^2 = 0.96$ (t/ha)² of the overall minimum. The cut-off comes from the likelihood in [Least squares](least-squares.qmd): with normal errors, the log-likelihood falls by $\Delta S / (2\sigma^2)$ when $S$ rises by $\Delta S$, and 3.84 is the 95th percentile of a chi-squared distribution with one degree of freedom, the usual threshold for twice a log-likelihood drop. The result, the **plausible range**, is an approximate 95% interval for $K$. Here $\sigma$ is known because the noise was generated; in practice it has to be estimated from the residuals, which adds uncertainty of its own.
+
+::: {.sim-card}
+#### Fit the first weeks
+
+```{ojs}
+//| echo: false
+viewof nObs = Inputs.range([5, 20], {value: 8, step: 1, label: "Weeks observed"})
+
+// Synthetic cumulative harvest (t/ha), weeks 1–20: logistic K = 30, r = 0.45,
+// tm = 10, plus normal noise with σ = 0.5 (numpy seed 1), rounded to 0.01.
+harvest = [0.68, 1.21, 1.40, 1.24, 3.31, 4.48, 5.91, 8.96, 11.86, 15.15,
+           18.33, 21.60, 23.45, 25.66, 26.90, 28.41, 28.79, 29.05, 29.10, 29.54]
+sigma = 0.5
+
+logistic = (t, K, r, tm) => K / (1 + Math.exp(-r * (t - tm)))
+sse = (t, y, K, r, tm) => d3.sum(t, (ti, i) => (y[i] - logistic(ti, K, r, tm)) ** 2)
+
+// Gaussian elimination with partial pivoting for the 2×2 or 3×3 step.
+solve = (A, b) => {
+  const n = b.length, M = A.map((row, i) => [...row, b[i]]);
+  for (let c = 0; c < n; c++) {
+    let p = c;
+    for (let r = c + 1; r < n; r++) if (Math.abs(M[r][c]) > Math.abs(M[p][c])) p = r;
+    [M[c], M[p]] = [M[p], M[c]];
+    for (let r = c + 1; r < n; r++) {
+      const f = M[r][c] / M[c][c];
+      for (let k = c; k <= n; k++) M[r][k] -= f * M[c][k];
+    }
+  }
+  const x = Array(n).fill(0);
+  for (let r = n - 1; r >= 0; r--) {
+    let s = M[r][n];
+    for (let k = r + 1; k < n; k++) s -= M[r][k] * x[k];
+    x[r] = s / M[r][r];
+  }
+  return x;
+}
+
+// Levenberg–Marquardt on p = [K, r, tm]. With fixK, K stays put and only r, tm move.
+lm = (t, y, p, fixK = false) => {
+  let S = sse(t, y, ...p), lambda = 1e-3;
+  for (let it = 0; it < 300; it++) {
+    const J = t.map(ti => {
+      const g = 1 / (1 + Math.exp(-p[1] * (ti - p[2]))), h = p[0] * g * (1 - g);
+      const row = [g, h * (ti - p[2]), -h * p[1]];
+      return fixK ? row.slice(1) : row;
+    });
+    const res = t.map((ti, i) => y[i] - logistic(ti, ...p));
+    const m = J[0].length;
+    const A = d3.range(m).map(a => d3.range(m).map(b => d3.sum(J, row => row[a] * row[b])));
+    const g = d3.range(m).map(a => d3.sum(J, (row, i) => row[a] * res[i]));
+    let improved = false;
+    while (lambda < 1e12) {
+      const step = solve(A.map((row, a) => row.map((v, b) => a === b ? v * (1 + lambda) : v)), g);
+      const q = fixK ? [p[0], p[1] + step[0], p[2] + step[1]] : p.map((v, a) => v + step[a]);
+      const Sq = sse(t, y, ...q);
+      if (Sq < S) {
+        improved = S - Sq > 1e-12 * (1 + S);
+        p = q; S = Sq; lambda = Math.max(lambda / 3, 1e-12);
+        break;
+      }
+      lambda *= 4;
+    }
+    if (!improved) break;
+  }
+  return {K: p[0], r: p[1], tm: p[2], S};
+}
+
+// Starting points from a coarse (r, tm) grid. For fixed r and tm the curve is
+// linear in K, so each grid point needs only three sums.
+gridSums = (t, y) => {
+  const pts = [];
+  for (let i = 0; i < 73; i++) for (let j = 0; j < 191; j++) {
+    const r = 0.05 + 0.02 * i, tm = 2 + 0.2 * j;
+    let syg = 0, sgg = 0, syy = 0;
+    t.forEach((ti, k) => {
+      const g = 1 / (1 + Math.exp(-r * (ti - tm)));
+      syg += y[k] * g; sgg += g * g; syy += y[k] * y[k];
+    });
+    pts.push({r, tm, syg, sgg, syy});
+  }
+  return pts;
+}
+gridStart = (pts, Kfixed) => {
+  let best = null, bestS = Infinity;
+  for (const p of pts) {
+    const K = Kfixed ?? p.syg / p.sgg, S = p.syy - 2 * K * p.syg + K * K * p.sgg;
+    if (S < bestS) { bestS = S; best = [K, p.r, p.tm]; }
+  }
+  return best;
+}
+
+partial = {
+  const t = d3.range(1, nObs + 1), y = harvest.slice(0, nObs), pts = gridSums(t, y);
+  const fit = lm(t, y, gridStart(pts));
+  // Profile: best fit with K held at 1, 2, ..., 300 t/ha.
+  const prof = d3.range(1, 301).map(K => lm(t, y, gridStart(pts, K), true));
+  const inside = prof.filter(d => d.S <= fit.S + 3.84 * sigma ** 2);
+  return {fit, lo: inside[0], hi: inside[inside.length - 1]};
+}
+
+fitCard = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${fitCard("Fitted asymptote", partial.fit.K > 1000 ? "no finite fit" : partial.fit.K.toFixed(1) + " t/ha", "#38bdf8")}
+  ${fitCard("Plausible range", partial.lo.K.toFixed(0) + (partial.hi.K >= 300 ? " to above 300" : " to " + partial.hi.K.toFixed(0)) + " t/ha", "#f59e0b")}
+  ${fitCard("True asymptote", "30 t/ha", "#cbd5e1")}
+</div>`
+
+curveOf = (p, kind) => d3.range(0, 20.01, 0.1).map(t => ({t, y: logistic(t, p.K, p.r, p.tm), kind}))
+
+weekly = harvest.map((y, i) => ({t: i + 1, y, seen: i < nObs}))
+
+Plot.plot({
+  height: 340,
+  marginLeft: 55,
+  // Plot paints its own white ground otherwise, which the dark card fights.
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, 20.5], label: "Week →", grid: true},
+  y: {domain: [0, 45], label: "↑ Cumulative harvest (t/ha)", grid: true},
+  color: {legend: true, domain: ["Truth", "Fit", "Range ends", "Observed"],
+          range: ["#64748b", "#38bdf8", "#f59e0b", "#cbd5e1"]},
+  marks: [
+    Plot.ruleX([nObs + 0.5], {stroke: "#ef4444", strokeDasharray: "5 4"}),
+    Plot.line(curveOf({K: 30, r: 0.45, tm: 10}, "Truth"), {x: "t", y: "y", stroke: "kind", strokeWidth: 2, strokeDasharray: "6 4"}),
+    Plot.line(curveOf(partial.lo, "Range ends"), {x: "t", y: "y", stroke: "kind", strokeWidth: 1.5, clip: true}),
+    Plot.line(curveOf(partial.hi, "Range ends"), {x: "t", y: "y", stroke: "kind", strokeWidth: 1.5, clip: true}),
+    Plot.line(curveOf(partial.fit, "Fit"), {x: "t", y: "y", stroke: "kind", strokeWidth: 3, clip: true}),
+    Plot.dot(weekly.filter(d => !d.seen), {x: "t", y: "y", stroke: "#64748b", strokeWidth: 1.5, r: 4}),
+    Plot.dot(weekly.filter(d => d.seen), {x: "t", y: "y", fill: () => "Observed", stroke: "#0f172a", strokeWidth: 1.5, r: 5})
+  ]
+})
+```
+
+Filled points are observed; hollow ones are the rest of the season, unseen by the fit. The amber curves are the best fits with $K$ held at each end of the plausible range; when the range has no upper end, the upper curve is the one at the 300 t/ha search limit.
+:::
+
+## Why the asymptote waits for the inflection
+
+Slide from 7 weeks to 12 and the fitted season total goes $18.7$, then about $450$, $38.6$, $31.7$, $29.7$ and $30.8$ t/ha. At 8 weeks the widget's fit sits near 450 t/ha and SciPy's at 447, with sums of squares equal to four decimal places: the surface is so flat along one direction that two optimisers stop at different points and neither is wrong. Through week 9 the plausible range has no upper end below the widget's 300 t/ha search limit; at 8 weeks it runs from 13 upward. Add week 11 and it closes to 24–47 t/ha, and by week 14 it is 28–32. The true inflection is at week 10, at 15 t/ha. The range closes when the data pass it.
+
+The algebra says why. Before the inflection, $e^{-r(t - t_m)}$ is large, so the 1 in the logistic's denominator hardly matters:
+
+$$Y(t) \approx K e^{r(t - t_m)} = \left(K e^{-r t_m}\right) e^{rt}$$
+
+The early season reveals $r$ and the single product $K e^{-r t_m}$, not $K$ and $t_m$ separately. Double $K$ and delay the inflection by $\ln 2 / r$ and the early curve is unchanged. For this season that means $K = 60$ with $t_m = 10 + \ln 2 / 0.45 = 11.54$ weeks: through week 5 the two curves differ by at most $0.14$ t/ha, under a third of the noise, yet by week 20 they differ by $29.0$ t/ha.
+
+The error of this approximation is known exactly. Rearranging the logistic gives $K e^{r(t - t_m)} = Y / (1 - Y/K)$, so the pure exponential overstates the curve by a factor $1/(1 - Y/K)$: 11% when the season is a tenth done, 33% at a quarter, double at half. The fit can learn $K$ only through this bending away from exponential growth, and the bending is small until $Y$ is a sizeable fraction of $K$. Past the inflection the curvature changes sign and the approach to the ceiling is in the data, which pins $K$. The same argument holds for the Gompertz and Richards curves, with two differences: their inflection height differs, and for the Richards curve the shape $\nu$ describes the asymmetry between the rise and the tail, which a fit cannot see until it has data on both sides of the peak.
+
+This is the core reason early-season forecasts of a season total are uncertain, and the useful responses follow from it:
+
+- **Report the range, not the point.** Before the inflection, a single fitted $K$ is close to arbitrary; the plausible range is the honest output.
+- **Bring in information the early data lack.** Past seasons can supply the shape, so that only a few adjustments, such as scale, timing and speed, are fitted to this season. That is what [Fitting a season from its first weeks](curve-fitting-partial-timeseries.qmd) does by morphing a historical template, with a penalty that keeps the fit near it. An independent estimate of the season total, such as a pre-season crop estimate, can constrain $K$ directly.
+- **Check the error model.** The synthetic noise here is independent from week to week, which suits a measured quantity such as canopy cover. A cumulative total built by adding up noisy weekly harvests carries each week's error into every later week, so its errors are correlated and a range computed as above is likely too narrow. Fitting the weekly amounts to the rate curve sidesteps that, provided each week's error is independent.
+
+## Key takeaways
+
+- Logistic, Gompertz and Richards curves describe S-shaped seasonal quantities with an asymptote $K$, a rate $r$, an inflection time $t_m$ and, for Richards, a shape $\nu$.
+- The inflection sits at $(1 + \nu)^{-1/\nu}$ of the asymptote: $1/2$ for the logistic ($\nu = 1$), $e^{-1} = 0.368$ for the Gompertz ($\nu \to 0$).
+- The weekly amount is the slope of the cumulative curve, a bell that peaks at the inflection. The Gompertz bell is skewed, with 63.2% of the total arriving after its peak.
+- $r$ means different things in different families; compare peak rates, $rK/4$ for the logistic and $rK/e$ for the Gompertz.
+- Fit by nonlinear least squares from a good start; for fixed $r$ and $t_m$, $K$ has a closed form, which makes a grid search for the start cheap.
+- Before the data pass the inflection, they constrain only $r$ and $K e^{-r t_m}$, so the asymptote, and with it the season total, is badly determined. Report a range, or add information from past seasons or an outside estimate.
+
+## References
+
+[^1]: Gompertz, B. On the nature of the function expressive of the law of human mortality, and on a new mode of determining the value of life contingencies. *Phil. Trans. R. Soc. Lond.* **115**, 513–583 (1825). https://doi.org/10.1098/rstl.1825.0026
+[^2]: Richards, F. J. A flexible growth function for empirical use. *J. Exp. Bot.* **10**, 290–301 (1959). https://doi.org/10.1093/jxb/10.2.290
+[^3]: Zwietering, M. H., Jongenburger, I., Rombouts, F. M. & van 't Riet, K. Modeling of the bacterial growth curve. *Appl. Environ. Microbiol.* **56**, 1875–1881 (1990). https://doi.org/10.1128/aem.56.6.1875-1881.1990
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/curve-fitting-partial-timeseries.html"><span>Previous</span>Fitting a season from its first weeks</a><a class="mf-up" href="/series/forecasting/index.html"><span>Series</span>Forecasting with Machine Learning</a></div>
+<!-- CURRICULUM_FOOTER_END -->
+

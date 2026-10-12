@@ -1,0 +1,190 @@
+---
+title: "Respiration: the cost of being alive"
+description: Every living cell in a blueberry bush burns sugar for energy, day and night, and a picked berry keeps doing it with nothing left to replace what it burns.
+date: 2026-10-12
+categories:
+- plant biology
+- biochemistry
+- horticulture
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/plants/index.html">Plant biology, one blueberry at a time</a><span class="sep">·</span>Part 1 · What a plant is doing all day</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">Assumes <a href="/blogs/photosynthesis-in-one-leaf.html">Photosynthesis, in one leaf</a>.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Respiration is the plant oxidising its own sugar back to $\text{CO}_2$ and water to make ATP. On paper it is photosynthesis run backwards; in the cell it is a different pathway, running in the cytosol and the mitochondria of every living cell, in light and in darkness. Plant physiologists split it into growth respiration, the cost of building new tissue, and maintenance respiration, the cost of keeping existing tissue alive, though how cleanly the two separate is still argued. Together they spend a large share of what photosynthesis fixes: in surveyed forests, close to half on average. Respiration speeds up roughly exponentially with temperature, a dependence summarised by $Q_{10}$, the factor by which the rate rises for every 10 °C. That matters most after harvest. A picked blueberry has no photosynthesis left, so everything it respires comes out of the sugar and acid it was picked with, about twelve times faster at 20 °C than at 0 °C. Afterwards you should be able to balance the respiration equation, use $Q_{10}$ to compare rates at two temperatures, and explain why cooling comes first after picking.
+:::
+
+## Photosynthesis backwards, on paper only
+
+[Photosynthesis, in one leaf](photosynthesis-in-one-leaf.qmd) ended with sugar. Respiration is what the plant does with most of it. In bookkeeping terms the overall reaction is the photosynthesis equation reversed:
+
+$$\text{C}_6\text{H}_{12}\text{O}_6 + 6\text{O}_2 \longrightarrow 6\text{CO}_2 + 6\text{H}_2\text{O}$$
+
+where $\text{C}_6\text{H}_{12}\text{O}_6$ is a hexose sugar such as glucose. The equation balances: six carbons, twelve hydrogens and eighteen oxygens on each side. By mass, burning 180 g of glucose releases 264 g of $\text{CO}_2$, so every gram of $\text{CO}_2$ a tissue gives off stands for $180/264 = 0.68$ g of sugar gone.
+
+The mechanism is not photosynthesis in reverse. No light is involved, and none of the photosynthetic machinery runs backwards. Glycolysis in the cytosol splits each sugar into two three-carbon pyruvate molecules. Inside the mitochondria, pyruvate dehydrogenase and then the citric acid cycle strip the remaining carbon off as $\text{CO}_2$ and loads the released electrons onto carriers, mainly NADH. Those electrons then pass along an electron transport chain in the inner mitochondrial membrane to oxygen, which becomes water. The chain pumps protons as it goes, and ATP synthase spends that proton gradient to make ATP. Part of the energy in the sugar is captured in ATP and the rest leaves as heat.
+
+```{mermaid}
+flowchart LR
+    S["Sugar<br/>(from photosynthesis or storage)"] --> G["Glycolysis<br/>cytosol"]
+    G -->|"pyruvate"| K["Citric acid cycle<br/>mitochondrial matrix"]
+    K -->|"CO₂ released"| C["CO₂ out"]
+    K -->|"NADH"| E["Electron transport chain<br/>inner mitochondrial membrane"]
+    O["O₂ in"] --> E
+    E -->|"H⁺ gradient"| A["ATP synthase<br/>ATP + heat"]
+    E -->|"O₂ reduced"| W["H₂O"]
+
+    class S ochre
+    class G sage
+    class K olive
+    class C rust
+    class E indigo
+    class O sienna
+    class A plum
+    class W c2
+    classDef c2 fill:#d69a2e,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+    classDef indigo fill:#1d4a62,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef sienna fill:#6c2b27,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef plum fill:#48304a,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef rust fill:#a04b2d,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef olive fill:#5b6e34,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef ochre fill:#d69a2e,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+    classDef sage fill:#95a87f,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+```
+
+ATP is not the only product. Respiration also supplies the carbon skeletons and the reducing power, in the form of NAD(P)H, that a cell needs to build amino acids, lipids and cell walls[^1]. That is why respiration runs in every living cell: in roots, woody stems, flowers and fruit, which fix little or no carbon of their own, and in leaves at night. A leaf in sunlight respires while it photosynthesises, so what a leaf gas-exchange instrument reports as net photosynthesis is already gross fixation minus the leaf's own respiration and photorespiration.
+
+## Growth and maintenance
+
+The question for a whole plant is how much of its fixed carbon respiration takes. The framework behind many crop and ecosystem models started with an empirical equation that McCree fitted to measurements of whole plants in 1970[^2]:
+
+$$R = k\,P + c\,W$$
+
+where $R$ is the plant's respiration over 24 hours ($\text{kg CO}_2\ \text{m}^{-2}\ \text{d}^{-1}$), $P$ is its gross photosynthesis over the same day (same units), $W$ is plant mass expressed as $\text{CO}_2$ equivalents ($\text{kg CO}_2\ \text{m}^{-2}$), $k$ is a dimensionless coefficient and $c$ is a coefficient with units of $\text{d}^{-1}$. McCree's fitted values were $k = 0.25$ and $c = 0.015\ \text{d}^{-1}$.
+
+The usual reading splits the right-hand side in two. The $kP$ term is **growth respiration**: the cost of converting new sugar into structure, so it rises and falls with how much sugar is coming in. The $cW$ term is **maintenance respiration**: the cost of keeping existing tissue working, so it scales with how much tissue there is, whether or not the plant grows. Amthor's review of the 30 years that followed lists the processes respiration pays for: building new structural biomass, moving sugar from sources to sinks, taking up ions from the soil, assimilating nitrogen and sulfur into organic compounds, turning over proteins, and holding ion gradients across membranes. A share may also be wasted, through futile cycles and electron transport that does not make ATP. Building new biomass is the core of growth respiration, and protein turnover and ion gradients are the core of maintenance, but transport and uptake costs do not sort neatly into either. That is one reason for the more general approach Amthor reviews, which assigns respiration to each process separately.
+
+Dividing McCree's equation by $P$ shows why the split matters for a budget. With illustrative values, not measurements of any crop: a plant that fixes 10% of its own mass per day ($P/W = 0.1\ \text{d}^{-1}$) respires $R/P = 0.25 + 0.015/0.1 = 0.40$ of what it fixes. The same plant in a dull week, or a larger plant with the same leaf area, fixing 3% of its mass per day, respires $0.25 + 0.015/0.03 = 0.75$. The maintenance bill does not shrink when photosynthesis does. [The carbon budget of a bush](the-carbon-budget-of-a-bush.qmd) builds on exactly this: net carbon gain is gross photosynthesis minus maintenance respiration minus growth respiration.
+
+The split is a model, not two separately measurable processes. Thornley, whose 2011 paper is the source of McCree's values above, argues that the biochemistry of a growing cell and a non-growing one is the same, that reading $c$ as a maintenance requirement is a mistake, and that a maintenance rate emerges from a model without one built in. His model also gives a steady-state ratio of respiration to gross photosynthesis of 0.4, which fits the view, argued in Gifford's review of respiration in productivity models, that this ratio is fairly conservative across plants and conditions[^3]. Measurements show how loose "fairly" is. A survey of 60 forest estimates from 26 papers found that, across all forests, net primary production, the carbon left after the trees' own respiration, rose with gross primary production with a slope of 0.53. Respiration therefore took roughly $1 - 0.53 = 0.47$ of what was fixed, but the ratio of the two ranged from 0.23 to 0.83 between forest types, so respiration's share ranged from 17% to 77%, and it rose as stands aged[^4]. No comparable survey for blueberry bushes is cited here; the forest figures show the scale, not a blueberry value.
+
+## Temperature and the Q10
+
+Respiration is a chain of enzyme reactions, and over the range a plant normally lives in, it speeds up roughly exponentially with temperature. The standard summary is the $Q_{10}$ form:
+
+$$R(T) = R_\text{ref}\, Q_{10}^{\,(T - T_\text{ref})/10}$$
+
+where $R(T)$ is the respiration rate at temperature $T$ (for fruit, typically in $\text{mg CO}_2\ \text{kg}^{-1}\ \text{h}^{-1}$), $R_\text{ref}$ is the rate measured at a reference temperature $T_\text{ref}$, both temperatures are in °C, and $Q_{10}$ is dimensionless: the factor by which the rate multiplies for each 10 °C rise. The same curve can be written $R(T) = R_\text{ref}\, e^{\beta (T - T_\text{ref})}$ with $\beta = \ln Q_{10} / 10$ per °C.
+
+$Q_{10} = 2$ means the rate doubles every 10 °C. Then a 5 °C rise multiplies it by $2^{0.5} = 1.41$, a 10 °C rise by 2, and a 20 °C rise by $2^2 = 4$. With $Q_{10} = 3$, the same 20 °C rise multiplies the rate by $3^2 = 9$. Small differences in $Q_{10}$ compound quickly over the range between a cold store and a warm afternoon.
+
+$Q_{10} = 2$ is the value most often assumed, but $Q_{10}$ is not a constant. It falls roughly linearly as temperature rises, because control of the rate shifts from the maximum activity of the respiratory enzymes at low temperature to the supply of substrate at high temperature. Plants also **acclimate**: respiration adjusts to the temperature a plant grows in, which makes it less sensitive to a lasting change in temperature than a short-term $Q_{10}$ would predict[^5]. A $Q_{10}$ measured over a few hours is therefore a poor guide to how a bush will respond to a warmer season, a point that also matters for carbon-cycle models.
+
+## After harvest
+
+Picking a berry cuts it off from the bush's supply of sugar, but it does not stop it being alive. Its cells keep respiring, and with no photosynthesis to replace what they burn, every molecule of $\text{CO}_2$ the berry gives off comes out of the sugar and organic acids it was carrying when it was picked. Across fresh produce, storage life generally varies inversely with respiration rate: the faster a commodity respires, the more perishable it tends to be, and the substrate it consumes is lost sweetness and food value[^6].
+
+The USDA's storage handbook tabulates blueberry respiration at six temperatures[^7]:
+
+| Temperature (°C) | 0 | 5 | 10 | 15 | 20 | 25 |
+|---|---|---|---|---|---|---|
+| Respiration ($\text{mg CO}_2\ \text{kg}^{-1}\ \text{h}^{-1}$) | 6 | 11 | 29 | 48 | 70 | 101 |
+| Ratio to 0 °C | 1.00 | 1.83 | 4.83 | 8.00 | 11.67 | 16.83 |
+
+The handbook describes these as approximate or average values; its blueberry chapter gives a range of 2 to 10 at 0 °C alone, so individual lots will differ. Read as averages, a berry at 20 °C respires $70/6 = 11.7$ times as fast as one at 0 °C. If all of that $\text{CO}_2$ came from hexose sugar, a kilogram of berries would lose $70 \times 0.68 = 48$ mg of sugar per hour at 20 °C, or $1.1$ g per day, against $6 \times 0.68 = 4.1$ mg per hour, or $0.10$ g per day, at 0 °C. Some of the substrate is organic acid rather than sugar, so these are approximate; the ratio between the two temperatures is the robust part.
+
+The table also shows $Q_{10}$ changing with temperature. Between 0 and 10 °C it is $29/6 = 4.8$; between 10 and 20 °C it is $70/29 = 2.4$; and between 15 and 25 °C it is $101/48 = 2.1$. Fruit respiration is most sensitive to temperature in exactly the range between a cold room and a cool day, which is the range a pallet passes through on its way from the field. In the widget below, the line is the $Q_{10}$ model with the reference at 0 °C and the points are the handbook ratios. On the logarithmic axis a constant $Q_{10}$ is a straight line, and the handbook points bend away from any single one.
+
+::: {.sim-card}
+#### Respiration rate against temperature
+
+```{ojs}
+//| echo: false
+viewof temp = Inputs.range([0, 30], {value: 20, step: 0.5, label: "Fruit temperature T (°C)"})
+viewof q10 = Inputs.range([1.5, 5], {value: 2, step: 0.1, label: "Q10"})
+
+// USDA Agriculture Handbook 66 (2016), Table 1, blueberry: mg CO2 per kg per hour.
+handbook = [
+  {T: 0, r: 6}, {T: 5, r: 11}, {T: 10, r: 29},
+  {T: 15, r: 48}, {T: 20, r: 70}, {T: 25, r: 101}
+]
+rRef = 6  // rate at the reference temperature, 0 °C
+
+// Q10 model, relative to 0 °C.
+rel = T => q10 ** (T / 10)
+
+// Sugar burned if all CO2 came from hexose: 180 g sugar per 264 g CO2.
+sugarPerDay = T => rRef * rel(T) * (180 / 264) * 24 / 1000  // g per kg per day
+
+tabulated = handbook.find(d => d.T === temp)
+
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${card("Model rate relative to 0 °C", rel(temp).toFixed(2) + "×", "#38bdf8")}
+  ${card("Model sugar respired", sugarPerDay(temp).toFixed(2) + " g per kg per day", "#38bdf8")}
+  ${card("Handbook ratio at this T", tabulated ? (tabulated.r / rRef).toFixed(2) + "×" : "not tabulated", "#10b981")}
+</div>`
+
+Plot.plot({
+  height: 340,
+  marginLeft: 55,
+  // Plot paints its own white ground otherwise, which the dark card fights.
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, 30], label: "Fruit temperature (°C) →", grid: true},
+  y: {type: "log", domain: [0.5, 200], label: "↑ Respiration relative to 0 °C", grid: true},
+  color: {legend: true,
+          domain: ["Q10 model", "Handbook blueberry", "Current setting"],
+          range: ["#38bdf8", "#10b981", "#ef4444"]},
+  marks: [
+    Plot.line(d3.range(0, 30.01, 0.5).map(T => ({T, y: rel(T)})),
+              {x: "T", y: "y", stroke: () => "Q10 model", strokeWidth: 2.5}),
+    Plot.dot(handbook, {x: "T", y: d => d.r / rRef, fill: () => "Handbook blueberry",
+                        stroke: "#0f172a", strokeWidth: 1.5, r: 5}),
+    Plot.dot([{T: temp, y: rel(temp)}], {x: "T", y: "y", fill: () => "Current setting",
+                                         stroke: "#0f172a", strokeWidth: 1.5, r: 6})
+  ]
+})
+```
+
+The sugar readout scales the 0 °C handbook rate by the model and assumes all respired carbon is sugar.
+:::
+
+At the default $Q_{10} = 2$, 20 °C reads 4.00 times the 0 °C rate, or 0.39 g of sugar per kg per day, well under the handbook's 11.67. Raising $Q_{10}$ to 3.4 brings the model to 11.56 at 20 °C, close to the handbook, but then it overshoots at 25 °C, where $3.4^{2.5} = 21.3$ against the handbook's 16.83. No single $Q_{10}$ fits blueberry respiration from 0 to 25 °C; a one-parameter curve can match two points and miss the rest.
+
+This is why cooling is the first thing done after picking. Field heat left in a berry keeps it respiring several times faster than it would in a cold room, burning through the sugar it will be judged on. The handbook's blueberry chapter recommends forced-air cooling to below 10 °C and refrigeration at 0 to 3 °C within an hour of harvest, and storage at −0.5 to 0 °C above 90% relative humidity, for up to two weeks for lowbush and highbush types. Respiration is not the only thing cold slows: the same chapter names water loss, seen as shrivel, as a major disorder, and notes that the *Rhizopus* rot fungus grows readily above 10 °C[^8]. Cooling buys time on all three.
+
+The handbook's respiration chapter lists blueberries among the **non-climacteric** fruits, those without a burst of respiration and ethylene during ripening. The classification is less settled than that list suggests. A 2025 systematic review found that several studies reported a respiration peak as northern highbush, southern highbush and lowbush berries change colour, that ethylene behaviour varies between genotypes, and concluded that a unified classification of blueberry ripening is premature. It also reports an early finding that cultivars with lower respiration rates kept their postharvest quality better[^9]. Neither point changes the arithmetic above: once picked, whatever the berry respires comes out of a fixed store, and temperature sets how fast.
+
+## Key takeaways
+
+- Respiration oxidises sugar to $\text{CO}_2$ and water, $\text{C}_6\text{H}_{12}\text{O}_6 + 6\text{O}_2 \rightarrow 6\text{CO}_2 + 6\text{H}_2\text{O}$, making ATP, reducing power and carbon skeletons. It runs in every living cell, in light and in darkness, through glycolysis, the citric acid cycle and mitochondrial electron transport.
+- Growth respiration scales with how much new tissue is being built; maintenance respiration scales with how much tissue already exists. McCree's $R = kP + cW$ is the empirical root of the split, and the split itself remains a modelling convention.
+- Respiration takes a large and variable share of gross photosynthesis: about 0.47 on average across surveyed forests, ranging from 0.17 to 0.77.
+- $R = R_\text{ref}\, Q_{10}^{(T - T_\text{ref})/10}$. $Q_{10} = 2$ doubles the rate every 10 °C, but $Q_{10}$ is larger at low temperature and plants acclimate over longer periods.
+- A picked blueberry respires its stored sugar and acid with nothing to replace them, about 11.7 times faster at 20 °C than at 0 °C by the USDA averages. Rapid cooling slows that loss, along with water loss and rot.
+
+## References
+
+[^1]: Amthor, J. S. The McCree–de Wit–Penning de Vries–Thornley respiration paradigms: 30 years later. *Ann. Bot.* **86**, 1–20 (2000). https://doi.org/10.1006/anbo.2000.1175
+[^2]: Thornley, J. H. M. Plant growth and respiration re-visited: maintenance respiration defined – it is an emergent property of, not a separate process within, the system – and why the respiration : photosynthesis ratio is conservative. *Ann. Bot.* **108**, 1365–1380 (2011). https://doi.org/10.1093/aob/mcr238
+[^3]: Gifford, R. M. Plant respiration in productivity models: conceptualisation, representation and issues for global terrestrial carbon-cycle research. *Funct. Plant Biol.* **30**, 171–186 (2003). https://doi.org/10.1071/FP02083
+[^4]: DeLucia, E. H., Drake, J. E., Thomas, R. B. & Gonzalez-Meler, M. Forest carbon use efficiency: is respiration a constant fraction of gross primary production? *Glob. Change Biol.* **13**, 1157–1167 (2007). https://doi.org/10.1111/j.1365-2486.2007.01365.x
+[^5]: Atkin, O. K. & Tjoelker, M. G. Thermal acclimation and the dynamic response of plant respiration to temperature. *Trends Plant Sci.* **8**, 343–351 (2003). https://doi.org/10.1016/S1360-1385(03)00136-5
+[^6]: Saltveit, M. E. in *The Commercial Storage of Fruits, Vegetables, and Florist and Nursery Stocks* (eds Gross, K. C., Wang, C. Y. & Saltveit, M.) Agriculture Handbook 66, 68–75 (U.S. Department of Agriculture, Agricultural Research Service, 2016).
+[^7]: Gross, K. C., Wang, C. Y. & Saltveit, M. (eds) *The Commercial Storage of Fruits, Vegetables, and Florist and Nursery Stocks*. Agriculture Handbook 66, Introduction, Table 1 (U.S. Department of Agriculture, Agricultural Research Service, 2016).
+[^8]: Perkins-Veazie, P. in *The Commercial Storage of Fruits, Vegetables, and Florist and Nursery Stocks* (eds Gross, K. C., Wang, C. Y. & Saltveit, M.) Agriculture Handbook 66, 240–242 (U.S. Department of Agriculture, Agricultural Research Service, 2016).
+[^9]: Zapien-Macias, J. M., Liu, T. & Nunez, G. H. Blueberry ripening mechanism: a systematic review of physiological and molecular evidence. *Hortic. Res.* **12**, uhaf126 (2025). https://doi.org/10.1093/hr/uhaf126
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/photosynthesis-in-one-leaf.html"><span>Previous</span>Photosynthesis, in one leaf</a><a class="mf-up" href="/series/plants/index.html"><span>Series</span>Plant biology, one blueberry at a time</a><a class="mf-next" href="/blogs/the-carbon-budget-of-a-bush.html"><span>Next</span>The carbon budget of a bush</a></div>
+<!-- CURRICULUM_FOOTER_END -->
+

@@ -17,9 +17,11 @@ parts:
       - id: forecasting/leakage
         title: "Leakage"
         level: introductory
+        path: blogs/leakage/leakage.ipynb
       - id: forecasting/backtesting-properly
         title: "Backtesting properly"
         level: intermediate
+        path: blogs/backtesting/backtesting_properly.ipynb
   - title: "Features"
     modules:
       - id: forecasting/feature-engineering-with-feature-engine
@@ -88,6 +90,7 @@ parts:
       - id: forecasting/compositional-data
         title: "Compositional data"
         level: intermediate
+        path: blogs/compositional-data.md
   - title: "Awkward targets"
     modules:
       - id: forecasting/cross-entropy-for-bounded-targets
@@ -115,6 +118,7 @@ parts:
       - id: forecasting/growth-curves
         title: "Growth curves"
         level: intermediate
+        path: blogs/growth-curves.md
   - title: "Evaluating forecasts"
     modules:
       - id: forecasting/which-metric

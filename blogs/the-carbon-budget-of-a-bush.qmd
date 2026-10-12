@@ -9,7 +9,7 @@ categories:
 ---
 
 <!-- CURRICULUM_HEADER_START -->
-<div class="mh"><p class="mh-crumb"><a href="/series/plants/index.html">Plant biology, one blueberry at a time</a><span class="sep">·</span>Part 1 · What a plant is doing all day</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Assumes <a href="/blogs/photosynthesis-in-one-leaf.html">Photosynthesis, in one leaf</a> and <span class="unwritten" title="not written yet">Respiration: the cost of being alive</span>.</p></div>
+<div class="mh"><p class="mh-crumb"><a href="/series/plants/index.html">Plant biology, one blueberry at a time</a><span class="sep">·</span>Part 1 · What a plant is doing all day</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Assumes <a href="/blogs/photosynthesis-in-one-leaf.html">Photosynthesis, in one leaf</a> and <a href="/blogs/respiration-the-cost-of-being-alive.html">Respiration: the cost of being alive</a>.</p></div>
 <!-- CURRICULUM_HEADER_END -->
 
 ::: {.callout-note appearance="simple" icon=false}
@@ -40,6 +40,6 @@ Fruit is a strong sink while it is expanding, since a growing berry imports suga
 - The next module follows this budget into a single fruit, from fertilisation to the shape of its growth curve.
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/photosynthesis-in-one-leaf.html"><span>Previous</span>Photosynthesis, in one leaf</a><a class="mf-up" href="/series/plants/index.html"><span>Series</span>Plant biology, one blueberry at a time</a><a class="mf-next" href="/blogs/pollination-and-fruit-set.html"><span>Next</span>Pollination and fruit set</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/respiration-the-cost-of-being-alive.html"><span>Previous</span>Respiration: the cost of being alive</a><a class="mf-up" href="/series/plants/index.html"><span>Series</span>Plant biology, one blueberry at a time</a><a class="mf-next" href="/blogs/pollination-and-fruit-set.html"><span>Next</span>Pollination and fruit set</a></div>
 <!-- CURRICULUM_FOOTER_END -->
 

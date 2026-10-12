@@ -1,0 +1,222 @@
+---
+title: Compositional data
+description: Shares that must sum to one carry their information in ratios, and log-ratio coordinates let ordinary forecasting models respect that.
+date: 2026-10-12
+categories:
+- forecasting
+- statistics
+- time series
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/forecasting/index.html">Forecasting with Machine Learning</a><span class="sep">·</span>Part 6 · Forecasting distributions</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Python and pandas. Basic statistics. No prior forecasting.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+A composition is a vector of positive parts that sum to a constant, such as the shares of a harvest in small, medium and large size grades. Only the ratios between parts carry information, and the fixed sum ties the parts together: the constraint alone forces the correlations between shares to be negative on average, whatever the crop is doing. A model that forecasts each share as an ordinary number can therefore produce negative shares, and clipping then renormalising hides the problem rather than fixing it. The standard remedy is to work in log-ratio coordinates. The additive log-ratio (alr) divides by one reference part, the centred log-ratio (clr) divides by the geometric mean of all parts, and the isometric log-ratio (ilr) gives orthonormal coordinates that preserve distances. Forecast those unconstrained numbers with any model, map back with a softmax-type inverse, and every forecast is a valid composition. Zeros break the logarithm and must be replaced first, with care. Afterwards you should be able to compute alr, clr and ilr by hand, choose between them, forecast a composition in log-ratio space, and tell when a zero replacement is driving the result.
+:::
+
+## What a composition is
+
+A **composition** with $D$ parts is a vector
+
+$$\mathbf{x} = (x_1, \dots, x_D), \qquad x_i > 0, \qquad \sum_{i=1}^{D} x_i = 1$$
+
+where $x_i$ is the share of part $i$ (dimensionless) and $D$ is the number of parts. The constant could be 100 % or a million parts per million; 1 is used throughout. The set of all such vectors is the **simplex**. Aitchison argued that the simplex, not ordinary $D$-dimensional space, is the right sample space for compositions, and built probability models by transforming normal distributions onto it[^1].
+
+Compositions usually arise by **closure**: measure positive amounts $w_1, \dots, w_D$ and divide each by their total,
+
+$$\mathcal{C}(\mathbf{w}) = \left( \frac{w_1}{\sum_j w_j}, \dots, \frac{w_D}{\sum_j w_j} \right)$$
+
+where $w_j$ are the raw amounts, in any common unit. The running example is a synthetic weekly size-grade mix of three parts, small, medium and large. In week 8 a packhouse grades 226 kg small, 449 kg medium and 325 kg large; closure gives $\mathbf{x} = (0.226, 0.449, 0.325)$. Grading ten times as much fruit in the same proportions gives the same composition. Closure discards the total, so what is left is the ratios between parts: $0.226/0.325 = 226/325 = 0.695$ either way. Every statement about a composition should survive multiplying all parts by the same positive number, and a statement that does not is about the total, not the mix.
+
+The fixed sum has three consequences that ordinary forecasting tools ignore.
+
+**The parts are not free.** Knowing $D - 1$ shares fixes the last one, so a $D$-part composition has $D - 1$ degrees of freedom.
+
+**Correlations are pushed negative.** Because $\sum_j x_j = 1$ for every observation, the covariance of any share with the total is zero:
+
+$$\operatorname{var}(x_i) + \sum_{j \neq i} \operatorname{cov}(x_i, x_j) = 0$$
+
+where $\operatorname{var}$ and $\operatorname{cov}$ are the variance and covariance across observations. Each share's covariances with the others must add up to minus its own variance, so at least one of them is negative. With two parts the correlation is exactly $-1$. If $D$ parts are exchangeable, every variance $\sigma^2$ and every covariance $c$ equal, the identity reads $\sigma^2 + (D-1)c = 0$, so the correlation is $c/\sigma^2 = -1/(D-1)$: $-0.5$ for three grades and $-0.2$ for six. None of that says anything about the crop. Pearson made the general point in 1897: two ratios that share a denominator are correlated even when the numerators and denominator are mutually uncorrelated, and he warned against reading such correlations as a biological relationship[^2]. A share is exactly such a ratio, with the total as the shared denominator. A negative correlation between the small and large shares is therefore not, by itself, evidence that anything moves fruit from one grade to the other.
+
+**Ordinary forecasts leave the simplex.** A model that treats each share as an unbounded number knows nothing about positivity or the sum. A straight-line trend in a falling share crosses zero; separate nonlinear models, or the same model tuned differently per share, give rows that no longer sum to one. The widget below shows the first failure on the synthetic size mix.
+
+## Log-ratio coordinates
+
+Since only ratios matter, the natural variables are logarithms of ratios. A log-ratio can take any real value, and positivity and the sum are restored automatically on the way back. Three transforms are in common use. Each is illustrated on the week-8 mix $\mathbf{x} = (0.226, 0.449, 0.325)$.
+
+**Additive log-ratio (alr).** Pick a reference part, conventionally the last, and take logs of every other part relative to it:
+
+$$\operatorname{alr}(\mathbf{x}) = \left( \ln\frac{x_1}{x_D}, \dots, \ln\frac{x_{D-1}}{x_D} \right), \qquad x_i = \frac{e^{y_i}}{1 + \sum_{j=1}^{D-1} e^{y_j}}, \quad x_D = \frac{1}{1 + \sum_{j=1}^{D-1} e^{y_j}}$$
+
+where $\mathbf{y} = \operatorname{alr}(\mathbf{x})$ has $D - 1$ real entries and the second pair of formulas is the inverse. With large as the reference, $y_1 = \ln(0.226/0.325) = -0.363$ and $y_2 = \ln(0.449/0.325) = 0.323$. Going back, $e^{-0.363} = 0.696$ and $e^{0.323} = 1.381$, the denominator is $1 + 0.696 + 1.381 = 3.077$, and the shares are $0.696/3.077 = 0.226$, $1.381/3.077 = 0.449$ and $1/3.077 = 0.325$. The inverse is a softmax with the reference part's input fixed at zero, so any pair of real numbers maps to positive shares summing to one.
+
+**Centred log-ratio (clr).** Divide by the geometric mean of all parts instead of by one of them:
+
+$$\operatorname{clr}(\mathbf{x}) = \left( \ln\frac{x_1}{g(\mathbf{x})}, \dots, \ln\frac{x_D}{g(\mathbf{x})} \right), \qquad g(\mathbf{x}) = \left( \prod_{i=1}^{D} x_i \right)^{1/D}, \qquad \mathbf{x} = \mathcal{C}\!\left(e^{\operatorname{clr}(\mathbf{x})}\right)$$
+
+where $g(\mathbf{x})$ is the geometric mean and the inverse is exactly the softmax. Here $g = (0.226 \times 0.449 \times 0.325)^{1/3} = 0.321$ and $\operatorname{clr}(\mathbf{x}) = (-0.350, 0.337, 0.013)$. The entries always sum to zero, which treats the parts symmetrically but leaves $D$ coordinates for $D - 1$ degrees of freedom, so their covariance matrix is singular.
+
+**Isometric log-ratio (ilr).** Choose $D - 1$ orthonormal directions inside the clr space and project onto them. Egozcue and colleagues built these coordinates from an orthonormal basis of the simplex, showed that they preserve distances and angles, and related them to clr and alr[^3]:
+
+$$\operatorname{ilr}(\mathbf{x}) = V^\top \operatorname{clr}(\mathbf{x}), \qquad \mathbf{x} = \mathcal{C}\!\left(e^{V \mathbf{z}}\right)$$
+
+where $V$ is a $D \times (D-1)$ matrix whose columns are orthonormal and each sum to zero, and $\mathbf{z} = \operatorname{ilr}(\mathbf{x})$. For three parts a readable choice is two **balances**, one contrasting small with medium and one contrasting those two with large:
+
+$$z_1 = \frac{1}{\sqrt{2}} \ln\frac{x_1}{x_2}, \qquad z_2 = \sqrt{\frac{2}{3}} \ln\frac{\sqrt{x_1 x_2}}{x_3}$$
+
+where the factors $1/\sqrt{2}$ and $\sqrt{2/3}$ make the basis orthonormal. For the week-8 mix, $z_1 = 0.707 \times \ln(0.226/0.449) = 0.707 \times (-0.686) = -0.485$, and $z_2 = 0.816 \times \ln(0.3185/0.325) = 0.816 \times (-0.020) = -0.016$. The second balance is near zero because large almost equals the geometric mean of small and medium.
+
+What "isometric" buys is visible in a distance. The **Aitchison distance** between two compositions is the ordinary Euclidean distance between their clr vectors. Between the synthetic week-1 mix $(0.455, 0.393, 0.152)$ and the week-8 mix it is $1.036$, and the Euclidean distance between their ilr vectors is also $1.036$. Between their alr vectors it is $1.589$ with large as the reference and $1.042$ with medium as the reference. The alr distorts distances, by an amount that depends on which part you divide by.
+
+| Transform | Coordinates | Strength | Weakness | Use it when |
+|---|---|---|---|---|
+| alr | $D - 1$ | Simplest; each coordinate is a log-odds against one part | Not isometric; results of distance-based methods depend on the reference | The model is unaffected by linear changes of coordinates, or one part is a natural baseline |
+| clr | $D$, summing to zero | Symmetric; one coordinate per part, good for plots and reading | Singular covariance; cannot feed a model that needs a full-rank target | Exploring, plotting, interpreting a fitted model part by part |
+| ilr | $D - 1$ | Orthonormal; distances, angles and variances are those of the simplex | Coordinates mean nothing until you design the basis as balances | The method uses distances or treats coordinates separately: penalised regression, clustering, principal components, one model per coordinate |
+
+The three are linear maps of one another. So any method whose fitted values transform along with a linear change of the target, such as [least squares](least-squares.qmd) on every coordinate with the same regressors, gives the same back-transformed forecast whichever you pick. The choice matters for methods that do not: tree ensembles, which split on one coordinate at a time, and anything with a penalty or a distance.
+
+## Forecasting in log-ratio space
+
+The recipe has three steps. Transform each historical composition to log-ratio coordinates; forecast those coordinates with any model, as if they were ordinary unconstrained series; map each forecast back with the inverse. The third step cannot produce a negative share or a sum other than one.
+
+The widget applies the simplest possible model, a least-squares straight line against week, to eight weeks of synthetic size mix in which the small grade is shrinking. Each point in the triangle is one composition: a corner is 100 % of that grade, and the distance from the opposite edge measures its share. The right-hand edge is where the small share is zero. The red path fits a straight line to each share; the green path fits a straight line to each alr coordinate and maps back.
+
+::: {.sim-card}
+#### Two straight-line forecasts of a size mix
+
+```{ojs}
+//| echo: false
+viewof T = Inputs.range([9, 24], {value: 20, step: 1, label: "Forecast to week"})
+
+// Synthetic weekly shares (small, medium, large), weeks 1–8. Seeded, not real data.
+obs = [
+  {week: 1, s: 0.455, m: 0.393, l: 0.152}, {week: 2, s: 0.424, m: 0.403, l: 0.173},
+  {week: 3, s: 0.369, m: 0.437, l: 0.194}, {week: 4, s: 0.328, m: 0.449, l: 0.223},
+  {week: 5, s: 0.302, m: 0.449, l: 0.249}, {week: 6, s: 0.271, m: 0.441, l: 0.288},
+  {week: 7, s: 0.246, m: 0.448, l: 0.306}, {week: 8, s: 0.226, m: 0.449, l: 0.325}
+]
+
+// Least-squares line y = a + b * week.
+ols = ys => {
+  const ws = obs.map(d => d.week), xbar = d3.mean(ws), ybar = d3.mean(ys);
+  const b = d3.sum(ws, (w, i) => (w - xbar) * (ys[i] - ybar)) / d3.sum(ws, w => (w - xbar) ** 2);
+  return {a: ybar - b * xbar, b};
+}
+
+rawFit = ["s", "m", "l"].map(k => ols(obs.map(d => d[k])))
+alrFit = [ols(obs.map(d => Math.log(d.s / d.l))), ols(obs.map(d => Math.log(d.m / d.l)))]
+
+// Straight line in each share.
+rawAt = t => { const [s, m, l] = rawFit.map(f => f.a + f.b * t); return {s, m, l}; }
+// Straight line in each alr coordinate, mapped back by the inverse alr.
+lrAt = t => {
+  const e1 = Math.exp(alrFit[0].a + alrFit[0].b * t), e2 = Math.exp(alrFit[1].a + alrFit[1].b * t);
+  const den = 1 + e1 + e2;
+  return {s: e1 / den, m: e2 / den, l: 1 / den};
+}
+// Clip negatives to zero, then divide by the row sum.
+clipAt = t => {
+  const r = rawAt(t), v = [r.s, r.m, r.l].map(x => Math.max(x, 0)), tot = d3.sum(v);
+  return {s: v[0] / tot, m: v[1] / tot, l: v[2] / tot};
+}
+
+// Ternary position: small at (0, 0), medium at (1, 0), large at the top.
+tern = c => ({x: c.m + c.l / 2, y: c.l * Math.sqrt(3) / 2})
+path = f => d3.range(8, T + 0.001, 0.25).map(t => tern(f(t)))
+
+fmt = v => (v < 0 ? "−" : "") + Math.abs(v).toFixed(3)
+mix = c => `${fmt(c.s)} · ${fmt(c.m)} · ${fmt(c.l)}`
+
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${card(`Line in shares, week ${T} (S · M · L)`, mix(rawAt(T)), "#ef4444")}
+  ${card("Same, clipped and renormalised", mix(clipAt(T)), "#38bdf8")}
+  ${card(`Line in log-ratios, week ${T}`, mix(lrAt(T)), "#10b981")}
+</div>`
+
+Plot.plot({
+  width: 560,
+  height: 500,
+  margin: 20,
+  // Plot paints its own white ground otherwise, which the dark card fights.
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [-0.08, 1.12], axis: null},
+  y: {domain: [-0.1, 0.98], axis: null},
+  color: {legend: true,
+          domain: ["Observed, weeks 1–8", "Line in shares", "Clipped and renormalised", "Line in log-ratios"],
+          range: ["#cbd5e1", "#ef4444", "#38bdf8", "#10b981"]},
+  marks: [
+    Plot.line([[0, 0], [1, 0], [0.5, Math.sqrt(3) / 2], [0, 0]], {stroke: "#cbd5e1", strokeOpacity: 0.6}),
+    Plot.text([{x: 0, y: 0, t: "Small"}, {x: 1, y: 0, t: "Medium"}, {x: 0.5, y: Math.sqrt(3) / 2, t: "Large"}],
+              {x: "x", y: "y", text: "t", dy: d => d.t === "Large" ? -14 : 18, fontSize: 14, fill: "#cbd5e1"}),
+    Plot.line(path(rawAt), {x: "x", y: "y", stroke: () => "Line in shares", strokeWidth: 2.5, clip: true}),
+    Plot.line(path(lrAt), {x: "x", y: "y", stroke: () => "Line in log-ratios", strokeWidth: 2.5, clip: true}),
+    Plot.dot([tern(rawAt(T))], {x: "x", y: "y", fill: () => "Line in shares", r: 6, clip: true}),
+    Plot.dot([tern(clipAt(T))], {x: "x", y: "y", fill: () => "Clipped and renormalised", r: 6}),
+    Plot.dot([tern(lrAt(T))], {x: "x", y: "y", fill: () => "Line in log-ratios", r: 6}),
+    Plot.dot(obs.map(tern), {x: "x", y: "y", fill: () => "Observed, weeks 1–8", stroke: "#0f172a", r: 4.5})
+  ]
+})
+```
+
+The red path leaves the triangle through the edge where the small share is zero.
+:::
+
+The fitted line for the small share is $0.4783 - 0.03349\,t$, where $t$ is the week number, so it reaches zero at $t = 0.4783/0.03349 = 14.3$. Any forecast to week 15 or later has a negative small share. At week 20 the three straight lines give $(-0.191, 0.550, 0.642)$. Those still sum to one, because a least-squares line through shares that each sum to one also sums to one; linear models fitted with the same regressors on every part keep the sum and break only positivity.
+
+Clipping and renormalising, the repair used in [Forecasting a size distribution](darts-size-distribution-forecast.ipynb), turns that into $(0, 0.461, 0.539)$. It is a valid composition but not a forecast anyone made: the medium share drops from $0.550$ to $0.461$ only because the deficit in small was spread across the other grades in proportion to their size, and the small grade is predicted to vanish exactly. The log-ratio line gives $(0.033, 0.291, 0.676)$. The small share approaches zero without reaching it, because a straight line in $\ln(x_1/x_3)$ is exponential decay in the ratio.
+
+Three cautions apply.
+
+- **Valid is not the same as right.** The log-ratio line assumes ratios change by a constant factor each week. That is a model, and on these synthetic data it happens to be the true one, since the series was generated that way. On real data it can be just as wrong as a straight line in shares; it only fails without producing impossible numbers.
+- **Back-transformed means are not mean shares.** The inverse transform is nonlinear, so mapping the forecast mean of the coordinates back gives a central composition, not the expected share of each grade. If you need expected shares, for instance to turn them into expected kilograms, simulate forecast paths in coordinate space, map every draw back, and average the shares.
+- **Not every model needs the transform.** A weighted average of compositions is a composition. A random forest that predicts all parts jointly sets each prediction to an average of whole training rows, so it cannot leave the simplex; the forecasts in [Forecasting a size distribution](darts-size-distribution-forecast.ipynb) already sum to one before its renormalisation step. The same averaging also means it cannot extrapolate beyond mixes it has seen. Linear trends, gradient boosting and neural networks with unconstrained outputs can all leave the simplex, and for them the log-ratio route is the cleaner fix. In Darts this means transforming the bucket series to ilr coordinates, fitting on $D - 1$ coordinate series, and inverting each predicted row.
+
+## Zeros
+
+The logarithm of zero is undefined, so a single empty grade in a single week stops every log-ratio involving it. Martín-Fernández, Barceló-Vidal and Pawlowsky-Glahn state the problem plainly, that log-ratio analysis is unsuitable when zeros are present, and review additive and multiplicative replacement methods for zeros caused by rounding or detection limits[^4].
+
+It helps to name which kind of zero you have. A **rounded** or **sampling zero** is a grade that exists but recorded nothing: too few fruit sampled, or weights below the scale's resolution. A **structural zero** is a part that cannot be present, for example a size grade that a crop has not yet reached at that point in the season. Replacement is defensible for the first kind and misleading for the second.
+
+**Multiplicative replacement** puts a small value $\delta$ in each zero and shrinks the non-zero parts by a common factor so the sum stays one:
+
+$$r_j = \begin{cases} \delta, & x_j = 0 \\ x_j \,(1 - k\delta), & x_j > 0 \end{cases}$$
+
+where $\mathbf{r}$ is the replaced composition, $k$ is the number of zero parts and $\delta$ is the replacement value (a share, dimensionless). Because every non-zero part is multiplied by the same factor, the ratios among them are untouched. The common alternative of adding a small constant to every part and reclosing does change them. Take an early-season mix $(0.620, 0.380, 0)$ with no large fruit. With $\delta = 0.001$ multiplicative replacement gives $(0.61938, 0.37962, 0.001)$, and $\ln(\text{small}/\text{medium})$ stays at $\ln(0.620/0.380) = 0.490$. Adding $0.01$ to every part instead gives a small-to-medium ratio of $0.63/0.39 = 1.615$ in place of $0.620/0.380 = 1.632$.
+
+The limit is everything that involves the replaced part. With $\delta = 0.001$, $\ln(\text{small}/\text{large}) = \ln(0.61938/0.001) = 6.429$; with $\delta = 0.0001$ it is $\ln(0.619938/0.0001) = 8.732$. The difference is $\ln 10 = 2.303$, set entirely by the choice of $\delta$ and not by the fruit. A model trained on such coordinates will happily learn the replacement value. In practice:
+
+- Set $\delta$ below the smallest share you could have recorded, and refit with a second value of $\delta$ to see whether the forecast moves. If it does, the zeros are driving the result.
+- If one grade is often empty, merge it with its neighbour. Summing parts, called **amalgamation**, gives a coarser composition with fewer zeros.
+- Treat structural zeros as a separate question: forecast whether the grade is present at all, and forecast the composition of the grades that are.
+
+## Key takeaways
+
+- A composition is a vector of positive shares with a fixed sum; it carries information only in the ratios between parts, and has $D - 1$ degrees of freedom.
+- The sum constraint forces each share's covariances with the others to add to minus its variance; with $D$ exchangeable parts the correlation is $-1/(D-1)$, whatever the underlying process. Do not read negative share correlations as mechanism.
+- alr divides by a reference part, clr by the geometric mean, and ilr projects onto an orthonormal basis that preserves distances. All three are linear maps of one another.
+- Use ilr when the method depends on distances or treats coordinates separately; alr is fine for methods unaffected by linear changes of coordinates; clr is for plotting and interpretation.
+- Forecast in log-ratio coordinates and invert with the softmax-type inverse, and every forecast is a valid composition. Clipping and renormalising produces valid shares, but shifts mass between grades arbitrarily.
+- Zeros must be replaced before taking logs. Multiplicative replacement keeps the ratios among non-zero parts, but any log-ratio involving a replaced zero is set by $\delta$, so check sensitivity, amalgamate sparse grades, and treat structural zeros separately.
+
+## References
+
+[^1]: Aitchison, J. The statistical analysis of compositional data. *J. R. Stat. Soc. B* **44**, 139–160 (1982). https://doi.org/10.1111/j.2517-6161.1982.tb01195.x
+[^2]: Pearson, K. Mathematical contributions to the theory of evolution. On a form of spurious correlation which may arise when indices are used in the measurement of organs. *Proc. R. Soc. Lond.* **60**, 489–498 (1897). https://doi.org/10.1098/rspl.1896.0076
+[^3]: Egozcue, J. J., Pawlowsky-Glahn, V., Mateu-Figueras, G. & Barceló-Vidal, C. Isometric logratio transformations for compositional data analysis. *Math. Geol.* **35**, 279–300 (2003). https://doi.org/10.1023/A:1023818214614
+[^4]: Martín-Fernández, J. A., Barceló-Vidal, C. & Pawlowsky-Glahn, V. Dealing with zeros and missing values in compositional data sets using nonparametric imputation. *Math. Geol.* **35**, 253–278 (2003). https://doi.org/10.1023/A:1023866030544
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/darts-size-distribution-forecast.html"><span>Previous</span>Forecasting a size distribution</a><a class="mf-up" href="/series/forecasting/index.html"><span>Series</span>Forecasting with Machine Learning</a><a class="mf-next" href="/blogs/lightgbm-cross-entropy-bounded-target.html"><span>Next</span>Cross-entropy for bounded targets</a></div>
+<!-- CURRICULUM_FOOTER_END -->
+

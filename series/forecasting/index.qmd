@@ -6,7 +6,7 @@ description: "Tabular machine learning for time series, from framing the problem
 <dl class="syl-meta">
 <div><dt>Level</dt><dd>Introductory to advanced</dd></div>
 <div><dt>Parts</dt><dd>15</dd></div>
-<div><dt>Modules</dt><dd>9 of 34 written</dd></div>
+<div><dt>Modules</dt><dd>13 of 34 written</dd></div>
 <div class="wide"><dt>Assumes</dt><dd>Python and pandas. Basic statistics. No prior forecasting.</dd></div>
 </dl>
 
@@ -14,8 +14,8 @@ description: "Tabular machine learning for time series, from framing the problem
 
 <ul class="syl">
 <li class="w"><a href="/blogs/horizon-frequency-and-target.html">Horizon, frequency and target</a><span class="m">Introductory</span></li>
-<li class="g">Leakage<span class="m">Introductory · not written</span></li>
-<li class="g">Backtesting properly<span class="m">Intermediate · not written</span></li>
+<li class="w"><a href="/blogs/leakage/leakage.html">Leakage</a><span class="m">Introductory</span></li>
+<li class="w"><a href="/blogs/backtesting/backtesting_properly.html">Backtesting properly</a><span class="m">Intermediate</span></li>
 </ul>
 
 ## Part 2 · Features
@@ -52,7 +52,7 @@ description: "Tabular machine learning for time series, from framing the problem
 
 <ul class="syl">
 <li class="w"><a href="/blogs/darts-size-distribution-forecast.html">Forecasting a size distribution</a><span class="m">Advanced</span></li>
-<li class="g">Compositional data<span class="m">Intermediate · not written</span></li>
+<li class="w"><a href="/blogs/compositional-data.html">Compositional data</a><span class="m">Intermediate</span></li>
 </ul>
 
 ## Part 7 · Awkward targets
@@ -67,7 +67,7 @@ description: "Tabular machine learning for time series, from framing the problem
 
 <ul class="syl">
 <li class="w"><a href="/blogs/curve-fitting-partial-timeseries.html">Fitting a season from its first weeks</a><span class="m">Advanced</span></li>
-<li class="g">Growth curves<span class="m">Intermediate · not written</span></li>
+<li class="w"><a href="/blogs/growth-curves.html">Growth curves</a><span class="m">Intermediate</span></li>
 </ul>
 
 ## Part 9 · Evaluating forecasts
