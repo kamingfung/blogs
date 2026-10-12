@@ -15,6 +15,10 @@ project:
 metadata-files:
   - _sidebar.yml
 
+# Merges repeated [^n] citations into one numbered note.
+filters:
+  - filters/dedupe-footnotes.lua
+
 website:
   title: "Blogs"
   description: "Course-style notes on atmospheric science, forecasting and scientific computing."
