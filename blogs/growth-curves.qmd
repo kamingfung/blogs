@@ -369,6 +369,6 @@ This is the core reason early-season forecasts of a season total are uncertain, 
 [^3]: Zwietering, M. H., Jongenburger, I., Rombouts, F. M. & van 't Riet, K. Modeling of the bacterial growth curve. *Appl. Environ. Microbiol.* **56**, 1875–1881 (1990). https://doi.org/10.1128/aem.56.6.1875-1881.1990
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/curve-fitting-partial-timeseries.html"><span>Previous</span>Fitting a season from its first weeks</a><a class="mf-up" href="/series/forecasting/index.html"><span>Series</span>Forecasting with Machine Learning</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/curve-fitting-partial-timeseries.html"><span>Previous</span>Fitting a season from its first weeks</a><a class="mf-up" href="/series/forecasting/index.html"><span>Series</span>Forecasting with Machine Learning</a><a class="mf-next" href="/blogs/which-metric.html"><span>Next</span>Which metric</a></div>
 <!-- CURRICULUM_FOOTER_END -->
 

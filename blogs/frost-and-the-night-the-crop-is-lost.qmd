@@ -1,0 +1,213 @@
+---
+title: Frost, and the night the crop is lost
+description: Why a blueberry crop is most exposed to frost in the weeks around bloom, what happens in the air on a radiation frost night, and how each protection method works on the night's energy budget.
+date: 2026-10-12
+categories:
+- plant biology
+- horticulture
+- meteorology
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/plants/index.html">Plant biology, one blueberry at a time</a><span class="sep">·</span>Part 5 · Seasons and stress</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">Assumes <a href="/blogs/pollination-and-fruit-set.html">Pollination and fruit set</a>.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+A dormant blueberry flower bud survives deep winter cold, but once it starts to open it loses that hardiness, and an open flower can be killed by a few tenths of a degree to a couple of degrees below freezing. Most spring frost nights are radiation frosts: clear, calm nights when the ground and plants radiate heat to a cold sky faster than the air can resupply it. The air then cools from the bottom up, so it is colder at flower height than a few metres above, and the coldest air drains downhill into hollows. Cooling slows once the surface reaches the dew point, because dew or frost forming releases latent heat. Each protection method acts on one term of that energy budget: wind machines mix warmer air down from the inversion, sprinklers release the latent heat of freezing water, and row covers return long-wave radiation that would otherwise go to the sky. Afterwards you should be able to tell a radiation frost from an advection frost, explain why a wind machine is useless on a windy night, say why sprinklers must not be switched off at sunrise, and read a critical-temperature table with its limits in mind.
+:::
+
+## Why the flower is the weak point
+
+Blueberries are hardy in winter, so their frost damage falls almost entirely on flowers and small fruit in spring. So notes the FAO frost-protection handbook by Snyder and de Melo-Abreu[^1], the source of this module's frost physics and protection figures unless another reference is given. The reason is that flower buds are hardy while they are dormant and lose that hardiness as they grow. In a controlled-freezing study of two rabbiteye cultivars, the temperature needed to damage a flower bud rose steadily with its stage of development: closed flower buds survived −15 °C, while open flowers were killed by −1 °C[^2].
+
+Hardiness is not only lost with development; it also moves with the weather. The handbook notes that fruit plants harden during cold spells, lose that hardening quickly over a few warm days, and regain it far more slowly than they lost it. A warm spell in late winter therefore does double harm: it pushes buds towards opening, and it strips the hardiness of the buds that have not yet opened. Whether bud break arrives early or late is a question of chilling and dormancy, covered in [Chill hours and dormancy](chill-hours-and-dormancy.qmd).
+
+The stage-by-stage numbers growers use come from tables like this one:
+
+| Stage of flower bud | 90% damage (°F) | 90% damage (°C) |
+|---|---:|---:|
+| Swelled flower buds | 21 | −6.1 |
+| Individual flowers distinguishable | 25 | −3.9 |
+| Flowers distinctly separated, corollas expanded but closed | 28 | −2.2 |
+| Fully opened flowers | 31 | −0.6 |
+
+<small>Rabbiteye blueberry, from the Alabama Cooperative Extension System[^3]; the Celsius values are as reproduced in the FAO handbook, where they are read as 90% kill after 30 minutes at that air temperature. Converted, $(21 - 32)/1.8 = -6.1$, and likewise for the other rows.</small>
+
+Three cautions go with any such table. The temperatures are air temperatures in a standard instrument shelter, not tissue temperatures. Values measured on cut shoots in freezing chambers tend to be lower than those seen in the field for the same damage, so the handbook treats published critical temperatures as guidelines for deciding when to start and stop protection, not as exact thresholds. And cultivars differ: in a study of open flowers on five highbush cultivars, 'Bluecrop' was the most sensitive and 'Hannah's Choice' and 'Murphy' the most tolerant[^4]. A rabbiteye table from Alabama is a guide, not a promise, for a highbush block elsewhere.
+
+The same study found the corolla the most sensitive part of an open flower and the interior of the ovary among the least. In fruit crops generally the style is more sensitive than the ovary, and the Alabama source notes that a marginal freeze in blueberry may kill only the stigma and style. The style is the route a pollen tube takes from the stigma to the ovules, so a flower with a dead style but a healthy ovary sets no fruit however well the bees work it afterwards. [Pollination and fruit set](pollination-and-fruit-set.qmd) explained why each fertilised ovule matters for berry size; frost acts one step earlier, on whether fertilisation can happen at all.
+
+## Two kinds of frost night
+
+The handbook separates two words. A **frost** is an air temperature of 0 °C or lower, measured 1.25 to 2.0 m above the ground in a weather shelter. A **freeze** is ice forming in the water outside the cells of a plant; whether that injures the tissue depends on the plant. Frost is weather; freeze is what happens to the crop.
+
+Frost nights then come in two kinds, set by where the cold comes from:
+
+| | Radiation frost | Advection frost |
+|---|---|---|
+| Cause | the surface loses heat by radiation to a clear sky | a cold air mass is blown in |
+| Sky and wind | clear, calm or nearly calm | often cloudy, moderate to strong wind |
+| Temperature profile | inversion: warmer air above the crop | no inversion: air well mixed |
+| Daytime | usually above 0 °C | can stay below 0 °C all day |
+
+Radiation frosts are the common kind, and they are the kind most protection methods are designed for. Advection frosts are rarer and much harder to fight, because the methods that rely on warmer air aloft have none to work with. A cold spell often begins as an advection frost and turns into a run of radiation frost nights once the sky clears.
+
+A radiation frost has two faces. When the air is humid enough, ice deposits on surfaces as a white **hoar frost**. When it is dry, the temperature can fall below 0 °C with no visible ice at all, a **black frost**. The handbook notes that hoar frosts usually do less damage, because depositing ice releases heat. The absence of white frost on a cold morning is not a sign that the flowers escaped.
+
+## The physics of a radiation frost night
+
+Everything about a radiation frost follows from the surface energy balance. Using the handbook's sign convention,
+
+$$R_n = G + H + LE$$
+
+where $R_n$ is net radiation at the surface (positive when the surface gains radiant energy), $G$ is the heat flux into the soil, $H$ is the sensible heat flux into the air, and $LE$ is the latent heat flux carried away by evaporating water ($L$ is the latent heat of vaporisation in J kg⁻¹ and $E$ is the water vapour flux in kg m⁻² s⁻¹). All four terms are in W m⁻². By day, sunshine makes $R_n$ large and positive. At night there is no sunshine, and the only radiation left is long-wave: the surface emits according to the fourth power of its absolute temperature, and the sky sends some back.
+
+A black body at 0 °C emits $\sigma T^4 = 5.67 \times 10^{-8} \times 273.15^4 \approx 316\text{ W m}^{-2}$, where $\sigma$ is the Stefan–Boltzmann constant in W m⁻² K⁻⁴ and $T$ is absolute temperature in K. On a clear frost night the handbook puts the net long-wave loss between −73 and −95 W m⁻², typically about −80 W m⁻², so a clear sky returns only about $316 - 80 = 236\text{ W m}^{-2}$, roughly three-quarters of what a surface at 0 °C sends up. Drier air sends less back: at an air temperature of 0 °C, the handbook's table gives −73 W m⁻² with a dew point of 0 °C and −80 W m⁻² with a dew point of −6 °C. Under low stratus cloud, net radiation is only about −10 W m⁻², because the cloud base is far warmer than the clear sky. That one number is why a cloudy night rarely brings a radiation frost.
+
+With $R_n$ negative, $G$ and $H$ turn negative too: heat flows up from the soil and down from the air towards the surface, but not fast enough, so the surface and the air touching it cool. Most of the night's fall comes in the few hours around sunset, when net radiation swings from positive to negative; after that, the fall slows. Because the air is cooled from below, the coldest air sits at the bottom, and temperature *increases* with height: a **temperature inversion**. It continues up to a level called the ceiling, above which temperature falls with height in the normal way. The handbook gives the depth of the inversion as generally 9 to 60 m. Blueberry flowers sit in the coldest metre or two of it, and flowers exposed to the sky radiate directly and can run colder still than the air around them.
+
+Two things slow the cooling. The first is **dew and frost**. Once the surface cools to the dew point, the temperature to which air must be cooled, at constant pressure and water content, to become saturated, further cooling makes water vapour condense or deposit on it, and each gram releases latent heat: 2501 J as dew, 2835.5 J as frost (both at 0 °C). Below 0 °C the relevant threshold is strictly the **frost point**, a little warmer than the dew point, because the saturation vapour pressure over ice is lower than over supercooled water. Either way, a humid night has a soft floor that a dry night lacks. The second is **soil heat**: a firm, moist, bare soil stores more heat by day and conducts more of it up at night than a loose, dry one.
+
+One thing makes cooling worse in particular places: **cold air drainage**. At the same pressure, air density is inversely proportional to absolute temperature, so air at −2 °C is denser than air at +2 °C by a factor of $275.15/271.15 = 1.015$, about 1.5%. That is enough for the coldest air to flow downhill on a calm night and collect in low spots much like water, as the handbook puts it. Hedgerows, fences or dense vegetation on the downhill side of a block dam the flow and pool cold air in the crop. Because the pattern repeats on every clear, calm night, cold spots can be mapped at any time of year, including from where ground fog forms first.
+
+The widget below puts the first of these ideas into numbers. It is an illustration, not a forecast.
+
+::: {.sim-card}
+#### A radiation night, simplified
+
+```{ojs}
+//| echo: false
+viewof T0 = Inputs.range([0, 15], {value: 8, step: 0.5, label: "Air temperature at sunset (°C)"})
+viewof Td = Inputs.range([-10, 5], {value: -2, step: 0.5, label: "Dew point (°C)"})
+viewof drop = Inputs.radio(new Map([["Clear", 12], ["Overcast", 3]]), {value: 12, label: "Sky"})
+viewof Tc = Inputs.select(new Map([
+  ["Swelled flower buds (−6.1 °C)", -6.1],
+  ["Individual flowers distinguishable (−3.9 °C)", -3.9],
+  ["Corollas expanded but closed (−2.2 °C)", -2.2],
+  ["Fully opened flowers (−0.6 °C)", -0.6]
+]), {value: -0.6, label: "Stage (90% damage temperature)"})
+
+// Illustrative parameters, not fitted to any site.
+TAU = 3      // h, cooling time scale
+R = 0.3      // cooling rate multiplier once dew or frost forms
+NIGHT = 12   // h, sunset to sunrise
+
+Teq = T0 - drop   // temperature the night would approach without latent heat
+// Hours after sunset at which the air reaches the dew point (never, if Teq >= Td).
+tDew = T0 <= Td ? 0 : (Td > Teq ? TAU * Math.log((T0 - Teq) / (Td - Teq)) : Infinity)
+
+// Newtonian cooling towards Teq, slowed by R after the dew point is reached.
+tempAt = (t, latent) => {
+  if (!latent || t < tDew) return Teq + (T0 - Teq) * Math.exp(-t / TAU);
+  return Teq + (Math.min(T0, Td) - Teq) * Math.exp(-R * (t - tDew) / TAU);
+}
+
+night = d3.range(0, 1201).map(i => ({t: i / 100, T: tempAt(i / 100, true), dry: tempAt(i / 100, false)}))
+hoursBelow = night.slice(1).filter(d => d.T < Tc).length / 100
+
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${card("Temperature at sunrise", night[1200].T.toFixed(1) + " °C", "#38bdf8")}
+  ${card("Dew point reached", Number.isFinite(tDew) ? tDew.toFixed(1) + " h after sunset" : "not reached", "#10b981")}
+  ${card("Hours below the stage's 90% damage temperature", hoursBelow.toFixed(1) + " h", "#ef4444")}
+</div>`
+
+Plot.plot({
+  height: 340,
+  marginLeft: 55,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, NIGHT], label: "Hours after sunset →", grid: true},
+  y: {domain: [-12, 16], label: "↑ Air temperature (°C)", grid: true},
+  color: {legend: true,
+          domain: ["With dew or frost", "Without latent heat", "Dew point", "90% damage temperature"],
+          range: ["#38bdf8", "#64748b", "#10b981", "#ef4444"]},
+  marks: [
+    Plot.ruleY([Td], {stroke: () => "Dew point", strokeDasharray: "4 4"}),
+    Plot.ruleY([Tc], {stroke: () => "90% damage temperature", strokeWidth: 2}),
+    Plot.line(night, {x: "t", y: "dry", stroke: () => "Without latent heat", strokeWidth: 2, strokeDasharray: "6 4"}),
+    Plot.line(night, {x: "t", y: "T", stroke: () => "With dew or frost", strokeWidth: 3})
+  ]
+})
+```
+
+Illustration with stated parameters: Newtonian cooling with a 3 h time scale towards a temperature 12 °C below the sunset value under a clear sky (3 °C overcast), with the cooling rate multiplied by 0.3 once the dew point is reached, over a 12 h night.
+:::
+
+Without latent heat, the air temperature $T$ falls exponentially towards an equilibrium value $T_\text{eq}$ that stands in for the radiative loss:
+
+$$T(t) = T_\text{eq} + (T_0 - T_\text{eq})\, e^{-t/\tau}$$
+
+where $T_0$ is the sunset temperature in °C, $t$ is time since sunset in h, and $\tau = 3\text{ h}$ is the cooling time scale. From the dew point onwards the time scale stretches to $\tau/0.3 = 10\text{ h}$, standing in for latent heat. The real dew point falls as water leaves the air, so it is a brake, not a floor.
+
+At the default settings (8 °C at sunset, dew point −2 °C, clear sky), the air reaches the dew point $3 \ln 6 = 5.4$ hours after sunset and ends the night at −3.0 °C, below the −0.6 °C damage temperature for open flowers for 8.2 hours. Drop the dew point to −10 °C and the brake never engages: the night ends at $-4 + 12e^{-4} = -3.8$ °C. Switch the sky to overcast and the night ends at 5.1 °C, with no frost at all. In this toy, the sky sets how far the night can fall and the dew point sets when the brake engages.
+
+## Protection, term by term
+
+Every active protection method works by changing one term in the energy balance.
+
+```{mermaid}
+flowchart TB
+    Sky["Clear night sky<br/>cold radiating surface"]
+    Air["Warmer air aloft<br/>top of the inversion"]
+    Flower["Flowers and canopy"]
+    Vap["Water vapour"]
+    Soil["Soil<br/>heat stored by day"]
+    Sky <-->|"long-wave: much out, less back"| Flower
+    Air -->|"sensible heat down, H"| Flower
+    Soil -->|"heat up, G"| Flower
+    Vap -->|"latent heat as dew or frost forms"| Flower
+    Fan["Wind machine"] -.->|"mixes air aloft down"| Air
+    Spr["Sprinklers"] -.->|"334.5 J per gram frozen"| Flower
+    Cov["Row cover"] -.->|"warmer than the sky: more long-wave back"| Flower
+
+    class Sky indigo
+    class Air ochre
+    class Flower rust
+    class Vap,Soil sage
+    class Fan,Spr,Cov olive
+    classDef indigo fill:#1d4a62,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef rust fill:#a04b2d,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef olive fill:#5b6e34,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef ochre fill:#d69a2e,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+    classDef sage fill:#95a87f,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+```
+
+**Wind machines** add no heat; they enlarge the downward sensible heat flux $H$. A large fan on a tower, typically 10 to 11 m up, draws air from above and blows it almost horizontally across the crop, mixing warmer air from the inversion down into the cold layer. Inside the area a machine covers, the handbook reports that the 1.5 m temperature rises by about one-third of the inversion strength, measured as the 10 m temperature minus the 1.5 m temperature. A 3 °C inversion is therefore worth about $3/3 = 1$ °C at flower height. The handbook's test before buying is that inversions between 2 and 10 m should be at least 1.5 °C on most frost nights. On an advection night there is no inversion, and a fan only stirs cold air with cold air.
+
+**Overhead sprinklers** use the latent heat of fusion. When 1 g of water freezes at 0 °C it releases about 334 J (the handbook tabulates 334.5 J; its constants appendix gives $6.0\text{ kJ mol}^{-1} / 18\text{ g mol}^{-1} = 333\text{ J g}^{-1}$). As long as liquid water keeps arriving and freezing on a bud, the bud sits inside an ice–water mixture, and that mixture stays at 0 °C, above the critical temperature of every stage in the table. The catch is evaporation, which runs the other way: each gram that evaporates removes 2501 J, and each gram that sublimates from ice removes 2835.5 J. Since $2501/334.5 = 7.5$, more than seven grams must freeze for every gram that evaporates just to break even, which is why application rates have to be high and continuous.
+
+The same arithmetic explains the rule that matters most in practice: the sprinklers must not be turned off when the sun comes up. Between wettings, and after the water stops, a wet or iced bud loses heat by evaporation and sublimation with nothing freezing to replace it, so it cools towards the **wet-bulb temperature**, the lowest temperature a ventilated wet surface can reach by evaporating into the surrounding air. In dry air the wet-bulb temperature can be well below the air temperature, so a coated bud can be colder than an uncoated one. The handbook's rule is that sprinklers should stay on, even with the sun shining and the air above 0 °C, until the wet-bulb temperature upwind of the crop is above the critical temperature, and preferably slightly above 0 °C. Florida's blueberry extension guidance turns this into a rule a grower can see: never turn the water off before icicles are falling, and on a calm, sunny morning wait until they have been falling rapidly for more than half an hour[^5]. Falling icicles are the visible sign that the ice is melting where it touches the plant, so the bud is held at 0 °C by melting water rather than left to sublimate.
+
+**Row covers** act on radiation. A cover over the crop is warmer than the clear sky, so the long-wave radiation coming down onto the plants is larger, and it also cuts convective heat loss to the air. The handbook puts the protection at about 1 to 5 °C, depending on the thickness of the material. A cover traps nothing literally: it replaces a cold radiating surface, the sky, with a warmer one.
+
+**Passive measures** cost least and act on every frost night: avoid low spots, remove whatever dams cold air on the downhill side of a block, and keep the soil firm, bare and moist, since grass or plant residue on the orchard floor typically makes the air 0 to 0.5 °C colder.
+
+**The morning after.** The handbook notes that the proportion of damaged flowers becomes obvious a few days after a freeze, and that the check is to cut flowers open: healthy ones are light green inside, damaged ones brownish. Look closely at the style as well as the ovary, since a dead style alone is enough to lose the berry.
+
+## Key takeaways
+
+- Hardiness falls as flower buds open: in rabbiteye, closed buds survived −15 °C in a chamber and open flowers were killed by −1 °C.
+- Critical-temperature tables give shelter air temperatures for one stage and species; treat them as guides.
+- Radiation frosts are clear, calm nights with an inversion; advection frosts are windy and well mixed. Most active methods only work on the first kind.
+- On a clear night the surface loses about 80 W m⁻² of net long-wave radiation; cloud cuts that to about 10 W m⁻². The coldest air sits at flower height and drains into hollows.
+- Reaching the dew point (frost point below 0 °C) slows cooling because condensation and deposition release latent heat; dry nights fall further.
+- Wind machines mix inversion air down (gaining about a third of the inversion strength), sprinklers hold buds at 0 °C by freezing water and must run until the wet-bulb temperature is safe, and row covers replace the cold sky with a warmer surface.
+
+## References
+
+[^1]: Snyder, R. L. & de Melo-Abreu, J. P. *Frost Protection: Fundamentals, Practice and Economics*, Vol. 1. FAO Environment and Natural Resources Series 10 (Food and Agriculture Organization of the United Nations, 2005).
+[^2]: Spiers, J. M. Effect of stage of bud development on cold injury in rabbiteye blueberry. *J. Am. Soc. Hortic. Sci.* **103**, 452–455 (1978). https://doi.org/10.21273/JASHS.103.4.452
+[^3]: Alabama Cooperative Extension System. Critical temperatures for fruit plants. *Principles of Freeze Protection for Fruit Crops* (web page, accessed 12 October 2026). https://ssl.acesag.auburn.edu/dept/peaches/frzcritical.html
+[^4]: Rowland, L. J. et al. Variation among highbush blueberry cultivars for frost tolerance of open flowers. *HortScience* **48**, 692–695 (2013). https://doi.org/10.21273/HORTSCI.48.6.692
+[^5]: Williamson, J. G., Harmon, P. F. & Phillips, D. A. Protecting blueberries from freezes in Florida. *EDIS* publication HS216 (University of Florida IFAS Extension; web version accessed 12 October 2026). https://ask.ifas.ufl.edu/publication/HS216
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/chill-hours-and-dormancy.html"><span>Previous</span>Chill hours and dormancy</a><a class="mf-up" href="/series/plants/index.html"><span>Series</span>Plant biology, one blueberry at a time</a></div>
+<!-- CURRICULUM_FOOTER_END -->

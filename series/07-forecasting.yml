@@ -103,9 +103,11 @@ parts:
       - id: forecasting/zeros-and-tweedie
         title: "Zeros and Tweedie"
         level: intermediate
+        path: blogs/zeros-and-tweedie/zeros_and_tweedie.ipynb
       - id: forecasting/log-and-boxcox-transforms
         title: "Log and Box–Cox transforms"
         level: introductory
+        path: blogs/log-and-boxcox-transforms.md
   - title: "Curves from partial data"
     modules:
       - id: forecasting/fitting-a-season-from-its-first-weeks
@@ -124,9 +126,11 @@ parts:
       - id: forecasting/which-metric
         title: "Which metric"
         level: introductory
+        path: blogs/which-metric.md
       - id: forecasting/pinball-loss-and-quantiles
         title: "Pinball loss and quantiles"
         level: intermediate
+        path: blogs/pinball-loss-and-quantiles.md
         requires:
           - forecasting/which-metric
       - id: forecasting/backtest-design
@@ -137,6 +141,7 @@ parts:
       - id: forecasting/quantile-regression
         title: "Quantile regression"
         level: intermediate
+        path: blogs/quantile-regression/quantile_regression.ipynb
       - id: forecasting/conformal-prediction
         title: "Conformal prediction"
         level: advanced
@@ -153,6 +158,7 @@ parts:
       - id: forecasting/forecasting-many-series-at-once
         title: "Forecasting many series at once"
         level: intermediate
+        path: blogs/many-series/forecasting_many_series.ipynb
   - title: "Classical models"
     modules:
       - id: forecasting/ets-and-arima

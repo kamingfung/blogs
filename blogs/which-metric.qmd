@@ -1,0 +1,222 @@
+---
+title: Which metric
+description: An error metric decides which forecast wins, so choose it for the decision the forecast feeds and check bias separately.
+date: 2026-10-12
+categories:
+- forecasting
+- time series
+- statistics
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/forecasting/index.html">Forecasting with Machine Learning</a><span class="sep">·</span>Part 9 · Evaluating forecasts</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">Python and pandas. Basic statistics. No prior forecasting.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+An error metric is a rule for how much each miss costs, and each rule has its own best forecast. On a skewed sample of 21 days of synthetic orders, the constant forecast with the lowest mean absolute error (MAE) is the median, 18 crates a day. The one with the lowest root mean squared error (RMSE) is the mean, 25. The one with the lowest mean absolute percentage error (MAPE) is 14, because MAPE caps the cost of an under-forecast at 100% and leaves over-forecasts unbounded. MAPE is also undefined on any day with zero sales. Comparing many items needs a metric that does not let the large ones dominate: the mean absolute scaled error (MASE) divides each item's error by a naive forecast's error, while the weighted absolute percentage error (WAPE) pools volume on purpose. None of these shows direction, so report bias as well. Afterwards you should be able to say which forecast a metric rewards, pick one for a stated purpose, compute MASE and WAPE by hand, and recognise when over- and under-supply cost differently enough to need a quantile.
+:::
+
+## A metric chooses the forecast
+
+A forecast is scored by comparing it with what happened. Write the error on day $t$ as
+
+$$e_t = y_t - \hat{y}_t$$
+
+where $y_t$ is the actual and $\hat{y}_t$ the forecast, both in crates per day, and $t = 1, \dots, n$. A positive error is an under-forecast. The two most common summaries are
+
+$$\text{MAE} = \frac{1}{n} \sum_{t=1}^{n} \lvert e_t \rvert, \qquad \text{RMSE} = \sqrt{\frac{1}{n} \sum_{t=1}^{n} e_t^2}$$
+
+where MAE, the mean absolute error, and RMSE, the root mean squared error, are both in crates per day. MAE charges every crate of miss the same. RMSE charges a miss in proportion to its size, so one large miss can outweigh many small ones.
+
+The two do not just give different numbers; they prefer different forecasts. The example is 21 days of **synthetic** orders for one fruit item at one depot, made up for this page and skewed the way sales data usually are, with most days modest and a few large:
+
+$$8, 10, 11, 12, 13, 14, 14, 15, 16, 17, 18, 19, 21, 22, 24, 27, 31, 36, 44, 58, 95$$
+
+Their median is 18 and their mean is $525/21 = 25$ crates per day. Suppose the forecast is one constant number for all 21 days. Move the slider and watch which value each metric likes best.
+
+::: {.sim-card}
+#### Score a constant forecast
+
+```{ojs}
+//| echo: false
+viewof c = Inputs.range([0, 100], {value: 40, step: 0.5, label: "Constant forecast (crates/day)"})
+
+// The 21 synthetic daily orders the text uses, in crates per day.
+actuals = [8, 10, 11, 12, 13, 14, 14, 15, 16, 17, 18, 19, 21, 22, 24, 27, 31, 36, 44, 58, 95]
+meanY = d3.mean(actuals)
+
+mae  = f => d3.mean(actuals, y => Math.abs(y - f))
+rmse = f => Math.sqrt(d3.mean(actuals, y => (y - f) ** 2))
+mape = f => 100 * d3.mean(actuals, y => Math.abs(y - f) / y)
+bias = f => f - meanY  // mean of forecast minus actual; positive = over-forecast
+
+// MAE and MAPE are piecewise linear with kinks at the actuals, so each is
+// lowest at one of them. RMSE is lowest at the mean.
+best = ({mae: d3.least(actuals, mae), rmse: meanY, mape: d3.least(actuals, mape)})
+
+metrics = [
+  {name: "MAE",  f: mae,  colour: "#10b981"},
+  {name: "RMSE", f: rmse, colour: "#38bdf8"},
+  {name: "MAPE", f: mape, colour: "#f59e0b"}
+]
+
+curves = metrics.flatMap(m => d3.range(0, 100.5, 0.5).map(x =>
+  ({x, metric: m.name, ratio: m.f(x) / m.f(best[m.name.toLowerCase()])})))
+
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+signed = v => (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v).toFixed(2)
+
+html`<div class="sim-readouts">
+  ${card(`MAE · lowest at ${best.mae} (median)`, mae(c).toFixed(2) + " crates", "#10b981")}
+  ${card(`RMSE · lowest at ${best.rmse} (mean)`, rmse(c).toFixed(2) + " crates", "#38bdf8")}
+  ${card(`MAPE · lowest at ${best.mape}`, mape(c).toFixed(1) + "%", "#f59e0b")}
+  ${card("Bias · zero at the mean", signed(bias(c)) + " crates", "#a78bfa")}
+</div>`
+
+// Stack repeated values so both 14s show.
+strip = actuals.map((y, i) => ({y, k: actuals.slice(0, i).filter(v => v === y).length}))
+
+Plot.plot({
+  height: 90,
+  marginLeft: 55,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, 100], label: "Actual orders (crates/day) →"},
+  y: {axis: null, domain: [-0.5, 1.5]},
+  marks: [
+    Plot.ruleX([c], {stroke: "#ef4444", strokeWidth: 2}),
+    Plot.dot(strip, {x: "y", y: "k", fill: "#cbd5e1", stroke: "#0f172a", r: 4})
+  ]
+})
+
+Plot.plot({
+  height: 300,
+  marginLeft: 55,
+  // Plot paints its own white ground otherwise, which the dark card fights.
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, 100], label: "Constant forecast (crates/day) →", grid: true},
+  y: {domain: [0.9, 3], label: "↑ Score ÷ its own minimum", grid: true},
+  color: {legend: true, domain: metrics.map(m => m.name), range: metrics.map(m => m.colour)},
+  marks: [
+    Plot.line(curves, {x: "x", y: "ratio", stroke: "metric", strokeWidth: 2, clip: true}),
+    Plot.dot(metrics, {x: m => best[m.name.toLowerCase()], y: 1, fill: "metric", r: 6, clip: false}),
+    Plot.ruleX([c], {stroke: "#ef4444", strokeWidth: 2})
+  ]
+})
+```
+
+Top: the 21 actuals, with the red line at your forecast. Bottom: each metric divided by its own lowest value, so every curve touches 1 at the forecast it rewards.
+:::
+
+The minima can be found without the slider. For MAE, nudging $c$ upward by a small amount lowers the error to every actual above $c$ and raises it to every actual below, so
+
+$$\frac{d\,\text{MAE}}{dc} = \frac{N_{\text{below}}(c) - N_{\text{above}}(c)}{n}$$
+
+where $c$ is the constant forecast and $N_{\text{below}}$ and $N_{\text{above}}$ count the actuals below and above it. Ten of the 21 actuals lie below 18 and ten above, so the slope is negative just below 18 and positive just above it: MAE is lowest at the median, $11.76$ crates. For squared error,
+
+$$\frac{d}{dc} \, \frac{1}{n} \sum_{t=1}^{n} (y_t - c)^2 = 2(c - \bar{y})$$
+
+where $\bar{y}$ is the mean of the actuals. That is zero at $c = \bar{y} = 25$, and the square root does not move the minimum, so RMSE is lowest at the mean, $19.68$ crates, which is the standard deviation of the actuals computed with divisor $n$. Each forecast loses on the other's metric: the median scores an RMSE of $20.89$ and the mean an MAE of $13.43$.
+
+Neither forecast is wrong. They answer different questions: the median is the value the actual falls above half the time, the mean is the long-run average. Gneiting puts the general rule this way: squared error is consistent for the mean and absolute error for the median, and averaging a score that does not match what the forecaster was asked for "can lead to grossly misguided inferences"[^1]. His simulation shows a forecaster who knows the true mean beaten, under absolute error, by one who always predicts a very low value. The practical consequence is to choose the metric before modelling and train with the matching loss. A gradient-boosted model fitted with squared error aims at the mean; scored by MAE on skewed sales, it is penalised for doing exactly what it was asked. In scikit-learn, `HistGradientBoostingRegressor(loss="absolute_error")` aims at the median instead.
+
+## Percentage errors
+
+The mean absolute percentage error divides each miss by its actual:
+
+$$\text{MAPE} = \frac{100\%}{n} \sum_{t=1}^{n} \frac{\lvert e_t \rvert}{y_t}$$
+
+where the symbols are as before and the result is a percentage. Its appeal is that it has no units, so a 10% miss means the same for a large item and a small one. It has three problems.
+
+**It breaks at zero.** Hyndman and Koehler note that percentage errors are infinite or undefined when any $y_t = 0$, and badly skewed when $y_t$ is near zero, which rules them out for intermittent demand[^2]. Add one day with no orders to the 21 above and MAPE is infinite for every forecast above zero, and $0/0$ at a forecast of zero.
+
+**It is lopsided.** An under-forecast can miss by at most 100%, by forecasting nothing; an over-forecast has no ceiling. On the 21 days, forecasting zero every day scores exactly 100%. Forecasting 36 crates, the mean plus 11, scores $116.5\%$. By MAPE, ordering no fruit at all beats ordering a little too much.
+
+**It rewards under-forecasting.** The same slope argument as for MAE, with each actual now weighted by $1/y_t$, gives
+
+$$\frac{d\,\text{MAPE}}{dc} = \frac{100\%}{n} \left( \sum_{y_t < c} \frac{1}{y_t} - \sum_{y_t > c} \frac{1}{y_t} \right)$$
+
+so MAPE is lowest at a weighted median in which small days count for more. The weights $1/y_t$ sum to $1.198$, half of which is $0.599$. The five days below 14 crates carry $0.476$; adding the two 14s brings it to $0.619$, past half. MAPE is therefore lowest at 14 crates, scoring $36.04\%$, below both the median and the mean. Gneiting calls this functional the median of order $-1$ and notes that it tends to favour severe under-forecasts. At 14 crates a day the forecast is short by 11 crates a day on average, $11 \times 21 = 231$ crates over the three weeks.
+
+The **symmetric MAPE** was proposed to fix the lopsidedness by dividing by the average of actual and forecast:
+
+$$\text{sMAPE} = \frac{100\%}{n} \sum_{t=1}^{n} \frac{2 \lvert y_t - \hat{y}_t \rvert}{y_t + \hat{y}_t}$$
+
+which runs from 0 to 200%. It is symmetric only in that swapping $y_t$ and $\hat{y}_t$ gives the same value. For a fixed actual of 100 crates, forecasting 50 scores $200 \times 50 / 150 = 66.7\%$ and forecasting 150 scores $200 \times 50 / 250 = 40.0\%$: the same 50-crate miss now costs more on the low side. Hyndman and Koehler point out this asymmetry, that sMAPE still divides by a number near zero when both values are small, and that it can go negative when values can.
+
+## Comparing many items
+
+MAE and RMSE are in crates, so averaging them across items lets the large ones decide. Hyndman and Koehler call such measures scale-dependent and advise against using them across series of different scales. There are two ways round it, and they answer different questions.
+
+**Scale each item.** The mean absolute scaled error divides every error by the in-sample error of the naive forecast, which predicts each period with the one before it:
+
+$$q_t = \frac{e_t}{\frac{1}{m-1} \sum_{i=2}^{m} \lvert y_i - y_{i-1} \rvert}, \qquad \text{MASE} = \frac{1}{n} \sum_{t=1}^{n} \lvert q_t \rvert$$
+
+where $y_1, \dots, y_m$ are the $m$ training observations, the denominator is the naive forecast's mean absolute error on them, $e_t$ are the errors on the $n$ evaluated periods, and $q_t$ and MASE have no units. MASE below 1 means the forecast's errors are on average smaller than the naive one-step errors in sample. Hyndman and Koehler proposed it as the standard for comparing accuracy across series: it is undefined only if every training value is the same, and it handles zeros. For $h$-step forecasts they note the denominator can use $h$-step naive errors. For weekly or daily data with a strong season, a seasonal-naive denominator, $\lvert y_i - y_{i-s} \rvert$ with $s$ the season length, is the common choice, so that a MASE below 1 means beating last season's curve.
+
+**Pool the volume.** The weighted absolute percentage error divides total absolute miss by total actual:
+
+$$\text{WAPE} = 100\% \times \frac{\sum_t \lvert e_t \rvert}{\sum_t y_t} = \sum_t \frac{y_t}{\sum_s y_s} \cdot \frac{100\% \, \lvert e_t \rvert}{y_t}$$
+
+where the sums run over every item and day being pooled. The second form shows WAPE is a MAPE in which each day's percentage error is weighted by its share of total volume, so zero days drop out and large items count in proportion to their size. For one series WAPE is MAE divided by the mean actual.
+
+The two disagree on purpose. Take two items, with numbers invented for illustration:
+
+| | Item A | Item B |
+|---|---:|---:|
+| Mean actual (crates/day) | 1000 | 5 |
+| Model MAE (crates/day) | 60 | 3.6 |
+| In-sample naive MAE (crates/day) | 80 | 3 |
+| MASE | $60/80 = 0.75$ | $3.6/3 = 1.20$ |
+| WAPE | $60/1000 = 6.0\%$ | $3.6/5 = 72\%$ |
+
+The average MAE is $(60 + 3.6)/2 = 31.8$ crates, of which item A contributes $60/63.6 = 94\%$. The average MASE is $(0.75 + 1.20)/2 = 0.975$: better than naive overall, but the model loses to naive on item B, which the per-item values show. Pooled WAPE is $(60 + 3.6)/(1000 + 5) = 6.3\%$, almost entirely item A, while the unweighted average of the two items' WAPEs is $(6.0 + 72)/2 = 39\%$, mostly item B. Pooled WAPE is the right number for trucks, labour and purchasing, where a crate is a crate. MASE is the right one for choosing a model that should work on every item, including the small ones.
+
+**Check bias separately.** Every metric so far ignores the sign of the error. Bias, the mean of forecast minus actual,
+
+$$\text{bias} = \frac{1}{n} \sum_{t=1}^{n} (\hat{y}_t - y_t)$$
+
+in crates per day, positive for over-forecasting, shows the direction. Pooled over items, divide the sum by $\sum y_t$ to get a percentage. In the widget the median forecast has the lowest MAE and a bias of $18 - 25 = -7$ crates a day: $7 \times 21 = 147$ crates short over three weeks, $147/525 = 28\%$ of what was ordered. A forecast can win on MAE while running short every week. A persistent bias can be removed by recalibrating, but only once someone has measured it.
+
+## Matching the metric to the cost
+
+The right metric is the one whose best forecast is the forecast you want, and that depends on what the number is for. For perishable fruit the two directions of error cost different things. A crate too many is fruit that spoils, is marked down or ties up cold storage. A crate too few is an empty shelf, a lost sale or a substituted product. A symmetric metric such as MAE says the two cost the same per crate.
+
+| What the forecast is for | Score with | Because |
+|---|---|---|
+| A typical day for one item, symmetric costs | MAE | It is lowest at the median |
+| Totals summed over days, stores or items | RMSE, with bias | It is lowest at the mean, and means add up |
+| Choosing one model across many items | MASE | Each item counts equally, relative to naive |
+| Volume misplaced across the business | Pooled WAPE, with bias | A crate is a crate |
+| People who think in percentages | WAPE rather than MAPE | Defined at zero; a crate over costs the same as a crate under |
+| An order with unequal over- and under-supply costs | Pinball loss | It is lowest at the quantile the costs imply |
+
+The second row matters for logistics. Means add: the mean of a total is the sum of the means. Medians do not. Twenty-one daily forecasts of 18 crates, each the best possible under MAE, add up to 378 crates against 525 ordered; twenty-one forecasts of the mean add up to $25 \times 21 = 525$. If daily forecasts will be summed into a weekly truck plan, forecast and score the mean.
+
+The last row is where symmetric metrics run out. When a crate short costs more than a crate wasted, or less, the cost-minimising forecast is neither the mean nor the median but a quantile of the forecast distribution, and the metric that rewards that quantile is the pinball loss, of which absolute error, halved, is the special case at the median. [Pinball loss and quantiles](pinball-loss-and-quantiles.qmd) takes it from here, together with how to score a whole interval.
+
+Whatever metric is chosen, the score only means something if it was computed the way the forecast will be used: per horizon, from rolling origins, and next to naive and seasonal-naive baselines, as set out in [Backtesting properly](backtesting/backtesting_properly.ipynb).
+
+## Key takeaways
+
+- A metric decides which forecast wins. MAE is lowest at the median, RMSE at the mean; on the synthetic skewed sample these were 18 and 25 crates a day.
+- Choose the metric before modelling and train with the matching loss; scoring a mean-seeking model by MAE, or the reverse, penalises it for doing what it was asked.
+- MAPE is undefined when any actual is zero, caps under-forecasts at 100% while leaving over-forecasts unbounded, and is lowest below the median: 14 crates here. sMAPE shifts the asymmetry rather than removing it.
+- MASE divides each item's error by its in-sample naive error, so items of any size count equally and values below 1 beat naive. Pooled WAPE weights items by volume. Use MASE to pick a model, WAPE to report volume.
+- None of these shows direction. Report bias alongside; the median forecast here had the lowest MAE and was 28% short in total.
+- If forecasts are summed, forecast the mean. If over- and under-supply cost differently, forecast a quantile and score it with pinball loss.
+
+## References
+
+[^1]: Gneiting, T. Making and evaluating point forecasts. *J. Am. Stat. Assoc.* **106**, 746–762 (2011). https://doi.org/10.1198/jasa.2011.r10138
+[^2]: Hyndman, R. J. & Koehler, A. B. Another look at measures of forecast accuracy. *Int. J. Forecast.* **22**, 679–688 (2006). https://doi.org/10.1016/j.ijforecast.2006.03.001
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/growth-curves.html"><span>Previous</span>Growth curves</a><a class="mf-up" href="/series/forecasting/index.html"><span>Series</span>Forecasting with Machine Learning</a><a class="mf-next" href="/blogs/pinball-loss-and-quantiles.html"><span>Next</span>Pinball loss and quantiles</a></div>
+<!-- CURRICULUM_FOOTER_END -->

@@ -1,0 +1,194 @@
+---
+title: "Sugar, acid, and what \"ripe\" measures"
+description: A ripening blueberry gains sugar and loses acid, and the refractometer, the titration and the colour chart each measure a different part of that change.
+date: 2026-10-12
+categories:
+- plant biology
+- horticulture
+- biochemistry
+- statistics
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/plants/index.html">Plant biology, one blueberry at a time</a><span class="sep">·</span>Part 4 · Ripening</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">School biology. The forecasting series models this crop&#x27;s data; this series explains where the data comes from.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+As a blueberry ripens it fills with sugar, almost all of it glucose and fructose, and its organic acids fall. Highbush berries are mostly citric acid; rabbiteye berries carry much less citric and more of other acids. None of this is measured directly in the field or the packhouse. A refractometer reads soluble solids in °Brix, a refractive index calibrated against sucrose, which sugar dominates but does not equal. Titratable acidity counts the acid protons a sample can give up to a base, reported as if all of them came from one named acid; pH, the free acidity, is a different quantity. The ratio of the two is a useful flavour index with known blind spots: two berries with the same ratio can taste different. Colour turns fully blue before sugar and acid stop changing, and firmness and size move at the same time. Berries also differ from one another, so a single reading means little. Afterwards you should be able to say what each number measures, convert a titration into a stated acid equivalent, and work out how many berries a sample needs for a chosen precision.
+:::
+
+## What ripening changes
+
+Sugar reaches a berry from the leaves, made by [photosynthesis](photosynthesis-in-one-leaf.qmd) and carried in through the phloem. By the time the fruit is ripe, what it holds is almost entirely the two hexoses. In a screen of about 3,000 samples from Florida and Oregon breeding programmes, fructose made up 45 to 53% of the soluble sugars in fully ripe blueberries and glucose 46 to 53%, while sucrose ranged from undetectable to 5%[^1]. A ripe blueberry is sweet with free glucose and fructose, not with the table sugar a refractometer is calibrated on.
+
+Acid moves the other way. A Hunan study followed two rabbiteye and three highbush cultivars through six stages, from small green fruit to deep purple fully ripe fruit, and measured soluble solids and titratable acidity on each[^2], both with a handheld sugar–acid meter rather than the titration described below. In every cultivar acidity rose while the berry was green, peaked at the large green stage, and then fell through colouring to its lowest value at full ripeness, while soluble solids climbed from the pink stage on. For the highbush cultivar 'Emerald', acidity fell from 3.39% at the large green stage to 0.87% when fully ripe, and soluble solids rose from 5.34% to 10.78%. The same study recorded the berry going soft as it begins to colour: 'Emerald' firmness, measured as the force to push a probe through the skin, dropped from 42.42 N at the large green stage to 12.92 N at the pink stage, and to 7.08 N when ripe. All of this happens in the final phase of [the growth curve of a berry](the-growth-curve-of-a-berry.qmd), as weight gain slows, though, as the harvest-interval trial below shows, a fully blue berry can still put on weight.
+
+Which acids are present depends on the species. Ehlenfeldt and colleagues measured four acids by liquid chromatography in six highbush (*Vaccinium corymbosum*) and eight rabbiteye (*V. ashei*, now usually *V. virgatum*) cultivars and selections[^3]. Citric acid averaged 75% of the total in highbush fruit (range 38 to 90%), with succinic acid second at 17%. Rabbiteye fruit averaged 10% citric, no clone above 22%, with succinic at 50% and malic at 34%. The Hunan study agrees on the highbush side, with citric acid at 53.76 to 97.91% of the total in its three ripe highbush cultivars, but in its rabbiteye cultivars malic and quinic acids together made up more than 90%. Both studies find rabbiteye low in citric acid. They disagree on which acid takes its place, with different cultivars, decades apart; read the rabbiteye profile as unsettled.
+
+## What the instruments read
+
+A **refractometer** measures how strongly a drop of juice bends light, its refractive index, and reports it on the Brix scale. One °Brix is defined as 1 g of sucrose per 100 g of a pure sucrose solution, so a reading of 12 °Brix means the juice bends light like a 12% sucrose solution. Everything dissolved in the juice raises the refractive index: glucose and fructose, which dominate, but also the organic acids, amino acids, soluble pectin and salts. That is why the reading is called **soluble solids content** (SSC), not sugar. Sugar is most of it, but the instrument cannot tell which solute is which, and it cannot tell sucrose from the glucose and fructose a blueberry actually holds.
+
+**Titratable acidity** (TA) is measured by titration. A weighed sample of juice or puree is titrated with sodium hydroxide of known concentration until it reaches a fixed endpoint, judged by a pH meter or an indicator dye. The volume of base used counts the moles of acid protons the sample gave up:
+
+$$\text{TA} = \frac{V \, c \, E}{m} \times 100$$
+
+where TA is in grams of the reference acid per 100 g of sample (written %), $V$ is the volume of base used (L), $c$ is its concentration ($\text{mol L}^{-1}$), $m$ is the sample mass (g), and $E$ is the equivalent mass of the reference acid, its molar mass divided by the number of protons it gives up ($\text{g mol}^{-1}$). Citric acid, $\text{C}_6\text{H}_8\text{O}_7$, has a molar mass of $192.12\ \text{g mol}^{-1}$ and three acidic protons, so $E = 192.12/3 = 64.04$. Malic acid, $\text{C}_4\text{H}_6\text{O}_5$, has two: $E = 134.09/2 = 67.04$.
+
+Take a synthetic example: 10.0 g of puree uses 12.0 mL of 0.100 mol/L base, which is $0.0120 \times 0.100 = 1.20$ mmol of protons. Expressed as citric acid that is $1.20 \times 64.04 = 76.8$ mg, or 0.77%. Expressed as malic acid the same titration is $1.20 \times 67.04 = 80.4$ mg, or 0.80%. The chemistry did not change; only the label did. That is why a TA figure needs its acid stated, and why blueberry results are usually given in citric acid equivalents, as in the breeding screen above, where TA ranged from 0.10 to 1.53%[^1]. For a rabbiteye berry that holds little citric acid, "citric acid equivalent" is a unit, not a description. It also counts protons, not mass: quinic acid, $\text{C}_7\text{H}_{12}\text{O}_6$, has a molar mass of $192.17\ \text{g mol}^{-1}$ but only one acidic proton, so a gram of it neutralises a third as much base as a gram of citric acid.
+
+**pH** is a different quantity. It measures the hydrogen ions free in the juice at that moment, on a logarithmic scale, while TA measures every proton the acids can give up when pushed to the endpoint. Fruit acids are weak acids, mostly undissociated, and the juice also holds their salts, which buffer it. Two juices can therefore share a TA and differ in pH, or the reverse. In the same breeding screen pH ran from 2.70 to 5.25, a $10^{5.25 - 2.70} = 355$-fold range in free hydrogen ion activity. When sourness is what matters, TA usually tracks it better: in a sensory study of southern highbush and rabbiteye juice, panel sourness correlated positively with total acids and TA, and negatively with pH and the Brix-to-TA ratio[^4].
+
+## The ratio, and the colour
+
+Sweetness and sourness pull against each other, so the most common single flavour index is their ratio:
+
+$$R = \frac{\text{SSC}}{\text{TA}}$$
+
+where SSC is in °Brix, TA is in % citric acid equivalent, and $R$ is treated as dimensionless. In the Hunan study it rose between 2.6- and 4.8-fold from the pink stage to full ripeness, depending on cultivar. Its means at full ripeness put 'Legacy' at $11.22/0.73 = 15.4$ and 'Homebell' at $15.00/0.81 = 18.5$; the paper reports 15.3 and 18.6 because it averaged the ratio replicate by replicate. In the widget, the lines trace each cultivar's six stages, the dashed lines are constant ratios, and the sliders place a berry of your own.
+
+::: {.sim-card}
+#### Soluble solids against acidity
+
+```{ojs}
+//| echo: false
+viewof ssc = Inputs.range([4, 22], {value: 10, step: 0.1, label: "Soluble solids (°Brix)"})
+viewof ta = Inputs.range([0.2, 3.5], {value: 0.5, step: 0.01, label: "TA (% citric acid equivalent)"})
+
+// Xiong et al. (2026), Foods 15, 2157, Table 3: mean TSS (%) and TA (%), stages I to VI.
+cultivars = [
+  {name: "Brightwell", type: "Rabbiteye", ssc: [5.16, 4.78, 6.04, 13.16, 13.64, 19.10], ta: [2.04, 2.26, 2.84, 1.19, 0.98, 0.65]},
+  {name: "Homebell",   type: "Rabbiteye", ssc: [5.94, 6.48, 6.42, 11.10, 11.40, 15.00], ta: [2.33, 2.41, 2.75, 1.71, 1.23, 0.81]},
+  {name: "Emerald",    type: "Highbush",  ssc: [4.22, 4.44, 5.34, 9.36, 9.46, 10.78],  ta: [1.56, 2.53, 3.39, 1.95, 1.74, 0.87]},
+  {name: "Bluegold",   type: "Highbush",  ssc: [5.40, 5.44, 6.08, 10.18, 10.60, 12.04], ta: [2.32, 2.41, 3.34, 2.39, 1.88, 0.59]},
+  {name: "Legacy",     type: "Highbush",  ssc: [5.26, 5.08, 4.64, 7.86, 9.70, 11.22],  ta: [2.17, 2.57, 2.89, 1.99, 1.60, 0.73]}
+]
+stages = cultivars.flatMap(c => c.ssc.map((s, i) => ({name: c.name, type: c.type, stage: i + 1, ssc: s, ta: c.ta[i]})))
+
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${card("Ratio SSC / TA", (ssc / ta).toFixed(1), "#ef4444")}
+  ${card("Same ratio, 50% more of both", (1.5 * ssc).toFixed(1) + " °Brix, " + (1.5 * ta).toFixed(2) + "%", "#64748b")}
+</div>`
+
+Plot.plot({
+  height: 360,
+  marginLeft: 55,
+  // Plot paints its own white ground otherwise, which the dark card fights.
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, 3.6], label: "Titratable acidity (%) →", grid: true},
+  y: {domain: [0, 22], label: "↑ Soluble solids (°Brix)", grid: true},
+  color: {legend: true, domain: ["Highbush", "Rabbiteye", "Your berry"],
+          range: ["#38bdf8", "#f59e0b", "#ef4444"]},
+  marks: [
+    [5, 10, 20, 30].map(r => Plot.line([{x: 0, y: 0}, {x: 22 / r, y: 22}],
+      {x: "x", y: "y", stroke: "#64748b", strokeDasharray: "4 4", clip: true})),
+    Plot.text([5, 10, 20, 30], {x: r => Math.min(22 / r, 3.5), y: r => Math.min(22, 3.5 * r),
+      text: r => "ratio " + r, fill: "#94a3b8", dy: -8, textAnchor: "end"}),
+    Plot.line(stages, {x: "ta", y: "ssc", z: "name", stroke: "type", strokeWidth: 2}),
+    Plot.dot(stages, {x: "ta", y: "ssc", fill: "type", r: d => d.stage === 6 ? 5 : 3,
+                      stroke: "#0f172a", tip: true,
+                      title: d => `${d.name}, stage ${d.stage}\n${d.ssc} °Brix, TA ${d.ta}%`}),
+    Plot.text(stages.filter(d => d.stage === 6), {x: "ta", y: "ssc", text: "name",
+                                                  fill: "#cbd5e1", dx: 8, textAnchor: "start"}),
+    Plot.dot([{ta, ssc}], {x: "ta", y: "ssc", fill: () => "Your berry", stroke: "#0f172a", r: 7})
+  ]
+})
+```
+
+Lines follow each cultivar from stage I (small green) to stage VI (fully ripe, larger dot). Data from Xiong et al. (2026); the slider berry is yours.
+:::
+
+The widget opens on a synthetic berry at 10 °Brix and 0.5% acid, ratio 20. The second readout shows another synthetic berry, at 15 °Brix and 0.75%, with exactly the same ratio. Nobody tasting both would call them the same: the second has half as much again of sugar and of acid, and would taste more intense in both directions. The ratio cannot see that, because it divides the scale away. It also cannot see which acids carry the TA, which Ehlenfeldt and colleagues suggest accounts for part of the flavour difference between rabbiteye and highbush fruit, or the aroma volatiles that make a blueberry taste of blueberry. The juice-flavour study above concluded that estimating flavour from such physicochemical measurements is complicated by the composition of the juice[^4]. The ratio is a good first sort and a poor final word.
+
+Colour is the cue a picker actually uses. The USDA storage handbook's maturity index for fresh-market blueberries is that fruit should be fully blue and firm[^5]. Full blue is reached before sugar and acid finish changing. In a two-year Oregon trial on seven highbush cultivars, picking every 4 days, as soon as berries were fully blue, gave firm fruit with relatively low weight and soluble solids, high TA and a low ratio; the author concluded that such fruit were not yet fully ripe[^6]. Picking every 12 days instead raised soluble solids in six of the seven cultivars, and raised average berry weight in five of them, by 5% to 29%. It cost firmness: 5 to 8% lower in four cultivars and 12% in 'Duke', with no effect in two. Size and firmness are quality axes in their own right. The same handbook chapter sizes highbush berries by count per 250 mL cup, from extra large at fewer than 90 berries to small at 190 to 250. Colour, sugar, acid, weight and firmness move together but not in step, and a harvest decision trades among them.
+
+Picking does not freeze these numbers. As [Respiration: the cost of being alive](respiration-the-cost-of-being-alive.qmd) shows, a picked berry keeps burning its sugar and acids, and that module's figure of about 1.1 g of sugar per kilogram per day at 20 °C is $1.1/10 = 0.11$ g per 100 g, in the same units as a Brix reading. Whether blueberry ripening involves a climacteric rise in respiration is still debated, as that module notes.
+
+## How many berries
+
+Berries on the same bush, picked on the same day, differ from one another, so a single berry's reading says little about the lot. What a sample estimates is the lot's mean, and its precision depends on two numbers: the berry-to-berry standard deviation and the number of berries. If berries are sampled at random, the 95% confidence interval for the mean soluble solids has half-width
+
+$$h = 1.96 \, \frac{\sigma}{\sqrt{n}}$$
+
+where $h$ is in °Brix, $\sigma$ is the berry-to-berry standard deviation (°Brix), $n$ is the number of berries, and 1.96 is the standard normal quantile for 95% coverage. This form assumes $\sigma$ is known. Estimating it from the same sample replaces 1.96 with a Student's $t$ quantile, which is larger for small samples: 2.26 for $n = 10$, 2.09 for $n = 20$. Rearranged, the sample needed for a chosen half-width is $n = (1.96\, \sigma / h)^2$, rounded up.
+
+No published berry-to-berry standard deviation for blueberry soluble solids is cited here, so the example uses a synthetic one, $\sigma = 1.5$ °Brix. Your own value is easy to get: read 20 single berries from one lot and take their standard deviation. With $\sigma = 1.5$, ten berries give $h = 1.96 \times 1.5 / \sqrt{10} = 0.93$ °Brix. Pinning the mean to within 0.5 °Brix needs $n = (1.96 \times 1.5 / 0.5)^2 = 34.6$, so 35 berries. Halving the interval again, to 0.25 °Brix, needs $(1.96 \times 1.5 / 0.25)^2 = 138.3$, so 139 berries, about four times as many. The widget draws 20 synthetic samples from a lot whose true mean is 12 °Brix and shows the interval each one would report.
+
+::: {.sim-card}
+#### Twenty samples from one lot
+
+```{ojs}
+//| echo: false
+viewof sigma = Inputs.range([0.5, 3], {value: 1.5, step: 0.1, label: "Berry-to-berry SD σ (°Brix)"})
+viewof n = Inputs.range([1, 100], {value: 10, step: 1, label: "Berries per sample n"})
+
+trueMean = 12  // synthetic lot
+half = 1.96 * sigma / Math.sqrt(n)
+
+// Synthetic berries: normal(12, σ), seeded so the same slider settings always draw the same berries.
+samples = {
+  const draw = d3.randomNormal.source(d3.randomLcg(42))(trueMean, sigma);
+  return d3.range(20).map(k => {
+    const m = d3.mean(d3.range(n), draw);
+    return {k: k + 1, m, lo: m - half, hi: m + half, hit: Math.abs(m - trueMean) <= half};
+  });
+}
+
+html`<div class="sim-readouts">
+  ${card("95% half-width h", "± " + half.toFixed(2) + " °Brix", "#38bdf8")}
+  ${card("Berries for ± 0.5 °Brix", Math.ceil((1.96 * sigma / 0.5) ** 2), "#10b981")}
+  ${card("Intervals covering 12 °Brix", d3.sum(samples, d => d.hit) + " of 20", "#f59e0b")}
+</div>`
+
+Plot.plot({
+  height: 360,
+  marginLeft: 55,
+  // Plot paints its own white ground otherwise, which the dark card fights.
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [5, 19], label: "Mean soluble solids of the sample (°Brix) →", grid: true},
+  y: {domain: [0.5, 20.5], label: "↑ Sample", ticks: [1, 5, 10, 15, 20]},
+  color: {legend: true, domain: ["Covers true mean", "Misses true mean"], range: ["#38bdf8", "#ef4444"]},
+  marks: [
+    Plot.ruleX([trueMean], {stroke: "#10b981", strokeWidth: 2, strokeDasharray: "6 4"}),
+    Plot.link(samples, {x1: "lo", x2: "hi", y1: "k", y2: "k", strokeWidth: 3, clip: true,
+                        stroke: d => d.hit ? "Covers true mean" : "Misses true mean"}),
+    Plot.dot(samples, {x: "m", y: "k", r: 4, stroke: "#0f172a",
+                       fill: d => d.hit ? "Covers true mean" : "Misses true mean"})
+  ]
+})
+```
+
+Synthetic data: berries drawn from a normal distribution with mean 12 °Brix (dashed line) and the chosen σ.
+:::
+
+Over many repeats about 19 intervals in 20 should cover the true mean, whatever $n$ is; what $n$ buys is how narrow they are. Two further points matter in practice. Blending the berries into one puree and reading it once averages them physically, so a well-mixed puree of 35 berries estimates the mean about as well as 35 separate readings, though it can no longer reveal the spread. And the formula assumes the berries are a random draw from the lot. Thirty-five berries from one bush, or from the sunny side of every bush, measure that bush or that side, and differences between bushes, positions and harvest dates add variation that more berries from the same spot cannot remove.
+
+## Key takeaways
+
+- Ripening fills a blueberry with glucose and fructose, with little sucrose, and draws its acids down after a peak in the green fruit. Highbush acid is mostly citric; rabbiteye has far less citric acid, and studies disagree on which acids replace it.
+- A refractometer reads soluble solids in °Brix, the sucrose solution with the same refractive index. Sugar dominates the reading but every dissolved substance contributes.
+- Titratable acidity counts acid protons, $\text{TA} = V c E / m \times 100$, and reports them as one named acid. The same titration is 0.77% as citric acid and 0.80% as malic acid. pH measures free acidity and is a different number.
+- The SSC/TA ratio is a useful flavour index that cannot distinguish a mild berry from an intense one with the same ratio, nor see acid type or aroma.
+- Fully blue comes before sugar, acid and weight stop changing, and waiting trades firmness for sweetness and size.
+- A sample's precision is set by $h = 1.96\,\sigma/\sqrt{n}$; with a synthetic $\sigma = 1.5$ °Brix, 35 random berries pin the mean to within 0.5 °Brix.
+
+## References
+
+[^1]: Perkins-Veazie, P., Ma, G., Pottorff, M., Lila, M. A. & Iorizzo, M. New tools for rapid fruit quality analysis in blueberry. *Acta Hortic.* **1357**, 193–198 (2023). https://doi.org/10.17660/ActaHortic.2023.1357.28
+[^2]: Xiong, J. et al. Changes in fruit characteristics of various blueberry cultivars during ripening stages. *Foods* **15**, 2157 (2026). https://doi.org/10.3390/foods15122157
+[^3]: Ehlenfeldt, M. K., Meredith, F. I. & Ballington, J. R. Unique organic acid profile of rabbiteye vs. highbush blueberries. *HortScience* **29**, 321–323 (1994). https://doi.org/10.21273/HORTSCI.29.4.321
+[^4]: Bett-Garber, K. L. et al. Flavor of fresh blueberry juice and the comparison to amount of sugars, acids, anthocyanidins, and physicochemical measurements. *J. Food Sci.* **80**, S818–S827 (2015). https://doi.org/10.1111/1750-3841.12821
+[^5]: Perkins-Veazie, P. in *The Commercial Storage of Fruits, Vegetables, and Florist and Nursery Stocks* (eds Gross, K. C., Wang, C. Y. & Saltveit, M.) Agriculture Handbook 66, 240–242 (U.S. Department of Agriculture, Agricultural Research Service, 2016).
+[^6]: Strik, B. C. Frequency of harvest affects berry weight, firmness, titratable acidity, and percent soluble solids of highbush blueberry cultivars in Oregon. *J. Am. Pomol. Soc.* **73**, 254–268 (2019). https://doi.org/10.71318/apom.2019.73.4.254
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/roots-and-why-blueberries-want-acid-soil.html"><span>Previous</span>Roots, and why blueberries want acid soil</a><a class="mf-up" href="/series/plants/index.html"><span>Series</span>Plant biology, one blueberry at a time</a><a class="mf-next" href="/blogs/chill-hours-and-dormancy.html"><span>Next</span>Chill hours and dormancy</a></div>
+<!-- CURRICULUM_FOOTER_END -->

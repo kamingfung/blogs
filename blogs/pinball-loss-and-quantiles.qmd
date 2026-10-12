@@ -1,0 +1,216 @@
+---
+title: Pinball loss and quantiles
+description: How the pinball loss scores a quantile forecast, why it rewards the true quantile, and how it extends to stocking decisions, intervals and whole distributions.
+date: 2026-10-12
+categories:
+- forecasting
+- statistics
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/forecasting/index.html">Forecasting with Machine Learning</a><span class="sep">·</span>Part 9 · Evaluating forecasts</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Assumes <a href="/blogs/which-metric.html">Which metric</a>.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+A quantile forecast makes a promise that outcomes can check: the value will be at or below $q$ with probability $\tau$. The pinball loss scores that promise. It charges $\tau$ for each unit the outcome lands above the forecast and $1-\tau$ for each unit it lands below, and its expected value is lowest at the true $\tau$-quantile, so shading the number up or down cannot improve the score. At $\tau = 0.5$ it is half the absolute error. The same loss is the cost of stocking a perishable product: with a unit cost $c_u$ for running short and $c_o$ for over-ordering, the cheapest order is the $c_u/(c_u+c_o)$ quantile of demand. Two quantiles make an interval, scored by its coverage and by the interval score, which rewards a narrow interval only while it keeps its promised coverage. Averaging the pinball loss over many levels approximates the CRPS, a score for the whole forecast distribution. Afterwards you should be able to score quantile and interval forecasts, choose $\tau$ from costs, and tell a calibrated forecast from a sharp one.
+:::
+
+## A quantile and its loss
+
+[Which metric](which-metric.qmd) scored forecasts that give one number. The MAE is smallest for a forecast at the median of the outcomes and the RMSE for one at the mean, but neither says how many punnets of raspberries to order when running out costs more than throwing fruit away. A **quantile forecast** answers that kind of question. For a chosen level $\tau$ it gives a value $q_\tau$ with
+
+$$P(Y \le q_\tau) = \tau$$
+
+where $Y$ is the unknown outcome (here, punnets demanded in a day), $\tau$ is the quantile level, a probability between 0 and 1, and $q_\tau$ is the forecast, in the same units as $Y$. A 0.9-quantile forecast of 116 punnets claims that demand will be at most 116 on nine days in ten.
+
+One day cannot refute that claim; a run of days can. The **pinball loss**, also called the quantile loss or check function, scores each day:
+
+$$L_\tau(y, q) = \begin{cases} \tau\,(y - q) & \text{if } y \ge q \\ (1-\tau)\,(q - y) & \text{if } y < q \end{cases}$$
+
+where $y$ is the observed outcome and $q$ the forecast, both in punnets, so $L_\tau$ is in punnets too. Plotted against the error $y - q$ it is a tilted V: slope $\tau$ when the forecast was too low, slope $1 - \tau$ when it was too high. For $\tau = 0.9$, falling short by 10 punnets costs 9 and overshooting by 10 costs 1.
+
+**Why the true quantile wins.** Let $F$ be the distribution function of $Y$ and $f$ its density. The expected loss of forecast $q$ is
+
+$$\begin{aligned} R(q) = {} & \tau \int_q^{\infty} (y - q)\, f(y)\, dy \\ & + (1 - \tau) \int_{-\infty}^{q} (q - y)\, f(y)\, dy \end{aligned}$$
+
+where the first integral covers outcomes above the forecast and the second those below. Differentiating with respect to $q$, the boundary terms vanish because both integrands are zero at $y = q$, leaving
+
+$$\begin{aligned} R'(q) &= -\tau\,\bigl[1 - F(q)\bigr] + (1 - \tau)\,F(q) \\ &= F(q) - \tau \end{aligned}$$
+
+where $F(q) = P(Y \le q)$. The derivative is zero where $F(q) = \tau$, which is the definition of the $\tau$-quantile, and $R''(q) = f(q) \ge 0$, so that point is a minimum. Read it as a trade: raising the forecast by one punnet saves $\tau$ on the days demand is above it, probability $1 - F(q)$, and costs $1 - \tau$ on the days it is below, probability $F(q)$. Stop raising when the two balance. A forecaster who believes the $\tau$-quantile is 116 does best, in expectation, by saying 116.
+
+The same argument works on a sample. With $n$ observed outcomes the average pinball loss is minimised by the empirical $\tau$-quantile, the $\lceil n\tau \rceil$-th smallest outcome when $n\tau$ is not a whole number.
+
+At $\tau = 0.5$ both slopes are $\tfrac{1}{2}$, so $L_{0.5}(y, q) = \tfrac{1}{2}\lvert y - q \rvert$ and the average pinball loss is half the MAE. The result that the MAE prefers the median is the $\tau = 0.5$ case of the derivation above. Quantile regression, introduced by Koenker and Bassett[^1], fits models by minimising this same asymmetrically weighted sum of absolute errors[^2]; [Quantile regression](quantile-regression/quantile_regression.ipynb) covers producing quantile forecasts that way. This module is about scoring them.
+
+The widget uses 37 days of synthetic daily demand for raspberry punnets at one store, drawn once from a gamma distribution with shape 16 and scale 6.25 (NumPy seed 7) and rounded to whole punnets. Their mean is 90.5 punnets and their median 93. Choose a level $\tau$ and a forecast $q$; the curve is the average pinball loss of every possible forecast, and the strip below shows which days fell above your forecast.
+
+::: {.sim-card}
+#### Score a quantile forecast
+
+```{ojs}
+//| echo: false
+viewof tau = Inputs.range([0.01, 0.99], {value: 0.6, step: 0.01, label: "Quantile level τ"})
+viewof q = Inputs.range([40, 170], {value: 90, step: 1, label: "Forecast q (punnets)"})
+
+// 37 days of synthetic demand in punnets: gamma(shape 16, scale 6.25), NumPy seed 7, rounded.
+demand = [98, 91, 87, 99, 86, 111, 101, 97, 68, 58, 59, 70, 102, 48, 97, 65, 102, 79, 79,
+          121, 95, 100, 100, 64, 101, 156, 71, 113, 116, 115, 82, 87, 71, 93, 129, 80, 56]
+
+// Average pinball loss of forecast x at level t.
+pinball = (t, x) => d3.mean(demand, y => y >= x ? t * (y - x) : (1 - t) * (x - y))
+
+// Share of days at or below x.
+coverage = x => d3.mean(demand, y => y <= x ? 1 : 0)
+
+// The minimiser is the ceil(n τ)-th smallest day; 37 τ is never whole on this slider.
+best = d3.sort(demand)[Math.ceil(demand.length * tau) - 1]
+
+curve = d3.range(40, 171).map(x => ({x, loss: pinball(tau, x)}))
+
+pct = v => (100 * v).toFixed(1) + "%"
+
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${card("Your average pinball loss", pinball(tau, q).toFixed(3) + " punnets", "#38bdf8")}
+  ${card("Days at or below your q", pct(coverage(q)), "#38bdf8")}
+  ${card("Loss-minimising q", best + " punnets", "#10b981")}
+  ${card("Its loss and coverage", pinball(tau, best).toFixed(3) + " · " + pct(coverage(best)), "#10b981")}
+</div>`
+
+Plot.plot({
+  height: 300,
+  marginLeft: 55,
+  // Plot paints its own white ground otherwise, which the dark card fights.
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [40, 170], label: "Forecast q (punnets) →", grid: true},
+  y: {domain: [0, 80], label: "↑ Average pinball loss (punnets)", grid: true},
+  color: {legend: true,
+          domain: ["Average loss", "Your forecast", "Minimum"],
+          range: ["#cbd5e1", "#38bdf8", "#10b981"]},
+  marks: [
+    Plot.line(curve, {x: "x", y: "loss", stroke: () => "Average loss", strokeWidth: 2, clip: true}),
+    Plot.ruleX([q], {stroke: "#38bdf8", strokeDasharray: "4 3"}),
+    Plot.dot([{x: best, loss: pinball(tau, best)}],
+             {x: "x", y: "loss", fill: () => "Minimum", stroke: "#0f172a", r: 6}),
+    Plot.dot([{x: q, loss: pinball(tau, q)}],
+             {x: "x", y: "loss", fill: () => "Your forecast", stroke: "#0f172a", r: 6})
+  ]
+})
+
+Plot.plot({
+  height: 80,
+  marginLeft: 55,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [40, 170], label: "Daily demand (punnets) →"},
+  color: {legend: true, domain: ["At or below q", "Above q"], range: ["#cbd5e1", "#ef4444"]},
+  marks: [
+    Plot.tickX(demand, {x: d => d, stroke: d => d <= q ? "At or below q" : "Above q", strokeWidth: 2}),
+    Plot.ruleX([q], {stroke: "#38bdf8", strokeWidth: 2})
+  ]
+})
+```
+
+The curve's slope at any $q$ is the share of days at or below $q$ minus $\tau$, so the minimum sits where that share first passes $\tau$.
+:::
+
+At the starting settings, $\tau = 0.6$ and $q = 90$ (the sample mean, rounded), the average loss is 8.924 punnets and only 17 of the 37 days, 45.9%, fall at or below the forecast. A 0.6-quantile forecast should have about 60% of days at or below it. The minimum is at $q = 98$: since $37 \times 0.6 = 22.2$, it is the 23rd smallest day, with loss 8.259 punnets and 23 of 37 days, 62.2%, at or below. Coverage cannot land on exactly 60% because 37 days move it in steps of $1/37$, about 2.7 percentage points. Set $\tau = 0.5$ and the minimum moves to the median, 93 punnets, with loss 8.811, half the MAE of 17.622 that a forecast of 93 scores.
+
+## The newsvendor quantile
+
+The pinball loss is more than a statistical device. It is the cost structure of any decision where too little and too much are both expensive, at different rates per unit. The classic case is the newsvendor: stock is bought before demand is known, and what is left at the end of the day is worthless. Fresh berries are close to that.
+
+Suppose, as a synthetic illustration, the store buys a punnet for \$2.00 and sells it for \$5.00, and unsold punnets are thrown away. Each punnet of unmet demand loses the margin, $c_u = 5 - 2 = \$3$, and each punnet left over loses its purchase price, $c_o = \$2$. Ordering $q$ punnets on a day with demand $y$ costs, relative to perfect foresight,
+
+$$\begin{aligned} C(y, q) &= c_u \max(y - q, 0) \\ &\quad + c_o \max(q - y, 0) \\ &= (c_u + c_o)\, L_{\tau^*}(y, q) \end{aligned}$$
+
+$$\tau^* = \frac{c_u}{c_u + c_o}$$
+
+where $c_u$ is the under-stock cost and $c_o$ the over-stock cost, both in dollars per punnet, $C$ is in dollars, and $\tau^*$, the **critical ratio**, is a probability. The second form follows by factoring out $c_u + c_o$: the coefficients become $\tau^*$ and $1 - \tau^*$. The cost is a scaled pinball loss, so by the previous section the expected cost is lowest when the order is the $\tau^*$-quantile of demand. Here $\tau^* = 3/(3 + 2) = 0.6$.
+
+Scoring four order rules on the same 37 days, with the mean rounded to 90: wasted and short are totals over the 37 days in punnets, and cost is the average per day, $(3 \times \text{short} + 2 \times \text{wasted})/37$ dollars.
+
+| Order | Wasted | Short | Cost |
+|---|---|---|---|
+| 90, the mean | 320 | 337 | \$44.62 |
+| 93, the median | 373 | 279 | \$42.78 |
+| 98, the 0.6-quantile | 473 | 194 | \$41.30 |
+| 105 | 664 | 126 | \$46.11 |
+
+The 0.6-quantile wastes the most fruit of the first three rules and still costs least, because each punnet short costs half as much again as each punnet wasted. Its cost, \$41.30, is $5 \times 8.259$: the widget's minimum at $\tau = 0.6$ multiplied by $c_u + c_o$. Ordering the mean, the forecast the RMSE rewards, costs the most of the first three.
+
+Three cautions. The order of 98 was read off the same 37 days it is scored on, so its win is guaranteed; in practice the quantile comes from a model conditioned on the day, and is checked on a [backtest](backtesting/backtesting_properly.ipynb). Real costs are rarely this linear: disposal fees, lost goodwill after a stock-out, and contract penalties all bend them. And the level should come from the people who carry the costs. A forecasting team that always delivers the median, or a habitual 0.9, has chosen $c_u/c_o$ on someone else's behalf.
+
+## Scoring an interval
+
+A central 80% prediction interval is a pair of quantile forecasts, the 0.1- and 0.9-quantiles. In general a central $(1 - \alpha)$ interval runs from the $\alpha/2$-quantile to the $(1 - \alpha/2)$-quantile. Two checks apply.
+
+**Coverage** is the share of outcomes inside the interval, which should be close to $1 - \alpha$. Coverage alone can be gamed: an interval wide enough to contain everything covers 100% and says nothing. The **interval score** charges for width and for misses together:
+
+$$\begin{aligned} S_\alpha(l, u; y) = {} & (u - l) \\ & + \frac{2}{\alpha}(l - y)\,\mathbb{1}\{y < l\} \\ & + \frac{2}{\alpha}(y - u)\,\mathbb{1}\{y > u\} \end{aligned}$$
+
+where $l$ and $u$ are the lower and upper bounds in punnets, $\alpha$ is the nominal miss rate (0.2 for an 80% interval), and $\mathbb{1}\{\cdot\}$ is 1 when the condition holds and 0 otherwise. Lower is better; Gneiting and Raftery write the same score with the opposite sign, as a reward to maximise. Gneiting and Raftery, in their review of proper scoring rules for quantile and interval forecasts, propose the interval score as one that addresses width as well as coverage[^3]; forecasters also call it the Winkler score, after Winkler's decision-theoretic treatment of interval estimation[^4]. Working through the three cases $y < l$, $l \le y \le u$ and $y > u$ shows that
+
+$$\frac{\alpha}{2}\, S_\alpha(l, u; y) = L_{\alpha/2}(y, l) + L_{1-\alpha/2}(y, u)$$
+
+where $L$ is the pinball loss. The interval score is two pinball losses added together, so it inherits their property: in expectation, the true quantiles score best.
+
+Three forecasters each issue the same 80% interval every day for the 37 days. Widths and mean interval scores are in punnets:
+
+| Interval | Coverage | Width | Mean score |
+|---|---|---|---|
+| Narrow, 80 to 105 | 18/37 = 48.6% | 25 | 105.54 |
+| Empirical, 59 to 116 | 31/37 = 83.8% | 57 | 76.73 |
+| Wide, 40 to 160 | 37/37 = 100% | 120 | 120.00 |
+
+The narrow interval is precise and wrong on half the days; every miss costs $2/0.2 = 10$ times its distance. The wide interval never misses and is charged its full width of 120 every day. The empirical interval runs from the 4th to the 34th smallest day, the empirical 0.1- and 0.9-quantiles, so it wins by construction on these days; its coverage is 83.8% rather than 80% because three days fall below it and three above, and 37 days cannot split more finely.
+
+This is the distinction Gneiting, Balabdaoui and Raftery draw between **calibration**, the statistical consistency between forecasts and outcomes, and **sharpness**, the concentration of the forecast distribution, a property of the forecasts alone; they frame evaluation as maximising sharpness subject to calibration[^5]. The empirical interval is calibrated but no sharper than the spread of the whole sample. A model that knows it is a Saturday, or that the weather is hot, can issue a narrower interval each day at the same coverage, and the interval score will reward it for that.
+
+## From quantiles to a distribution
+
+A forecast can also be a whole predictive distribution $F$, from which any quantile can be read. Its standard score is the **continuous ranked probability score**:
+
+$$\begin{aligned} &\mathrm{CRPS}(F, y) \\ &\quad = \int \bigl(F(x) - \mathbb{1}\{y \le x\}\bigr)^2 dx \end{aligned}$$
+
+where $F(x)$ is the forecast probability that $Y \le x$, $x$ runs over possible outcomes in punnets, the integral runs over all $x$, and the CRPS is in punnets. If $F$ is a point forecast, a step from 0 to 1 at $q$, the integrand is 1 between $q$ and $y$ and 0 elsewhere, so the CRPS reduces to the absolute error $\lvert y - q \rvert$. Gneiting and Ranjan show that the CRPS decomposes over quantile levels[^6]:
+
+$$\mathrm{CRPS}(F, y) = 2 \int_0^1 L_\tau\bigl(y, F^{-1}(\tau)\bigr)\, d\tau$$
+
+where $F^{-1}(\tau)$ is the forecast's $\tau$-quantile. Twice the average pinball loss over evenly spaced levels therefore approximates the CRPS. Take a forecast that demand is normal with mean 100 and standard deviation 15 punnets, and an outcome of 120. Numerical integration of the definition gives a CRPS of 12.809 punnets. Twice the average pinball loss at the nine levels 0.1 to 0.9 gives 14.031, at the 19 levels 0.05 to 0.95 gives 13.447, and at the 99 levels 0.01 to 0.99 gives 12.936. The coarse grids overstate the CRPS because they leave out the tails, where this outcome sits; the absolute error of the forecast median alone would be 20.
+
+In practice that gives a short evaluation routine for quantile forecasts on a backtest:
+
+- For each level $\tau$, report the average pinball loss and the share of outcomes at or below the forecast. The second should be close to $\tau$; a table of the two across levels is a calibration check.
+- Report the average over levels as one summary number; it is about half the CRPS.
+- Repeat the coverage check by segment, such as horizon, product or season. Coverage that is right on average can hide intervals that are too narrow at peak and too wide off-season.
+- Like the MAE, the pinball loss is in the units of the target, so it cannot be compared across products of different size. Divide it by a scale, such as the in-sample naive MAE that the MASE uses in [Which metric](which-metric.qmd), before averaging across series.
+
+## Key takeaways
+
+- A $\tau$-quantile forecast claims $P(Y \le q) = \tau$, and the pinball loss $L_\tau$ scores it, charging $\tau$ per unit for under-forecasts and $1 - \tau$ per unit for over-forecasts.
+- The expected pinball loss has derivative $F(q) - \tau$, so it is minimised at the true $\tau$-quantile. At $\tau = 0.5$ it is half the absolute error.
+- With linear under-stock and over-stock costs, the cost of an order is $(c_u + c_o) L_{\tau^*}$, and the best order is the $\tau^* = c_u/(c_u + c_o)$ quantile of demand. The level should come from the costs.
+- An interval is scored by coverage and by the interval score, which is the sum of the two end-point pinball losses scaled by $2/\alpha$; it penalises both width and misses.
+- Good probabilistic forecasts are as sharp as possible while staying calibrated. Check coverage at every level and in every segment that matters.
+- Twice the average pinball loss over many evenly spaced levels approximates the CRPS, which reduces to the absolute error for a point forecast.
+
+## References
+
+[^1]: Koenker, R. & Bassett, G. Regression quantiles. *Econometrica* **46**, 33–50 (1978). https://doi.org/10.2307/1913643
+[^2]: Koenker, R. & Hallock, K. F. Quantile regression. *J. Econ. Perspect.* **15**, 143–156 (2001). https://doi.org/10.1257/jep.15.4.143
+[^3]: Gneiting, T. & Raftery, A. E. Strictly proper scoring rules, prediction, and estimation. *J. Am. Stat. Assoc.* **102**, 359–378 (2007). https://doi.org/10.1198/016214506000001437
+[^4]: Winkler, R. L. A decision-theoretic approach to interval estimation. *J. Am. Stat. Assoc.* **67**, 187–191 (1972). https://doi.org/10.1080/01621459.1972.10481224
+[^5]: Gneiting, T., Balabdaoui, F. & Raftery, A. E. Probabilistic forecasts, calibration and sharpness. *J. R. Stat. Soc. B* **69**, 243–268 (2007). https://doi.org/10.1111/j.1467-9868.2007.00587.x
+[^6]: Gneiting, T. & Ranjan, R. Comparing density forecasts using threshold- and quantile-weighted scoring rules. *J. Bus. Econ. Stat.* **29**, 411–422 (2011). https://doi.org/10.1198/jbes.2010.08110
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/which-metric.html"><span>Previous</span>Which metric</a><a class="mf-up" href="/series/forecasting/index.html"><span>Series</span>Forecasting with Machine Learning</a><a class="mf-next" href="/blogs/quantile-regression/quantile_regression.html"><span>Next</span>Quantile regression</a></div>
+<!-- CURRICULUM_FOOTER_END -->

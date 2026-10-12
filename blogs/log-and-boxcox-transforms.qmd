@@ -1,0 +1,238 @@
+---
+title: Log and Box–Cox transforms
+description: Why positive, skewed, multiplicative targets such as volumes and prices are often modelled on a log or power scale, how to choose the power, and how to get back to the original scale without bias.
+date: 2026-10-12
+categories:
+- statistics
+- machine learning
+- time series
+- data science
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/forecasting/index.html">Forecasting with Machine Learning</a><span class="sep">·</span>Part 7 · Awkward targets</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">Python and pandas. Basic statistics. No prior forecasting.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Harvest volumes, sales and prices are positive, right-skewed, and driven by effects that multiply. Fitted with squared error on the raw scale, the largest weeks and series dominate the fit, a 10% miss costs more the bigger the week, and the noise grows with the level. Taking logs turns multiplicative effects into additive ones, makes log errors close to percentage errors, and steadies a spread that is proportional to the level. The Box–Cox family $(y^\lambda - 1)/\lambda$ generalises this, with $\lambda = 1$ (no change), $\lambda = 0.5$ (square root) and $\lambda = 0$ (log) as its familiar members; $\lambda$ is chosen by maximum likelihood or, for time series, by Guerrero's variance-stabilising method. The catch is the return trip: exponentiating a mean of logs gives a median, not a mean, which for a log-scale spread of 0.6 is 16.5% low. You will be able to pick a transform, choose $\lambda$, back-transform with the right correction, and recognise when zeros rule out the log.
+:::
+
+## Why skewed targets are awkward
+
+A weekly harvest is roughly a product: the area in production, times the yield per plant at that point of the season, times a weather factor. Write it as
+
+$$y_t = L_t \, S_t \, \varepsilon_t$$
+
+where $y_t$ is the volume in week $t$ (tonnes), $L_t$ is the underlying level (tonnes), $S_t$ is a dimensionless seasonal factor, and $\varepsilon_t$ is a dimensionless noise factor centred near 1. A model that minimises squared error on $y_t$ has three problems with this.
+
+**Big weeks decide the fit.** A 10% miss on a 50 t week is 5 t and costs $5^2 = 25\ \text{t}^2$; the same 10% miss on a 2 t week is 0.2 t and costs $0.2^2 = 0.04\ \text{t}^2$. The first counts $25/0.04 = 625$ times as much. Pool many series or a whole season and the fit is decided by the peak weeks and the largest fields; the small ones are close to invisible.
+
+**Effects multiply, but models add.** A linear model adds its terms, and a tree ensemble adds its leaf values. Taking logs turns the product into a sum,
+
+$$\ln y_t = \ln L_t + \ln S_t + \ln \varepsilon_t$$
+
+so an additive model on $\ln y_t$ is a multiplicative model on $y_t$: a leaf value of $+0.1$ means "about 10% more", whatever the level. A difference of logs is also close to a relative error. Predicting 10% too high gives $\ln 1.1 = 0.095$ and 10% too low gives $\ln 0.9 = -0.105$, so squared error on the log scale charges percentage misses about equally at every level, slightly more for under- than over-prediction.
+
+**The spread grows with the level.** If $\varepsilon_t$ has a fixed spread, the standard deviation of $y_t$ is proportional to $L_t S_t$: a peak week is noisier in tonnes than a shoulder week. Squared error assumes a common spread, the assumption listed in [Least squares](least-squares.qmd) as making noisy points count as much as precise ones.
+
+How much a power transform helps follows from a first-order (delta-method) expansion. Suppose the standard deviation of $y$ grows as a power of its mean,
+
+$$\operatorname{SD}(y) \approx k\, m^{\alpha}$$
+
+where $m$ is the mean level (tonnes), $k$ is a constant, and $\alpha$ (dimensionless) says how fast the spread grows. A transform $w = g(y)$ has $\operatorname{SD}(w) \approx |g'(m)| \operatorname{SD}(y)$, and for a power transform $g'(m) = m^{\lambda - 1}$, so
+
+$$\operatorname{SD}(w) \approx k\, m^{\lambda - 1 + \alpha}$$
+
+which no longer depends on $m$ when $\lambda = 1 - \alpha$. A spread proportional to the level ($\alpha = 1$) needs $\lambda = 0$, the log. A variance proportional to the level, as for counts ($\alpha = 1/2$), needs $\lambda = 1/2$, the square root. A constant spread ($\alpha = 0$) needs nothing.
+
+One point that matters for tree models: transforming a *feature* by any increasing function leaves a tree's splits unchanged, because only the order of values matters. Transforming the *target* is different, because it changes the quantity whose squared error the trees minimise.
+
+## The Box–Cox family
+
+Box and Cox[^1] proposed a family of power transforms indexed by one parameter, chosen so that the transformed data are as close as possible to normal, of constant variance, and additive in the model's terms:
+
+$$
+y^{(\lambda)} =
+\begin{cases}
+\dfrac{y^{\lambda} - 1}{\lambda}, & \lambda \neq 0 \\[2ex]
+\ln y, & \lambda = 0
+\end{cases}
+$$
+
+where $y > 0$ is the original value and $\lambda$ is the dimensionless power. Subtracting 1 and dividing by $\lambda$ makes the family continuous: since $y^\lambda = e^{\lambda \ln y} \approx 1 + \lambda \ln y$ for small $\lambda$, the first line tends to $\ln y$ as $\lambda \to 0$. Every member is increasing in $y$, so it never reorders the data.
+
+| $\lambda$ | $y^{(\lambda)}$ | Effect |
+|---|---|---|
+| 1 | $y - 1$ | A shift; shape unchanged |
+| 0.5 | $2(\sqrt{y} - 1)$ | Square root; mild compression of large values |
+| 0 | $\ln y$ | Log; multiplicative becomes additive |
+| −1 | $1 - 1/y$ | Reciprocal; stronger compression than the log |
+
+The widget applies the transform to a fixed synthetic sample: 300 values drawn from a lognormal distribution with median 20 t and log-scale standard deviation 0.6, standing in for weekly volumes. It is not real data. The histogram shows the transformed values; the orange and green rules mark their mean and median, which coincide when the distribution is symmetric.
+
+::: {.sim-card}
+#### Box–Cox on a skewed sample
+
+```{ojs}
+//| echo: false
+viewof lam = Inputs.range([-1, 1.5], {value: 1, step: 0.05, label: "Power λ"})
+
+// Seeded generator (mulberry32) so every reader sees the same synthetic sample.
+mulberry32 = a => () => {
+  a = (a + 0x6D2B79F5) | 0;
+  let t = Math.imul(a ^ (a >>> 15), 1 | a);
+  t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+}
+
+// 300 lognormal values, median 20 t, log-scale SD 0.6 (Box–Muller normals).
+sample = {
+  const u = mulberry32(42);
+  return Array.from({length: 300}, () => {
+    const z = Math.sqrt(-2 * Math.log(1 - u())) * Math.cos(2 * Math.PI * u());
+    return 20 * Math.exp(0.6 * z);
+  });
+}
+
+isLog = l => Math.abs(l) < 1e-9
+bc = (y, l) => isLog(l) ? Math.log(y) : (y ** l - 1) / l
+invbc = (w, l) => isLog(l) ? Math.exp(w) : (l * w + 1) ** (1 / l)
+moment = (a, k) => { const m = d3.mean(a); return d3.mean(a, v => (v - m) ** k); }
+skew = a => moment(a, 3) / moment(a, 2) ** 1.5
+
+// Profile log-likelihood of Box and Cox, maximised on a 0.001 grid.
+lamHat = {
+  const sumLog = d3.sum(sample, Math.log);
+  const llf = l => -sample.length / 2 * Math.log(moment(sample.map(y => bc(y, l)), 2)) + (l - 1) * sumLog;
+  return d3.range(-1, 1.5001, 0.001).reduce((best, l) => llf(l) > llf(best) ? l : best, -1);
+}
+
+w = sample.map(y => bc(y, lam))
+meanY = d3.mean(sample)
+backMean = invbc(d3.mean(w), lam)
+
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${card("Skewness of transformed values", skew(w).toFixed(2), "#38bdf8")}
+  ${card("Maximum-likelihood λ", lamHat.toFixed(2), "#10b981")}
+  ${card("Transformed mean ± SD", `${d3.mean(w).toFixed(3)} ± ${d3.deviation(w).toFixed(3)}`, "#cbd5e1")}
+  ${card("Sample mean of y", meanY.toFixed(2) + " t", "#cbd5e1")}
+  ${card("Back-transformed mean", `${backMean.toFixed(2)} t (${((backMean / meanY - 1) * 100).toFixed(1)}%)`, "#f59e0b")}
+</div>`
+
+Plot.plot({
+  height: 300,
+  marginLeft: 50,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {label: "transformed value →", grid: true},
+  y: {label: "↑ count", grid: true},
+  color: {legend: true,
+          domain: ["Transformed values", "Mean", "Median"],
+          range: ["#38bdf8", "#f59e0b", "#10b981"]},
+  marks: [
+    Plot.rectY(w, Plot.binX({y: "count"}, {x: d => d, fill: () => "Transformed values", thresholds: 30, fillOpacity: 0.8})),
+    Plot.ruleX([d3.mean(w)], {stroke: () => "Mean", strokeWidth: 2.5}),
+    Plot.ruleX([d3.median(w)], {stroke: () => "Median", strokeWidth: 2.5, strokeDasharray: "5 4"})
+  ]
+})
+```
+
+At λ = 1 the long right tail pulls the mean well past the median. Slide toward 0 and the two rules meet.
+:::
+
+The skewness readout falls from 2.37 at $\lambda = 1$ to 0.94 at $\lambda = 0.5$ and −0.04 at $\lambda = 0$, then turns negative, −0.91 at $\lambda = -0.5$, as the transform starts to stretch the left tail instead. Because the sample is lognormal, the log is the right transform, and the maximum-likelihood estimate finds it: $\hat{\lambda} = 0.02$.
+
+### Choosing λ
+
+**Maximum likelihood.** Box and Cox assume that, for some $\lambda$, the transformed values are normal with constant variance, and choose the $\lambda$ that makes the original data most probable. With no predictors, the log-likelihood profiled over the mean and variance is
+
+$$\ell(\lambda) = -\frac{n}{2} \ln \hat{\sigma}^2(\lambda) + (\lambda - 1) \sum_{i=1}^{n} \ln y_i$$
+
+where $n$ is the number of observations, $\hat{\sigma}^2(\lambda)$ is the variance of the transformed values $y_i^{(\lambda)}$ (dividing by $n$), and the second term is the log of the Jacobian $\prod_i y_i^{\lambda - 1}$, which stops the fit from shrinking the data towards zero to make the variance small. The widget maximises this on a grid; `scipy.stats.boxcox` does the same with a numerical optimiser and returns both the transformed data and $\hat{\lambda}$:
+
+```python
+import numpy as np
+from scipy import stats
+from scipy.special import inv_boxcox
+
+w, lam = stats.boxcox(y)          # y must be strictly positive; lam by maximum likelihood
+# ... fit any model to w, predict w_hat ...
+y_back = inv_boxcox(w_hat, lam)   # back to tonnes: a median-type forecast (next section)
+```
+
+On the widget's sample, `stats.boxcox` returns $\hat{\lambda} = 0.024$, matching the grid's 0.02.
+
+**Guerrero's method.** For a time series, normality of the pooled values is not quite the goal; a constant spread over time is. Guerrero[^2] proposed choosing $\lambda$ to stabilise the variance, independently of the forecasting model that follows. In the form implemented in R's `forecast` package, the series is cut into consecutive subseries one seasonal period long (for weekly data with a yearly cycle, each year), the mean $m_h$ and standard deviation $s_h$ of each subseries $h$ are computed, and $\lambda$ is chosen to make the ratio $s_h / m_h^{1 - \lambda}$ as nearly constant across subseries as possible, by minimising its coefficient of variation. This is the $\lambda = 1 - \alpha$ rule from the previous section, estimated from the data.
+
+In practice an estimate such as 0.08 or 0.43 is best rounded to a value people can read, usually 0, 0.5 or 1, and the choice confirmed in a backtest. A skewed histogram of the raw target is also weaker evidence than it looks: a mixture of small and large fields is skewed even when each field's residuals are well behaved, and what squared error needs is well-behaved residuals.
+
+## Back to the original scale
+
+A model trained with squared error on $w = y^{(\lambda)}$ estimates the conditional mean of $w$. Applying the inverse transform to that mean does not give the mean of $y$, because the inverse is curved; for the log, it is convex, so the result is too low.
+
+For the log case this has an exact answer. If $\ln y \sim \mathcal{N}(\mu, \sigma^2)$, then
+
+$$\operatorname{median}(y) = e^{\mu}, \qquad \operatorname{E}[y] = e^{\mu + \sigma^2/2}$$
+
+where $\mu$ and $\sigma$ are the mean and standard deviation of $\ln y$ (dimensionless, since the log of tonnes is taken after dividing by 1 t). The first holds because the exponential preserves order and $\mu$ is the median of $\ln y$. The second is the normal moment-generating function $\operatorname{E}[e^{tZ}] = e^{\mu t + \sigma^2 t^2/2}$ evaluated at $t = 1$. So exponentiating a mean of logs returns the **median**, and the mean is larger by the factor $e^{\sigma^2/2}$.
+
+**Worked example.** The population behind the widget has $\mu = \ln 20$ and $\sigma = 0.6$. Its median is $e^{\ln 20} = 20$ t. Its mean is $20 \times e^{0.6^2/2} = 20 \times e^{0.18} = 20 \times 1.197 = 23.94$ t. The naive back-transform is low by $1 - 1/1.197 = 16.5\%$.
+
+The sample shows the same thing. Set the widget to $\lambda = 0$: the logs have mean 2.983 and standard deviation 0.595, so the naive back-transform is $e^{2.983} = 19.74$ t, 16.1% below the sample mean of 23.52 t. The corrected value is $e^{2.983 + 0.595^2/2} = e^{3.160} = 23.57$ t, within 0.05 t of the sample mean.
+
+Whether this matters depends on what the forecast is for. The median is the right point forecast if the forecast is judged by mean absolute error, and it is a sensible single number for a skewed quantity. It is the wrong one if forecasts are summed: a packhouse plan built from weekly medians, or a regional total built from field medians, underestimates the expected total by roughly the factor $e^{\sigma^2/2}$. The `TransformedTargetRegressor` in scikit-learn applies the inverse function to predictions and nothing more, so a model wrapped with `func=np.log, inverse_func=np.exp`, as in [Ensemble models](forecast/2_ensemble_models.ipynb), returns median-type forecasts.
+
+**When the residuals are not normal**, which with a machine-learning model is the usual case, the $e^{\sigma^2/2}$ factor is only approximate. Duan's smearing estimate[^3] replaces the normal assumption with the empirical residuals: multiply the back-transformed prediction by the average of $e^{r_i}$, where $r_i = \ln y_i - \widehat{\ln y_i}$ are the residuals on the log scale.
+
+```python
+r = np.log(y_valid) - model.predict(X_valid)   # log-scale residuals, held-out rows
+smear = np.mean(np.exp(r))                     # replaces exp(sigma^2 / 2)
+y_mean_hat = np.exp(model.predict(X_new)) * smear
+```
+
+With no predictors this returns the sample mean exactly, since $e^{\bar{\ell}} \cdot \frac{1}{n}\sum e^{\ln y_i - \bar{\ell}} = \bar{y}$, where $\bar{\ell}$ is the mean of the logs and $\bar{y}$ the mean of $y$. The code uses held-out residuals because a boosted model's training residuals are too small, which would make the factor too small too. For general $\lambda$, Guerrero's paper also proposes a bias reduction for forecasts returned to the original scale.
+
+**Or change the loss, not the target.** The alternative is to keep $y$ on its own scale and put the log inside the model as a *link*: the model produces a score $s$, predicts $e^{s}$, and the loss compares $e^{s}$ with $y$ directly. Predictions stay positive, effects are multiplicative, and the model estimates the mean of $y$ itself, so there is nothing to correct. LightGBM's `gamma` and `tweedie` objectives are documented as using a log link. The same idea with the logit $\ln\bigl(p/(1-p)\bigr)$, the log's counterpart for a target bounded in $[0, 1]$, is the sigmoid link in [Cross-entropy for bounded targets](lightgbm-cross-entropy-bounded-target.qmd).
+
+| | Transform the target | Log link in the loss |
+|---|---|---|
+| Model fits | $\operatorname{E}[\ln y]$ with squared error | $\operatorname{E}[y]$ through $e^{s}$ |
+| Back-transform | $e^{\hat{w}}$ is a median; needs a correction for the mean | None |
+| Works with | Any regressor | Models that offer the objective |
+
+## Zeros and log1p
+
+The log and every Box–Cox member with $\lambda \le 0$ fail at zero ($\ln 0 = -\infty$), and `scipy.stats.boxcox` refuses any value that is not strictly positive. A week with no harvest, or a product line that has not started, breaks the transform.
+
+The common patch is `np.log1p(y)`, which computes $\ln(1 + y)$ accurately for small $y$, with `np.expm1` as its inverse. It behaves like $\ln y$ for $y \gg 1$ and like $y$ itself near zero. The catch is that the 1 is in the target's units, so the transform depends on them. For 0.5 t, $\ln 0.5 = -0.693$ but $\ln 1.5 = 0.405$, a large distortion; for the same volume written as 500 kg, $\ln 500 = 6.215$ and $\ln 501 = 6.217$, almost none. Measured in tonnes, `log1p` treats everything below about 1 t as roughly linear, not relative; measured in kilograms, it is close to a true log. Choose the units, or a constant $c$ in $\ln(y + c)$, deliberately, and remember that `expm1` of a mean of `log1p` values is still a median-type forecast.
+
+The Yeo–Johnson family[^4] extends power transforms to zero and negative values, and is available as `scipy.stats.yeojohnson` and in scikit-learn's `PowerTransformer`. It is the right tool for an occasional zero or a signed quantity such as a price change.
+
+Many exact zeros are a different problem. A target that is zero in a third of the weeks is not a skewed continuous quantity with a few awkward points; it is a point mass at zero plus a positive part, and no smooth transform makes that look normal. That case, and the Tweedie objective built for it, is the subject of [Zeros and Tweedie](zeros-and-tweedie/zeros_and_tweedie.ipynb).
+
+## Key takeaways
+
+- Positive, skewed, multiplicative targets are a poor match for squared error on the raw scale: large values dominate, effects multiply while models add, and the spread grows with the level.
+- On the log scale, multiplicative effects become additive, differences of logs approximate percentage errors, and a spread proportional to the level becomes constant.
+- Box–Cox, $(y^\lambda - 1)/\lambda$ with $\ln y$ at $\lambda = 0$, generalises the log. A spread growing as $m^\alpha$ is stabilised by $\lambda = 1 - \alpha$: the log for $\alpha = 1$, the square root for $\alpha = 1/2$.
+- Choose $\lambda$ by maximum likelihood (`scipy.stats.boxcox`) or, for a time series, by Guerrero's variance-stabilising method; round it to 0, 0.5 or 1 and confirm in a backtest.
+- Back-transforming a mean of logs gives the median. For lognormal data the mean is $e^{\sigma^2/2}$ times larger, 16.5% for $\sigma = 0.6$; use that factor, a smearing estimate, or a log-link objective when forecasts will be summed.
+- Box–Cox needs $y > 0$. `log1p` handles zeros but depends on the units; Yeo–Johnson handles zeros and negatives; many exact zeros need a different model.
+
+## References
+
+[^1]: Box, G. E. P. & Cox, D. R. An analysis of transformations. *J. R. Stat. Soc. B* **26**, 211–243 (1964). https://doi.org/10.1111/j.2517-6161.1964.tb00553.x
+[^2]: Guerrero, V. M. Time-series analysis supported by power transformations. *J. Forecast.* **12**, 37–48 (1993). https://doi.org/10.1002/for.3980120104
+[^3]: Duan, N. Smearing estimate: a nonparametric retransformation method. *J. Am. Stat. Assoc.* **78**, 605–610 (1983). https://doi.org/10.1080/01621459.1983.10478017
+[^4]: Yeo, I.-K. & Johnson, R. A. A new family of power transformations to improve normality or symmetry. *Biometrika* **87**, 954–959 (2000). https://doi.org/10.1093/biomet/87.4.954
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/zeros-and-tweedie/zeros_and_tweedie.html"><span>Previous</span>Zeros and Tweedie</a><a class="mf-up" href="/series/forecasting/index.html"><span>Series</span>Forecasting with Machine Learning</a><a class="mf-next" href="/blogs/curve-fitting-partial-timeseries.html"><span>Next</span>Fitting a season from its first weeks</a></div>
+<!-- CURRICULUM_FOOTER_END -->

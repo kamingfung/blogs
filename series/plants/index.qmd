@@ -6,7 +6,7 @@ description: "How a plant works, followed through a single crop: what a blueberr
 <dl class="syl-meta">
 <div><dt>Level</dt><dd>Introductory to intermediate</dd></div>
 <div><dt>Parts</dt><dd>6</dd></div>
-<div><dt>Modules</dt><dd>6 of 19 written</dd></div>
+<div><dt>Modules</dt><dd>10 of 19 written</dd></div>
 <div class="wide"><dt>Assumes</dt><dd>School biology. The forecasting series models this crop&#x27;s data; this series explains where the data comes from.</dd></div>
 </dl>
 
@@ -29,7 +29,7 @@ description: "How a plant works, followed through a single crop: what a blueberr
 ## Part 3 · Water and nutrients
 
 <ul class="syl">
-<li class="g">Roots, and why blueberries want acid soil<span class="m">Introductory · not written</span></li>
+<li class="w"><a href="/blogs/roots-and-why-blueberries-want-acid-soil.html">Roots, and why blueberries want acid soil</a><span class="m">Introductory</span></li>
 <li class="g">Ericoid mycorrhizae<span class="m">Intermediate · not written</span></li>
 <li class="g">Nitrogen as ammonium, not nitrate<span class="m">Intermediate · not written</span></li>
 </ul>
@@ -38,7 +38,7 @@ description: "How a plant works, followed through a single crop: what a blueberr
 
 <ul class="syl">
 <li class="g">Why blueberries are blue: anthocyanins<span class="m">Introductory · not written</span></li>
-<li class="g">Sugar, acid, and what &quot;ripe&quot; measures<span class="m">Introductory · not written</span></li>
+<li class="w"><a href="/blogs/sugar-acid-and-what-ripe-measures.html">Sugar, acid, and what &quot;ripe&quot; measures</a><span class="m">Introductory</span></li>
 <li class="g">Non-climacteric: why a picked blueberry stops<span class="m">Intermediate · not written</span></li>
 <li class="g">The bloom: the wax coat and what it protects<span class="m">Introductory · not written</span></li>
 </ul>
@@ -46,8 +46,8 @@ description: "How a plant works, followed through a single crop: what a blueberr
 ## Part 5 · Seasons and stress
 
 <ul class="syl">
-<li class="g">Chill hours and dormancy<span class="m">Introductory · not written</span></li>
-<li class="g">Frost, and the night the crop is lost<span class="m">Introductory · not written</span></li>
+<li class="w"><a href="/blogs/chill-hours-and-dormancy.html">Chill hours and dormancy</a><span class="m">Introductory</span></li>
+<li class="w"><a href="/blogs/frost-and-the-night-the-crop-is-lost.html">Frost, and the night the crop is lost</a><span class="m">Introductory</span></li>
 <li class="g">Heat and drought: the stomata close<span class="m">Intermediate · not written</span></li>
 </ul>
 
