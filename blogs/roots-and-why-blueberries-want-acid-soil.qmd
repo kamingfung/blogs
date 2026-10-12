@@ -1,0 +1,206 @@
+---
+title: Roots, and why blueberries want acid soil
+description: A blueberry feeds through a small, shallow mass of very fine roots without root hairs, and the acidity of the soil around them decides which nutrients those roots can reach.
+date: 2026-10-12
+categories:
+- plant biology
+- soil science
+- horticulture
+- nitrogen
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/plants/index.html">Plant biology, one blueberry at a time</a><span class="sep">·</span>Part 3 · Water and nutrients</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">School biology. The forecasting series models this crop&#x27;s data; this series explains where the data comes from.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+A blueberry bush feeds through a shallow mat of very fine, fibrous roots that have no root hairs, so it has little root surface to work with and leans on fungal partners in its roots. Soil acidity decides what that small root system can reach. pH is a logarithm, so the pH 4.5 that blueberry growers aim for holds a hundred times more hydrogen ion than the pH 6.5 suited to many vegetable crops. Across that gap, free ferric iron in equilibrium with iron hydroxide changes a millionfold, which is why blueberries on near-neutral soil turn yellow between the veins of their youngest leaves. Extension guides recommend a soil pH of about 4.5 to 5.5. Growers reach it by mixing in elemental sulfur, which soil bacteria oxidise to sulfuric acid over months, or by planting into acidic pine bark, sawdust or peat. Afterwards you should be able to convert between pH and hydrogen-ion activity, explain why iron deficiency follows high pH, balance the sulfur oxidation reaction, and say why blueberry fertiliser programmes use ammonium rather than nitrate.
+:::
+
+## A small, shallow root system
+
+The roots are where a blueberry is most unlike the crops around it. Extension guides from New England and Florida describe the same root system: mostly fine, fibrous roots near the soil surface, with no root hairs[^1]<sup>,</sup>[^2]. Root hairs are single-cell outgrowths of the root's outer layer that extend its contact with soil water. Without them, a blueberry root system has a relatively low capacity to absorb water and nutrients, and both guides make that point. The New England guide adds that the roots cannot push into compacted soil and tolerate excessively wet or dry soil poorly[^1].
+
+The finest roots are very fine and short-lived. In a study that sorted highbush blueberry roots by branching order, first- and second-order roots, the tips of the system, were described as extremely fine and anatomically almost identical, and minirhizotron cameras gave them median lifespans of 115 to 120 days[^3]. The coarser roots of fourth order and above had radial growth, the densest tissue and the least fungal colonisation; they are the more permanent part of the system, while the fine tips are built, used and replaced. Every root tip replaced is carbon drawn from the pool described in [The carbon budget of a bush](the-carbon-budget-of-a-bush.qmd), and every living root respires, consuming oxygen as described in [Respiration: the cost of being alive](respiration-the-cost-of-being-alive.qmd). Roots short of oxygen are injured roots, and the Florida guide notes that root injury in poorly drained soil can itself cause iron deficiency[^2].
+
+The fine roots do not work alone. Blueberry belongs to the Ericaceae, the heather family, whose fine "hair roots" are colonised by **ericoid mycorrhizal** fungi. The fungi are endophytes, living within the hair roots, and some of them decompose organic matter well, giving the plant access to nitrogen and phosphorus held in tough, carbon-rich litter on nutrient-poor soils[^4]. Plants with these partnerships are widespread in harsh habitats, and the fungi appear able to relieve some of the stresses those soils impose, including, in contaminated sites, toxic metals[^5]. What the fungi trade, and how much a cultivated bush depends on them, is the subject of the next module in this part.
+
+So the plant has a small absorbing surface concentrated in the top of the soil. Whatever controls nutrient availability in that thin layer controls the plant, and the strongest control is soil pH.
+
+## pH is a logarithm
+
+pH is defined from the activity of the hydrogen ion[^6]:
+
+$$\text{pH} = -\log_{10} a_{\text{H}^+}$$
+
+where $a_{\text{H}^+}$ is the hydrogen-ion activity, a dimensionless quantity. In dilute solutions it is close to the hydrogen-ion concentration $[\text{H}^+]$ divided by $1\text{ mol L}^{-1}$, and the rest of this module treats the two as interchangeable. Inverting the definition gives $a_{\text{H}^+} = 10^{-\text{pH}}$.
+
+Because the scale is logarithmic, equal steps in pH are equal *ratios* of hydrogen ion, not equal differences:
+
+| Soil pH | $a_{\text{H}^+}$ (≈ $[\text{H}^+]$ in $\text{mol L}^{-1}$) | Relative to pH 6.5 |
+|---:|---:|---:|
+| 4.5 | $3.2 \times 10^{-5}$ | $100\times$ |
+| 5.0 | $1.0 \times 10^{-5}$ | $32\times$ |
+| 5.5 | $3.2 \times 10^{-6}$ | $10\times$ |
+| 6.5 | $3.2 \times 10^{-7}$ | $1\times$ |
+| 7.0 | $1.0 \times 10^{-7}$ | $0.32\times$ |
+
+<small>Each entry is $10^{-\text{pH}}$; the last column is $10^{6.5 - \text{pH}}$.</small>
+
+A blueberry soil at pH 4.5 and a soil at pH 6.5 sound two units apart. In hydrogen ion they are $10^{6.5-4.5} = 10^2 = 100$ times apart. For comparison, the Community Land Model assumes a soil pH of 6.5 everywhere by default, as the [Enhanced rock weathering](enhanced-rock-weathering-nitrogen.qmd) module notes; a blueberry field is a hundredfold outlier from that default. Small-sounding changes are large too: lowering a soil from pH 5.7 to 5.1 raises its hydrogen-ion activity by $10^{0.6} = 4.0$ times.
+
+::: {.sim-card}
+#### Two soils, one scale
+
+```{ojs}
+//| echo: false
+viewof phNow = Inputs.range([4, 7.5], {value: 6.5, step: 0.1, label: "Soil pH now"})
+viewof phTarget = Inputs.range([4, 7.5], {value: 4.5, step: 0.1, label: "Target pH"})
+
+// Hydrogen-ion activity a = 10^(-pH), shown in micromoles per litre.
+hMicro = ph => 1e6 * 10 ** (-ph)
+
+// Free Fe3+ over iron hydroxide: log a(Fe3+) = log K - 3 pH, so the ratio
+// between two pH values is 10^(3 * difference), whatever K is.
+feRatio = 10 ** (3 * (phNow - phTarget))
+hRatio = 10 ** (phNow - phTarget)
+
+fmtRatio = v => v >= 1 ? Math.round(v).toLocaleString("en-US") : v.toPrecision(3)
+
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${card("H⁺ now", hMicro(phNow).toPrecision(3) + " µmol/L", "#38bdf8")}
+  ${card("H⁺ at target", hMicro(phTarget).toPrecision(3) + " µmol/L", "#10b981")}
+  ${card("H⁺ at target ÷ H⁺ now", fmtRatio(hRatio) + "×", "#f59e0b")}
+  ${card("Free Fe³⁺ at target ÷ now", fmtRatio(feRatio) + "×", "#ef4444")}
+</div>`
+
+Plot.plot({
+  height: 300,
+  marginLeft: 55,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [4, 7.5], label: "Soil pH →", grid: true},
+  y: {domain: [0, 100], label: "↑ H⁺ activity (µmol/L)", grid: true},
+  color: {legend: true, domain: ["10^(−pH)", "Now", "Target"],
+          range: ["#cbd5e1", "#38bdf8", "#10b981"]},
+  marks: [
+    Plot.line(d3.range(4, 7.501, 0.02).map(ph => ({ph, h: hMicro(ph)})),
+              {x: "ph", y: "h", stroke: () => "10^(−pH)", strokeWidth: 2}),
+    Plot.dot([{ph: phNow, h: hMicro(phNow)}],
+             {x: "ph", y: "h", fill: () => "Now", stroke: "#0f172a", strokeWidth: 1.5, r: 6}),
+    Plot.dot([{ph: phTarget, h: hMicro(phTarget)}],
+             {x: "ph", y: "h", fill: () => "Target", stroke: "#0f172a", strokeWidth: 1.5, r: 6})
+  ]
+})
+```
+
+On a linear axis almost everything above pH 6 looks like zero, which is why the logarithm is used. The iron readout is the free-ion ratio from the next section, not a measure of what a plant absorbs.
+:::
+
+At the starting settings the readouts show $0.316$ and $31.6\text{ µmol L}^{-1}$, a ratio of $100$, and a free ferric iron ratio of $1{,}000{,}000$. The next section explains that last number.
+
+## What soil pH controls
+
+Soil pH matters to a plant mostly through what it does to other ions. Three effects matter most for blueberries.
+
+**Iron becomes scarce as pH rises.** In well-aerated soil, much of the iron is ferric, $\text{Fe}^{3+}$, held in hydroxide and oxide minerals. Their dissolution consumes hydrogen ions:
+
+$$\text{Fe(OH)}_3(\text{s}) + 3\,\text{H}^+ \;\rightleftharpoons\; \text{Fe}^{3+} + 3\,\text{H}_2\text{O}$$
+
+At equilibrium $K = a_{\text{Fe}^{3+}} / a_{\text{H}^+}^3$, where $K$ is the dimensionless equilibrium constant of the mineral (the solid and water have activity 1). Taking logarithms,
+
+$$\log_{10} a_{\text{Fe}^{3+}} = \log_{10} K - 3\,\text{pH}$$
+
+so free $\text{Fe}^{3+}$ falls by $10^3 = 1000$ times for every unit rise in pH, whichever iron mineral sets $K$. Between pH 4.5 and 6.5 that is $10^{3 \times 2} = 10^6$, the millionfold change in the widget. The real decline in plant-available iron is smaller, because part of the dissolved iron is present as hydroxide complexes such as $\text{FeOH}^{2+}$ and $\text{Fe(OH)}_2^+$, whose activities fall only 100 and 10 times per pH unit by the same reasoning, and part is held by organic chelates. But the direction is the same, and iron is only slightly soluble to begin with. Plants outside the grass family take it up by reducing $\text{Fe}^{3+}$ to $\text{Fe}^{2+}$ at the root surface[^7], and cultivated blueberry raises the activity of its root ferric chelate reductase, the enzyme that does this, when iron runs short[^8]. On a high-pH soil the plant can be surrounded by iron it cannot use: the Florida guide notes that iron may be present in sufficient quantities but unavailable at higher soil pH[^2]. The visible result is iron-deficiency chlorosis, yellowing between the veins while the veins stay green, which appears first in the youngest leaves near the shoot tips[^2]. Oregon State's guide to soil acidification describes the same symptom and attributes it to soil pH being higher than the plant's optimum[^9].
+
+**Aluminium and manganese become abundant as pH falls.** Aluminium hydroxide follows the same stoichiometry as iron hydroxide, so free $\text{Al}^{3+}$ rises 1000 times for every unit fall in pH. Toxic aluminium and manganese, with too little phosphorus, are the main limitations of acid soils for crops in general[^10]. Blueberries are grown well below the pH 6.5 at which Oregon State says vegetable gardens produce well[^9], but there is a floor: Oregon State recommends liming when blueberry soil falls below pH 4.5[^11], the Florida guide notes that calcium deficiency may occur below the recommended range, and it warns that the manganese in pine bark, together with low pH, can push manganese to toxic levels[^2].
+
+**Nitrogen changes form.** Dissolved ammonium is in equilibrium with ammonia, $\text{NH}_4^+ \rightleftharpoons \text{NH}_3 + \text{H}^+$, the reaction worked through in [Where ammonia comes from](where-ammonia-comes-from.qmd). With that module's $\text{p}K_a = 9.25$ at $25\,^\circ\text{C}$, the volatile share is $1/(1 + 10^{9.25 - 4.5}) = 0.0018\%$ at pH 4.5 against $0.18\%$ at pH 6.5, so in an acid soil ammoniacal nitrogen stays almost entirely as the ammonium ion. Soil bacteria also oxidise ammonium to nitrate, **nitrification**:
+
+$$\text{NH}_4^+ + 2\,\text{O}_2 \longrightarrow \text{NO}_3^- + \text{H}_2\text{O} + 2\,\text{H}^+$$
+
+which balances (one N, four H plus two in $2\,\text{H}^+$, four O, net charge $+1$ on each side) and releases two hydrogen ions per nitrogen atom. Nitrification still runs in acid soils[^12], so an acid soil is not free of nitrate, but the form in which a blueberry gets its nitrogen depends on soil chemistry and on the plant, as the last section shows.
+
+```{mermaid}
+flowchart LR
+    PH["Soil pH<br/>(log of H⁺ activity)"] -->|"pH rises"| FE["Free Fe³⁺ falls<br/>1000× per unit"]
+    FE --> CHL["Interveinal chlorosis<br/>in young leaves"]
+    PH -->|"pH falls"| AL["Al³⁺ and Mn rise"]
+    AL --> TOX["Mn toxicity, Ca deficiency<br/>at the low end"]
+    PH -->|"pH falls"| NH4["Ammoniacal N stays<br/>as NH₄⁺, not NH₃"]
+    NH4 -->|"nitrification"| NO3["NO₃⁻ plus 2 H⁺"]
+    NO3 -->|"acidifies"| PH
+
+    class PH indigo
+    class FE,AL,NH4 ochre
+    class NO3 sage
+    class CHL,TOX rust
+    classDef indigo fill:#1d4a62,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef rust fill:#a04b2d,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef ochre fill:#d69a2e,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+    classDef sage fill:#95a87f,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+```
+
+Those three effects set the window. The guides agree on its position within a few tenths of a unit: pH 4.5 to 5.2 in the New England guide[^1], 4.5 to 5.5 in the Florida[^2] and Oregon coast guides[^11], and "below 6 and preferably below 5.5" for acid-loving plants generally in Oregon State's acidification guide[^9]. From 4.5 to 5.5 is a tenfold range in hydrogen ion.
+
+## Lowering pH, and growing in bark
+
+Where the soil sits above that window, growers lower its pH or plant into something else.
+
+**Elemental sulfur** is the standard tool. Mixed into soil, it is oxidised by naturally occurring bacteria, which Oregon State's guide names as the genus *Thiobacillus*, and the product is sulfuric acid in the soil solution[^9]. The overall reaction balances as
+
+$$2\,\text{S} + 3\,\text{O}_2 + 2\,\text{H}_2\text{O} \longrightarrow 2\,\text{H}_2\text{SO}_4 \longrightarrow 4\,\text{H}^+ + 2\,\text{SO}_4^{2-}$$
+
+with two sulfur, four hydrogen and eight oxygen atoms on each side. Each sulfur atom yields two hydrogen ions, so one kilogram of sulfur, at $32.06\text{ g mol}^{-1}$, supplies $2 \times 1000 / 32.06 = 62.4\text{ mol}$ of $\text{H}^+$.
+
+Because bacteria do the work, it is slow. The Oregon coast guide advises acidifying about a year before planting, and for a clay loam between pH 5.7 and 6.5 recommends 3.5 to 4.5 pounds of finely ground sulfur per 100 square feet ($171$ to $220\text{ g m}^{-2}$) to go from pH 6.5 to 5.4, starting at the lower rate, retesting after 6 to 12 months, and never applying more than 7 pounds per 100 square feet ($342\text{ g m}^{-2}$) at once, because over-acidifying is harder to correct than under-acidifying[^11]. In a trial near Wilsonville, Oregon, a single application of 45 pounds per 1000 square feet ($220\text{ g m}^{-2}$) to a loam at pH 5.7 with 3.5% organic matter brought it to pH 5.1 after two years, where it stabilised[^9].
+
+That trial also shows how strongly soil resists the change. The arithmetic below uses two assumed values, not measurements from the trial: sulfur mixed into the top $0.15\text{ m}$ of soil, and a volumetric water content of $0.30$.
+
+- Acid added: $220\text{ g m}^{-2} / 32.06\text{ g mol}^{-1} = 6.85\text{ mol}$ of S per square metre, which yields $13.7\text{ mol}$ of $\text{H}^+$ once fully oxidised.
+- Soil water in that layer: $0.15\text{ m} \times 0.30 = 0.045\text{ m}^3$, or $45\text{ L}$ per square metre.
+- Extra $\text{H}^+$ in that water at pH 5.1 compared with 5.7: $(10^{-5.1} - 10^{-5.7}) \times 45 = 2.7 \times 10^{-4}\text{ mol}$.
+
+The acid added exceeds the change in dissolved hydrogen ion about $51{,}000$ times. Nearly all of it is neutralised by the soil's reserve of exchangeable bases and minerals, which is why the guides scale sulfur rates by soil texture and note that heavier soils need more[^11]. pH measures the solution; the sulfur has to overcome the solid.
+
+**Acidifying fertiliser** works the same way more slowly. Nitrification of ammonium releases hydrogen ions, as in the equation above, and Oregon State's guide rates ammonium sulfate as supplying twice the acidity of urea or ammonium nitrate, and notes that lowering pH by 0.4 unit this way could take more than two years[^9].
+
+**Acidic organic media** sidestep the soil. Florida's sandy soils are low in organic matter and generally above the recommended pH, so most commercial southern highbush growers there plant into raised beds of milled pine bark, or into soil amended with it. The bark supplies organic matter and a lower-pH medium, though it holds water and nutrients poorly, and fresh bark immobilises ammonium as it decomposes, so the guide suggests fertilising new beds at least three months before planting[^2]. In Oregon, Douglas-fir sawdust (pH 4.0 to 4.5) or bark is incorporated before planting, and peat moss is quite acidic but too expensive for large areas[^11]. Composts and manures go the other way: yard-debris compost is often above pH 7.0[^11].
+
+That leaves the nitrogen. Blueberry fertiliser programmes are built on ammonium. The Florida guide says blueberries prefer ammonium to nitrate, that small amounts of nitrate can be used in a blend if soil pH does not exceed 5.5, and that fertilisers supplying only or mainly nitrate should not be used in conventional production; ammonium sulfate is popular partly because its uptake helps hold pH in range[^2]. In a hydroponic comparison, a cultivated highbush hybrid took up ammonium faster than nitrate, and took up less nitrate, with lower root nitrate reductase activity, than a wild *Vaccinium* species adapted to a wider range of soils, including high-pH ones[^8]. A later study tempers the picture: in rabbiteye and southern highbush, roots took up both forms at relatively low and similar rates, and nitrate taken up by the roots stayed largely in the roots. Shoots supplied with nitrate directly, through the leaf surface or a cut stem, raised their nitrate reductase activity, so the authors suggest that uptake and transport to the shoot, not the shoot's capacity, limit how much nitrate the plant uses[^13]. Why a plant adapted to acid soil handles nitrogen this way is the subject of the module on nitrogen as ammonium rather than nitrate.
+
+## Key takeaways
+
+- Blueberry roots are fine, fibrous, shallow and without root hairs, so the plant absorbs through a small surface in the top of the soil, with ericoid mycorrhizal fungi colonising the finest roots.
+- $\text{pH} = -\log_{10} a_{\text{H}^+}$. Each pH unit is a tenfold step in hydrogen ion: pH 4.5 has $100$ times the hydrogen ion of pH 6.5.
+- Free $\text{Fe}^{3+}$ over iron hydroxide falls $1000$ times per unit rise in pH, so blueberries on high-pH soil develop interveinal chlorosis in young leaves even when the soil holds iron. At the low end, aluminium and manganese become the problem.
+- Extension guides recommend soil pH of about 4.5 to 5.5 (4.5 to 5.2 in New England).
+- Elemental sulfur lowers pH through bacterial oxidation, $2\text{S} + 3\text{O}_2 + 2\text{H}_2\text{O} \rightarrow 2\text{H}_2\text{SO}_4$, over months to years, and soil buffering absorbs nearly all the acid added. Pine bark, sawdust and peat give an acidic medium directly.
+- Blueberry fertiliser is ammonium-based. How strongly the plant prefers ammonium, and why, is taken up in the next modules, along with what the root fungi contribute.
+
+## References
+
+[^1]: UMass Extension Fruit Program. Highbush blueberries. In *New England Small Fruit Management Guide* (Univ. Massachusetts Amherst, Center for Agriculture, Food, and the Environment, accessed 12 October 2026). https://www.umass.edu/agriculture-food-environment/fruit/ne-small-fruit-management-guide/highbush-blueberries
+[^2]: Phillips, D. & Williamson, J. G. Nutrition and fertilization practices for southern highbush blueberry in Florida. *EDIS* HS1356 (2020). https://doi.org/10.32473/edis-hs1356-2020
+[^3]: Valenzuela-Estrada, L. R., Vera-Caraballo, V., Ruth, L. E. & Eissenstat, D. M. Root anatomy, morphology, and longevity among root orders in *Vaccinium corymbosum* (Ericaceae). *Am. J. Bot.* **95**, 1506–1514 (2008). https://doi.org/10.3732/ajb.0800092
+[^4]: Read, D. J. The structure and function of the ericoid mycorrhizal root. *Ann. Bot.* **77**, 365–374 (1996). https://doi.org/10.1006/anbo.1996.0044
+[^5]: Cairney, J. W. G. & Meharg, A. A. Ericoid mycorrhiza: a partnership that exploits harsh edaphic conditions. *Eur. J. Soil Sci.* **54**, 735–740 (2003). https://doi.org/10.1046/j.1351-0754.2003.0555.x
+[^6]: Buck, R. P. et al. Measurement of pH. Definition, standards, and procedures (IUPAC Recommendations 2002). *Pure Appl. Chem.* **74**, 2169–2200 (2002). https://doi.org/10.1351/pac200274112169
+[^7]: Kobayashi, T. & Nishizawa, N. K. Iron uptake, translocation, and regulation in higher plants. *Annu. Rev. Plant Biol.* **63**, 131–152 (2012). https://doi.org/10.1146/annurev-arplant-042811-105522
+[^8]: Poonnachit, U. & Darnell, R. Effect of ammonium and nitrate on ferric chelate reductase and nitrate reductase in *Vaccinium* species. *Ann. Bot.* **93**, 399–405 (2004). https://doi.org/10.1093/aob/mch053
+[^9]: Hart, J. M., Horneck, D. A., Stevens, R. G., Bell, N. & Cogger, C. G. *Acidifying Soil for Blueberries and Ornamental Plants in the Yard and Garden: West of the Cascades in Oregon and Washington*. EC 1560 (Oregon State Univ. Extension Service, 2003; reviewed 2026). https://extension.oregonstate.edu/catalog/pub/ec1560
+[^10]: Kochian, L. V., Hoekenga, O. A. & Piñeros, M. A. How do crop plants tolerate acid soils? Mechanisms of aluminum tolerance and phosphorous efficiency. *Annu. Rev. Plant Biol.* **55**, 459–493 (2004). https://doi.org/10.1146/annurev.arplant.55.031903.141655
+[^11]: Bouska, C., Dixon, E. & Strik, B. *Growing Berries on the Oregon Coast: Blueberries*. EM 9179 (Oregon State Univ. Extension Service, 2018). https://extension.oregonstate.edu/sites/default/files/documents/em9179.pdf
+[^12]: De Boer, W. & Kowalchuk, G. A. Nitrification in acid soils: micro-organisms and mechanisms. *Soil Biol. Biochem.* **33**, 853–866 (2001). https://doi.org/10.1016/S0038-0717(00)00247-9
+[^13]: Alt, D. S., Doyle, J. W. & Malladi, A. Nitrogen-source preference in blueberry (*Vaccinium* sp.): enhanced shoot nitrogen assimilation in response to direct supply of nitrate. *J. Plant Physiol.* **216**, 79–87 (2017). https://doi.org/10.1016/j.jplph.2017.05.014
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/the-growth-curve-of-a-berry.html"><span>Previous</span>The growth curve of a berry</a><a class="mf-up" href="/series/plants/index.html"><span>Series</span>Plant biology, one blueberry at a time</a><a class="mf-next" href="/blogs/sugar-acid-and-what-ripe-measures.html"><span>Next</span>Sugar, acid, and what &quot;ripe&quot; measures</a></div>
+<!-- CURRICULUM_FOOTER_END -->

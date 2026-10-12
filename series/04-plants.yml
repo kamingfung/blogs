@@ -47,6 +47,7 @@ parts:
       - id: plants/roots-and-why-blueberries-want-acid-soil
         title: Roots, and why blueberries want acid soil
         level: introductory
+        path: blogs/roots-and-why-blueberries-want-acid-soil.md
       - id: plants/ericoid-mycorrhizae
         title: Ericoid mycorrhizae
         level: intermediate
@@ -63,6 +64,7 @@ parts:
       - id: plants/sugar-acid-and-what-ripe-measures
         title: Sugar, acid, and what "ripe" measures
         level: introductory
+        path: blogs/sugar-acid-and-what-ripe-measures.md
       - id: plants/why-a-picked-blueberry-stops
         title: "Non-climacteric: why a picked blueberry stops"
         level: intermediate
@@ -75,10 +77,12 @@ parts:
       - id: plants/chill-hours-and-dormancy
         title: Chill hours and dormancy
         level: introductory
+        path: blogs/chill-hours-and-dormancy.md
         requires: [prediction/climate-vs-weather]
       - id: plants/frost-and-the-night-the-crop-is-lost
         title: Frost, and the night the crop is lost
         level: introductory
+        path: blogs/frost-and-the-night-the-crop-is-lost.md
         requires: [plants/pollination-and-fruit-set]
       - id: plants/heat-and-drought-stomata-close
         title: "Heat and drought: the stomata close"

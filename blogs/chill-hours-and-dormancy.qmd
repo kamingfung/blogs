@@ -1,0 +1,251 @@
+---
+title: Chill hours and dormancy
+description: Why a blueberry bud needs a winter's worth of cold before warmth can open it, how three models count that cold, and why they disagree most in mild climates.
+date: 2026-10-12
+categories:
+- plant biology
+- horticulture
+- climate
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/plants/index.html">Plant biology, one blueberry at a time</a><span class="sep">·</span>Part 5 · Seasons and stress</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">Assumes <a href="/blogs/climate-vs-weather/climate-vs-weather.html">Climate vs weather</a>.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+A blueberry bud formed in summer will not grow normally in spring until it has been through a long enough cold spell. Through autumn and winter it sits in endodormancy, a block inside the bud that only accumulated cold lifts. Once that chill requirement is met, the bud is in ecodormancy and waits for warmth, so bloom date is set by two clocks running one after the other: chill, then heat. Chill is counted with a model, and the three common ones disagree. Chill hours count the hours between 0 and 7.2 °C, the Utah model weights temperature bands and subtracts warm hours, and the Dynamic model banks chill in portions that later warmth cannot undo. In a mild winter the same weather can score high on one model and near zero on another, so a requirement measured in one model, in one place, does not carry over to another. Afterwards you should be able to explain why a bud waits, compute chill hours and Utah units from hourly temperatures, say why the models diverge, and describe which accumulations a bloom or harvest-timing forecast has to track.
+:::
+
+## Why a bud waits
+
+A blueberry bush sets next year's flower buds during the previous summer and autumn. Those buds then sit through the winter without visible growth, in a state called **dormancy**. Lang and colleagues[^1] split dormancy by where the brake comes from, and their three terms are now standard in fruit-tree research[^2]:
+
+- **Paradormancy**: growth is held back by another part of the plant, such as a growing shoot tip suppressing the buds below it.
+- **Endodormancy**: the brake is inside the bud itself. Warmth alone will not release it; only a period of accumulated cold will.
+- **Ecodormancy**: the internal brake is gone, and the bud is held back only by its surroundings, usually temperatures too low for growth.
+
+The cold that releases endodormancy is called **chill**, and the amount a cultivar needs is its **chilling requirement**. Plants from cold-winter climates fall dormant in autumn to avoid frost damage, and do not resume growth until their chilling requirement has been met[^3]. The logic is a guard against being fooled. If warmth alone could open a bud, a mild week in midwinter would open it, and the next hard frost would kill the flowers. Requiring chill first means that warmth only counts once enough of the winter has passed.
+
+```{mermaid}
+flowchart LR
+    A["Summer: bud forms, held by the shoot (paradormancy)"] --> B["Autumn and winter: endodormancy, chill accumulates"]
+    B -->|"chilling requirement met"| C["Late winter: ecodormancy, heat accumulates"]
+    C -->|"heat requirement met"| D["Bud break, then bloom"]
+
+    class A plum
+    class B indigo
+    class C ochre
+    class D olive
+    classDef indigo fill:#1d4a62,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef plum fill:#48304a,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef olive fill:#5b6e34,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef ochre fill:#d69a2e,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+```
+
+Nobody measures the internal brake directly. A chilling requirement is found by experiment: shoots are cut from the bush at intervals through the winter, put in warm conditions, and watched. The chill that had accumulated in the field by the first date on which the cut shoots' buds reliably grow is taken as the requirement[^2]. That number is only as good as the model used to count the chill, which is the subject of the rest of this module.
+
+## Counting chill
+
+Winter chill models are empirical: they are fitted to field observations or controlled-temperature experiments, not derived from a known mechanism in the bud[^3]. Three are in wide use, and all take hourly temperature as input.
+
+**Chill hours.** The simplest model counts every hour with a temperature between 0 and 7.2 °C (45 °F) as one chill hour[^4]:
+
+$$\text{CH} = \sum_{h} \mathbf{1}\left[ 0 < T_h \le 7.2 \right]$$
+
+where $\text{CH}$ is the season's total in hours, $T_h$ is the air temperature in hour $h$ in °C, and $\mathbf{1}[\cdot]$ is 1 when the condition holds and 0 otherwise. Some sources, including much of the blueberry literature cited below, count every hour *below* about 7 °C instead, with no lower limit. The two versions agree in a winter that never freezes; in the cold synthetic winter below they differ by $2{,}569 - 1{,}351 = 1{,}218$ hours. Check which one a quoted requirement uses.
+
+**Utah chill units.** Richardson, Seeley and Walker built the Utah model for peach trees by converting temperatures into chill units of different value[^5]. Each hour earns a weight that depends on its temperature, and warm hours earn a negative weight that cancels chill already gained[^6]:
+
+| Hourly temperature (°C) | Utah weight (chill units per hour) |
+|---|---|
+| 1.4 or below | 0 |
+| above 1.4 to 2.4 | 0.5 |
+| above 2.4 to 9.1 | 1 |
+| above 9.1 to 12.4 | 0.5 |
+| above 12.4 to 15.9 | 0 |
+| above 15.9 to 18 | −0.5 |
+| above 18 | −1 |
+
+The season's total is the sum of the hourly weights. The source lists every band except 12.4 to 15.9 °C explicitly; that band is the gap between the positive and negative weights, and carries none.
+
+The difference from chill hours shows up in a pair of made-up days. Day A spends 12 hours at 5 °C and 12 at 10 °C; day B spends 12 hours at 5 °C and 12 at 19 °C. Both score 12 chill hours. In Utah units day A scores $12 \times 1 + 12 \times 0.5 = 18$ and day B scores $12 \times 1 + 12 \times (-1) = 0$: the warm afternoon undid the cold morning.
+
+**The Dynamic model.** Fishman, Erez and Couvillon proposed a two-step model of dormancy breaking[^7]. Cool temperatures build up an intermediate product, which warm temperatures can destroy. Once enough of it has accumulated, it is converted irreversibly into one **chill portion**, and the season's chill is the number of portions banked[^6]. A warm spell can therefore wipe out a partly built portion, but it cannot take back portions already banked, which is the main behavioural difference from the Utah model. Its equations are longer than the other two, and it is not included in the widget below.
+
+The widget runs the first two models on a synthetic winter: an hourly temperature series from 1 November to 28 February (120 days, 2,880 hours), generated in the page from a seasonal dip, a daily cycle peaking at 15:00, and two fixed slow waves standing in for passing weather. It is not data from any real site. The slider adds the same warming to every hour.
+
+::: {.sim-card}
+#### Count one synthetic winter
+
+```{ojs}
+//| echo: false
+viewof site = Inputs.radio(["Mild winter", "Cold winter"], {value: "Mild winter", label: "Synthetic site"})
+viewof warming = Inputs.range([0, 4], {value: 0, step: 0.5, label: "Warm every hour by (°C)"})
+
+// Synthetic, not measured: seasonal dip (depth S below M at midwinter), a 5 °C
+// daily cycle peaking at 15:00, and two fixed waves standing in for weather.
+siteParams = ({"Mild winter": {M: 15, S: 6}, "Cold winter": {M: 6, S: 8}})
+hours = d3.range(120 * 24)
+winter = (p, dT) => hours.map(i => {
+  const d = i / 24;
+  return p.M - p.S * Math.sin(Math.PI * d / 120)
+    + 5 * Math.cos(2 * Math.PI * (i % 24 - 15) / 24)
+    + 2.5 * Math.sin(2 * Math.PI * d / 9)
+    + 1.5 * Math.sin(2 * Math.PI * d / 4.3 + 1)
+    + dT;
+})
+
+chillHour = T => (T > 0 && T <= 7.2 ? 1 : 0)
+belowSeven = T => (T <= 7.2 ? 1 : 0)
+// Utah weights as listed by Luedeling, Kunz & Blanke (2013), after Richardson et al. (1974).
+utah = T => T <= 1.4 ? 0 : T <= 2.4 ? 0.5 : T <= 9.1 ? 1 : T <= 12.4 ? 0.5
+          : T <= 15.9 ? 0 : T <= 18 ? -0.5 : -1
+
+totals = temps => ({ch: d3.sum(temps, chillHour), lt: d3.sum(temps, belowSeven), ut: d3.sum(temps, utah)})
+
+baseTemps = winter(siteParams[site], 0)
+temps = winter(siteParams[site], warming)
+base = totals(baseTemps)
+now = totals(temps)
+
+start = Date.UTC(2025, 10, 1)
+dateOf = i => new Date(start + i * 3600e3)
+
+// Running totals, sampled at the end of each day.
+running = ts => {
+  const out = [];
+  let ch = 0, ut = 0;
+  ts.forEach((T, i) => {
+    ch += chillHour(T); ut += utah(T);
+    if (i % 24 === 23) {
+      out.push({date: dateOf(i), value: ch, model: "Chill hours (0–7.2 °C)"});
+      out.push({date: dateOf(i), value: ut, model: "Utah chill units"});
+    }
+  });
+  return out;
+}
+
+fmtSigned = v => (v > 0 ? "+" : v < 0 ? "−" : "±") + Math.abs(v).toLocaleString("en-GB")
+fmtNum = v => (v < 0 ? "−" : "") + Math.abs(v).toLocaleString("en-GB")
+
+card = (label, value, change, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+  <div class="sim-readout-label">${change} vs no warming</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${card("Chill hours, 0–7.2 °C", fmtNum(now.ch) + " h", fmtSigned(now.ch - base.ch), "#38bdf8")}
+  ${card("Hours below 7.2 °C", fmtNum(now.lt) + " h", fmtSigned(now.lt - base.lt), "#a78bfa")}
+  ${card("Utah chill units", fmtNum(now.ut), fmtSigned(now.ut - base.ut), "#f59e0b")}
+</div>`
+
+Plot.plot({
+  height: 300,
+  marginLeft: 55,
+  // Plot paints its own white ground otherwise, which the dark card fights.
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {type: "utc", label: "Synthetic winter →", tickFormat: "%d %b", grid: true},
+  y: {label: "↑ Accumulated chill (hours or units)", grid: true},
+  color: {legend: true, domain: ["Chill hours (0–7.2 °C)", "Utah chill units"],
+          range: ["#38bdf8", "#f59e0b"]},
+  marks: [
+    Plot.ruleY([0], {strokeOpacity: 0.4}),
+    Plot.line(running(baseTemps),
+              {x: "date", y: "value", stroke: "model", strokeWidth: 1.2,
+               strokeDasharray: "5 4", strokeOpacity: 0.7}),
+    Plot.line(running(temps),
+              {x: "date", y: "value", stroke: "model", strokeWidth: 2.5})
+  ]
+})
+
+Plot.plot({
+  height: 240,
+  marginLeft: 55,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {type: "utc", label: "Synthetic winter →", tickFormat: "%d %b", grid: true},
+  y: {label: "↑ Hourly temperature (°C)", grid: true},
+  marks: [
+    Plot.line(temps.map((T, i) => ({date: dateOf(i), T})),
+              {x: "date", y: "T", stroke: "#cbd5e1", strokeWidth: 0.6}),
+    Plot.ruleY([0, 7.2], {stroke: "#38bdf8", strokeWidth: 1.5}),
+    Plot.ruleY([15.9], {stroke: "#ef4444", strokeWidth: 1.5, strokeDasharray: "4 3"}),
+    Plot.text([{y: 7.2, t: "chill-hour band 0–7.2 °C"}, {y: 15.9, t: "Utah units turn negative above 15.9 °C"}],
+              {x: () => dateOf(120 * 24 - 1), y: "y", text: "t", textAnchor: "end", dy: -7, fill: "#cbd5e1"})
+  ]
+})
+```
+
+Dashed lines are the unwarmed winter, solid lines the warmed one. The bottom panel shows the warmed hourly temperatures.
+:::
+
+## Why the counts disagree
+
+The mild site averages 11.2 °C over the 2,880 hours and never drops below freezing, so its chill hours and its hours below 7.2 °C are identical: 598. Its Utah total is 966 units, higher than the chill hours, because the many hours between 7.2 and 12.4 °C earn Utah credit that the chill-hour model ignores. Warm it by 2 °C and chill hours fall to 313, a loss of $1 - 313/598 = 48\%$, while Utah units fall to 251, a loss of $1 - 251/966 = 74\%$. At 4 °C of warming the Utah total is −485: the winter's warm afternoons have cancelled more chill than its nights produced.
+
+That negative total is not an artefact of the synthetic series. In a global analysis of weather records from 5,078 stations, the Utah model gave negative winter chill totals in many subtropical regions, where it does not seem to be useful. Across the same stations, the ratio between chill-hour and chill-portion totals ran from 0 to 34, so a requirement stated in one model has no fixed conversion into another[^3]. Under projected warming, the chill-hour and Utah models also show much steeper losses than the Dynamic model, especially in warm growing regions, and several studies have found the Dynamic model the more accurate of the three in subtropical climates[^8].
+
+The cold site behaves differently. Its winter averages 0.95 °C and spends many hours below freezing, which neither chill hours nor Utah units credit. Warming by 2 °C lifts some of those hours into the chill band:
+
+| Cold site | No warming | Warmed by 2 °C | Change |
+|---|---|---|---|
+| Chill hours, 0–7.2 °C | 1,351 | 1,446 | +95 |
+| Hours below 7.2 °C | 2,569 | 2,284 | −285 |
+| Utah chill units | 1,139.5 | 1,480.5 | +341 |
+
+The same warming raises chill by two counts and lowers it by the third, depending only on how freezing hours are treated. "Warmer winters mean less chill" is true where winters are already mild, and can be false where they are cold.
+
+The models also disagree about what the bud is responding to, and for blueberries that is unsettled. Two early studies proposed that the chilling requirement of highbush blueberry is at least partly met by temperatures below 1.4 °C and above 12.4 °C[^9], exactly the ranges to which the Utah model gives zero weight. None of the three models was built for blueberry; the Utah model, for one, was fitted to two peach cultivars.
+
+Finally, a chill total belongs to one winter, which makes it a single draw in the sense of [Climate vs weather](climate-vs-weather/climate-vs-weather.ipynb). The chill climate of a site is the distribution of totals over many winters, and choosing a cultivar is a bet against that distribution, not against an average year. Luedeling and colleagues formalised this as **safe winter chill**, the amount of chill exceeded in 90% of years: the distribution's 10th percentile[^4].
+
+## Blueberries and the second clock
+
+Blueberry types are grouped by chilling requirement, conventionally counted in hours below 7 °C[^10]:
+
+| Group | Chilling requirement | Typical winters |
+|---|---|---|
+| High chill: northern highbush, half-high, lowbush | more than 800 h | cold |
+| Moderate chill: most rabbiteye | 500–800 h | temperate |
+| Low chill: southern highbush | less than 500 h | mild |
+
+Southern highbush is a bred group, not a wild one. Breeders lowered the chilling requirement of northern highbush mainly by bringing in genes from *Vaccinium darrowii*, a diploid species from the southern United States, and cultivars are now available with requirements spread almost continuously from 0 to 1,000 hours below 7 °C[^9]. Most southern highbush is grown where winters supply 250 to 600 such hours[^9]. Treat the table as a coarse guide: published ranges for each group differ between sources, requirements are cultivar-specific, and every one of them is tied to the chill model and the site in which it was measured.
+
+**When chill falls short**, the internal brake is only partly released. In temperate fruit crops the result is delayed, irregular and poorly synchronised growth, flowering and fruit set[^6]: some buds open late, some not at all, and bloom is spread out. For a grower that can mean a drawn-out, uneven harvest; for a forecaster, a season that starts late and is spread thin.
+
+**Once chill is met**, the bud waits on heat. Heat is counted the same way, by summing hourly contributions. One common form counts **growing degree hours**, the temperature excess over a base of 4.5 °C, capped at 25 °C[^11]:
+
+$$\text{GDH} = \sum_{h} \min\left( \max\left( T_h - 4.5,\; 0 \right),\; 20.5 \right)$$
+
+where $\text{GDH}$ is the accumulated heat in °C·h, $T_h$ is the hourly temperature in °C, 4.5 °C is the base below which no heat counts, and 20.5 °C·h is the largest contribution of any single hour, reached at 25 °C. An hour at 14.5 °C adds $14.5 - 4.5 = 10$ °C·h; a whole day at that temperature adds $24 \times 10 = 240$ °C·h; an hour at 30 °C adds only 20.5 °C·h.
+
+The bud blooms when accumulated heat reaches a cultivar's heat requirement. The two requirements are met at least partly in sequence, chill first and heat second[^6], and that sequence is what makes bloom, and the harvest that follows it, forecastable. Chill accumulated so far can be computed from station temperatures as the winter goes. Once the requirement is met, a bloom forecast becomes a forecast of when a running heat sum crosses a threshold: the heat already banked is known, and the heat still to come can be drawn from the site's climatology and updated as the real hours arrive. The same structure says what a harvest-timing model needs as inputs: accumulated chill under a stated model, the date the chilling requirement was met, and heat accumulated since. A calendar date ignores all three, and is least reliable in unusual years such as a short-chill winter or an early warm spring. What can happen to an opened bud on one clear, still, freezing night is the subject of [Frost, and the night the crop is lost](frost-and-the-night-the-crop-is-lost.qmd).
+
+## Key takeaways
+
+- A blueberry bud passes through **endodormancy**, released only by accumulated cold, and then **ecodormancy**, released by warmth. The chill requirement stops a midwinter warm spell from opening buds that frost would then kill.
+- **Chill hours** count hours between 0 and 7.2 °C. **Utah units** weight temperature bands from 0 to 1 per hour and subtract 0.5 or 1 for hours above 15.9 °C. The **Dynamic model** banks chill in portions that later warmth cannot undo.
+- The models are empirical and not proportional to one another. In mild winters the Utah total can go negative, and warming cuts it faster than chill hours; in cold winters, warming can raise chill.
+- Requirements, roughly more than 800 h for northern highbush, 500–800 h for most rabbiteye and under 500 h for southern highbush, are only meaningful alongside the model and site they were measured with.
+- Too little chill gives late, irregular and poorly synchronised bud break and bloom. After chill comes heat, often counted as growing degree hours; the two sums in sequence are what make bloom and harvest timing forecastable.
+
+## References
+
+[^1]: Lang, G. A., Early, J. D., Martin, G. C. & Darnell, R. L. Endo-, para-, and ecodormancy: physiological terminology and classification for dormancy research. *HortScience* **22**, 371–377 (1987). https://doi.org/10.21273/HORTSCI.22.3.371
+[^2]: Herrera, S. et al. Male meiosis as a biomarker for endo- to ecodormancy transition in apricot. *Front. Plant Sci.* **13**, 842333 (2022). https://doi.org/10.3389/fpls.2022.842333
+[^3]: Luedeling, E. & Brown, P. H. A global analysis of the comparability of winter chill models for fruit and nut trees. *Int. J. Biometeorol.* **55**, 411–421 (2011). https://doi.org/10.1007/s00484-010-0352-y
+[^4]: Luedeling, E., Zhang, M. & Girvetz, E. H. Climatic changes lead to declining winter chill for fruit and nut trees in California during 1950–2099. *PLoS ONE* **4**, e6166 (2009). https://doi.org/10.1371/journal.pone.0006166
+[^5]: Richardson, E. A., Seeley, S. D. & Walker, D. R. A model for estimating the completion of rest for 'Redhaven' and 'Elberta' peach trees. *HortScience* **9**, 331–332 (1974). https://doi.org/10.21273/HORTSCI.9.4.331
+[^6]: Luedeling, E., Kunz, A. & Blanke, M. M. Identification of chilling and heat requirements of cherry trees—a statistical approach. *Int. J. Biometeorol.* **57**, 679–689 (2013). https://doi.org/10.1007/s00484-012-0594-y
+[^7]: Fishman, S., Erez, A. & Couvillon, G. A. The temperature dependence of dormancy breaking in plants: mathematical analysis of a two-step model involving a cooperative transition. *J. Theor. Biol.* **124**, 473–483 (1987). https://doi.org/10.1016/S0022-5193(87)80221-7
+[^8]: Luedeling, E., Girvetz, E. H., Semenov, M. A. & Brown, P. H. Climate change affects winter chill for temperate fruit and nut trees. *PLoS ONE* **6**, e20155 (2011). https://doi.org/10.1371/journal.pone.0020155
+[^9]: Lobos, G. A. & Hancock, J. F. Breeding blueberries for a changing global environment: a review. *Front. Plant Sci.* **6**, 782 (2015). https://doi.org/10.3389/fpls.2015.00782
+[^10]: Campa, A. & Ferreira, J. J. Genetic diversity assessed by genotyping by sequencing (GBS) and for phenological traits in blueberry cultivars. *PLoS ONE* **13**, e0206361 (2018). https://doi.org/10.1371/journal.pone.0206361
+[^11]: Guerrero, B. I., Fadón, E., Guerra, M. E. & Rodrigo, J. Perspectives on the adaptation of Japanese plum-type cultivars to reduced winter chilling in two regions of Spain. *Front. Plant Sci.* **15**, 1343593 (2024). https://doi.org/10.3389/fpls.2024.1343593
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/sugar-acid-and-what-ripe-measures.html"><span>Previous</span>Sugar, acid, and what &quot;ripe&quot; measures</a><a class="mf-up" href="/series/plants/index.html"><span>Series</span>Plant biology, one blueberry at a time</a><a class="mf-next" href="/blogs/frost-and-the-night-the-crop-is-lost.html"><span>Next</span>Frost, and the night the crop is lost</a></div>
+<!-- CURRICULUM_FOOTER_END -->
