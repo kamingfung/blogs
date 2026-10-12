@@ -1,5 +1,5 @@
 # The blog, built with Quarto. Replaced the MkDocs Material site on the same URL;
-# that site is archived at blogs-mirror.kamingfung.workers.dev.
+# that site is archived at blogs-mkdocs.kamingfung.workers.dev.
 # Source layout is mirrored exactly, so every relative image reference in a post
 # keeps working: docs/blogs/foo.md -> blogs/foo.qmd, assets copied alongside.
 project:
@@ -36,7 +36,7 @@ website:
         text: Series
     right:
       - icon: github
-        href: https://github.com/kamingfung/blogs-mirror
+        href: https://github.com/kamingfung/blogs
         aria-label: Source on GitHub
   search:
     location: navbar
