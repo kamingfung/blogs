@@ -146,6 +146,6 @@ The next module, [The land model: CLM](the-land-model-clm.qmd), opens up one com
 [^7]: NCAR. CESM2 configurations (CESM2.1). *CESM2.1 documentation* https://escomp.github.io/CESM/release-cesm2/cesm_configurations.html (accessed 9 October 2026).
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/agriculture-climate-challenges.html"><span>Previous</span>Agriculture under climate extremes</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/the-land-model-clm.html"><span>Next</span>The land model: CLM</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/how-ozone-damages-crops.html"><span>Previous</span>How ozone damages crops</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/the-land-model-clm.html"><span>Next</span>The land model: CLM</a></div>
 <!-- CURRICULUM_FOOTER_END -->
 

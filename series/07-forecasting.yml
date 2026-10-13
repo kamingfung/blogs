@@ -34,6 +34,7 @@ parts:
       - id: forecasting/lags-and-rolling-windows
         title: "Lags and rolling windows"
         level: introductory
+        path: blogs/lags-and-rolling-windows/lags_and_rolling_windows.ipynb
       - id: forecasting/calendar-and-cyclical-encodings
         title: "Calendar and cyclical encodings"
         level: introductory
@@ -42,6 +43,7 @@ parts:
       - id: forecasting/baselines-first
         title: "Baselines first"
         level: introductory
+        path: blogs/baselines-first.md
       - id: forecasting/gradient-boosting-for-tabular-time-series
         title: "Gradient boosting for tabular time series"
         level: intermediate
@@ -153,6 +155,7 @@ parts:
       - id: forecasting/hierarchical-reconciliation
         title: "Hierarchical reconciliation"
         level: advanced
+        path: blogs/hierarchical-reconciliation/hierarchical_reconciliation.ipynb
         requires:
           - forecasting/forecasting-many-series-at-once
       - id: forecasting/forecasting-many-series-at-once
@@ -185,6 +188,7 @@ parts:
       - id: forecasting/retraining-and-drift
         title: "Retraining and drift"
         level: intermediate
+        path: blogs/retraining-and-drift/retraining_and_drift.ipynb
       - id: forecasting/monitoring-a-forecast
         title: "Monitoring a forecast"
         level: intermediate

@@ -1,0 +1,235 @@
+---
+title: Nitrogen as ammonium, not nitrate
+description: Blueberries take most of their mineral nitrogen as ammonium, and because a root must trade charge for every ion it absorbs, the form of nitrogen a grower supplies also sets which way the root zone's pH drifts.
+date: 2026-10-12
+categories:
+- plant biology
+- soil science
+- horticulture
+- nitrogen
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/plants/index.html">Plant biology, one blueberry at a time</a><span class="sep">·</span>Part 3 · Water and nutrients</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Assumes <a href="/blogs/roots-and-why-blueberries-want-acid-soil.html">Roots, and why blueberries want acid soil</a> and <a href="/blogs/fixed-nitrogen.html">Fixed nitrogen</a>.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+The field rule: ammonium sulfate acidifies a blueberry root zone, urea is close to neutral, calcium nitrate raises pH, and bicarbonate in irrigation water works against all of them. The reason is charge. Plants take up nitrogen either as the ammonium cation, $\text{NH}_4^+$, or the nitrate anion, $\text{NO}_3^-$, and a root has to stay electrically neutral. So for each ammonium ion it absorbs, it releases about one hydrogen ion into the soil, and for each nitrate ion about one hydroxide or bicarbonate ion. Blueberry takes up ammonium faster than nitrate and sends little nitrate to its shoots, which suits the acid, often wet soils where the genus grows and nitrification is slow. Counting hydrogen ions per nitrogen atom gives a simple budget, in which nitrate leached below the roots adds one more hydrogen ion per atom. Afterwards you should be able to pick a nitrogen form for your soil pH, read alkalinity off a water report, and estimate whether your irrigation water cancels your fertiliser's acidity.
+:::
+
+## Two forms of nitrogen
+
+The [Fixed nitrogen](fixed-nitrogen.qmd) module follows reactive nitrogen through its forms. A root meets two of them in soil water: ammonium, a cation, and nitrate, an anion. Both end up as the amino nitrogen of proteins. Ammonium nitrogen is already in the right chemical state and can be attached to carbon directly. Nitrate has to be reduced first, which costs the plant energy: eight electrons per nitrogen atom.
+
+::: {.callout-note collapse="true"}
+## Derivation: reducing nitrate
+
+Ammonium nitrogen is at oxidation state $-3$, the same as amino nitrogen; nitrate nitrogen is at $+5$. Nitrate reductase takes nitrate to nitrite and nitrite reductase takes nitrite to ammonium[^1]:
+
+$$\text{NO}_3^- + 2e^- + 2\,\text{H}^+ \longrightarrow \text{NO}_2^- + \text{H}_2\text{O}$$
+
+$$\text{NO}_2^- + 6e^- + 8\,\text{H}^+ \longrightarrow \text{NH}_4^+ + 2\,\text{H}_2\text{O}$$
+
+where $e^-$ is an electron supplied by the cell's reductants. Added together, $\text{NO}_3^- + 8e^- + 10\,\text{H}^+ \rightarrow \text{NH}_4^+ + 3\,\text{H}_2\text{O}$: one nitrogen, three oxygen and ten hydrogen atoms on each side, and a net charge of $+1$ on each.
+:::
+
+The [roots module](roots-and-why-blueberries-want-acid-soil.qmd) summarised the evidence that blueberry prefers ammonium. Three studies give the detail.
+
+- **Uptake and transport.** In 'Sharpblue' southern highbush blueberry supplied with $^{15}\text{N}$-labelled nitrogen for 48 hours, ammonium was taken up at about twice the rate of nitrate ($17.1$ against $8.6$ in the paper's units, a ratio of $17.1/8.6 = 2.0$) and moved to the shoots about four times as fast ($7.7/1.9 = 4.1$)[^2].
+- **A wild relative.** Grown hydroponically, both cultivated highbush and the wild *Vaccinium arboreum* took up ammonium faster than nitrate. The wild species, which grows on a wider range of soils including high-pH, nitrate-containing ones, took up more nitrate, and that went with higher root nitrate reductase activity[^3].
+- **Where the bottleneck is.** In rabbiteye and southern highbush, nitrate supplied to the roots raised root nitrate reductase activity by up to $3.3$-fold for a while, but the nitrogen stayed largely in the roots. Supplied directly to the shoot through a cut stem, nitrate raised leaf nitrate reductase activity about fivefold[^1]. The shoot can assimilate nitrate; it rarely receives any.
+
+That last study found both forms taken up through the roots at relatively low and similar rates[^1], so "prefers ammonium" means "takes ammonium more readily and does little with the nitrate it absorbs", not "cannot use nitrate", despite one Oregon guide's statement that blueberries take up only ammonium[^4].
+
+The preference fits where the genus grows. Most *Vaccinium* species need low pH, abundant available iron and nitrogen mainly as ammonium, on limited soils often found near wetlands[^3]. Nitrification, the bacterial oxidation of ammonium to nitrate, does run in acid soils[^5], but it needs oxygen, and in the acidic conditions of most blueberry fields it is somewhat limited[^6]. Much of the nitrogen in these soils is also organic, held in litter, and reaches the plant through the fungi described in [Ericoid mycorrhizae](ericoid-mycorrhizae.qmd).
+
+## The charge balance at the root
+
+A root cell cannot take up a stream of positive or negative charge. For every cation it absorbs it must take up an anion or release a cation, and for every anion the reverse. The ion that usually balances the account is the hydrogen ion going out, or its opposite, hydroxide or bicarbonate.
+
+Amino nitrogen in protein is, to a first approximation, uncharged, so ammonium's positive charge and nitrate's negative one both have to go somewhere. Raven and Smith worked through the biochemistry: assimilating one ammonium ion produces at least one hydrogen ion, which roots pump out into the soil, and assimilating one nitrate ion produces almost one hydroxide ion, partly excreted and partly neutralised inside the plant by making organic acids[^7]. In round numbers, per nitrogen atom:
+
+$$\text{NH}_4^+ \text{ absorbed} \;\Rightarrow\; 1\,\text{H}^+ \text{ released to the soil}$$
+
+$$\text{NO}_3^- \text{ absorbed} \;\Rightarrow\; 1\,\text{OH}^- \text{ (or } \text{HCO}_3^-\text{) released, equivalent to } 1\,\text{H}^+ \text{ consumed}$$
+
+The effect is large where little else buffers it. In a sand-culture experiment summarised by Bryla and Machado, the pH around blueberries fed only ammonium fell from about 4.5 to 3.0 in 140 days, and rose to 6.0 when they were fed only nitrate[^6]. From 4.5 to 3.0 is $10^{1.5} = 32$ times more hydrogen ion.
+
+A fertiliser's effect adds this root term to whatever the fertiliser does before the root sees it. **Ammonium sulfate** dissolves to ammonium and sulfate, and sulfate is neutral in the budget, so it adds the root's $+1$ hydrogen ion per nitrogen atom. **Urea** consumes one hydrogen ion per nitrogen atom as it hydrolyses to ammonium in acid soil, and the root returns one: net zero. **Calcium nitrate** adds only the root's $-1$. What happens to the nitrogen in the soil afterwards, nitrification, ammonia loss or denitrification, does not change these totals, but nitrate leached below the roots does: it never collects its hydroxide from a root, so each leached nitrogen atom adds one hydrogen ion.
+
+::: {.callout-note collapse="true"}
+## Derivation: the fertiliser terms
+
+**Urea** hydrolyses as in [Where ammonia comes from](where-ammonia-comes-from.qmd):
+
+$$\text{CO(NH}_2\text{)}_2 + 3\,\text{H}_2\text{O} \longrightarrow 2\,\text{NH}_4^+ + \text{HCO}_3^- + \text{OH}^-$$
+
+In an acid soil the hydroxide takes one hydrogen ion and the bicarbonate another as it leaves as carbon dioxide, so overall
+
+$$\text{CO(NH}_2\text{)}_2 + 2\,\text{H}^+ + \text{H}_2\text{O} \longrightarrow 2\,\text{NH}_4^+ + \text{CO}_2$$
+
+(one carbon, two oxygen, two nitrogen and eight hydrogen atoms on each side; charge $+2$ on each): one hydrogen ion consumed per nitrogen atom. If part of the bicarbonate stays in solution, urea's net lies between $0$ and $+0.5$.
+
+**Nitrification first.** $\text{NH}_4^+ + 2\,\text{O}_2 \rightarrow \text{NO}_3^- + \text{H}_2\text{O} + 2\,\text{H}^+$ releases two hydrogen ions and root uptake of the nitrate consumes one: net $+1$, the same as taking up the ammonium directly.
+
+**Denitrification** consumes one hydrogen ion per nitrogen atom, as plant uptake of nitrate does: $4\,\text{NO}_3^- + 5\,\text{CH}_2\text{O} + 4\,\text{H}^+ \rightarrow 2\,\text{N}_2 + 5\,\text{CO}_2 + 7\,\text{H}_2\text{O}$, with $\text{CH}_2\text{O}$ standing for soil organic matter.
+
+**Volatilisation.** Ammonia lost from ammonium leaves its hydrogen ion behind, $\text{NH}_4^+ \rightarrow \text{NH}_3 + \text{H}^+$, as root uptake would. Ammonia lost straight from urea, $\text{CO(NH}_2\text{)}_2 + \text{H}_2\text{O} \rightarrow 2\,\text{NH}_3 + \text{CO}_2$, neither adds nor removes any, matching urea's net of zero.
+
+**Leaching.** Nitrate washed below the roots, with a base cation such as calcium to balance its charge, skips the $-1$ of root uptake, so it adds $+1$ relative to the same atom taken up.
+
+**This module's bookkeeping rule.** Adding the terms, the net hydrogen ion added to the root zone per mole of nitrogen applied is
+
+$$\Delta\text{H}^+ = a + L$$
+
+where $a$ is the source term ($+1$ for ammonium sulfate, $0$ for urea and ammonium nitrate, $-1$ for calcium nitrate) and $L$ is the fraction of the applied nitrogen leached as nitrate, between 0 and 1. Both sides are in moles of $\text{H}^+$ per mole of N. It is derived here from the reactions above, not taken from a cited source, and it assumes that leached nitrate goes with a base cation, that organic nitrogen is uncharged, and that urea's bicarbonate degasses.
+:::
+
+In words, the rule is: start from the fertiliser's own number, $+1$ for ammonium sulfate, $0$ for urea, $-1$ for calcium nitrate, and add the share of the nitrogen that leaches as nitrate. Read the diagram below left to right: each fertiliser enters as ammonium or nitrate, the labels on the arrows are the hydrogen ions each step adds or uses, and the boxes on the right are where the acidity or alkalinity ends up. For scale, $8\text{ kmol}$ of $\text{H}^+$ per hectare, what $112\text{ kg N ha}^{-1}$ of ammonium sulfate adds in a season, is the acid in $128\text{ kg}$ of elemental sulfur, about $6\%$ of the $2200\text{ kg ha}^{-1}$ ($220\text{ g m}^{-2}$) pre-plant sulfur application described in the roots module. The arithmetic is under the widget.
+
+```{mermaid}
+flowchart LR
+    AS["Ammonium sulfate"] --> NH4["NH₄⁺ in soil water"]
+    UR["Urea"] -->|"hydrolysis uses 1 H⁺ per N"| NH4
+    CN["Calcium nitrate"] --> NO3["NO₃⁻ in soil water"]
+    NH4 -->|"nitrification releases 2 H⁺"| NO3
+    NH4 -->|"uptake, faster"| ROOT["Blueberry root"]
+    NO3 -->|"uptake, slower"| ROOT
+    ROOT -->|"1 H⁺ out per NH₄⁺"| ACID["Root zone more acid"]
+    ROOT -->|"1 OH⁻ or HCO₃⁻ out per NO₃⁻"| BASE["Root zone more alkaline"]
+    NO3 -->|"leaching"| LOST["Below the roots,<br/>its H⁺ left behind"]
+    WATER["Irrigation water<br/>HCO₃⁻"] -->|"neutralises H⁺"| BASE
+
+    class AS,UR,CN ochre
+    class NH4,NO3 sage
+    class ROOT olive
+    class ACID rust
+    class BASE,WATER indigo
+    class LOST plum
+    classDef indigo fill:#1d4a62,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef plum fill:#48304a,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef rust fill:#a04b2d,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef olive fill:#5b6e34,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef ochre fill:#d69a2e,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+    classDef sage fill:#95a87f,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+```
+
+## Choosing a fertiliser
+
+The extension advice follows from the budget. The Florida guide lists ammonium sulfate, urea, ammonium phosphates and organic nitrogen as the common sources, allows nitrate in a blend only if soil pH does not exceed 5.5, and says fertilisers supplying only or mainly nitrate should not be used in conventional production[^8]. At the top of the pH window nitrate has two strikes: the plant uses it poorly, and its uptake pushes pH up ($a = -1$). The same guide favours ammonium sulfate because its uptake helps hold pH in range, with caution as pH nears the bottom of the range[^8]. Bryla and Machado give the same split for the Pacific Northwest: ammonium sulfate, the most acidifying, when soil pH is above 5.0; urea, or a blend of urea and ammonium sulfate, when it is below[^6].
+
+Fertigation, injecting dissolved fertiliser into drip or microsprinkler water, mostly uses urea-based liquids[^6]. The Florida guide recommends frequent light applications because pine-bark beds and sandy soils hold nutrients poorly and young plants burn easily[^8], and the Oregon coast guide gives weekly doses from late April through July, rising to $112$ to $168\text{ kg N ha}^{-1}$ (100 to 150 lb N per acre) per year in a mature fertigated planting[^4].
+
+Irrigation water can undo the fertiliser. Each bicarbonate ion, $\text{HCO}_3^-$, neutralises one hydrogen ion as it reaches acid soil, $\text{HCO}_3^- + \text{H}^+ \rightarrow \text{CO}_2 + \text{H}_2\text{O}$. Water reports give this as alkalinity, usually in one of three units, which convert through molar masses. Bicarbonate carries one charge, so $1\text{ mmol L}^{-1}$ of it is $1\text{ meq L}^{-1}$, and at $61.0\text{ g mol}^{-1}$ ($1.008 + 12.011 + 3 \times 15.999$) it is $61\text{ mg L}^{-1}$ of bicarbonate. Calcium carbonate, at $100.09\text{ g mol}^{-1}$, carries two equivalents per mole, so $1\text{ meq L}^{-1}$ is $100.09 / 2 = 50.0\text{ mg L}^{-1}$ (ppm) "as $\text{CaCO}_3$". Read the value from your own water analysis; this module does not have a verified source for typical values in blueberry regions.
+
+The widget sets the two budgets side by side. Its conversions: $1\text{ kg}$ of nitrogen is $1000 / 14.007 = 71.4\text{ mol}$ N; water with alkalinity $c$ (in $\text{mmol L}^{-1}$) applied to a depth $d$ (in mm) over one hectare delivers $10\,c\,d$ mol of bicarbonate, because $d$ mm over $10^4\text{ m}^2$ is $10^4 d$ litres; and $1\text{ kg}$ of elemental sulfur yields $62.4\text{ mol}$ of $\text{H}^+$, from the roots module.
+
+::: {.sim-card}
+#### A season's acid budget
+
+```{ojs}
+//| echo: false
+viewof nRate = Inputs.range([0, 200], {value: 112, step: 1, label: "Nitrogen applied (kg N/ha per season)"})
+viewof leach = Inputs.range([0, 1], {value: 0, step: 0.05, label: "Share of N leached as nitrate"})
+viewof alk = Inputs.range([0, 5], {value: 0, step: 0.1, label: "Water alkalinity (meq/L = mmol/L HCO₃⁻)"})
+viewof depth = Inputs.range([0, 1000], {value: 500, step: 10, label: "Irrigation applied (mm per season)"})
+
+// Net H+ per mol N applied = a + L  (a: source term, L: leached fraction).
+sources = [
+  {name: "Ammonium sulfate", a: 1, colour: "#ef4444"},
+  {name: "Urea", a: 0, colour: "#f59e0b"},
+  {name: "Calcium nitrate", a: -1, colour: "#38bdf8"}
+]
+molN = nRate * 1000 / 14.007          // mol N per ha
+waterBase = 10 * alk * depth          // mol HCO3- per ha
+molHperS = 2 * 1000 / 32.06           // mol H+ per kg elemental S
+net = (a, L) => molN * (a + L) - waterBase   // mol H+ per ha
+
+fmt = v => (v >= 0 ? "+" : "−") + Math.abs(v / 1000).toFixed(2) + " kmol"
+sEq = v => (v >= 0 ? "" : "−") + Math.abs(v / molHperS).toFixed(0) + " kg S"
+
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${sources.map(s => card(s.name + ", net H⁺ per ha",
+                          fmt(net(s.a, leach)) + " (" + sEq(net(s.a, leach)) + ")", s.colour))}
+  ${card("Irrigation bicarbonate per ha", (waterBase / 1000).toFixed(2) + " kmol", "#cbd5e1")}
+  ${card("Water alkalinity as CaCO₃", (alk * 100.09 / 2).toFixed(0) + " ppm", "#cbd5e1")}
+</div>`
+
+Plot.plot({
+  height: 300,
+  marginLeft: 55,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, 1], label: "Share of N leached as nitrate →", grid: true},
+  y: {label: "↑ Net H⁺ added (kmol/ha)", grid: true},
+  color: {legend: true, domain: sources.map(s => s.name), range: sources.map(s => s.colour)},
+  marks: [
+    Plot.ruleY([0], {stroke: "#64748b"}),
+    ...sources.map(s => Plot.line([0, 1].map(L => ({L, h: net(s.a, L) / 1000, name: s.name})),
+                                  {x: "L", y: "h", stroke: "name", strokeWidth: 2})),
+    Plot.dot(sources.map(s => ({L: leach, h: net(s.a, leach) / 1000, name: s.name})),
+             {x: "L", y: "h", fill: "name", stroke: "#0f172a", strokeWidth: 1.5, r: 6})
+  ]
+})
+```
+
+Positive values acidify the root zone, negative values make it more alkaline. The sulfur figure is the mass of elemental sulfur that would supply the same hydrogen ion once oxidised. The budget counts hydrogen ions, not pH: how far pH moves depends on the soil's buffering.
+:::
+
+At the starting settings, $112\text{ kg N ha}^{-1}$ with nothing leached and no bicarbonate, ammonium sulfate adds $+8.00\text{ kmol}$ of $\text{H}^+$ per hectare ($128\text{ kg}$ of sulfur equivalent), urea $0.00$, and calcium nitrate $-8.00$ ($112 \times 1000 / 14.007 = 7996\text{ mol}$ N, times $a$; $7996 / 62.4 = 128$; $128 / 2200 = 0.058$). Two more results are worth a slide:
+
+- **Leaching widens the gap.** At a leached share of 1, ammonium sulfate doubles to $+15.99\text{ kmol}$ and urea rises to $+8.00$: the "twice the acidity of urea" ratio the roots module quotes from Oregon State's acidification guide, reached only when all of the nitrate is lost.
+- **The water can outweigh the fertiliser.** At an assumed alkalinity of $2\text{ mmol L}^{-1}$ ($100\text{ ppm}$ as $\text{CaCO}_3$), $500\text{ mm}$ of water brings $10 \times 2 \times 500 = 10{,}000\text{ mol}$ of bicarbonate per hectare, and ammonium sulfate's net becomes $8.00 - 10.0 = -2.00\text{ kmol}$: the root zone drifts upward under the most acidifying common fertiliser. Under drip fertigation water and fertiliser share the same wetted strip, so the comparison holds.
+
+The budget sets direction and size, not speed. In a two-year Oregon field trial on a silty clay loam brought to pH 5.5 with sulfur, root-zone pH fell as more nitrogen was applied in the second year, yet fertigated urea and granular ammonium sulfate gave no detectable difference, and microsprinkler plots ran lower than drip plots even without nitrogen, pH 5.6 against 6.1 to 6.3[^6]. The authors note that ammonium fertilisers lower pH gradually, so two years may be too short to see it[^6]. The evidence in this module comes from mineral soils and pine-bark beds in Oregon and Florida and from sand and hydroponic culture; the stoichiometry is the same in soilless substrates such as coco or peat under high-frequency fertigation, but none of the studies here measured how fast pH moves in them.
+
+## Where the preference stops
+
+Ammonium is not harmless to blueberry, and its tolerance has limits of three kinds.
+
+**Concentration.** Most higher plants develop severe toxicity when grown on ammonium as their only nitrogen source; in sensitive barley, root cells pump much of the incoming ammonium straight back out at a high energy cost[^9]. A later review lists fast ammonium assimilation and insensitivity to the acidification ammonium uptake causes among the traits of tolerant plants[^10]. Blueberry grows at pH 4.5 to 5.5, so it plainly has the second, but no study read for this module measures its toxicity threshold directly.
+
+**Concentration plus salt, in the field.** In the same Oregon trial, 44 to 50% of plants given granular ammonium sulfate at $150\text{ kg N ha}^{-1}$ died in the first year, while none died under weekly urea fertigation. The deaths went with soil-solution ammonium of up to $650\text{ mg L}^{-1}$ and electrical conductivity above $3\text{ dS m}^{-1}$[^6]. The authors describe apparent salt stress, so the study does not separate ammonium toxicity from salinity: concentrated granular fertiliser delivers both at once. Hence the Florida guide's advice to spread dry fertiliser evenly over the root zone and never concentrate it near the crown, since blueberries are salt sensitive and shallow-rooted[^8].
+
+**Acidity.** The hydrogen ion from ammonium uptake does not stop at the bottom of the window. The sand-culture fall to pH 3.0 is the extreme case[^6]; in soil, buffering slows it, but a programme built on ammonium sulfate keeps pushing pH down year after year, towards the range where, as the roots module described, manganese and aluminium become the problem. That is why the guides move from ammonium sulfate to urea or a blend as pH nears 5.0 or the lower end of the range[^6]<sup>,</sup>[^8].
+
+The preference itself is a matter of degree. The shoot can assimilate nitrate when it gets it[^1], the wild *V. arboreum* takes up more nitrate than cultivated highbush, and in that comparison the cultivated plant's lower nitrate uptake showed up as lower dry weight[^3]. Nitrate feeds a blueberry, less well than ammonium, and near the top of the window its uptake pushes pH the wrong way.
+
+**What to do with this.**
+
+- Get your irrigation water tested for alkalinity, and convert it to meq/L if the report gives ppm as $\text{CaCO}_3$ (divide by 50) or mg/L bicarbonate (divide by 61).
+- Put your own nitrogen rate, irrigation depth and alkalinity into the widget to see whether your water or your fertiliser sets the direction of drift.
+- Choose the nitrogen form by soil pH as the guides do: ammonium sulfate above about pH 5.0, urea or a urea and ammonium sulfate blend below, and nitrate only in small amounts and only below pH 5.5[^6]<sup>,</sup>[^8].
+- Keep testing. The Florida guide asks for soil tests on a regular schedule after planting, especially for pH and salinity, at the same laboratory each time, and leaf analysis at least once a year[^8]. It gives no fixed testing interval; its target is the 4.5 to 5.5 pH range.
+
+## Key takeaways
+
+- Blueberry takes up ammonium faster than nitrate and moves little absorbed nitrate to the shoot; the shoot can reduce nitrate when nitrate reaches it. The preference fits acid, often wet soils where nitrification is slowed.
+- A root stays electrically neutral: about one $\text{H}^+$ out per $\text{NH}_4^+$ assimilated, about one $\text{OH}^-$ or $\text{HCO}_3^-$ out per $\text{NO}_3^-$.
+- This module's bookkeeping: net hydrogen ion per mole of N applied is $a + L$, with $a = +1$ for ammonium sulfate, $0$ for urea, $-1$ for calcium nitrate, and $L$ the fraction leached as nitrate.
+- Guides favour ammonium sulfate above about pH 5.0, urea or blends below, and keep nitrate out above pH 5.5. Bicarbonate in irrigation water ($1\text{ meq L}^{-1} = 50\text{ ppm}$ as $\text{CaCO}_3$) can outweigh a season's fertiliser acidity.
+- Ammonium has limits: concentrated granular fertiliser killed young plants through high ammonium and salinity together, and sustained ammonium sulfate can push pH below the window.
+
+## References
+
+[^1]: Alt, D. S., Doyle, J. W. & Malladi, A. Nitrogen-source preference in blueberry (*Vaccinium* sp.): enhanced shoot nitrogen assimilation in response to direct supply of nitrate. *J. Plant Physiol.* **216**, 79–87 (2017). https://doi.org/10.1016/j.jplph.2017.05.014
+[^2]: Merhaut, D. J. & Darnell, R. L. Ammonium and nitrate accumulation in containerized southern highbush blueberry plants. *HortScience* **30**, 1378–1381 (1995). https://doi.org/10.21273/HORTSCI.30.7.1378
+[^3]: Poonnachit, U. & Darnell, R. Effect of ammonium and nitrate on ferric chelate reductase and nitrate reductase in *Vaccinium* species. *Ann. Bot.* **93**, 399–405 (2004). https://doi.org/10.1093/aob/mch053
+[^4]: Bouska, C., Dixon, E. & Strik, B. *Growing Berries on the Oregon Coast: Blueberries*. EM 9179 (Oregon State Univ. Extension Service, 2018). https://extension.oregonstate.edu/sites/default/files/documents/em9179.pdf
+[^5]: De Boer, W. & Kowalchuk, G. A. Nitrification in acid soils: micro-organisms and mechanisms. *Soil Biol. Biochem.* **33**, 853–866 (2001). https://doi.org/10.1016/S0038-0717(00)00247-9
+[^6]: Bryla, D. R. & Machado, R. M. A. Comparative effects of nitrogen fertigation and granular fertilizer application on growth and availability of soil nitrogen during establishment of highbush blueberry. *Front. Plant Sci.* **2**, 46 (2011). https://doi.org/10.3389/fpls.2011.00046
+[^7]: Raven, J. A. & Smith, F. A. Nitrogen assimilation and transport in vascular land plants in relation to intracellular pH regulation. *New Phytol.* **76**, 415–431 (1976). https://doi.org/10.1111/j.1469-8137.1976.tb01477.x
+[^8]: Phillips, D. & Williamson, J. G. Nutrition and fertilization practices for southern highbush blueberry in Florida. *EDIS* HS1356 (2020). https://doi.org/10.32473/edis-hs1356-2020
+[^9]: Britto, D. T., Siddiqi, M. Y., Glass, A. D. M. & Kronzucker, H. J. Futile transmembrane NH$_4^+$ cycling: a cellular hypothesis to explain ammonium toxicity in plants. *Proc. Natl Acad. Sci. USA* **98**, 4255–4258 (2001). https://doi.org/10.1073/pnas.061034698
+[^10]: Esteban, R., Ariz, I., Cruz, C. & Moran, J. F. Review: mechanisms of ammonium toxicity and the quest for tolerance. *Plant Sci.* **248**, 92–101 (2016). https://doi.org/10.1016/j.plantsci.2016.04.008
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/ericoid-mycorrhizae.html"><span>Previous</span>Ericoid mycorrhizae</a><a class="mf-up" href="/series/plants/index.html"><span>Series</span>Plant biology, one blueberry at a time</a><a class="mf-next" href="/blogs/sugar-acid-and-what-ripe-measures.html"><span>Next</span>Sugar, acid, and what &quot;ripe&quot; measures</a></div>
+<!-- CURRICULUM_FOOTER_END -->

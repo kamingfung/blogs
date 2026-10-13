@@ -6,7 +6,7 @@ description: "Tabular machine learning for time series, from framing the problem
 <dl class="syl-meta">
 <div><dt>Level</dt><dd>Introductory to advanced</dd></div>
 <div><dt>Parts</dt><dd>15</dd></div>
-<div><dt>Modules</dt><dd>19 of 34 written</dd></div>
+<div><dt>Modules</dt><dd>23 of 34 written</dd></div>
 <div class="wide"><dt>Assumes</dt><dd>Python and pandas. Basic statistics. No prior forecasting.</dd></div>
 </dl>
 
@@ -22,14 +22,14 @@ description: "Tabular machine learning for time series, from framing the problem
 
 <ul class="syl">
 <li class="w"><a href="/blogs/forecast/1_feature_engineering.html">Feature engineering with feature_engine</a><span class="m">Intermediate</span></li>
-<li class="g">Lags and rolling windows<span class="m">Introductory · not written</span></li>
+<li class="w"><a href="/blogs/lags-and-rolling-windows/lags_and_rolling_windows.html">Lags and rolling windows</a><span class="m">Introductory</span></li>
 <li class="g">Calendar and cyclical encodings<span class="m">Introductory · not written</span></li>
 </ul>
 
 ## Part 3 · Models
 
 <ul class="syl">
-<li class="g">Baselines first<span class="m">Introductory · not written</span></li>
+<li class="w"><a href="/blogs/baselines-first.html">Baselines first</a><span class="m">Introductory</span></li>
 <li class="w"><a href="/blogs/forecast/gradient_boosting_for_time_series.html">Gradient boosting for tabular time series</a><span class="m">Intermediate</span></li>
 <li class="w"><a href="/blogs/forecast/2_ensemble_models.html">Ensemble models</a><span class="m">Intermediate</span></li>
 </ul>
@@ -88,7 +88,7 @@ description: "Tabular machine learning for time series, from framing the problem
 ## Part 11 · Hierarchies
 
 <ul class="syl">
-<li class="g">Hierarchical reconciliation<span class="m">Advanced · not written</span></li>
+<li class="w"><a href="/blogs/hierarchical-reconciliation/hierarchical_reconciliation.html">Hierarchical reconciliation</a><span class="m">Advanced</span></li>
 <li class="w"><a href="/blogs/many-series/forecasting_many_series.html">Forecasting many series at once</a><span class="m">Intermediate</span></li>
 </ul>
 
@@ -115,6 +115,6 @@ description: "Tabular machine learning for time series, from framing the problem
 ## Part 15 · In production
 
 <ul class="syl">
-<li class="g">Retraining and drift<span class="m">Intermediate · not written</span></li>
+<li class="w"><a href="/blogs/retraining-and-drift/retraining_and_drift.html">Retraining and drift</a><span class="m">Intermediate</span></li>
 <li class="g">Monitoring a forecast<span class="m">Intermediate · not written</span></li>
 </ul>

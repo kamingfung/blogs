@@ -1,0 +1,235 @@
+---
+title: How ozone damages crops
+description: Surface ozone harms a crop through the dose its leaves take up through their stomata, and the way that dose is measured changes how large, and where, the losses appear.
+date: 2026-10-12
+categories:
+- ozone
+- air quality
+- agronomy
+- food security
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/air-land-climate/index.html">Air, Land and Climate</a><span class="sep">·</span>Part 9 · Climate and food</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">School chemistry. Parts 1 and 5 of Clouds and Aerosols help but are not required.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Surface ozone forms in sunlit air from nitrogen oxides and volatile organic compounds, and it harms a crop only after entering a leaf through the stomata. Damage therefore follows the dose the leaf absorbs, not the concentration around it. Exposure indices such as AOT40 and M7 use concentration alone; the phytotoxic ozone dose, $\text{POD}_Y$, adds up modelled stomatal flux above a threshold the leaf can detoxify, and matches where damage is observed better. Inside the leaf, ozone forms reactive oxygen species that lower RuBisCO and make leaves age early, shortening grain filling. A flux-based assessment put 2010–2012 global losses at 12.4% for soybean, 7.1% for wheat, 6.1% for maize and 4.4% for rice. Afterwards you should be able to compute AOT40, M7, a stomatal flux and a $\text{POD}_Y$ from hourly data, turn each into a yield loss with a published function, and explain why the same air harms a watered crop more than a droughted one.
+:::
+
+## Made in sunlight, taken in through stomata
+
+Ozone at the surface is a secondary pollutant: no chimney or exhaust pipe emits it in quantity. It forms when sunlight splits nitrogen dioxide,
+
+$$\text{NO}_2 + h\nu \longrightarrow \text{NO} + \text{O}(^3\text{P}), \qquad \text{O}(^3\text{P}) + \text{O}_2 + \text{M} \longrightarrow \text{O}_3 + \text{M}$$
+
+where $h\nu$ is a near-ultraviolet photon, $\text{O}(^3\text{P})$ a ground-state oxygen atom and $\text{M}$ any third molecule that carries off excess energy. On its own this makes no ozone overall, because $\text{O}_3 + \text{NO} \rightarrow \text{NO}_2 + \text{O}_2$ undoes it. Net production needs another route from NO back to $\text{NO}_2$, which the oxidation of carbon monoxide and volatile organic compounds (VOCs) supplies through peroxy radicals, as in $\text{HO}_2 + \text{NO} \rightarrow \text{NO}_2 + \text{OH}$. In polluted cities ozone lives for hours; in the free troposphere its lifetime is several weeks, long enough to cross continents[^1]. Over much of the Earth's land surface, ozone concentrations have more than doubled since pre-industrial times[^2]. Which precursor limits production, $\text{NO}_x$ or VOCs, is the subject of [Ammonia deposition and ozone feedbacks](ammonia-deposition-ozone.qmd).
+
+Ozone reaches a crop's leaves through the resistances in series of [Deposition: how nitrogen leaves the air](deposition-how-nitrogen-leaves-the-air.qmd). The aerodynamic resistance $R_\text{a}$ governs transport down to the canopy top; at a single leaf, $R_\text{b}$ becomes the leaf's still-air layer $r_\text{b}$, and $R_\text{c}$ becomes the leaf surface resistance $r_\text{c}$, stomata and cuticle in parallel. Only ozone that diffuses through the stomata reaches living cells, and it reacts so fast that its concentration in the leaf's air spaces is effectively zero: experiments on sunflower leaves measured none, and found the leaf's resistance to ozone to be its resistance to water vapour times about $1.67$, the ratio of the two gases' diffusion coefficients[^3]. The European risk-assessment manual therefore writes the stomatal flux into one representative sunlit leaf at the top of the canopy, such as a wheat flag leaf, as[^4]
+
+$$F_\text{st} = c(z_1)\, g_\text{sto}\, \frac{r_\text{c}}{r_\text{b} + r_\text{c}}$$
+
+where $F_\text{st}$ is the stomatal ozone flux per unit projected leaf area of that leaf ($\text{nmol m}^{-2}\,\text{s}^{-1}$); $c(z_1)$ is the ozone concentration at the canopy top, height $z_1$ ($\text{nmol m}^{-3}$); $g_\text{sto}$ is the stomatal conductance to ozone ($\text{m s}^{-1}$); $r_\text{b}$ is in $\text{s m}^{-1}$; and $r_\text{c} = 1/(g_\text{sto} + g_\text{ext})$, with $g_\text{ext} = 1/2500\ \text{m s}^{-1}$ the cuticle's conductance. The last factor is the stomatal share of the leaf's uptake. Two simplifications are built in: the flux is for a single leaf, not summed over the canopy, and $c(z_1)$ is usually not measured: monitor inlets sit a few metres up, so the manual derives the canopy-top value from the measured one with a deposition model or tabulated gradients, which for crops lower it. The manual also models $g_\text{sto}$ hour by hour as a maximum conductance multiplied by factors between 0 and 1 for growth stage, light, temperature, vapour pressure deficit and soil water.
+
+A worked example uses the manual's wheat flag-leaf values and holds $g_\text{sto}$ fixed:
+
+1. **Concentration.** At $20\,^\circ\text{C}$ and $1013\text{ hPa}$ air holds $P/(RT) = 101\,300/(8.314 \times 293.15) = 41.56\text{ mol m}^{-3}$, so $50\text{ ppb}$ of ozone is $c = 50 \times 41.56 = 2078\text{ nmol m}^{-3}$.
+2. **Conductance.** The maximum stomatal conductance, $g_\text{max}$, the conductance of a fully open, unstressed leaf, is $500\text{ mmol m}^{-2}\,\text{s}^{-1}$ for wheat, which is $0.5/41.56 = 0.0120\text{ m s}^{-1}$.
+3. **Resistances, then flux.** For a leaf $L = 2\text{ cm}$ wide in a wind of $u = 2\text{ m s}^{-1}$ (an illustrative value), the manual's $r_\text{b} = 1.3 \times 150\sqrt{L/u} = 195 \times \sqrt{0.01} = 19.5\text{ s m}^{-1}$, and $r_\text{c} = 1/(0.0120 + 0.0004) = 80.4\text{ s m}^{-1}$. Then
+
+$$F_\text{st} = 2078 \times 0.0120 \times \frac{80.4}{19.5 + 80.4} = 20.1\text{ nmol m}^{-2}\,\text{s}^{-1}$$
+
+Now let drying soil and a high afternoon vapour pressure deficit close the stomata to a quarter of $g_\text{max}$, as [Heat and drought: the stomata close](heat-and-drought-stomata-close.qmd) describes. With $g_\text{sto} = 0.0030\text{ m s}^{-1}$, the same steps give $r_\text{c} = 293.5\text{ s m}^{-1}$ and $F_\text{st} = 5.9\text{ nmol m}^{-2}\,\text{s}^{-1}$. The air is identical; the dose is less than a third.
+
+## Exposure and dose
+
+Three concentration indices dominate the crop literature. **AOT40**, the accumulated ozone over a threshold of 40 ppb, is
+
+$$\text{AOT40} = \sum_{i \in \text{daylight}} \max\!\left(0,\ \chi_i - 40\right) \Delta t$$
+
+where $\chi_i$ is the hourly mean ozone mixing ratio at the canopy top in hour $i$ (ppb), $\Delta t = 1\text{ h}$, and the sum runs over the daylight hours of the accumulation period; the result is in ppb h, or ppm h after dividing by 1000. An hour at 52 ppb adds 12 ppb h; an hour at 39 ppb adds nothing. **M7** and **M12** are seasonal means of the hourly concentrations between 09:00 and 15:59 and between 08:00 and 19:59 local time, in ppb, with no threshold[^5]. The manual counts an hour as daylight when global radiation exceeds $50\text{ W m}^{-2}$; global assessments, and the widget below, replace that rule with the fixed hours 08:00–19:59, so their AOT40 sums over the M12 window, while M7 averages only the midday seven hours.
+
+The critical level for agricultural crops, set to protect against a 5% loss of wheat grain yield, is an AOT40 of 3 ppm h over three months centred on wheat's mid-anthesis. The window follows growth stage because ozone does most harm late, during grain filling. The 40 ppb cut-off stands, like the threshold $Y$ below, for what the plant can detoxify, but the data do not pin it down sharply: an accumulation over 30 ppb predicts damage about as well[^6].
+
+The relative yield loss, $\text{RYL}$, is the fractional reduction in yield compared with clean air. Linear AOT40 functions compiled by Mills and colleagues in 2007, rescaled by a global assessment to give no loss at zero AOT40, are $\text{RYL} = a \times \text{AOT40}$ with $a$ in $(\text{ppm h})^{-1}$: $0.0163$ for wheat, $0.0113$ for soybean, $0.00415$ for rice and $0.00356$ for maize. The same assessment used curved functions of M7 (wheat, rice) and M12 (soybean, maize), $\text{RYL} = 1 - \exp[-(M/\alpha)^\beta] / \exp[-(M_0/\alpha)^\beta]$, where $M$ is M7 or M12 (ppb), $M_0$ is a clean-air reference (25 ppb for M7, 20 ppb for M12) and $\alpha$ (ppb) and $\beta$ (dimensionless) are fitted per crop. For wheat at the critical level, $0.0163 \times 3 = 4.9\%$.
+
+**The phytotoxic ozone dose** puts the stomata back in, accumulating the hourly stomatal flux above a threshold $Y$:
+
+$$\text{POD}_Y = \sum_{i \in \text{daylight}} \max\!\left(0,\ F_{\text{st},i} - Y\right) \frac{3600}{10^6}$$
+
+where $F_{\text{st},i}$ is the mean stomatal flux in hour $i$ and $Y$ the threshold, both in $\text{nmol m}^{-2}\,\text{s}^{-1}$; the factor $3600/10^6$ converts each hour's excess to $\text{mmol m}^{-2}$. $Y$ stands for the flux the leaf can detoxify; in practice, the same review notes, it is chosen empirically, by trying candidate thresholds and keeping the one that gives the best linear flux–yield regression. The manual uses $Y = 6$ for a detailed wheat model ($\text{POD}_6\text{SPEC}$), accumulated from 200 degree-days before mid-anthesis to 700 after, and $Y = 3$ for a generic crop over 90 days in large-scale models ($\text{POD}_3\text{IAM}$). Wheat grain yield falls 3.85% per $\text{mmol m}^{-2}$ of $\text{POD}_6\text{SPEC}$, so the critical level of $1.3\text{ mmol m}^{-2}$ marks $1.3 \times 3.85 = 5.0\%$. The generic function reaches 5% at $7.9\text{ mmol m}^{-2}$ of $\text{POD}_3\text{IAM}$ counted from a clean-air reference of $0.1$, a slope of $5/7.8 = 0.64\%$ per $\text{mmol m}^{-2}$.
+
+In the worked example, the open leaf adds $(20.1 - 6) \times 3600/10^6 = 0.051\text{ mmol m}^{-2}$ of $\text{POD}_6$ an hour, reaching the wheat critical level in about 26 such hours; the droughted leaf's $5.9$ never exceeds $Y$ and adds nothing. Both add the same $10\text{ ppb h}$ an hour to AOT40.
+
+The widget runs a synthetic 90-day season of hourly ozone, built from sine waves, through all four indices. One slider scales every hour; the other fixes the stomatal opening as a fraction of $g_\text{max}$, a stand-in for drought.
+
+::: {.sim-card}
+#### Four indices from one synthetic season
+
+```{ojs}
+//| echo: false
+viewof scale = Inputs.range([0.5, 1.4], {value: 1, step: 0.05, label: "Scale every hour by"})
+viewof opening = Inputs.range([0.05, 1], {value: 0.3, step: 0.05, label: "Stomatal opening (× g_max)"})
+viewof crop = Inputs.select(new Map([
+  ["Wheat", {name: "Wheat", a: 0.0163, index: "M7", alpha: 137, beta: 2.34, ref: 25}],
+  ["Soybean", {name: "Soybean", a: 0.0113, index: "M12", alpha: 107, beta: 1.58, ref: 20}],
+  ["Rice", {name: "Rice", a: 0.00415, index: "M7", alpha: 202, beta: 2.47, ref: 25}],
+  ["Maize", {name: "Maize", a: 0.00356, index: "M12", alpha: 124, beta: 2.83, ref: 20}]
+]), {label: "Crop"})
+
+// Synthetic season: 90 days x 24 hourly means (ppb). Day-to-day swings are sums of
+// sines; the daily cycle is a cosine peaking at 15:00. Fixed, so every reader sees the same data.
+base = {
+  const rows = [];
+  for (let d = 0; d < 90; d++) {
+    const mean = 33 + 6 * Math.sin(2 * Math.PI * d / 9) + 5 * Math.sin(2 * Math.PI * d / 23 + 1.3)
+               + 5 * Math.sin(Math.PI * d / 90);
+    const amp = 14 + 4 * Math.sin(2 * Math.PI * d / 6.3 + 0.7);
+    for (let h = 0; h < 24; h++)
+      rows.push({d, h, o3: Math.max(2, mean + amp * Math.cos(2 * Math.PI * (h - 15) / 24))});
+  }
+  return rows;
+}
+
+series = base.map(r => ({...r, t: r.d + r.h / 24, o3: r.o3 * scale}))
+daylight = series.filter(r => r.h >= 8 && r.h <= 19)        // 08:00-19:59
+counted = daylight.filter(r => r.o3 > 40)
+aot40 = d3.sum(counted, r => r.o3 - 40)                      // ppb h: each value is a 1-h mean
+m7 = d3.mean(series.filter(r => r.h >= 9 && r.h <= 15), r => r.o3)
+m12 = d3.mean(daylight, r => r.o3)
+
+rylAot = Math.min(1, crop.a * aot40 / 1000)
+mIndex = crop.index === "M7" ? m7 : m12
+weibull = m => Math.exp(-((m / crop.alpha) ** crop.beta))
+rylMean = Math.max(0, 1 - weibull(mIndex) / weibull(crop.ref))
+
+// Stomatal flux, manual eqs III.12b-III.15: 20 C, 1013 hPa, 2 cm leaf, 2 m/s wind (illustrative).
+molar = 101300 / (8.31447 * 293.15)                          // mol m-3
+gsto = opening * 0.5 / molar                                 // m s-1; g_max = 500 mmol m-2 s-1
+rb = 1.3 * 150 * Math.sqrt(0.02 / 2)                         // s m-1
+rc = 1 / (gsto + 1 / 2500)                                   // s m-1
+fst = ppb => ppb * molar * gsto * rc / (rb + rc)             // nmol m-2 s-1
+pod3 = d3.sum(daylight, r => Math.max(0, fst(r.o3) - 3)) * 3600 / 1e6   // mmol m-2
+rylPod = Math.max(0, 0.0064 * (pod3 - 0.1))
+
+pct = v => (100 * v).toFixed(1) + "%"
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${card("AOT40 (× 3 ppm h critical level)", (aot40 / 1000).toFixed(2) + " ppm h (" + (aot40 / 3000).toFixed(2) + "×)", "#f59e0b")}
+  ${card("M7 / M12", m7.toFixed(1) + " / " + m12.toFixed(1) + " ppb", "#38bdf8")}
+  ${card(crop.name + " loss from AOT40", pct(rylAot), "#ef4444")}
+  ${card(crop.name + " loss from " + crop.index, pct(rylMean), "#38bdf8")}
+  ${card("POD₃ (generic crop)", pod3.toFixed(1) + " mmol m⁻²", "#10b981")}
+  ${card("Generic-crop loss from POD₃", pct(rylPod), "#10b981")}
+</div>`
+
+Plot.plot({
+  height: 300,
+  marginLeft: 50,
+  // Plot paints its own white ground otherwise, which the dark card fights.
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, 90], label: "Day of season →"},
+  y: {domain: [0, 100], label: "↑ Ozone (ppb)", grid: true},
+  color: {legend: true, domain: ["Hourly ozone", "Counted in AOT40", "40 ppb threshold"],
+          range: ["#64748b", "#f59e0b", "#ef4444"]},
+  marks: [
+    Plot.ruleX(counted, {x: "t", y1: 40, y2: "o3", stroke: () => "Counted in AOT40", strokeWidth: 1}),
+    Plot.line(series, {x: "t", y: "o3", stroke: () => "Hourly ozone", strokeWidth: 0.8}),
+    Plot.ruleY([40], {stroke: () => "40 ppb threshold", strokeDasharray: "6 4"})
+  ]
+})
+```
+
+AOT40 losses: $\text{RYL} = a \times \text{AOT40}$ (ppm h), with $a$ from Van Dingenen et al. (2009), Table 1, who rescaled the functions of Mills et al. (2007); M7 and M12 losses: the Weibull functions in the same table. $\text{POD}_3$: the worked example's equations and values (wind illustrative), with $g_\text{sto}$ fixed instead of modelled hourly; loss $= 0.64\% \times (\text{POD}_3 - 0.1)$, a wheat-based generic function independent of the crop menu. The data are synthetic.
+:::
+
+At the starting setting the season has an M7 of 44.7 ppb and an AOT40 of 6.55 ppm h, 2.18 times the critical level, from 756 of its 1080 daylight hours.
+
+First, AOT40 is steep near its threshold. For this synthetic season, multiplying every hour by 0.8 cuts M7 by exactly 20%, to 35.8 ppb, but cuts AOT40 by 85%, to 0.98 ppm h, because most hours just above 40 ppb drop below it. With real ozone the steepness depends on how many hours sit just above 40 ppb, which the diurnal amplitude and day-to-day variability set: a flat cycle hovering near 40 ppb is more sensitive, one with peaks far above it less.
+
+Second, the indices disagree with each other. At the starting setting, wheat loses 10.7% by AOT40 but 5.3% by M7, while soybean loses 7.4% by AOT40 but 16.3% by M12. The global assessment behind these functions found the same pattern with real ozone: for wheat and rice, M7 gave losses 74% and 64% lower than AOT40, and for maize and soybean M12 gave losses 24% and 28% higher. It judged the cumulative index the less robust.
+
+Third, only the dose sees the stomata. At the starting opening of 0.3, $\text{POD}_3$ is $12.3\text{ mmol m}^{-2}$ and the generic loss 7.8%. Halve the opening to 0.15 and $\text{POD}_3$ falls to $1.4\text{ mmol m}^{-2}$, a loss of 0.8%, while AOT40, M7 and M12 do not move. Return the opening to 0.3 and scale ozone by 0.8, and $\text{POD}_3$ falls by 39%, to $7.6\text{ mmol m}^{-2}$, less steeply than AOT40.
+
+The dose index wins where it can be tested. Across Europe, many field records of ozone effects from 1990–2006 came from places where AOT40 was below the critical level, and maps of modelled $\text{POD}_3$ matched them better than maps of AOT40[^7]. In a global wheat assessment, in the hot, dry western United States, where AOT40 averaged 18.5 ppm h, concentration indices predicted 17.2–19.8% wheat losses; the dose model predicted 8.2%, against 13.9% in the more humid east, where ozone is lower but stomata stay open. Worldwide, the dose model gave a mean wheat loss of 9.4% where AOT40 gave 13.8%[^8].
+
+## Inside the leaf
+
+Once through the stomata, ozone meets the water film on the cell walls, the apoplast, and reacts within it. The review by Emberson and colleagues cited above traces the steps that follow:
+
+```{mermaid}
+flowchart TD
+    A["Ozone enters through stomata"] -->|"dissolves in the cell-wall water"| B["Reactive oxygen species: H2O2, superoxide, hydroxyl"]
+    B -->|"neutralised"| C["Apoplast antioxidants, mainly ascorbate"]
+    B -->|"when antioxidants run short"| D["Plasma membrane damage and stress signalling"]
+    D --> E["Less RuBisCO, slower photosynthesis"]
+    D --> F["Early, faster leaf senescence"]
+    D -->|"high doses"| G["Cell death and visible flecks"]
+    E --> H["Shorter grain filling, smaller grains, lower yield"]
+    F --> H
+
+    class A indigo
+    class B rust
+    class C olive
+    class D plum
+    class E,F,G ochre
+    class H sienna
+    classDef indigo fill:#1d4a62,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef sienna fill:#6c2b27,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef plum fill:#48304a,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef rust fill:#a04b2d,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef olive fill:#5b6e34,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef ochre fill:#d69a2e,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+```
+
+Antioxidants in the cell wall, ascorbate first among them, neutralise the reactive oxygen species at a carbon cost; $Y$ is an empirical stand-in for this capacity. When they run short, ozone and its products attack the plasma membrane, and the cell changes its gene expression and makes stress hormones such as ethylene.
+
+Two chronic responses carry the damage to yield. Photosynthesis falls, the carbon-fixing reactions being thought most sensitive: the leaf holds less RuBisCO, the enzyme of [Photosynthesis, in one leaf](photosynthesis-in-one-leaf.qmd), rather than less activated RuBisCO. Leaves also senesce earlier and faster: in open-air fumigation experiments on soybean and wheat, elevated ozone did not lower a leaf's initial photosynthetic capacity but made it decline sooner. At high doses cells die and the leaf shows visible flecks, which correlate poorly with grain yield.
+
+A meta-analysis of 53 wheat studies gives the size of these effects. Compared with carbon-filtered air, elevated ozone lowered photosynthetic rate by 20%, RuBisCO activity by 19%, stomatal conductance by 22%, chlorophyll by 40% and grain yield by 29%. Even studies with ozone between 31 and 59 ppb, averaging 43 ppb, found an 18% loss of grain yield. The damage was greatest during grain filling[^9].
+
+## Yield, drought and nitrogen
+
+**From leaf to region.** The meta-analysis above compares fumigated plants with plants in filtered air, experiment by experiment. Global estimates answer a different question: they combine modelled ozone, a stomatal or concentration index and a response function over every grid cell of cropland. Most of the uncertainty sits in that extrapolation, not in the leaf biology.
+
+**How much is lost.** Using a dose model, Mills and colleagues estimated that ozone in 2010–2012 reduced global yields by 12.4% for soybean, 7.1% for wheat, 6.1% for maize and 4.4% for rice, 227 million tonnes in total, and ranked sensitivity soybean > wheat > maize > rice[^10]. A study that pooled concentration- and flux-based indices from one consistent ozone simulation put global losses at $3.6 \pm 1.1\%$ for maize, $2.6 \pm 0.8\%$ for rice, $6.7 \pm 4.1\%$ for soybean and $7.2 \pm 7.3\%$ for wheat, the wheat range running from about zero to twice the mean. It attributed that spread mostly to the choice of method. Its own flux-based losses were well below Mills's; because both used similar methods and the same dose–response functions, it ascribed that gap mainly to different ozone and meteorological inputs, and noted that its high soybean losses came mostly from one index, M12[^11]. All agree that soybean and wheat are the most sensitive.
+
+**Drought protects, irrigation exposes.** Anything that closes stomata lowers the dose. In the wheat meta-analysis, drought significantly reduced the harm from elevated ozone, which the authors attributed to lower ozone uptake through lower stomatal conductance. The global wheat study found the reverse: simulating full irrigation where wheat is now mostly rain-fed raised the ozone loss in every climate zone, so irrigation as an adaptation buys less yield where ozone is high. The protection is not free: the droughted crop also loses carbon gain.
+
+**Nitrogen runs in a loop.** Nitrogen oxides from fuel and fertilised soils help make the ozone, and ozone in turn lowers the grain yield and grain protein that wheat returns per unit of nitrogen applied, leaving more to leach or escape as nitrous oxide[^12]. Wheat grain grown under ozone has a higher protein concentration but a lower protein yield per hectare[^13].
+
+These interactions are why [Agriculture under climate extremes](agriculture-climate-challenges.qmd) treats ozone together with heat and drought rather than as a separate problem.
+
+## Key takeaways
+
+- Damage follows the stomatal flux into a leaf, $F_\text{st} = c\,g_\text{sto}\,r_\text{c}/(r_\text{b} + r_\text{c})$, not the concentration. The same 50 ppb gives a fully open wheat leaf about $20\text{ nmol m}^{-2}\,\text{s}^{-1}$ and a leaf at a quarter of $g_\text{max}$ about $6$.
+- AOT40 (excess over 40 ppb; crop critical level 3 ppm h), M7 and M12 use concentration only and disagree with one another. $\text{POD}_Y$ sums stomatal flux above a detoxification threshold, responds to stomatal closure and matches observed damage better.
+- A flux-based estimate for 2010–2012 puts global losses at 12.4% for soybean, 7.1% for wheat, 6.1% for maize and 4.4% for rice; most of the uncertainty lies in scaling from leaf to region.
+- Drought lowers the ozone dose and irrigation raises it. Ozone lowers the return on nitrogen fertiliser.
+
+## References
+
+[^1]: Monks, P. S. et al. Tropospheric ozone and its precursors from the urban to the global scale from air quality to short-lived climate forcer. *Atmos. Chem. Phys.* **15**, 8889–8973 (2015). https://doi.org/10.5194/acp-15-8889-2015
+[^2]: Ainsworth, E. A. Understanding and improving global crop response to ozone pollution. *Plant J.* **90**, 886–897 (2017). https://doi.org/10.1111/tpj.13298
+[^3]: Laisk, A., Kull, O. & Moldau, H. Ozone concentration in leaf intercellular air spaces is close to zero. *Plant Physiol.* **90**, 1163–1167 (1989). https://doi.org/10.1104/pp.90.3.1163
+[^4]: CLRTAP. Mapping critical levels for vegetation. Chapter III of *Manual on Methodologies and Criteria for Modelling and Mapping Critical Loads and Levels and Air Pollution Effects, Risks and Trends* (UNECE Convention on Long-range Transboundary Air Pollution, 2017).
+[^5]: Van Dingenen, R. et al. The global impact of ozone on agricultural crop yields under current and future air quality legislation. *Atmos. Environ.* **43**, 604–618 (2009). https://doi.org/10.1016/j.atmosenv.2008.10.033
+[^6]: Emberson, L. D. et al. Ozone effects on crops and consideration in crop models. *Eur. J. Agron.* **100**, 19–34 (2018). https://doi.org/10.1016/j.eja.2018.06.002
+[^7]: Mills, G. et al. Evidence of widespread effects of ozone on crops and (semi-)natural vegetation in Europe (1990–2006) in relation to AOT40- and flux-based risk maps. *Glob. Change Biol.* **17**, 592–613 (2011). https://doi.org/10.1111/j.1365-2486.2010.02217.x
+[^8]: Mills, G. et al. Ozone pollution will compromise efforts to increase global wheat production. *Glob. Change Biol.* **24**, 3560–3574 (2018). https://doi.org/10.1111/gcb.14157
+[^9]: Feng, Z., Kobayashi, K. & Ainsworth, E. A. Impact of elevated ozone concentration on growth, physiology, and yield of wheat (*Triticum aestivum* L.): a meta-analysis. *Glob. Change Biol.* **14**, 2696–2708 (2008). https://doi.org/10.1111/j.1365-2486.2008.01673.x
+[^10]: Mills, G. et al. Closing the global ozone yield gap: quantification and cobenefits for multistress tolerance. *Glob. Change Biol.* **24**, 4869–4893 (2018). https://doi.org/10.1111/gcb.14381
+[^11]: Tai, A. P. K., Sadiq, M., Pang, J. Y. S., Yung, D. H. Y. & Feng, Z. Impacts of surface ozone pollution on global crop yields: comparing different ozone exposure metrics and incorporating co-effects of CO2. *Front. Sustain. Food Syst.* **5**, 534616 (2021). https://doi.org/10.3389/fsufs.2021.534616
+[^12]: Broberg, M. C., Uddling, J., Mills, G. & Pleijel, H. Fertilizer efficiency in wheat is reduced by ozone pollution. *Sci. Total Environ.* **607–608**, 876–880 (2017). https://doi.org/10.1016/j.scitotenv.2017.07.069
+[^13]: Broberg, M. C., Feng, Z., Xin, Y. & Pleijel, H. Ozone effects on wheat grain quality – a summary. *Environ. Pollut.* **197**, 203–213 (2015). https://doi.org/10.1016/j.envpol.2014.12.009
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/agriculture-climate-challenges.html"><span>Previous</span>Agriculture under climate extremes</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/what-an-earth-system-model-is.html"><span>Next</span>What an Earth system model is</a></div>
+<!-- CURRICULUM_FOOTER_END -->
