@@ -231,5 +231,6 @@ The preference itself is a matter of degree. The shoot can assimilate nitrate wh
 [^10]: Esteban, R., Ariz, I., Cruz, C. & Moran, J. F. Review: mechanisms of ammonium toxicity and the quest for tolerance. *Plant Sci.* **248**, 92–101 (2016). https://doi.org/10.1016/j.plantsci.2016.04.008
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/ericoid-mycorrhizae.html"><span>Previous</span>Ericoid mycorrhizae</a><a class="mf-up" href="/series/plants/index.html"><span>Series</span>Plant biology, one blueberry at a time</a><a class="mf-next" href="/blogs/sugar-acid-and-what-ripe-measures.html"><span>Next</span>Sugar, acid, and what &quot;ripe&quot; measures</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/ericoid-mycorrhizae.html"><span>Previous</span>Ericoid mycorrhizae</a><a class="mf-up" href="/series/plants/index.html"><span>Series</span>Plant biology, one blueberry at a time</a><a class="mf-next" href="/blogs/why-blueberries-are-blue.html"><span>Next</span>Why blueberries are blue: anthocyanins</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+

@@ -1,0 +1,188 @@
+---
+title: "Why a picked blueberry stops ripening"
+description: A blueberry gets its sugar from the bush, so once it is picked its colour can still change but its sweetness cannot be added to, whatever label the berry is given.
+date: 2026-10-14
+categories:
+- plant biology
+- horticulture
+- agriculture
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/plants/index.html">Plant biology, one blueberry at a time</a><span class="sep">·</span>Part 4 · Ripening</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Assumes <a href="/blogs/sugar-acid-and-what-ripe-measures.html">Sugar, acid, and what &quot;ripe&quot; measures</a>.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+A picked blueberry can keep colouring, but it cannot get sweeter. Its sugar arrives from the bush while it ripens and the fruit stores almost no starch, so once the stem is cut nothing adds to it, and respiration slowly burns what is there. The Brix reading can still drift: up when the berry loses water, down when it is kept warm. A rise in storage is therefore not evidence of ripening. The textbook label is less settled. Fruit are sorted into climacteric types such as bananas and tomatoes, which ripen off the plant on a self-sustaining burst of ethylene, and non-climacteric types such as grapes, strawberries and citrus, which do not. The USDA storage handbook puts blueberry in the second group, but several studies find a respiration peak at colour change and real ethylene output, and a 2025 systematic review calls any single classification premature. Afterwards you should be able to say what can and cannot change in a picked berry, read a stored Brix reading alongside its weight loss, and explain why the day of picking sets eating quality.
+:::
+
+## Two ways to ripen
+
+In a **climacteric** fruit, ripening is driven by ethylene that triggers more of its own synthesis, a positive feedback that drives many of the ripening reactions[^2]. That is why bananas and tomatoes picked mature but unripe still ripen, partly by turning stored starch into sugar[^1].
+
+A **non-climacteric** fruit has no such burst, and the handbook's flavour chapter puts the consequence plainly: fruit such as apples and bananas continue to ripen after harvest, those such as citrus and strawberries do not, and the flavour of non-climacteric fruit generally declines after harvest[^5].
+
+| | Climacteric | Non-climacteric |
+|---|---|---|
+| Ethylene | Self-sustaining surge | No self-sustaining surge |
+| Ripens after picking | Yes, if picked mature | No |
+| Examples | Banana, tomato, apple | Grape, strawberry, citrus |
+
+The handbook's respiration chapter, which supplies these examples, lists blueberry as non-climacteric, and notes that some fruit, kiwifruit and cucumber among them, blur the line.
+
+## Where blueberry sits
+
+The evidence is mixed. Blueberries make more ethylene than strawberries or oranges, several studies find a peak in respiration as the berry changes colour, and results differ between blueberry types and between laboratories. A 2025 systematic review concluded that "a unified classification of blueberry ripening remains premature"[^6].
+
+For anyone handling the fruit, the label matters less than one fact the studies do not dispute: a picked blueberry cannot add sugar. The next section shows why, and what can still change.
+
+::: {.callout-note collapse="true"}
+## The evidence in detail
+
+**Ethylene rates.** The handbook's summary table gives blueberry ethylene production as variable, 0.5 to 10.0 µL per kg per hour, against below 0.1 for strawberry and orange, 5.0 for ripe banana (measured at 15 °C) and 10.0 for tomato[^3]. Measurement temperatures differ between rows, so these are rough comparisons. The handbook's blueberry chapter splits the range by type: 0.5 to 2 for northern highbush, varying with year and cultivar, and 10 for rabbiteye.
+
+**Units.** The review reports ethylene by mass. At 20 °C and 1 atm, a mole of gas occupies $V_m = RT/P = 8.314 \times 293.15 / 101{,}325 = 0.02405\ \text{m}^3$, or 24.05 L, where $R$ is the gas constant ($\text{J mol}^{-1}\ \text{K}^{-1}$), $T$ the temperature (K) and $P$ the pressure (Pa). With ethylene's molar mass of 28.05 g per mol, 1 µL weighs $28.05 \times 10^{-6} / 24.05 = 1.17 \times 10^{-6}$ g, or about 0.0012 mg.
+
+**The review's findings:**
+
+- **Respiration.** Several studies found the highest respiration rate at colour change in northern highbush, southern highbush and lowbush fruit. The maxima of rabbiteye and southern highbush fruit can exceed those of some climacteric crops, tomato and apple among them.
+- **Ethylene.** Production rises during development, usually peaking at colour change or at blue, but timing and size vary between genotypes and studies, and one early study found no maximum. Most studies reported 0.00005 to 0.22 mg per kg per hour, about 0.04 to 190 µL per kg per hour by the conversion above, so the handbook's range sits inside it. The authors attribute part of the spread to differences in method.
+- **Autocatalysis.** A 2022 study covered in the review found that rabbiteye fruit made more ethylene than highbush but showed no self-sustaining response at ACC synthase, the enzyme that commits the pathway, although genes for the next enzyme, ACC oxidase, did respond to an ethylene-releasing treatment. On that basis rabbiteye was called an "atypical climacteric" fruit.
+- **Other signals.** Abscisic acid, another plant hormone, is linked to the start of colour change, and most of the change in sugar and acid comes after ethylene levels have fallen. The review suggests some ripening traits may depend on ethylene and others not, as in melon.
+:::
+
+## What a picked berry can and cannot change
+
+**Colour can keep developing.** Kalt and colleagues picked highbush berries of three cultivars at several stages of ripeness and held the underripe ones at 20 °C for up to 8 days. Anthocyanins, the pigments that turn the berry blue, kept forming, more slowly after about 4 days, and less formed in the less ripe fruit. After 8 days, fruit picked 5 to 50% blue or 50 to 95% blue had more anthocyanin than the ripe fruit[^7]. A berry picked with a red shoulder can look fully blue a few days later. [Why blueberries are blue](why-blueberries-are-blue.qmd) explains where that pigment comes from.
+
+**Sugar cannot be added.** During ripening a blueberry's sugar arrives from the leaves, as [Sugar, acid, and what "ripe" measures](sugar-acid-and-what-ripe-measures.qmd) describes. A berry could still sweeten after picking if it carried starch to convert, as a banana does. Acharya and colleagues followed two rabbiteye cultivars through development and found starch "very low throughout fruit development"; they concluded that the steep rise in sugar during ripening depends on continued import, probably as sucrose[^8]. Their ripe fruit held at most 0.044 mg of starch per gram, which, turned entirely into sugar, would add about 0.005 °Brix at most. Once the stem is cut, the berry has no meaningful source of new sugar.
+
+**What the berry has keeps being spent.** [Respiration: the cost of being alive](respiration-the-cost-of-being-alive.qmd) showed that a picked berry keeps burning its sugar and organic acids, about 0.10 g per kg per day at 0 °C and 1.1 g at 20 °C by the handbook's averages. It also keeps losing water through its skin, and it keeps softening.
+
+**So the Brix reading can move with no new sugar.** A refractometer reads concentration. Respiration removes sugar; water loss removes water, which concentrates what is left. As a rule of thumb, ignoring respiration, a 12 °Brix berry that loses 5% of its weight reads about 0.6 °Brix higher, and one that loses 8% about 1 °Brix higher, without having made any sugar.
+
+::: {.callout-note collapse="true"}
+## The formula behind the widget
+
+$$\text{SSC}_t = 100 \times \frac{\text{SSC}_0 - L}{100 - w}$$
+
+where $\text{SSC}_0$ is the soluble solids content at harvest (°Brix, read as g per 100 g of juice), $L$ is the sugar respired over the storage period (g per 100 g), $w$ is the berry's weight loss over the same period (g per 100 g, that is, %), and $\text{SSC}_t$ is the reading after storage (°Brix). It assumes the weight lost comes out of the juice. $L$ is the handbook respiration rate (mg CO₂ per kg per hour) × 180/264 g of sugar per g of CO₂ × 24 hours × days ÷ 10,000.
+
+With no respiration, $12 / (1 - 0.05) = 12.63$ and $12 / (1 - 0.08) = 13.04$ °Brix, the two rule-of-thumb figures above.
+:::
+
+Try two cases: 0 °C for 14 days with 5% weight loss, a cold-stored berry; then 20 °C for 1 day with no weight loss, a berry that sat out with its field heat.
+
+::: {.sim-card}
+#### Brix in a picked berry
+
+```{ojs}
+//| echo: false
+viewof ssc0 = Inputs.range([8, 16], {value: 12, step: 0.1, label: "Brix at harvest (°Brix)"})
+viewof tempC = Inputs.range([0, 25], {value: 0, step: 1, label: "Storage temperature (°C)"})
+viewof days = Inputs.range([0, 21], {value: 14, step: 1, label: "Days in storage"})
+viewof wLoss = Inputs.range([0, 16], {value: 5, step: 0.5, label: "Weight loss (%)"})
+
+// USDA Agriculture Handbook 66 (2016), Table 1, blueberry: mg CO2 per kg per hour.
+handbook = [
+  {T: 0, r: 6}, {T: 5, r: 11}, {T: 10, r: 29},
+  {T: 15, r: 48}, {T: 20, r: 70}, {T: 25, r: 101}
+]
+// Straight-line interpolation between the tabulated temperatures.
+rate = T => {
+  const i = Math.min(Math.floor(T / 5), 4);
+  const a = handbook[i], b = handbook[i + 1];
+  return a.r + (b.r - a.r) * (T - a.T) / 5;
+}
+// Sugar respired, g per 100 g: 180 g sugar per 264 g CO2, all substrate counted as sugar.
+respired = (T, d) => rate(T) * (180 / 264) * 24 * d / 10000
+brixAfter = (T, d, w) => 100 * (ssc0 - respired(T, d)) / (100 - w)
+// Weight loss over zero days is zero; between, spread it evenly over the period.
+lossBy = d => days > 0 ? wLoss * Math.min(d / days, 1) : 0
+brixEnd = brixAfter(tempC, days, lossBy(days))
+
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${card("Sugar respired", respired(tempC, days).toFixed(2) + " g per 100 g", "#ef4444")}
+  ${card("Brix reading after storage", brixEnd.toFixed(2) + " °Brix", "#38bdf8")}
+  ${card("Change in reading", (brixEnd - ssc0 >= 0 ? "+" : "") + (brixEnd - ssc0).toFixed(2) + " °Brix", "#f59e0b")}
+</div>`
+
+Plot.plot({
+  height: 320,
+  marginLeft: 55,
+  // Plot paints its own white ground otherwise, which the dark card fights.
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, 21], label: "Days in storage →", grid: true},
+  y: {label: "↑ Brix reading (°Brix)", grid: true},
+  color: {legend: true,
+          domain: ["With weight loss", "No weight loss", "At harvest"],
+          range: ["#38bdf8", "#ef4444", "#10b981"]},
+  marks: [
+    Plot.ruleY([ssc0], {stroke: "#10b981", strokeDasharray: "6 4", strokeWidth: 2}),
+    Plot.line(d3.range(0, 21.01, 0.5).map(d => ({d, y: brixAfter(tempC, d, 0)})),
+              {x: "d", y: "y", stroke: () => "No weight loss", strokeWidth: 2.5}),
+    Plot.line(d3.range(0, 21.01, 0.5).map(d => ({d, y: brixAfter(tempC, d, lossBy(d))})),
+              {x: "d", y: "y", stroke: () => "With weight loss", strokeWidth: 2.5}),
+    Plot.dot([{d: days, y: brixEnd}], {x: "d", y: "y", fill: "#38bdf8", stroke: "#0f172a", strokeWidth: 1.5, r: 6})
+  ]
+})
+```
+
+Respiration rates are the USDA handbook averages for blueberry, interpolated between its 5 °C steps; all respired substrate is counted as sugar, so the red line is the steepest plausible fall. The blue line spreads the chosen weight loss evenly over the chosen days. The Brix and weight-loss settings are illustrative, not measurements.
+:::
+
+In the cold case the berry respires 0.14 g of sugar per 100 g, yet its reading rises from 12 to 12.49 °Brix because water left faster than sugar. In the warm case it respires 0.11 g in a single day and reads 11.89 °Brix. Neither berry gained sugar.
+
+This matters when reading storage trials. In a two-year Georgia trial, rabbiteye 'Brightwell' berries picked every 2, 3 or 7 days were held at 1 °C and 85% relative humidity for 21 days[^9]. Soluble solids rose during storage, and the authors attribute the rise to continued ripening. Weight loss also climbed with storage time, to a maximum of 15.5% in one treatment and year, and the authors cite earlier work treating berries as unmarketable once weight loss passes 5 to 8%. Water loss alone would also raise the reading, and the published summary does not let a reader separate the two causes.
+
+| Quality | After picking | Why |
+|---|---|---|
+| Colour | Can keep developing | Pigment synthesis continues |
+| Sugar content | Cannot rise | No import, almost no starch |
+| Brix reading | Can drift up or down | Water loss vs respiration |
+| Firmness | Keeps falling | Softening continues |
+
+## What this means for you
+
+**Pick at the eating quality you want to sell.** A red-shouldered berry that turns blue in the clamshell has its colour but not its sugar. The handbook's blueberry chapter gives the fresh-market maturity index as "fully blue and firm"[^4], but fully blue comes before sugar and acid finish changing on the bush. In a two-year Oregon trial on seven northern highbush cultivars, picking every 4 days, as soon as berries were first fully blue, gave firm fruit the author judged not fully ripe[^10]. Picking every 12 days instead raised soluble solids in six cultivars and berry weight in five, by 5 to 29%, lowered firmness by 5 to 12% in five, and cut picking labour costs by 64%. The 'Brightwell' trial shows the other side in a warm, humid climate: its 7-day interval gave the sweetest fruit but the most weight loss and damage in storage, and the authors recommend 3 days for fresh market. The review makes the same general point, that earlier picking can lengthen shelf life but may cost flavour.
+
+**Cool fast; the cold room will not ripen anything.** The same blueberry chapter recommends forced-air cooling to below 10 °C and refrigeration at 0 to 3 °C within an hour of harvest, then storage at −0.5 to 0 °C above 90% relative humidity. It names shrivel, from water loss, as a major disorder, and as the widget shows, water loss also flatters the Brix reading.
+
+**Treat a rise in stored Brix as a question, not as ripening.** Check the weight loss over the same period before reading it as quality gained.
+
+**Checking it in your own QC.** This module's suggestion, not a published protocol: tag a set of berries, or draw matched samples from the same lot, and measure Brix and weigh them at harvest and again at receiving. Compare the change in Brix with the weight loss. A rise that matches the rule of thumb above is concentration, not ripening.
+
+**Where these numbers apply.** The field trials here are on rabbiteye in Georgia and northern highbush in Oregon, and the starch measurements are on rabbiteye. The arithmetic, no new sugar and concentration by water loss, holds for any blueberry, but the sizes of the effects will differ for southern highbush and in other climates.
+
+## Key takeaways
+
+- Underripe highbush berries kept forming pigment for days after picking in one storage study at 20 °C, enough to overtake ripe fruit within 8 days.
+- Blueberry stores so little starch that converting all of it would add about 0.005 °Brix; respiration takes about 0.11 g of sugar per 100 g in one day at 20 °C.
+- Water loss concentrates sugar: about 0.6 °Brix for 5% weight loss and 1 °Brix for 8%, with no new sugar. Weigh berries whenever you compare Brix across storage.
+- Blueberry ethylene output, 0.5 to 10 µL per kg per hour in the USDA handbook, sits between strawberry's and tomato's; rabbiteye has been called "atypical climacteric".
+- Cooling within an hour of harvest and high humidity slow both the sugar loss and the water loss that disguises it.
+
+## References
+
+[^1]: Saltveit, M. E. in *The Commercial Storage of Fruits, Vegetables, and Florist and Nursery Stocks* (eds Gross, K. C., Wang, C. Y. & Saltveit, M.) Agriculture Handbook 66, 68–75 (U.S. Department of Agriculture, Agricultural Research Service, 2016).
+[^2]: Saltveit, M. E. in *The Commercial Storage of Fruits, Vegetables, and Florist and Nursery Stocks* (eds Gross, K. C., Wang, C. Y. & Saltveit, M.) Agriculture Handbook 66, 76–82 (U.S. Department of Agriculture, Agricultural Research Service, 2016).
+[^3]: Gross, K. C., Wang, C. Y. & Saltveit, M. (eds) *The Commercial Storage of Fruits, Vegetables, and Florist and Nursery Stocks*. Agriculture Handbook 66, Introduction, Table 1 (U.S. Department of Agriculture, Agricultural Research Service, 2016).
+[^4]: Perkins-Veazie, P. in *The Commercial Storage of Fruits, Vegetables, and Florist and Nursery Stocks* (eds Gross, K. C., Wang, C. Y. & Saltveit, M.) Agriculture Handbook 66, 240–242 (U.S. Department of Agriculture, Agricultural Research Service, 2016).
+[^5]: Baldwin, E. A. in *The Commercial Storage of Fruits, Vegetables, and Florist and Nursery Stocks* (eds Gross, K. C., Wang, C. Y. & Saltveit, M.) Agriculture Handbook 66, 128–148 (U.S. Department of Agriculture, Agricultural Research Service, 2016).
+[^6]: Zapien-Macias, J. M., Liu, T. & Nunez, G. H. Blueberry ripening mechanism: a systematic review of physiological and molecular evidence. *Hortic. Res.* **12**, uhaf126 (2025). https://doi.org/10.1093/hr/uhaf126
+[^7]: Kalt, W. et al. Oxygen radical absorbing capacity, anthocyanin and phenolic content of highbush blueberries (*Vaccinium corymbosum* L.) during ripening and storage. *J. Am. Soc. Hortic. Sci.* **128**, 917–923 (2003). https://doi.org/10.21273/JASHS.128.6.0917
+[^8]: Acharya, T. P., Malladi, A. & Nambeesan, S. U. Sustained carbon import supports sugar accumulation and anthocyanin biosynthesis during fruit development and ripening in blueberry (*Vaccinium ashei*). *Sci. Rep.* **14**, 24964 (2024). https://doi.org/10.1038/s41598-024-74929-w
+[^9]: Godara, A., Rubio Ames, Z. & Deltsidis, A. Impact of shorter picking intervals on the storability and postharvest quality of rabbiteye blueberries cv. 'Brightwell'. *Front. Plant Sci.* **16**, 1683940 (2025). https://doi.org/10.3389/fpls.2025.1683940
+[^10]: Strik, B. C. Frequency of harvest affects berry weight, firmness, titratable acidity, and percent soluble solids of highbush blueberry cultivars in Oregon. *J. Am. Pomol. Soc.* **73**, 254–268 (2019). https://doi.org/10.71318/apom.2019.73.4.254
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/sugar-acid-and-what-ripe-measures.html"><span>Previous</span>Sugar, acid, and what &quot;ripe&quot; measures</a><a class="mf-up" href="/series/plants/index.html"><span>Series</span>Plant biology, one blueberry at a time</a><a class="mf-next" href="/blogs/the-bloom.html"><span>Next</span>The bloom: the wax coat and what it protects</a></div>
+<!-- CURRICULUM_FOOTER_END -->

@@ -1,0 +1,227 @@
+---
+title: Heat stress on crops
+description: How warmth speeds a crop through its life, how a few hot hours at flowering cost more than a warmer season, and how water and irrigation change the damage.
+date: 2026-10-14
+categories:
+- agronomy
+- climate
+- food security
+- plant biology
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/air-land-climate/index.html">Air, Land and Climate</a><span class="sep">·</span>Part 9 · Climate and food</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">School chemistry. Parts 1 and 5 of Clouds and Aerosols help but are not required.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Heat lowers yield in two ways. A warmer season speeds development, leaving fewer days to fill grain. Hours above a threshold do sharper damage, worst at flowering. US county yields of maize, soybean and cotton rise with temperature up to 29, 30 and 32 °C and fall steeply above, so extreme degree days, the summed excess above a threshold, predict losses far better than mean temperature. Whether that damage is mostly direct harm to flowers or mostly water stress is contested; for US maize, the evidence points mainly to water, as hot air dries the soil and the canopy heats past the air. Without adaptation or $\text{CO}_2$, each degree of global warming lowers global yields by about 6.0% for wheat, 3.2% for rice, 7.4% for maize and 3.1% for soybean. The widget shows how to count those hot hours from daily weather.
+:::
+
+## Two ways heat costs yield
+
+Every crop grows between a minimum and a maximum temperature, and fastest at an optimum in between: its **cardinal temperatures**. For most species the optimum for leaf and stem development is higher than for reproduction. A review by Hatfield and Prueger describes two ways warmth acts on a crop[^1].
+
+**A warmer season runs the clock faster.** Below the optimum, development speeds up as it warms, so a crop sown on the same day flowers and matures sooner. The result is smaller plants, a shorter reproductive phase and a lower yield potential, without any single damaging day.
+
+**A few hot hours at the wrong moment do damage.** Flowering is the most sensitive stage. Maize pollen loses viability above 35 °C, and more so in dry air, because its viability before it reaches the silks depends on its moisture content. Maize sheds its pollen within 3 to 5 days, so one heat wave can hit the whole field; rice and other small grains flower over a week or more, soybean and cotton over several weeks. In rice held in growth cabinets, tissue temperatures of 33.7 °C or more at anthesis caused sterility, and in the variety IR64 spikelet fertility fell by about 7% per °C above 29.6 °C[^2].
+
+Published thresholds refer to different temperatures, so they are not interchangeable:
+
+| Crop | Threshold | What falls | Temperature of |
+|---|---|---|---|
+| Maize, soybean, cotton | 29, 30, 32 °C | County yield | Air (gridded weather-station data) |
+| Maize | 35 °C | Pollen viability | Experimental exposure |
+| Rice | 33.7 °C | Spikelet fertility | Plant tissue at anthesis |
+| Wheat | 31 °C | Grain number | Canopy at flowering |
+
+The rows come from Schlenker and Roberts' statistical fit, Hatfield and Prueger's review, Jagadish and colleagues, and Siebert and colleagues, who apply the wheat value to other temperate cereals too. Whether damage above such thresholds is mostly direct harm to reproductive organs, or mostly water stress driven by hot, dry air, is contested; the third section returns to it.
+
+## Counting the hot hours
+
+Because yield responds so differently below and above a threshold, temperature is split into two sums. **Growing degree days** count useful warmth from a base temperature up to the threshold; **extreme degree days** count only the excess above it:
+
+$$\text{GDD} = \frac{1}{24}\sum_{h} \min\!\big(\max(T_h - T_\text{b},\,0),\; T_\text{x} - T_\text{b}\big)$$
+
+$$\text{EDD} = \frac{1}{24}\sum_{h} \max(T_h - T_\text{x},\,0)$$
+
+where $T_h$ is the temperature in hour $h$ (°C), $T_\text{b}$ is the base below which nothing counts (10 °C in this module's widget), $T_\text{x}$ is the extreme-heat threshold (°C), and the sums run over every hour of the season. Dividing by 24 turns degree-hours into degree days, in °C·day.
+
+Daily records give only a minimum and maximum, so the hours are reconstructed. Schauberger and colleagues, following Schlenker and Roberts, used a sine curve between the two[^3], as does the widget.
+
+::: {.callout-note collapse="true"}
+## The sine interpolation used here
+
+Each day's 24 hourly temperatures are
+
+$$T_h = \frac{T_\text{max} + T_\text{min}}{2} + \frac{T_\text{max} - T_\text{min}}{2}\cos\!\left(\frac{2\pi(h - 15)}{24}\right)$$
+
+where $T_\text{max}$ and $T_\text{min}$ are the day's maximum and minimum (°C) and $h = 0, 1, \dots, 23$ is the hour of day. It peaks at 15:00 and bottoms out at 03:00. Real days need not be symmetric, and studies differ in the curve they fit.
+
+**Why the daily mean is not enough.** Take a day with a minimum of 20 °C and a maximum of 35 °C. Its mean is 27.5 °C, below a 30 °C threshold, so a daily-mean count gives zero EDD. The sine curve spends 9 of the 24 hours above 30 °C, for 1.27 °C·day of EDD.
+:::
+
+The case for this split comes from Schlenker and Roberts. They paired yields from most US counties from 1950 to 2005 (east of the 100th meridian for maize and soybean) with the time crops spent in each one-degree temperature interval. Yields rose up to the thresholds in the table and fell much more steeply above. In their maize model, replacing a full day at 29 °C with a full day at 40 °C lowered predicted yield by about 7%. Their inference about adaptation has three steps. Differences between counties include whatever farmers in warmer places have done to adapt. Year-to-year variation within one county does not. The two gave the same shape, so farmers appear to have adapted little to heat so far[^4].
+
+In more than 20,000 historical maize trials across Africa, each degree day above 30 °C lowered final yield by 1% under optimal rain-fed management and by 1.7% under drought[^5]. Those rates belong to those trials and their method, so the widget does not turn its sums into yield.
+
+The widget runs a fixed **synthetic** 120-day season with a heat wave around day 66, not data from a real site. The sliders add warming to every hour, set the threshold, and add a canopy-minus-air offset from 08:00 to 18:00. The crop matures when it has the unwarmed season's GDD total, EDD stops counting at maturity, and flowering follows thermal time, so warming moves both earlier.
+
+::: {.sim-card}
+#### Degree days in a synthetic season
+
+```{ojs}
+//| echo: false
+viewof warming = Inputs.range([0, 4], {value: 0, step: 0.5, label: "Warming (°C)"})
+viewof thr = Inputs.range([28, 34], {value: 30, step: 0.5, label: "Extreme-heat threshold (°C)"})
+viewof canopy = Inputs.range([-3, 8], {value: 0, step: 0.5, label: "Canopy minus air, 08:00–18:00 (°C)"})
+
+TBASE = 10          // base temperature for GDD (°C)
+DAYS = 120
+FLOWER = [60, 74]   // flowering days in the unwarmed season
+
+// Synthetic daily max/min (°C): seasonal arch + two fixed weather waves + a heat wave near day 66.
+days = d3.range(DAYS).map(d => {
+  const tx = 26 + 3 * Math.sin(Math.PI * d / 119) + 2.5 * Math.sin(2 * Math.PI * d / 11 + 0.4)
+           + 1.5 * Math.sin(2 * Math.PI * d / 5.3 + 1.1) + 6 * Math.exp(-(((d - 66) / 3) ** 2));
+  const range = 11 + 1.5 * Math.sin(2 * Math.PI * d / 7 + 0.5);
+  return {d, tx, tn: tx - range};
+})
+
+// Daily GDD and EDD from 24 sine-interpolated hours; start/end = thermal time before/after each day.
+season = (w, c) => {
+  let cum = 0;
+  return days.map(({d, tx, tn}) => {
+    let gdd = 0, edd = 0;
+    for (let h = 0; h < 24; h++) {
+      const T = (tx + tn) / 2 + w + (tx - tn) / 2 * Math.cos(2 * Math.PI * (h - 15) / 24) + (h >= 8 && h <= 18 ? c : 0);
+      gdd += Math.min(Math.max(T - TBASE, 0), thr - TBASE) / 24;
+      edd += Math.max(T - thr, 0) / 24;
+    }
+    const row = {d, gdd, edd, start: cum, end: cum + gdd};
+    cum += gdd;
+    return row;
+  });
+}
+
+base = season(0, 0)
+NEED = base[DAYS - 1].end                                   // thermal time to maturity
+FLO = [base[FLOWER[0]].start, base[FLOWER[1]].end]          // thermal time spanned by flowering
+now = season(warming, canopy)
+matIdx = now.findIndex(r => r.end >= NEED - 1e-9)           // -1: not mature by day 120
+grown = matIdx < 0 ? now : now.slice(0, matIdx + 1)
+flowering = grown.filter(r => r.start >= FLO[0] - 1e-9 && r.start < FLO[1] - 1e-9)
+edd = d3.sum(grown, r => r.edd)
+dEdd = edd - d3.sum(base, r => r.edd)
+
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${card(`GDD over ${DAYS} days`, d3.sum(now, r => r.gdd).toFixed(0) + " °C·day", "#10b981")}
+  ${card("Matures on day", matIdx < 0 ? "after day 120" : String(matIdx + 1), "#10b981")}
+  ${card("EDD to maturity", edd.toFixed(1) + " °C·day", "#ef4444")}
+  ${card(flowering.length ? `EDD at flowering, days ${flowering[0].d}–${flowering[flowering.length - 1].d}` : "EDD at flowering",
+         d3.sum(flowering, r => r.edd).toFixed(1) + " °C·day", "#f59e0b")}
+  ${card("EDD change vs. no warming or offset", (dEdd >= 0 ? "+" : "−") + Math.abs(dEdd).toFixed(1) + " °C·day", "#38bdf8")}
+</div>`
+
+Plot.plot({
+  height: 320,
+  marginLeft: 50,
+  // Plot paints its own white ground otherwise, which the dark card fights.
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, DAYS], label: "Day of season →"},
+  y: {domain: [5, 45], label: "↑ Temperature (°C)", grid: true},
+  color: {legend: true,
+          domain: ["Daily maximum", "Daily minimum", "Threshold", "Flowering"],
+          range: ["#ef4444", "#38bdf8", "#f59e0b", "#cbd5e1"]},
+  marks: [
+    flowering.length ? Plot.rect([{x1: flowering[0].d, x2: flowering[flowering.length - 1].d + 1}],
+                                 {x1: "x1", x2: "x2", y1: 5, y2: 45, fill: "#cbd5e1", fillOpacity: 0.08}) : null,
+    matIdx >= 0 ? Plot.ruleX([matIdx + 1], {stroke: "#10b981", strokeDasharray: "2 3"}) : null,
+    Plot.line(days, {x: "d", y: d => d.tx, stroke: () => "Daily maximum", strokeOpacity: 0.35, strokeDasharray: "3 3"}),
+    Plot.line(days, {x: "d", y: d => d.tn, stroke: () => "Daily minimum", strokeOpacity: 0.35, strokeDasharray: "3 3"}),
+    Plot.line(days, {x: "d", y: d => d.tx + warming, stroke: () => "Daily maximum", strokeWidth: 2}),
+    Plot.line(days, {x: "d", y: d => d.tn + warming, stroke: () => "Daily minimum", strokeWidth: 2}),
+    Plot.ruleY([thr], {stroke: () => "Threshold", strokeDasharray: "6 4"})
+  ]
+})
+```
+
+Dashed lines are the unwarmed season and solid lines the warmed one; the shaded band is flowering and the green dotted line is maturity. The canopy offset changes the sums but not the lines, which show air temperature. A crop that has not matured by day 120 is counted to day 120.
+:::
+
+At the starting settings the crop matures on day 120 with 11.2 °C·day of EDD, 8.3 of them during flowering on days 60–74. Add 2 °C. GDD over 120 days rises 14%, to 1,727 °C·day, and the crop matures on day 103. EDD still roughly triples, to 33.3 °C·day, despite 17 fewer days in the field. Flowering moves to days 54–66 and catches only the start of the heat wave, so its EDD rises just to 9.5. Here faster development partly dodges the hot spell; in another season it could move flowering into one.
+
+Over a fixed period, 1 °C of warming adds exactly as much EDD as lowering the threshold by 1 °C: over all 120 days, both give 19.8 °C·day. (The widget shows 19.5 for the warming, because that crop leaves the field nine days early.) A threshold wrong by a degree matters as much as a warming scenario wrong by one.
+
+## Canopy, water and the vapour pressure deficit
+
+What matters is the temperature of leaves and flowers, not of station air. A transpiring canopy cools itself by evaporation; one with closed stomata cannot. Siebert and colleagues measured the gap, and the height of each air reading matters[^6]:
+
+- In German rye plots at anthesis, irrigated canopies were on average 2 °C cooler than the air 3.5 m above the ground, while rain-fed canopies ran up to 7.5 °C warmer. The rain-fed canopy passed 31 °C when that air read about 25 °C; irrigated canopies always stayed below 26 °C.
+- In winter wheat variety trials at three sites in Saxony, heat stress computed from air temperature near the ground (20 cm) reproduced the grain-number losses from controlled experiments; the same calculation from 2 m air temperature showed no relationship.
+- At 78 German weather stations from 1994 to 2009, the estimated mean wheat yield loss from heat at flowering was 0.7% from 2 m temperatures and 22% from temperatures measured at the ground in short grass.
+
+In the widget, a canopy offset of −2 °C cuts the season's EDD from 11.2 to 4.0 °C·day; +4 °C raises it to 72.7.
+
+**Vapour pressure deficit.** The drying power of the air is the vapour pressure deficit, $\text{VPD} = e_s(T) - e_a$, where $e_s(T)$ is the saturation vapour pressure at temperature $T$ and $e_a$ the actual vapour pressure of the air, both in kPa. With the FAO formula $e_s = 0.6108\exp[17.27\,T/(T + 237.3)]$, $e_s$ rises by $17.27 \times 237.3/(25 + 237.3)^2 = 6.0\%$ per °C near 25 °C. If the air's moisture stays the same, warming widens the deficit; [Heat and drought: the stomata close](heat-and-drought-stomata-close.qmd) works an example.
+
+**Direct damage or water stress?** Lobell and colleagues ran the APSIM crop model over the US Midwest, and it reproduced the statistical studies: a strong loss with extreme degree days, a weak response to rainfall. In the model, extreme degree days act mainly through VPD, which raises the soil water needed for the same photosynthesis and dries the soil faster. In July, the model's ratio of water supply to demand responded about three times as strongly to 2 °C of warming as to a 20% cut in rainfall. They concluded that direct heat damage to reproductive organs plays a relatively minor role for US maize at present temperatures[^7].
+
+Schauberger and colleagues reached a similar view from irrigation. In US county data, each day above 30 °C lowered rain-fed maize and soybean yields by up to 6%, and nine crop models agreed; irrigated counties, and model runs with full irrigation, declined only weakly. They read this as support for heat-driven water stress, while noting that it does not rule out direct damage and that the models omit evaporative cooling of leaves.
+
+That conclusion is for US maize and soybean at current temperatures. It need not hold for rice, where heated growth cabinets caused spikelet sterility, or for wheat, where grain-number losses tracked canopy temperature at flowering. Statistics struggle to settle it because heat and drought feed each other: hot air raises VPD, transpiration drains the soil, and dry soil lets the canopy heat further. A regression on station air temperature folds all three into one number.
+
+Stomatal closure has one benefit: closed stomata take in less ozone. Irrigation that keeps a canopy cool also lets more ozone in, as [How ozone damages crops](how-ozone-damages-crops.qmd) explains.
+
+## Warming and adaptation
+
+Combining gridded and site-based crop models, statistical regressions and field-warming experiments, Zhao and colleagues estimated the yield change per °C of global mean warming[^8]:
+
+| Crop | Per °C | Note |
+|---|---|---|
+| Wheat | −6.0 ± 2.9% | Methods agree best: −7.8 to −4.1% |
+| Rice | −3.2 ± 3.7% | Some regressions: almost no effect |
+| Maize | −7.4 ± 4.5% | All four methods negative |
+| Soybean | −3.1% | Not significant |
+
+The ± values are about two standard errors. The estimates exclude $\text{CO}_2$ fertilisation, adaptation and genetic improvement, and the gridded models assumed full irrigation: they are sensitivities, not projections. Adaptation can target each route:
+
+- **Season length.** Earlier sowing and longer-maturing cultivars restore the days faster development takes away. A statistical analysis of US maize attributed more than a quarter of the yield gain since 1981 to warmer weather with cooler extremes, and to earlier planting and longer-maturing varieties[^9]. A global crop-model study found that adapting sowing dates and cultivars in time would raise yields by about 12% by 2080–2099 compared with no adaptation, with later-maturing cultivars needed especially at higher latitudes[^10].
+- **Flowering.** Hatfield and Prueger see few options at pollination itself: plants that shed pollen in cooler hours, or flower over a longer period. The two rice varieties in the growth-cabinet study differed in their response.
+- **Water.** Irrigation weakens the heat response, but needs water that may be scarce in a hot, dry year.
+
+::: {.callout-tip appearance="simple" icon=false}
+**What this means for you.** Judge heat risk by hours above a threshold, interpolated from daily minimum and maximum temperatures, not by the season's mean, and track the hours at flowering separately, the stage the sources above find most sensitive. In a dry spell, expect a rain-fed canopy to run warmer than the station reads. The same hot days cost irrigated and rain-fed fields very different amounts.
+:::
+
+## Key takeaways
+
+- Warmer seasons shorten development and grain filling; hours above a threshold do separate damage, most at flowering.
+- US county yields rise up to 29 °C for maize, 30 °C for soybean and 32 °C for cotton, then fall steeply. Extreme degree days capture this; mean temperature does not.
+- In a synthetic season, 2 °C of warming raises GDD by 14% but roughly triples EDD, though the crop matures 17 days sooner.
+- Rain-fed canopies can run several degrees above the air, irrigated ones below it. For US maize, much heat damage runs through water stress; for rice and wheat, experiments show direct damage at flowering.
+- Without $\text{CO}_2$ or adaptation, each degree of global warming costs about 3% to 7% of global wheat, rice, maize and soybean yields.
+
+## References
+
+[^1]: Hatfield, J. L. & Prueger, J. H. Temperature extremes: effect on plant growth and development. *Weather Clim. Extremes* **10**, 4–10 (2015). https://doi.org/10.1016/j.wace.2015.08.001
+[^2]: Jagadish, S. V. K., Craufurd, P. Q. & Wheeler, T. R. High temperature stress and spikelet fertility in rice (*Oryza sativa* L.). *J. Exp. Bot.* **58**, 1627–1635 (2007). https://doi.org/10.1093/jxb/erm003
+[^3]: Schauberger, B. et al. Consistent negative response of US crops to high temperatures in observations and crop models. *Nat. Commun.* **8**, 13931 (2017). https://doi.org/10.1038/ncomms13931
+[^4]: Schlenker, W. & Roberts, M. J. Nonlinear temperature effects indicate severe damages to U.S. crop yields under climate change. *Proc. Natl Acad. Sci. USA* **106**, 15594–15598 (2009). https://doi.org/10.1073/pnas.0906865106
+[^5]: Lobell, D. B., Bänziger, M., Magorokosho, C. & Vivek, B. Nonlinear heat effects on African maize as evidenced by historical yield trials. *Nat. Clim. Change* **1**, 42–45 (2011). https://doi.org/10.1038/nclimate1043
+[^6]: Siebert, S., Ewert, F., Eyshi Rezaei, E., Kage, H. & Graß, R. Impact of heat stress on crop yield—on the importance of considering canopy temperature. *Environ. Res. Lett.* **9**, 044012 (2014). https://doi.org/10.1088/1748-9326/9/4/044012
+[^7]: Lobell, D. B. et al. The critical role of extreme heat for maize production in the United States. *Nat. Clim. Change* **3**, 497–501 (2013). https://doi.org/10.1038/nclimate1832
+[^8]: Zhao, C. et al. Temperature increase reduces global yields of major crops in four independent estimates. *Proc. Natl Acad. Sci. USA* **114**, 9326–9331 (2017). https://doi.org/10.1073/pnas.1701762114
+[^9]: Butler, E. E., Mueller, N. D. & Huybers, P. Peculiarly pleasant weather for US maize. *Proc. Natl Acad. Sci. USA* **115**, 11935–11940 (2018). https://doi.org/10.1073/pnas.1808035115
+[^10]: Minoli, S., Jägermeyr, J., Asseng, S., Urfels, A. & Müller, C. Global crop yields can be lifted by timely adaptation of growing periods to climate change. *Nat. Commun.* **13**, 7079 (2022). https://doi.org/10.1038/s41467-022-34411-5
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/how-ozone-damages-crops.html"><span>Previous</span>How ozone damages crops</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/what-an-earth-system-model-is.html"><span>Next</span>What an Earth system model is</a></div>
+<!-- CURRICULUM_FOOTER_END -->

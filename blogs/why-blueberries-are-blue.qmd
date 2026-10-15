@@ -1,0 +1,216 @@
+---
+title: "Why blueberries are blue: anthocyanins"
+description: A blueberry's skin is coloured a near-black red-purple by anthocyanins, and the blue you see is the wax bloom scattering light over it.
+date: 2026-10-14
+categories:
+- plant biology
+- horticulture
+- biochemistry
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/plants/index.html">Plant biology, one blueberry at a time</a><span class="sep">·</span>Part 4 · Ripening</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">School biology. The forecasting series models this crop&#x27;s data; this series explains where the data comes from.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+The pigment in a blueberry is not blue. The skin is packed with anthocyanins, red-purple pigments so concentrated they look almost black, and a squashed berry's juice runs red. The blue you see is the wax bloom: tiny crystals that scatter blue light over that dark skin. Rub the bloom off and the blue goes. The berry makes it in the skin late in ripening, turning green to pink to blue. How much it makes depends mostly on cultivar and ripening stage; heavy shade cuts it and the season shifts it. Full colour tells a grower the skin has ripened, not that the flesh is sweet. A berry picked part-blue keeps colouring, so colour at the packhouse can overstate maturity at picking. Afterwards you should be able to explain where the blue comes from, why acidity changes the pigment's colour, and what colour can and cannot tell you.
+:::
+
+## What the pigment is
+
+A blueberry makes its pigment in the skin, late in ripening[^1]. The pigments are anthocyanins: water-soluble members of the flavonoid family of plant compounds, held in the sap-filled vacuole of each skin cell[^2]. In highbush and rabbiteye blueberries the flesh stays pale. A New Zealand study of one cultivar of each found the flesh "largely devoid of anthocyanins"[^3]. The bilberry, a wild European relative, has deep red flesh, because a genetic switch that turns pigment production on is active in bilberry flesh and missing in blueberry flesh[^4]. Whether lowbush flesh carries any pigment is not settled by the sources used here.
+
+Squash a highbush berry and the juice from its broken skin cells shows red over the whitish flesh[^5]. Red is the pigment's own colour at the berry's acidity; the next section explains why.
+
+Lowbush berries held more anthocyanin than highbush berries in one comparison, but within each species bigger berries were not paler: size alone does not set pigment content[^6].
+
+Colouring starts at the first blush of pink and rises quickly to full ripeness. As it goes, the pigment mix shifts towards the bluer-purple members of the family[^7].
+
+::: {.callout-note collapse="true"}
+## Which anthocyanins, and in which cultivars
+
+An anthocyanin is a coloured core, the **anthocyanidin**, with a sugar attached. Houghton and colleagues note that the core alone is stable only at about pH 1, and that the sugar stabilises it. Six anthocyanidins account for about 92% of the anthocyanins reported in plants. They differ only in the hydroxyl (–OH) and methoxyl (–OCH₃) groups on one ring, and more of these groups shifts the colour from orange (pelargonidin) towards bluish purple (malvidin).
+
+Blueberries use five of the six. Gao and Mazza found sugar-bound forms of delphinidin, cyanidin, petunidin, peonidin and malvidin in all of the ten lowbush and one highbush cultivar they tested, with total anthocyanins of 110 to 260 mg per 100 g of fresh berries[^8]. In Günther and colleagues' study of highbush 'Nui' and rabbiteye 'Velluto Blue', malvidin glycosides were the main pigments in both, and the rabbiteye had about twice as much cyanidin and peonidin. Pigment built up from the first colour change, and in the rabbiteye cyanidin began one stage earlier than the rest. Spinardi and colleagues followed 'Duke' and 'Brigitta' in the Italian Alps and found a shift during ripening from cyanidin-type pigments, with two groups on the ring, to delphinidin-based ones with three.
+
+Anthocyanins are one of three main flavonoid groups in the fruit. Zifkin and colleagues found the other two, proanthocyanidins (condensed tannins) and flavonols, most concentrated in young fruit, in the tissue around the seeds, with anthocyanins accumulating late in maturation.
+:::
+
+## Where the blue comes from
+
+The blue is on the surface. Middleton and colleagues showed that a blueberry's blue is a structural colour: tiny, randomly arranged wax crystals in the bloom scatter blue and ultraviolet light. Rubbing the wax off, or dissolving it, removes the blue and leaves the very dark pigmented skin. The bloom is there throughout development, but the berry looks blue only once dark pigment has filled the skin underneath. The pigment's job in the colour is to be dark. What the bloom is made of, and what else it does, is the subject of [The bloom](the-bloom.qmd).
+
+Why is the pigment itself not blue? Because its colour depends on acidity. In strong acid it takes a **red form**. With less acid it can lose a hydrogen ion and become a **purple form**, and near neutral it can lose a second and become a **blue form**. At in-between acidity, though, water can add to the red form instead, making **colourless forms**, and for simple anthocyanins the colourless forms win above about pH 3, as Houghton and colleagues explain. Blueberries are acidic: in a screen of thousands of samples from Florida and Oregon breeding programmes, puree pH ran from 2.70 to 5.25[^9].
+
+The widget uses measured constants for malvidin-3-glucoside, a grape pigment closely related to the main blueberry ones[^10]. Set pH 3.5, then switch the copigment to caffeine, and watch the coloured share (red plus purple) go from 15.0% to 48.3%.
+
+::: {.sim-card}
+#### Which form the pigment takes
+
+```{ojs}
+//| echo: false
+viewof pH = Inputs.range([1, 7], {value: 3.5, step: 0.05, label: "pH"})
+viewof copig = Inputs.radio(new Map([["None", "none"], ["Caffeine, 0.053 M", "caff"]]),
+                            {value: "none", label: "Copigment"})
+
+// Mendoza et al. (2019), ACS Omega 4, 12058, Table 4: malvidin-3-glucoside (1.8 × 10⁻⁵ M),
+// without and with caffeine. Ka and Kh in mol/L; Kt and Ki dimensionless.
+constants = ({
+  none: {pKa: 3.8, Kh: 1.7e-3, Kt: 0.4, Ki: 0.45, pKa2: 6.4},
+  caff: {pKa: 3.5, Kh: 3e-4,   Kt: 0.5, Ki: 1.5,  pKa2: 6.4}
+})
+formNames = ["Red form", "Purple form", "Colourless form",
+             "Pale forms", "Blue (ionised) forms"]
+
+forms = (p, c) => {
+  const h = 10 ** -p, Ka = 10 ** -c.pKa, K2 = 10 ** -c.pKa2;
+  const K1 = Ka + c.Kh + c.Kh * c.Kt + c.Kh * c.Kt * c.Ki;  // apparent K'a
+  const D = h * h + K1 * h + K1 * K2, cb = K1 * h / D;      // cb: neutral forms together
+  const x = [h * h / D, cb * Ka / K1, cb * c.Kh / K1, cb * c.Kh * c.Kt * (1 + c.Ki) / K1, K1 * K2 / D];
+  return formNames.map((form, i) => ({pH: p, form, x: x[i]}));
+}
+
+now = forms(pH, constants[copig])
+curves = d3.range(1, 7.001, 0.05).flatMap(p => forms(p, constants[copig]))
+
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+pct = v => (100 * v).toFixed(1) + "%"
+
+html`<div class="sim-readouts">
+  ${card("Red form", pct(now[0].x), "#ef4444")}
+  ${card("Purple form", pct(now[1].x), "#a78bfa")}
+  ${card("Coloured (red + purple)", pct(now[0].x + now[1].x), "#38bdf8")}
+  ${card("Colourless forms", pct(now[2].x + now[3].x), "#cbd5e1")}
+</div>`
+
+Plot.plot({
+  height: 340,
+  marginLeft: 55,
+  // Plot paints its own white ground otherwise, which the dark card fights.
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [1, 7], label: "pH →", grid: true},
+  y: {domain: [0, 1.12], label: "↑ Share of the pigment", ticks: [0, 0.25, 0.5, 0.75, 1], tickFormat: "%"},
+  color: {legend: true, domain: formNames,
+          range: ["#ef4444", "#a78bfa", "#64748b", "#f59e0b", "#38bdf8"]},
+  marks: [
+    Plot.areaY(curves, {x: "pH", y: "x", fill: "form", order: formNames, fillOpacity: 0.85}),
+    Plot.ruleY([1.06], {x1: 2.70, x2: 5.25, stroke: "#cbd5e1", strokeWidth: 3}),
+    Plot.text([{x: 3.975, y: 1.06}], {x: "x", y: "y", text: () => "blueberry puree, pH 2.70 to 5.25",
+                                     fill: "#cbd5e1", dy: -9}),
+    Plot.ruleX([pH], {stroke: "#ffffff", strokeWidth: 2, strokeDasharray: "4 4"})
+  ]
+})
+```
+
+Constants from Mendoza et al. (2019) for malvidin-3-glucoside in dilute solution at equilibrium. The puree range is from a breeding-programme screen. The blue band lumps the forms that have lost a second hydrogen ion; the paper treats their mix as an estimate.
+:::
+
+Without a copigment, 84.9% of the pigment at pH 3.5 is in colourless forms. Slide the pH up and the red fades, and the blue form takes over only above the top of the puree range. In dilute solution, the pigment alone cannot make an acidic berry blue.
+
+A copigment is a flat molecule that stacks against the pigment and stops water adding to it, which keeps more of the pigment coloured. Caffeine is a laboratory stand-in. In plants the main copigments are hydrolysable tannins, other flavonoids and phenolic acids, sharing the vacuole with the pigment; metal ions, and pigment molecules stacking on each other, can also hold the colour, according to Houghton's review. Blueberries carry plenty of one phenolic acid: Gao and Mazza measured chlorogenic acid at 50 to 100 mg per 100 g of fresh fruit. The sources here do not measure how much of it copigments in the skin.
+
+Treat the widget as a guide to direction, not a model of a berry. Its constants are for one grape pigment at about 18 micromoles per litre. Blueberries carry other sugar forms too, and a skin cell's vacuole is far more concentrated, which favours stacking. Puree pH also mixes all the berry's cells, so it is not the pH inside the skin cells.
+
+::: {.callout-note collapse="true"}
+## The chemistry: forms and equilibria
+
+The red form is the **flavylium cation** ($\text{AH}^+$), the purple form the **quinoidal base** ($\text{A}$), and the blue form the **anionic quinoidal base** ($\text{A}^-$). The colourless forms are the **hemiketal** ($\text{B}$) and the *cis*- and *trans*-**chalcones** ($\text{C}_\text{c}$, $\text{C}_\text{t}$), which can be pale yellow.
+
+```{mermaid}
+flowchart TD
+    AH["Red: flavylium"] <-->|"loses H+"| A["Purple: quinoidal base"]
+    A <-->|"loses H+"| Am["Blue: anionic base"]
+    AH <-->|"adds water"| B["Colourless: hemiketal"]
+    B <-->|"ring opens"| C["Pale: chalcones"]
+
+    class AH rust
+    class A plum
+    class Am indigo
+    class B umber
+    class C ochre
+    classDef indigo fill:#1d4a62,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef umber fill:#3b1a18,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef plum fill:#48304a,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef rust fill:#a04b2d,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef ochre fill:#d69a2e,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+```
+
+Four equilibria link the forms below the second deprotonation:
+
+$$\text{AH}^+ \rightleftharpoons \text{A} + \text{H}^+ \;(K_\text{a}), \qquad \text{AH}^+ + \text{H}_2\text{O} \rightleftharpoons \text{B} + \text{H}^+ \;(K_\text{h}), \qquad \text{B} \rightleftharpoons \text{C}_\text{c} \;(K_\text{t}), \qquad \text{C}_\text{c} \rightleftharpoons \text{C}_\text{t} \;(K_\text{i})$$
+
+where $K_\text{a}$ and $K_\text{h}$ are the acid and hydration constants ($\text{mol L}^{-1}$), and $K_\text{t}$ and $K_\text{i}$ are the ring-opening and isomerisation constants (dimensionless). Every neutral form is reached from $\text{AH}^+$ by losing one proton, so the system behaves like a single acid whose conjugate base is the whole neutral pool $\text{CB} = \text{A} + \text{B} + \text{C}_\text{c} + \text{C}_\text{t}$, with apparent constant
+
+$$K_\text{a}' = K_\text{a} + K_\text{h} + K_\text{h}K_\text{t} + K_\text{h}K_\text{t}K_\text{i}$$
+
+in $\text{mol L}^{-1}$. A second apparent constant, $K_\text{a}''$ ($\text{mol L}^{-1}$), takes the neutral pool to the ionised pool $\text{CB}^-$. With $h = 10^{-\text{pH}}$, the hydrogen ion activity ($\text{mol L}^{-1}$), the shares are
+
+$$x_{\text{AH}^+} = \frac{h^2}{D}, \qquad x_\text{CB} = \frac{K_\text{a}' h}{D}, \qquad x_{\text{CB}^-} = \frac{K_\text{a}' K_\text{a}''}{D}, \qquad D = h^2 + K_\text{a}' h + K_\text{a}' K_\text{a}''$$
+
+and inside the neutral pool, $\text{A}$, $\text{B}$ and the two chalcones split in the ratio $K_\text{a} : K_\text{h} : K_\text{h}K_\text{t}(1 + K_\text{i})$.
+
+For malvidin-3-glucoside without copigment, Mendoza and colleagues report $\text{p}K_\text{a} = 3.8$, $K_\text{h} = 1.7 \times 10^{-3}$, $K_\text{t} = 0.4$, $K_\text{i} = 0.45$ and $\text{p}K_\text{a}'' = 6.4$. Adding the terms, $K_\text{a}' = 1.58 \times 10^{-4} + 1.7 \times 10^{-3} + 6.8 \times 10^{-4} + 3.06 \times 10^{-4} = 2.84 \times 10^{-3}$, so $\text{p}K_\text{a}' = 2.55$, the value they report: the pH at which the red cation and the neutral pool are equal. On these constants the purple form never exceeds 5.4% (at pH 4.47), and the ionised forms reach half the pigment at pH 6.4, where $h = K_\text{a}''$. With 0.053 M caffeine the constants become $\text{p}K_\text{a} = 3.5$, $K_\text{h} = 3 \times 10^{-4}$, $K_\text{t} = 0.5$ and $K_\text{i} = 1.5$, and $\text{p}K_\text{a}'$ moves up to 3.0. The copigment mostly suppresses hydration: $K_\text{h}$ falls more than fivefold.
+:::
+
+## What sets how much
+
+Cultivar and species set the range. Lowbush beat highbush in Kalt's comparison, and the rabbiteye and highbush in Günther's study differed in their pigment mix.
+
+Light is the one lever with numbers. Zoratti and colleagues grew potted 'Brigitta Blue' highbush under coloured nets that removed about 25% of sunlight and under a black net that removed 90%[^11]. In 2013, berries in open sun held 346.9 mg of anthocyanin per 100 g fresh weight and every net lowered that. Under the black net berries held 141.1, $1 - 141.1/346.9 = 59\%$ less, and ripened about 20 days late. In 2014 open-sun berries held 217.7, the same as under the coloured nets, and black-net berries 163.4, $1 - 163.4/217.7 = 25\%$ less. The season moved the numbers as much as the nets did: the authors linked part of 2013's higher pigment to cold nights of 8 to 11 °C in late June.
+
+Warmth changed the timing more than the result: at the warmer of Spinardi's two Alpine sites pigment built up faster early, but ripe fruit did not differ. Year and place reshuffle cultivars. Across Minnesota, Michigan and Oregon over two years, Connor and colleagues found that cultivar rank for anthocyanin content changed between years and between sites[^12]. None of the sources read here tested fertiliser, irrigation or pruning for effects on skin pigment.
+
+## What colour tells you
+
+Colour is the harvest cue pickers use, but it is a skin measurement. Sugar and acid are in the flesh, and [Sugar, acid, and what "ripe" measures](sugar-acid-and-what-ripe-measures.qmd) shows that full blue arrives before they stop changing, and covers how to judge maturity.
+
+Colour also keeps changing after picking. Kalt and colleagues held underripe highbush berries at 20 °C for up to 8 days[^13]. Anthocyanin kept forming, more slowly after about 4 days, and less of it in the least ripe fruit. After 8 days, berries picked 5 to 50% blue or 50 to 95% blue held more anthocyanin than ripe fruit. The study measured pigment, not sugar, so colour at the packhouse can look riper than the berry was when it was picked. What else does and does not change after picking is the subject of [Why a picked blueberry stops](why-a-picked-blueberry-stops.qmd).
+
+A dull or reddish berry has more than one possible cause. The first is lost bloom: handling that rubs off the wax removes the blue and leaves the dark skin showing. The second is incomplete colouring: pigment builds up from pink to full blue, and a part-coloured berry is still at the redder stage, when cyanidin-type pigments make up more of the mix. The third is pigment form: in the widget a more acidic setting favours the red form, but none of the sources here links reddish berries in the field to skin acidity, so treat that as possible rather than shown.
+
+On health, a 2020 review finds that observational studies link regular blueberry or anthocyanin intake with lower risk of cardiovascular disease and type 2 diabetes, but calls for more human trials[^14]. In what its authors called the longest trial to date, the freeze-dried equivalent of a cup of blueberries a day for six months improved blood-vessel function in adults with metabolic syndrome but not insulin resistance, and half a cup changed nothing measured[^15]. The US Highbush Blueberry Council funded the trial and paid the review's authors an honorarium.
+
+What this means for you, with the sources above:
+
+- Use colour to find candidate fruit, and sugar and acid to judge maturity.
+- A part-blue berry keeps colouring for days after picking, so judge maturity at the bush, not at the packhouse.
+- A dull berry may have lost bloom rather than pigment.
+- Expect cultivar to set colour depth and seasons and sites to reshuffle it; in the netting trial, 90% shade cut pigment in both years and lighter nets in one.
+- Health benefits are plausible, but the human-trial evidence is still limited.
+
+## Key takeaways
+
+- A blueberry's blue is mostly wax scattering blue light over a near-black skin; rubbing off the bloom removes it.
+- The pigments are anthocyanins, made in the skin late in ripening. In highbush and rabbiteye the flesh stays pale; bilberry flesh is red.
+- The same pigment is red in strong acid, mostly colourless at blueberry-juice acidity in dilute solution, and blue only near neutral. Copigments keep more of it coloured.
+- Cultivar and ripening stage set pigment content. Heavy shade cut it by 59% and 25% in two seasons, and year and site reshuffle cultivars.
+- Full colour comes before sugar and acid stop changing, and colour keeps developing after picking.
+- In one six-month trial a cup of blueberries a day improved blood-vessel function but not insulin resistance; specific health benefits are not yet established.
+
+## References
+
+[^1]: Zifkin, M. et al. Gene expression and metabolite profiling of developing highbush blueberry fruit indicates transcriptional regulation of flavonoid metabolism and activation of abscisic acid metabolism. *Plant Physiol.* **158**, 200–224 (2012). https://doi.org/10.1104/pp.111.180950
+[^2]: Houghton, A., Appelhagen, I. & Martin, C. Natural blues: structure meets function in anthocyanins. *Plants* **10**, 726 (2021). https://doi.org/10.3390/plants10040726
+[^3]: Günther, C. S. et al. Spatiotemporal modulation of flavonoid metabolism in blueberries. *Front. Plant Sci.* **11**, 545 (2020). https://doi.org/10.3389/fpls.2020.00545
+[^4]: Lafferty, D. J. et al. The coordinated action of MYB activators and repressors controls proanthocyanidin and anthocyanin biosynthesis in *Vaccinium*. *Front. Plant Sci.* **13**, 910155 (2022). https://doi.org/10.3389/fpls.2022.910155
+[^5]: Middleton, R. et al. Self-assembled, disordered structural color from fruit wax bloom. *Sci. Adv.* **10**, eadk4219 (2024). https://doi.org/10.1126/sciadv.adk4219
+[^6]: Kalt, W. et al. Interspecific variation in anthocyanins, phenolics, and antioxidant capacity among genotypes of highbush and lowbush blueberries (*Vaccinium* section *Cyanococcus* spp.). *J. Agric. Food Chem.* **49**, 4761–4767 (2001). https://doi.org/10.1021/jf010653e
+[^7]: Spinardi, A., Cola, G., Gardana, C. S. & Mignani, I. Variation of anthocyanin content and profile throughout fruit development and ripening of highbush blueberry cultivars grown at two different altitudes. *Front. Plant Sci.* **10**, 1045 (2019). https://doi.org/10.3389/fpls.2019.01045
+[^8]: Gao, L. & Mazza, G. Quantitation and distribution of simple and acylated anthocyanins and other phenolics in blueberries. *J. Food Sci.* **59**, 1057–1059 (1994). https://doi.org/10.1111/j.1365-2621.1994.tb08189.x
+[^9]: Perkins-Veazie, P., Ma, G., Pottorff, M., Lila, M. A. & Iorizzo, M. New tools for rapid fruit quality analysis in blueberry. *Acta Hortic.* **1357**, 193–198 (2023). https://doi.org/10.17660/ActaHortic.2023.1357.28
+[^10]: Mendoza, J., Basílio, N., de Freitas, V. & Pina, F. New procedure to calculate all equilibrium constants in flavylium compounds: application to the copigmentation of anthocyanins. *ACS Omega* **4**, 12058–12070 (2019). https://doi.org/10.1021/acsomega.9b01066
+[^11]: Zoratti, L., Jaakola, L., Häggman, H. & Giongo, L. Modification of sunlight radiation through colored photo-selective nets affects anthocyanin profile in *Vaccinium* spp. berries. *PLoS ONE* **10**, e0135935 (2015). https://doi.org/10.1371/journal.pone.0135935
+[^12]: Connor, A. M., Luby, J. J., Tong, C. B. S., Finn, C. E. & Hancock, J. F. Genotypic and environmental variation in antioxidant activity, total phenolic content, and anthocyanin content among blueberry cultivars. *J. Am. Soc. Hortic. Sci.* **127**, 89–97 (2002). https://doi.org/10.21273/JASHS.127.1.89
+[^13]: Kalt, W. et al. Oxygen radical absorbing capacity, anthocyanin and phenolic content of highbush blueberries (*Vaccinium corymbosum* L.) during ripening and storage. *J. Am. Soc. Hortic. Sci.* **128**, 917–923 (2003). https://doi.org/10.21273/JASHS.128.6.0917
+[^14]: Kalt, W. et al. Recent research on the health benefits of blueberries and their anthocyanins. *Adv. Nutr.* **11**, 224–236 (2020). https://doi.org/10.1093/advances/nmz065
+[^15]: Curtis, P. J. et al. Blueberries improve biomarkers of cardiometabolic function in participants with metabolic syndrome—results from a 6-month, double-blind, randomized controlled trial. *Am. J. Clin. Nutr.* **109**, 1535–1545 (2019). https://doi.org/10.1093/ajcn/nqy380
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/nitrogen-as-ammonium-not-nitrate.html"><span>Previous</span>Nitrogen as ammonium, not nitrate</a><a class="mf-up" href="/series/plants/index.html"><span>Series</span>Plant biology, one blueberry at a time</a><a class="mf-next" href="/blogs/sugar-acid-and-what-ripe-measures.html"><span>Next</span>Sugar, acid, and what &quot;ripe&quot; measures</a></div>
+<!-- CURRICULUM_FOOTER_END -->
