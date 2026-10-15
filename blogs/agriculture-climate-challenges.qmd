@@ -1,6 +1,6 @@
 ---
 title: Agriculture under climate extremes
-description: Heat, drought and surface ozone acting on crops together, and the agronomic changes that would make food systems less fragile.
+description: Heat and surface ozone strike the same crops at the same time, what global studies find when both are counted, and which responses suit which crop.
 date: 2026-08-27
 categories:
 - food security
@@ -8,7 +8,6 @@ categories:
 - ozone pollution
 - agronomy
 - climate resilience
-- interactive
 ---
 
 <!-- CURRICULUM_HEADER_START -->
@@ -18,32 +17,39 @@ categories:
 ::: {.callout-note appearance="simple" icon=false}
 ## TL;DR
 
-Breadbaskets now face heatwaves, flash drought and phytotoxic surface ozone ($\text{O}_3$) in the same season. Evaluated together, co-occurring heat and peak ozone depress soybean, wheat and maize yields by $4.4–12.4\%$ beyond thermal stress alone. This module sets out a four-tier adaptation stack (tolerant cultivars, strip intercropping, drip fertigation, regional grain buffers) and explains why the tiers stack rather than substitute.
+Heat and surface ozone ($\text{O}_3$) harm the same staple crops, often in the same places and the same weeks, because ozone forms faster in hot weather. Counting them separately misreads both: one global study found that 24%, 9.8% and 46% of the yield loss that statistics attribute to extreme heat in wheat, maize and soybean was really caused by the extra ozone on hot days. Ozone on its own cut global yields in 2010–2012 by an estimated 12.4% for soybean, 7.1% for wheat, 6.1% for maize and 4.4% for rice. Projected to 2050 without adaptation, warming cuts global crop production by 11%; rising ozone makes that 15%, while cutting ozone precursors brings it to 9.0%. Which response helps most depends on the crop: heat-tolerant cultivars for maize and soybean where heat dominates, ozone control for wheat.
 :::
 
-## Three stresses that arrive together
+::: {.callout-note}
+## Corrected, October 2026
 
-Modern agriculture was built on the climatic stability of the Holocene. Breadbaskets now face three atmospheric stressors at once, and their damage compounds:
+An earlier version of this page said co-occurring heat and ozone cut soybean, wheat and maize yields by $4.4$–$12.4\%$ beyond heat alone. Those figures are ozone-only global yield losses, ranging from rice to soybean, from a study that does not estimate a heat-plus-ozone increment. The page also gave a $5$–$15\%$ global ozone loss, a per-crop loss table, a bar chart and a $15$–$30\%$ fall in photosynthesis that no cited source contains; described ozone's effect on RuBisCO loosely, where the evidence is for less of the enzyme rather than a less active one; and presented a four-tier adaptation plan as the content of a *Frontiers in Climate* editorial that does not discuss it. Its interactive widget used response coefficients from no source and has been removed, as have a data note that named no dataset and a code link to a repository that does not exist. The page now reports what the cited studies find.
+:::
+
+## Heat and ozone arrive together
+
+Ozone formation is strongly correlated with temperature, so the hot days that stress a crop also tend to be its high-ozone days[^1]. The two stresses overlap in space as well. A global map of five yield constraints found that areas with high ozone losses are often also at risk of high losses from heat stress, pests and diseases, and to a lesser extent aridity and nutrient stress. In India, the area where ozone cuts wheat production most coincided with the area of highest heat stress, which covered most of the northern half of the country[^2].
 
 ```{mermaid}
 flowchart TD
-    TripleThreat["The Compounding Agricultural Stress Matrix"]
-    
-    TripleThreat --> Heat["1. Extreme Heat & Evaporative Deficit<br/>Pollen Sterility, Accelerated Senescence"]
-    TripleThreat --> Water["2. Hydrological Volatility<br/>Flash Droughts, Flood Inundation, Soil Erosion"]
-    TripleThreat --> Ozone["3. Toxic Surface Ozone (O3)<br/>Stomatal Lesions, RuBisCO Degradation"]
+    Weather["Hot, sunny growing season"]
 
-    Heat & Water & Ozone --> CompoundDamage["Compounding Cellular Damage in Staple Crops<br/>Depresses Photosynthetic Carbon Assimilation by 15-30%"]
-    
-    CompoundDamage --> YieldDrop["Major Global Crop Losses (Wheat, Maize, Soy, Rice)"]
-    YieldDrop --> EconomicShock["Food Price Spikes, Export Bans & Malnutrition Risk"]
+    Weather --> Heat["Days above the crop's optimum temperature<br/>(killing degree days)"]
+    Weather -->|"ozone formation rises with temperature"| Ozone["More surface ozone"]
+    Ozone -->|"enters through open stomata"| ROS["Reactive oxygen species in the leaf"]
+    ROS --> Rubisco["Less RuBisCO, slower photosynthesis"]
+    ROS --> Senesce["Earlier leaf senescence, shorter grain filling"]
 
-    class TripleThreat indigo
+    Heat --> Yield["Lower yield"]
+    Rubisco --> Yield
+    Senesce --> Yield
+
+    class Weather indigo
     class Heat rust
-    class Water plum
     class Ozone ochre
-    class CompoundDamage sienna
-    class EconomicShock terracotta
+    class ROS plum
+    class Rubisco,Senesce sienna
+    class Yield terracotta
     classDef indigo fill:#1d4a62,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
     classDef sienna fill:#6c2b27,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
     classDef plum fill:#48304a,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
@@ -52,158 +58,67 @@ flowchart TD
     classDef terracotta fill:#c97d62,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
 ```
 
-### Surface ozone, the overlooked one
+Because the two arrive together, a statistical model that relates yields to hot days alone credits heat with damage done by the ozone that came with it. Tai and colleagues measured heat as killing degree days: over the season, the sum of each day's maximum temperature above the crop's optimal growth temperature. They then corrected for the covariation of ozone with temperature and found that, on average, 24% of wheat's, 9.8% of maize's and 46% of soybean's observed yield sensitivity to killing degree days came from the higher ozone associated with hot days. For rice the result was inconclusive[^1].
 
-Greenhouse warming is widely recognised; ground-level ozone is a chronic crop poison that is not:
-1. Ozone enters open leaf stomata during daytime transpiration.
-2. Inside the leaf interior, it rapidly dissolves into reactive oxygen species ($\text{ROS}$: $\text{H}_2\text{O}_2, \cdot\text{OH}, \text{O}_2^{\cdot-}$)[^1].
-3. $\text{ROS}$ degrades the primary photosynthetic enzyme **RuBisCO**, inducing premature chlorosis, shrinking grain fill duration, and slashing harvest yield by $5–15\%$ globally[^2].
+## What ozone does inside a leaf
+
+1. Ozone enters leaves through the stomata and generates other reactive oxygen species, causing oxidative stress that decreases photosynthesis, growth and biomass[^3].
+2. Antioxidants in the water film on the cell walls, ascorbate among them, can detoxify ozone and its products, but they are used up in doing so[^4].
+3. The leaf ends up with less RuBisCO, the enzyme that fixes carbon dioxide. A review of about 20 experimental studies found that ozone lowers RuBisCO's concentration rather than its activation state. The fall has been attributed to slower synthesis of the enzyme's messenger RNA, though one study points to faster breakdown[^4].
+4. Leaves senesce earlier and faster. In wheat this shortens the time from flowering to maturity, leaving less time to fill the grain, and the yield loss is mostly in the mass of each grain rather than the number of grains[^4].
+
+How much does this cost? Using the ozone dose taken up through the stomata, Mills and colleagues estimated that ozone in 2010–2012 cut global yields by 12.4% for soybean, 7.1% for wheat, 6.1% for maize and 4.4% for rice each year, 227 million tonnes of lost yield in all, and ranked sensitivity soybean > wheat > maize > rice[^2]. These are losses to ozone alone, measured against clean air; they are not an addition to the losses from heat.
 
 ## Which staples are most exposed
 
-The four staples differ in photosynthetic pathway and in the growth stage each stress hits, so their vulnerabilities differ:
+The two global studies answer different questions, so the columns below are not comparable with one another:
 
-| Staple Crop | Photosynthetic Pathway | Primary Climate Vulnerability | Ozone Sensitivity | Estimated Global Annual Yield Loss |
-| :--- | :--- | :--- | :--- | :--- |
-| **Soybean ($\text{Glycine max}$)** | $\text{C}_3$ Legume | Pod abortion during reproductive heat | **Extremely High** | **$-8.5\text{ to }-14.0\%$** |
-| **Wheat ($\text{Triticum aestivum}$)** | $\text{C}_3$ Cereal | Heat-induced grain shrinkage during flowering | **Very High** | **$-7.1\text{ to }-12.2\%$** |
-| **Maize ($\text{Zea mays}$)** | $\text{C}_4$ Grass | Silk desiccation and pollen sterility ($T > 35^\circ\text{C}$) | **Moderate** | **$-4.2\text{ to }-6.5\%$** |
-| **Rice ($\text{Oryza sativa}$)** | $\text{C}_3$ Semi-aquatic | Nighttime high-temperature respiration | **Moderate-High** | **$-3.8\text{ to }-5.9\%$** |
+| Crop | Yield lost to ozone, 2010–2012[^2] | Share of apparent heat sensitivity that is ozone[^1] | Main driver of projected 2050 change in major producing regions[^1] |
+| :--- | :--- | :--- | :--- |
+| Soybean | 12.4% | 46% | Temperature in South America; uncertain in the US |
+| Wheat | 7.1% | 24% | Ozone, except in South America, where temperature |
+| Maize | 6.1% | 9.8% | Temperature in the US, Europe and South America; ozone in China |
+| Rice | 4.4% | inconclusive | Ozone in China |
 
-```
-       Relative Yield Loss by Stressor for Major Global Grains (%):
-       
-       Soybean:  [████████] Heat  [████████████] Ozone  [██████] Drought  (-28% Total Risk)
-       Wheat:    [██████████] Heat  [██████████] Ozone  [████████] Drought  (-28% Total Risk)
-       Maize:    [██████████████] Heat  [████] Ozone  [██████████] Drought  (-28% Total Risk)
-       Rice:     [████████] Heat  [██████] Ozone  [██████] Drought  (-20% Total Risk)
-```
+The first column is today's loss to ozone alone. The second says how much of the historical link between hot days and poor harvests was really ozone. The third says which of the two stresses dominates the change projected to 2050 in the regions that grow most of each crop.
 
-## A four-tier adaptation stack
+## Projected to 2050
 
-In our synthesis in *Frontiers in Climate*[^3], we set out a resilience roadmap spanning biotechnology, field ecology and food-systems policy:
+Tai and colleagues projected 2000-to-2050 changes in temperature and ozone with the Community Earth System Model under two scenarios: RCP4.5, in which pollution control lowers surface ozone worldwide except in South Asia, and RCP8.5, in which ozone rises worldwide except in the US and Japan. They converted the yield changes of the four crops into food energy and left out the effects of rising carbon dioxide, of adaptation and of water scarcity[^1]:
 
-```{=html}
-<figure markdown="span">
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 340" style="width:100%;max-width:760px;height:auto;font-family:system-ui,-apple-system,sans-serif;" role="img" aria-label="Four stacked bands showing the adaptation tiers from genetics at the bottom to policy at the top, with the intervention and the scale at which each acts, against an axis of widening scale and lead time.">
-<defs>
-<marker id="agScale" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="var(--md-default-fg-color--light)"/></marker>
-</defs>
-<text x="76" y="26" fill="var(--md-default-fg-color)" font-size="15.5" font-weight="600">The four tiers act at different scales, so they stack rather than substitute</text>
-<line x1="44" y1="300" x2="44" y2="62" stroke="var(--md-default-fg-color--light)" stroke-width="1.6" marker-end="url(#agScale)"/>
-<text transform="rotate(-90 26 186)" x="26" y="186" text-anchor="middle" fill="var(--md-default-fg-color--light)" font-size="12.5">widening scale and lead time</text>
-<text x="246" y="56" fill="var(--md-default-fg-color--light)" font-size="11.5">INTERVENTION</text>
-<text x="735" y="56" text-anchor="end" fill="var(--md-default-fg-color--light)" font-size="11.5">ACTS AT</text>
-<rect x="76" y="66" width="664" height="52" rx="8" fill="var(--ink-rust)" fill-opacity="0.12" stroke="var(--md-default-fg-color--light)" stroke-width="1.6"/>
-<text x="92" y="97" fill="var(--ink-rust)" font-size="14.5" font-weight="600">Tier 4 &#183; Policy</text>
-<text x="246" y="97" fill="var(--md-default-fg-color)" font-size="13">Grain reserves, climate crop insurance</text>
-<text x="724" y="97" text-anchor="end" fill="var(--md-default-fg-color--light)" font-size="12.5">nation &#183; years to decades</text>
-<rect x="76" y="128" width="664" height="52" rx="8" fill="var(--ink-rust)" fill-opacity="0.12" stroke="var(--md-default-fg-color--light)" stroke-width="1.6"/>
-<text x="92" y="159" fill="var(--ink-rust)" font-size="14.5" font-weight="600">Tier 3 &#183; Water &amp; N</text>
-<text x="246" y="159" fill="var(--md-default-fg-color)" font-size="13">Drip fertigation, controlled-release urea</text>
-<text x="724" y="159" text-anchor="end" fill="var(--md-default-fg-color--light)" font-size="12.5">farm &#183; within one season</text>
-<rect x="76" y="190" width="664" height="52" rx="8" fill="var(--ink-indigo)" fill-opacity="0.12" stroke="var(--md-default-fg-color--light)" stroke-width="1.6"/>
-<text x="92" y="221" fill="var(--ink-indigo)" font-size="14.5" font-weight="600">Tier 2 &#183; Field</text>
-<text x="246" y="221" fill="var(--md-default-fg-color)" font-size="13">Strip intercropping, cover crops, biochar</text>
-<text x="724" y="221" text-anchor="end" fill="var(--md-default-fg-color--light)" font-size="12.5">field &#183; one to three seasons</text>
-<rect x="76" y="252" width="664" height="52" rx="8" fill="var(--ink-indigo)" fill-opacity="0.12" stroke="var(--md-default-fg-color--light)" stroke-width="1.6"/>
-<text x="92" y="283" fill="var(--ink-indigo)" font-size="14.5" font-weight="600">Tier 1 &#183; Genetics</text>
-<text x="246" y="283" fill="var(--md-default-fg-color)" font-size="13">Ozone- and heat-tolerant cultivars (CRISPR)</text>
-<text x="724" y="283" text-anchor="end" fill="var(--md-default-fg-color--light)" font-size="12.5">gene &#183; a decade of breeding</text>
-<rect x="92" y="314" width="12" height="12" rx="2" fill="var(--ink-indigo)" fill-opacity="0.55" stroke="var(--ink-indigo)" stroke-width="1.4"/>
-<text x="112" y="324" fill="var(--md-default-fg-color--light)" font-size="12.5">blue: raises what the plant can tolerate</text>
-<rect x="392" y="314" width="12" height="12" rx="2" fill="var(--ink-rust)" fill-opacity="0.55" stroke="var(--ink-rust)" stroke-width="1.4"/>
-<text x="412" y="324" fill="var(--md-default-fg-color--light)" font-size="12.5">magenta: lowers the stress the plant sees</text>
-</svg>
-<figcaption><strong>Figure 1 | Adaptation only works as a stack, because each tier buys time at a different scale.</strong> The two lower tiers (blue) change the plant itself &#8212; cultivars with stomatal conductance tuned to throttle uptake during peak midday ozone, and field designs that buffer microclimate and hold soil moisture &#8212; but both take seasons to decades to deploy. The two upper tiers (magenta) instead cut the stress the plant is exposed to at all, through precise water and nitrogen delivery and, at national scale, reserves and insurance that stop a local harvest failure from becoming a global price shock. Because the lead times differ by orders of magnitude, no single tier can substitute for another.</figcaption>
-</figure>
-```
+| Change in global crop production by 2050 | RCP4.5 (ozone falls) | RCP8.5 (ozone rises) |
+| :--- | :--- | :--- |
+| Warming alone | −11% | −11% |
+| Ozone alone | +3.1% | −3.6% |
+| Both together | −9.0% | −15% |
+| Undernourishment in developing countries, 18% in 2000 | up 27%, to about 23% | up 49%, to 27% |
 
+The combined effect is computed grid cell by grid cell and crop by crop, as the product of a climate and an ozone factor, so it is not the sum of the two rows above it. Regionally the range is wider: wheat production in South Asia, where ozone worsens in both scenarios, falls by up to 40%, and maize and soybean in their temperature-dominated regions fall by 20–50% from more frequent extreme heat whatever happens to ozone. The undernourishment rate under RCP4.5 is $18\% \times 1.27 = 22.9\%$.
 
-1. **Stress-Resilient Cultivars**: Breeding crops with optimized stomatal conductance curves that automatically throttle gas intake during peak midday ozone and heat events without choking off photosynthesis[^4].
-2. **Crop Diversification & Intercropping**: Transitioning away from vast, uniform monocultures toward multi-species strip intercropping (e.g., maize-soybean), which creates microclimate buffering and enhances soil moisture retention.
-3. **Smart Nutrient & Irrigation Management**: Utilizing subsurface drip fertigation to minimize ammonia volatilization while reducing plant water stress during critical flowering windows.
-4. **Decentralized Grain Buffers**: Establishing localized grain storage and diversified supply chains to prevent local harvest failures from turning into global price shocks.
+## What would help
 
-### Test the stack against compound stress
+The studies point to three kinds of response, and which one pays depends on whether heat or ozone dominates a crop's losses.
 
-Set warming and surface ozone, then step the adaptation level up to see how much of the loss each tier recovers:
+**Cut ozone at its source.** Under RCP4.5, ozone regulation could fully reverse the warming impact on wheat in the US and China and turn it into a gain. Tai and colleagues argue that, given how hard ozone-resistant cultivars are to deploy, the doubtful efficacy of other management practices and the public-health benefit of cleaner air, ozone regulation may be a practical and preferable complement to climate adaptation, depending on the crop, and call for farmers, agricultural policy makers and air-quality managers to work together[^1]. Mills and colleagues likewise list more stringent controls on ozone precursor emissions as one way to close the ozone yield gap[^2].
 
-::: {.sim-card}
-#### 🌽 Global crop stress & adaptation simulator
+**Breed for heat and ozone tolerance.** Selecting heat-tolerant cultivars may work for maize and soybean in their major producing regions, except China for both crops and the US for soybean, but less well than ozone reduction for wheat[^1]. Varieties differ widely in ozone tolerance, most of all in soybean and rice, which leaves room to select more tolerant ones, and Mills and colleagues describe a crop ideotype tolerant of several stresses at once, ozone included[^2]. There is a trade-off. Drying soil normally closes stomata, which limits ozone uptake, so drought-adapted varieties that keep their stomata open under drought take a higher ozone dose; yet those are the traits that keep them productive under drought, so breeding against them may not raise yield[^4].
 
-```{ojs}
-//| echo: false
-viewof warm = Inputs.range([0.0, 4.0], {value: 1.5, step: 0.5, label: "Warming anomaly (°C)"})
-viewof ozo = Inputs.range([30, 90], {value: 55, step: 5, label: "Surface ozone (ppb)"})
-viewof adapt = Inputs.select(new Map([
-  ["None (Conventional Monoculture)", 0],
-  ["Moderate (Intercropping + Drip Water)", 1],
-  ["Advanced (Full Climate-Resilient Package)", 2]
-]), {value: 1, label: "Agro-ecological adaptation level"})
-
-// Ozone damage only accrues above the 35 ppb phytotoxic threshold.
-ozoExcess = Math.max(0, ozo - 35)
-
-// Each tier hands back a fixed number of percentage points per crop.
-buffer = adapt === 1 ? {soy: 5.5, wheat: 4.5, maize: 6.0}
-       : adapt === 2 ? {soy: 11.0, wheat: 9.5, maize: 12.0}
-       : {soy: 0, wheat: 0, maize: 0}
-
-losses = ({
-  soy: -(warm * 4.5 + ozoExcess * 0.35) + buffer.soy,
-  wheat: -(warm * 5.0 + ozoExcess * 0.28) + buffer.wheat,
-  maize: -(warm * 6.2 + ozoExcess * 0.14) + buffer.maize
-})
-
-formatLoss = v => (v >= 0 ? "+" + v.toFixed(1) : v.toFixed(1)) + "%"
-lossColour = v => v < -10 ? "#ef4444" : (v < 0 ? "#f59e0b" : "#10b981")
-
-resilience = adapt === 0 && (warm > 2.0 || ozo > 65)
-  ? {score: "Critical Risk", colour: "#ef4444",
-     diag: "🚨 Critical Food Security Threat: Unmitigated compound heat and ozone episodes cause massive yield collapse across major cereal and legume crops."}
-  : adapt === 2
-  ? {score: "High Resilience", colour: "#10b981",
-     diag: "🌟 Climate-Smart Farming: Comprehensive agronomic adaptations, intercropping, and stress-tolerant cultivars completely neutralize compound atmospheric losses."}
-  : {score: "Buffered", colour: "#38bdf8",
-     diag: "🛡️ Moderate Resilience: Agro-ecological techniques provide effective protection against seasonal volatility and ozone peaks."}
-
-card = (label, value, colour) => html`<div class="sim-readout">
-  <div class="sim-readout-label">${label}</div>
-  <div class="sim-readout-value" style="color:${colour}">${value}</div>
-</div>`
-
-html`<div class="sim-readouts">
-  ${card("Soybean yield", formatLoss(losses.soy), lossColour(losses.soy))}
-  ${card("Wheat yield", formatLoss(losses.wheat), lossColour(losses.wheat))}
-  ${card("Maize yield", formatLoss(losses.maize), lossColour(losses.maize))}
-  ${card("Net food supply resilience", resilience.score, resilience.colour)}
-</div>`
-
-html`<div style="font-size:0.9em;background:rgba(16,185,129,0.1);border-left:4px solid #10b981;padding:10px;border-radius:4px">${resilience.diag}</div>`
-```
-:::
-
-
-### Data and code
-
-- **Synthesis Framework**: Data sources, historical crop yield databases, and ozone exposure metrics are documented in the Frontiers in Climate archive.
-- **Reference Code**: Agricultural modeling scripts and visualization routines are open on GitHub: [`kamingfung/agri-climate-challenges`](https://github.com/kamingfung).
+**Manage the crop and its nitrogen.** Mills and colleagues discuss changes in crop management that could reduce ozone impacts in the shorter term[^2]. The *Frontiers in Climate* Research Topic that we edited gathered farm-scale work of this kind[^5]. One study found that optimising fertiliser input could raise maize production by 20–25% without increasing nitrogen losses in regions such as Eastern Europe, Western Africa and parts of Central and Eastern Africa. Another found that of three cover crops, white clover, a living mulch, reduced greenhouse-gas emissions and had the highest potential to mitigate climate change. A third, from Vietnam, found that the main obstacles to adopting climate-smart agriculture were a lack of capital, information, technical support and land-ownership institutions.
 
 ## Key takeaways
 
-- Heat, flash drought and surface ozone hit crops in the same season, and together they cut photosynthetic carbon assimilation by $15–30\%$.
-- Ozone enters through open stomata, becomes reactive oxygen species and degrades RuBisCO; on its own it removes $5–15\%$ of global yield, and with heat it takes $4.4–12.4\%$ more from soybean, wheat and maize than heat alone.
-- Soybean and wheat ($\text{C}_3$) are the most ozone-sensitive staples; maize ($\text{C}_4$) is more exposed to heat at silking.
-- The four tiers (genetics, field design, water and nitrogen management, grain reserves and insurance) act at different scales and lead times, so none can substitute for another.
-- Tightening industrial $\text{NO}_x$ and methane ($\text{CH}_4$) limits raises wheat and soybean yields directly, and subsidies and crop insurance should reward the soil-building practices (cover crops, intercropping, reduced tillage) that build resilience to heat and drought.
+- Ozone formation rises with temperature, so heat and ozone peak together, and the areas at risk from each overlap. Ignoring ozone credits heat with its damage: 24% of wheat's, 9.8% of maize's and 46% of soybean's apparent sensitivity to extreme heat came from ozone.
+- Ozone enters through the stomata and forms reactive oxygen species; the leaf holds less RuBisCO and senesces early, which shortens grain filling. In 2010–2012 ozone alone cut global yields by 12.4% for soybean, 7.1% for wheat, 6.1% for maize and 4.4% for rice.
+- Without adaptation, warming cuts global crop production by 11% by 2050; rising ozone makes it 15%, falling ozone 9.0%.
+- Heat-tolerant cultivars suit maize and soybean where temperature dominates; ozone control suits wheat. Breeding for ozone tolerance has to weigh drought-adapted traits that keep stomata open.
 
 ## References
 
-[^1]: Ainsworth, E. A., Yendrek, C. R., Sitch, S., Collins, W. J. & Emberson, L. D. The effects of tropospheric ozone on net primary productivity and implications for climate change. *Annu. Rev. Plant Biol.* **63**, 637–661 (2012). https://doi.org/10.1146/annurev-arplant-042110-103829
-[^2]: Tai, A. P. K., Martin, M. V. & Heald, C. L. Threat to future global food security from climate change and ozone air pollution. *Nature Clim. Change* **4**, 817–821 (2014). https://doi.org/10.1038/nclimate2317
-[^3]: Fung, K. M., Saikawa, E. & Tai, A. P. K. Agriculture and food supply challenges in a changing climate. *Front. Clim.* **4**, 1113825 (2023). https://doi.org/10.3389/fclim.2022.1113825
-[^4]: Lobell, D. B. et al. The critical role of extreme heat for maize production in the United States. *Nature Clim. Change* **3**, 497–501 (2013). https://doi.org/10.1038/nclimate1832
+[^1]: Tai, A. P. K., Val Martin, M. & Heald, C. L. Threat to future global food security from climate change and ozone air pollution. *Nature Clim. Change* **4**, 817–821 (2014). https://doi.org/10.1038/nclimate2317
+[^2]: Mills, G. et al. Closing the global ozone yield gap: quantification and cobenefits for multistress tolerance. *Glob. Change Biol.* **24**, 4869–4893 (2018). https://doi.org/10.1111/gcb.14381
+[^3]: Ainsworth, E. A., Yendrek, C. R., Sitch, S., Collins, W. J. & Emberson, L. D. The effects of tropospheric ozone on net primary productivity and implications for climate change. *Annu. Rev. Plant Biol.* **63**, 637–661 (2012). https://doi.org/10.1146/annurev-arplant-042110-103829
+[^4]: Emberson, L. D. et al. Ozone effects on crops and consideration in crop models. *Eur. J. Agron.* **100**, 19–34 (2018). https://doi.org/10.1016/j.eja.2018.06.002
+[^5]: Fung, K. M., Saikawa, E. & Tai, A. P. K. Editorial: Agriculture and food supply challenges in a changing climate. *Front. Clim.* **4**, 1113825 (2023). https://doi.org/10.3389/fclim.2022.1113825
 
 <!-- CURRICULUM_FOOTER_START -->
 <div class="mf"><a class="mf-prev" href="/blogs/enhanced-rock-weathering-nitrogen.html"><span>Previous</span>Enhanced rock weathering</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/what-an-earth-system-model-is.html"><span>Next</span>What an Earth system model is</a></div>
