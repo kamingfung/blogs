@@ -202,5 +202,6 @@ That leaves the nitrogen. Blueberry fertiliser programmes are built on ammonium.
 [^13]: Alt, D. S., Doyle, J. W. & Malladi, A. Nitrogen-source preference in blueberry (*Vaccinium* sp.): enhanced shoot nitrogen assimilation in response to direct supply of nitrate. *J. Plant Physiol.* **216**, 79–87 (2017). https://doi.org/10.1016/j.jplph.2017.05.014
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/the-growth-curve-of-a-berry.html"><span>Previous</span>The growth curve of a berry</a><a class="mf-up" href="/series/plants/index.html"><span>Series</span>Plant biology, one blueberry at a time</a><a class="mf-next" href="/blogs/sugar-acid-and-what-ripe-measures.html"><span>Next</span>Sugar, acid, and what &quot;ripe&quot; measures</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/the-growth-curve-of-a-berry.html"><span>Previous</span>The growth curve of a berry</a><a class="mf-up" href="/series/plants/index.html"><span>Series</span>Plant biology, one blueberry at a time</a><a class="mf-next" href="/blogs/ericoid-mycorrhizae.html"><span>Next</span>Ericoid mycorrhizae</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+

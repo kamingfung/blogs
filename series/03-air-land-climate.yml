@@ -133,6 +133,7 @@ parts:
       - id: air-land-climate/how-ozone-damages-crops
         title: "How ozone damages crops"
         level: intermediate
+        path: blogs/how-ozone-damages-crops.md
       - id: air-land-climate/heat-stress-on-crops
         title: "Heat stress on crops"
         level: intermediate

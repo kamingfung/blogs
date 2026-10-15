@@ -1,0 +1,111 @@
+---
+title: Highbush, lowbush, rabbiteye
+description: The five kinds of cultivated blueberry, the wild species behind each, and what the differences mean for where and how a grower can produce fruit.
+date: 2026-10-12
+categories:
+- plant biology
+- horticulture
+- agriculture
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/plants/index.html">Plant biology, one blueberry at a time</a><span class="sep">·</span>Part 6 · Breeding</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">School biology. The forecasting series models this crop&#x27;s data; this series explains where the data comes from.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Cultivated blueberries come in five types, and the first question for any site is which one its winter suits. Northern highbush needs a long, cold winter. Half-high, a short cross of highbush and lowbush, needs one too, and survives it under snow. Rabbiteye is a tall southern bush for moderate winters that copes with a wider range of soils but ripens later. Southern highbush is the mild-winter bush: highbush bred with a southern wild species so that it needs little winter cold, giving the earliest fruit at the cost of a fussier plant. Lowbush is not planted at all: growers manage wild stands, prune them to the ground every other year, and rake the crop. Afterwards you should be able to match a type to a winter, read a comparison of chill need, hardiness and harvest season, and explain how southern highbush was bred.
+:::
+
+## Five types from three species
+
+A recent review of *Vaccinium* breeding names three commonly cultivated blueberry species: highbush (*V. corymbosum*), lowbush (*V. angustifolium*) and rabbiteye (*V. virgatum*, which older papers call *V. ashei*)[^1]. The five types a grower meets are built from those three, plus one species brought in by breeders:
+
+- **Northern highbush** is *V. corymbosum*, which the review puts at about 90% of the ancestry of most standard cultivars.
+- **Lowbush** is *V. angustifolium*, harvested from managed wild stands.
+- **Rabbiteye** is *V. virgatum*, native to the southern United States. Most rabbiteye cultivars, though not all, are entirely *V. virgatum*.
+- **Half-high** cultivars are crosses of highbush with lowbush, with *V. angustifolium* making up about 25 to 50% of many of them.
+- **Southern highbush** is highbush into which breeders have brought *V. darrowii*, a southern species with no chilling requirement. It typically makes up about 25% of a southern highbush cultivar.
+
+So "highbush" names a species and two crops, selected for opposite winters.
+
+For a planting, the type matters at bloom. Florida's extension guide advises pairing rabbiteye with rabbiteye, and southern highbush with southern highbush, for cross-pollination, and says rabbiteye needs pollen from a second rabbiteye cultivar[^2]. Behind the species boundaries is a difference in chromosome number: highbush and lowbush are tetraploid, with four sets of 12 chromosomes ($4 \times 12 = 48$), and rabbiteye is hexaploid, with six ($6 \times 12 = 72$); the review names ploidy as a common barrier to crossing species. Why blueberries carry so many chromosome sets is the subject of a later module in this part.
+
+## How the crops began
+
+Lowbush was never domesticated. In Maine it is not planted but occupies wild fields, a single field can hold as many as 1,500 genetically distinct plants, and the Wabanaki peoples were the first to manage it at scale, by burning and harvesting[^3]. Northern highbush was domesticated on purpose: Frederick Coville, a botanist at the US Department of Agriculture, made his first wild selection in 1908, worked out the plant's soil and cultural requirements by 1910, and from 1911 until his death in 1938 worked with Elizabeth White of Whitesbog, New Jersey, on the first 15 released cultivars; the first shipment of highbush blueberries from controlled crosses, grown under managed cultivation, came in 1916[^4]. Why the soil mattered so much is explained in [Roots, and why blueberries want acid soil](roots-and-why-blueberries-want-acid-soil.qmd). Over the following century highbush spread from New Jersey across North America and on to Europe, New Zealand, Australia, central Chile and China[^5].
+
+## Breeding a blueberry for mild winters
+
+A northern highbush planted where winters are short does not get enough cold to release its buds from dormancy, and flowers and leafs out late and unevenly, as [Chill hours and dormancy](chill-hours-and-dormancy.qmd) describes. Rabbiteye grows in the South, but the *Vaccinium* review lists its drawbacks as late ripening and almost no self-fruitfulness. What was missing was a highbush berry that ripened early without much cold.
+
+Lobos and Hancock describe lowering the chilling requirement of northern highbush as a major breeding goal, met largely by bringing genes from *V. darrowii* into *V. corymbosum*, with native southern *V. corymbosum* and *V. ashei* also playing a part. *V. darrowii* has two chromosome sets and highbush four, and the genes crossed that gap through unreduced gametes, pollen or egg cells that carry two sets instead of one. The review adds that *V. darrowii* also brought vigour, distinctive fruit volatiles, firmness and waxy foliage, and Lobos and Hancock suggest it brought heat tolerance: one selection, Fla 4B, held its photosynthesis steady between 20 and 30 °C and became a parent of 'Biloxi', 'Emerald', 'Legacy' and 'Star'.
+
+The story runs in two steps. The first cultivar was 'Sharpblue', released by the University of Florida in 1976, the first UF blueberry with a chilling requirement low enough for the state, which the Florida guide treats as the start of the group. Commercial plantings followed in the 1980s, when Lobos and Hancock date southern highbush becoming established in Florida and Georgia, and from there it moved to Chile, Argentina, Spain and California, and in the 2010s to Mexico, Peru and Ecuador. Cultivars are now available with chilling requirements spread almost continuously from 0 to 1,000 hours below 7 °C, and most southern highbush is grown where winters supply 250 to 600 such hours.
+
+Lobos and Hancock compile the species composition of 33 cultivars from earlier studies. Three rows, one northern highbush ('Bluecrop') and two southern highbush ('Legacy' and 'Biloxi'), show how mixed a southern highbush can be:
+
+| Cultivar | *corymbosum* | *darrowii* | Other |
+|---|---:|---:|---:|
+| 'Bluecrop' | 93.6 | 0 | 6.4 |
+| 'Legacy' | 73.4 | 25.0 | 1.6 |
+| 'Biloxi' | 41.8 | 32.5 | 25.7 |
+
+Values are percentages of ancestry from each *Vaccinium* species; "other" is *V. angustifolium*, *V. ashei* and unnamed species, summed so each row totals 100%.
+
+'Biloxi' is less than half *V. corymbosum* by descent. How Lobos and Hancock's sources derived these percentages is not stated; my inference is that they are pedigree expectations rather than DNA measurements, because values such as 25.0 and 12.5 elsewhere in their table are successive halvings.
+
+## Choosing a type
+
+A grower chooses a type first by winter, then by soil and by market.
+
+| Type | Winter, chill | Hardiness | Harvest |
+|---|---|---|---|
+| Northern highbush | cold, over 800 h | highest; −20 to −30 °C when dormant | mid-May to early July (N. Carolina) |
+| Southern highbush | mild, under 500 h | lower; 'Legacy' −17 °C | April–May (Florida), earliest |
+| Rabbiteye | moderate, 500–800 h | less than highbush | May–July (Florida) |
+| Half-high | cold, high | relies on snow | a 2- to 5-week season |
+| Lowbush | cold, high | winters under snow | August (Maine), every second year |
+
+Chill in hours below 7 °C; 'Ozarkblue', another southern highbush, tolerated −26 °C. Sources: chill groups from Campa and Ferreira[^6]; hardiness from Lobos and Hancock and North Carolina State Extension[^7]; harvest from the North Carolina (coast to mountains), Florida, Minnesota[^8] and Maine guides; "earliest" means the earliest in North America, for peninsular Florida. Each cell is a group tendency reported from one place.
+
+To estimate how much chill your own site gets, and which model to count it with, see [Chill hours and dormancy](chill-hours-and-dormancy.qmd).
+
+**Northern highbush** is the cold-climate standard. North Carolina's leaflet says only highbush reliably survives the winters below 10 °F, or $(10 - 32) \times 5/9 = -12.2$ °C, that regularly occur in the state's mountains, and advises adding sulfur if soil pH is above 5.0. Its fruit acid is mostly citric, as [Sugar, acid, and what "ripe" measures](sugar-acid-and-what-ripe-measures.qmd) describes.
+
+**Southern highbush** buys an early season with a fussier plant. The Florida guide calls it harder to grow than rabbiteye: it is less forgiving of soil and is not recommended below 3% organic matter without amendment, it is more susceptible to some diseases including *Phytophthora* root rot, and it flowers very early, so late winter freezes threaten the crop. That risk is the subject of [Frost, and the night the crop is lost](frost-and-the-night-the-crop-is-lost.qmd). In Florida it is grown for the early fresh market and mostly picked by hand, the largest single annual cost; some growers switch to over-the-row harvesters later in the season[^9].
+
+**Rabbiteye** is the forgiving southern bush. In Florida it is more drought tolerant than southern highbush, less prone to root rot, flowers later, grows on soils with 1% organic matter if mulched, and reaches 12 to 15 ft (3.7 to 4.6 m); its berries have slightly tougher skins and usually store better. North Carolina's leaflet calls it the best choice for most soils below 2,500 ft in that state, and advises sulfur only above pH 5.3. Against that, it ripens after southern highbush and needs a second rabbiteye cultivar nearby.
+
+**Half-high** is a northern answer to cold. The Minnesota guide credits its short stature, 10 to 60 inches (25 to 152 cm) across nine listed cultivars, and its cold hardiness for reliable production in USDA zones 3 to 5, and recommends extra winter protection when snow is less than 12 inches (30 cm) deep. Lobos and Hancock note that snow cover may be the main reason half-highs are hardier than highbush.
+
+**Lowbush** is managed on a two-year cycle. The plants stand 4 to 15 inches (10 to 38 cm) tall. After the August harvest, fields are pruned to the ground by mowing or burning; the next year is vegetative, and the year after that the plants fruit, so growers split their land in half to harvest every year. The crop is raked by hand or by machine[^10], and 99% of Maine's wild blueberries are sold frozen. A lowbush grower manages a population of wild plants, not a variety.
+
+Every figure here is a group average, and chilling requirement, hardiness and harvest date belong to the cultivar and the site. When Campa and Ferreira scored 70 cultivars in northern Spain by flowering date, their rabbiteye and half-high groups each held cultivars with high, moderate and low chilling requirements. Hardiness numbers also depend on the test: Lobos and Hancock report 'Bluecrop' and 'Tifblue' flower buds tolerating about −27 and −25 °C in the field but −24 and −17 °C in a cold room, and field survival also depends on how fast buds lose hardiness during midwinter warm spells, not only on the coldest night, which is why a bud figure does not overturn North Carolina's experience that rabbiteye fails in mountain winters. Which traits breeders move from one type into another, and how they measure them, is the subject of [What breeders select for](what-breeders-select-for.qmd).
+
+## Key takeaways
+
+- Match the type to the winter first: northern highbush, half-high and lowbush for cold winters, rabbiteye for moderate ones, southern highbush for mild ones.
+- Southern highbush is highbush bred with *V. darrowii* to need little chill. It gives the earliest fruit, but is more demanding of soil than rabbiteye and exposed to spring frost by its early bloom.
+- Rabbiteye tolerates drier, lower-organic-matter soils but ripens later and needs a second rabbiteye cultivar for pollination.
+- Lowbush is not planted: it is harvested from managed wild stands on a two-year prune-and-crop cycle.
+- Northern highbush was domesticated by Frederick Coville and Elizabeth White, with the first crop from controlled crosses shipped in 1916.
+- Every figure for a type is a group tendency measured somewhere; the cultivar and the site decide.
+
+## References
+
+[^1]: Edger, P. P. et al. There and back again; historical perspective and future directions for *Vaccinium* breeding and research studies. *Hortic. Res.* **9**, uhac083 (2022). https://doi.org/10.1093/hr/uhac083
+[^2]: Williamson, J. G. & Phillips, D. A. *Blueberry Gardener's Guide*. CIR1192/MG359 (UF/IFAS Extension, accessed 12 October 2026). https://ask.ifas.ufl.edu/publication/MG359
+[^3]: Calderwood, L., Yarborough, D. E. & Tooley, B. *About the Maine Wild Blueberry* (Univ. Maine Cooperative Extension, revised September 2025; accessed 12 October 2026). https://extension.umaine.edu/blueberries/?p=17876
+[^4]: Mainland, C. M. & Ehlenfeldt, M. K. Celebrating the 100th anniversary of highbush blueberry domestication – the contribution by Frederick Vernon Coville and Elizabeth Coleman White. *Acta Hortic.* **1180**, 135–142 (2017). https://doi.org/10.17660/ActaHortic.2017.1180.19
+[^5]: Lobos, G. A. & Hancock, J. F. Breeding blueberries for a changing global environment: a review. *Front. Plant Sci.* **6**, 782 (2015). https://doi.org/10.3389/fpls.2015.00782
+[^6]: Campa, A. & Ferreira, J. J. Genetic diversity assessed by genotyping by sequencing (GBS) and for phenological traits in blueberry cultivars. *PLoS ONE* **13**, e0206361 (2018). https://doi.org/10.1371/journal.pone.0206361
+[^7]: Cline, B. *Growing Blueberries in the Home Garden*. Horticulture Information Leaflet (NC State Extension, 2002; revised 2024). https://content.ces.ncsu.edu/growing-blueberries-in-the-home-garden
+[^8]: Foulk, D. et al. *Commercial Blueberry Production in Minnesota and Wisconsin* (Univ. Minnesota Extension, reviewed 2021; accessed 12 October 2026). https://extension.umn.edu/fruit/commercial-blueberry-production-minnesota-and-wisconsin
+[^9]: Williamson, J. G. & Phillips, D. A. Preparing a southern highbush blueberry field for machine harvesting. *EDIS* HS1481 (2024). https://doi.org/10.32473/edis-hs1481-2024
+[^10]: University of Maine Cooperative Extension. *Two-Year Wild Blueberry Production Cycle* (accessed 12 October 2026). https://extension.umaine.edu/blueberries/?p=1430
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/heat-and-drought-stomata-close.html"><span>Previous</span>Heat and drought: the stomata close</a><a class="mf-up" href="/series/plants/index.html"><span>Series</span>Plant biology, one blueberry at a time</a><a class="mf-next" href="/blogs/what-breeders-select-for.html"><span>Next</span>What breeders select for</a></div>
+<!-- CURRICULUM_FOOTER_END -->

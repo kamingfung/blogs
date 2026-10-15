@@ -190,5 +190,6 @@ Over many repeats about 19 intervals in 20 should cover the true mean, whatever 
 [^6]: Strik, B. C. Frequency of harvest affects berry weight, firmness, titratable acidity, and percent soluble solids of highbush blueberry cultivars in Oregon. *J. Am. Pomol. Soc.* **73**, 254–268 (2019). https://doi.org/10.71318/apom.2019.73.4.254
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/roots-and-why-blueberries-want-acid-soil.html"><span>Previous</span>Roots, and why blueberries want acid soil</a><a class="mf-up" href="/series/plants/index.html"><span>Series</span>Plant biology, one blueberry at a time</a><a class="mf-next" href="/blogs/chill-hours-and-dormancy.html"><span>Next</span>Chill hours and dormancy</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/nitrogen-as-ammonium-not-nitrate.html"><span>Previous</span>Nitrogen as ammonium, not nitrate</a><a class="mf-up" href="/series/plants/index.html"><span>Series</span>Plant biology, one blueberry at a time</a><a class="mf-next" href="/blogs/chill-hours-and-dormancy.html"><span>Next</span>Chill hours and dormancy</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+

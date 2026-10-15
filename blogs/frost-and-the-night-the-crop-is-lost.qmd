@@ -209,5 +209,6 @@ The same arithmetic explains the rule that matters most in practice: the sprinkl
 [^5]: Williamson, J. G., Harmon, P. F. & Phillips, D. A. Protecting blueberries from freezes in Florida. *EDIS* publication HS216 (University of Florida IFAS Extension; web version accessed 12 October 2026). https://ask.ifas.ufl.edu/publication/HS216
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/chill-hours-and-dormancy.html"><span>Previous</span>Chill hours and dormancy</a><a class="mf-up" href="/series/plants/index.html"><span>Series</span>Plant biology, one blueberry at a time</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/chill-hours-and-dormancy.html"><span>Previous</span>Chill hours and dormancy</a><a class="mf-up" href="/series/plants/index.html"><span>Series</span>Plant biology, one blueberry at a time</a><a class="mf-next" href="/blogs/heat-and-drought-stomata-close.html"><span>Next</span>Heat and drought: the stomata close</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+

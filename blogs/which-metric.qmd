@@ -220,3 +220,4 @@ Whatever metric is chosen, the score only means something if it was computed the
 <!-- CURRICULUM_FOOTER_START -->
 <div class="mf"><a class="mf-prev" href="/blogs/growth-curves.html"><span>Previous</span>Growth curves</a><a class="mf-up" href="/series/forecasting/index.html"><span>Series</span>Forecasting with Machine Learning</a><a class="mf-next" href="/blogs/pinball-loss-and-quantiles.html"><span>Next</span>Pinball loss and quantiles</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+

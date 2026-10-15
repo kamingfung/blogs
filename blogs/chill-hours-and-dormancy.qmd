@@ -249,3 +249,4 @@ The bud blooms when accumulated heat reaches a cultivar's heat requirement. The 
 <!-- CURRICULUM_FOOTER_START -->
 <div class="mf"><a class="mf-prev" href="/blogs/sugar-acid-and-what-ripe-measures.html"><span>Previous</span>Sugar, acid, and what &quot;ripe&quot; measures</a><a class="mf-up" href="/series/plants/index.html"><span>Series</span>Plant biology, one blueberry at a time</a><a class="mf-next" href="/blogs/frost-and-the-night-the-crop-is-lost.html"><span>Next</span>Frost, and the night the crop is lost</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+

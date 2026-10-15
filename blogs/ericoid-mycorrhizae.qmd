@@ -1,0 +1,130 @@
+---
+title: Ericoid mycorrhizae
+description: Blueberry roots host fungi that live as coils inside their finest root cells, unlock nitrogen and phosphorus held in organic matter, and are paid in sugar, but what that partnership is worth in a fertilised field is still uncertain.
+date: 2026-10-12
+categories:
+- plant biology
+- soil science
+- horticulture
+- nitrogen
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/plants/index.html">Plant biology, one blueberry at a time</a><span class="sep">·</span>Part 3 · Water and nutrients</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Assumes <a href="/blogs/roots-and-why-blueberries-want-acid-soil.html">Roots, and why blueberries want acid soil</a>.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Blueberry roots carry fungal partners of the ericoid type, found in the heather family and in only 1.5% of vascular plant species. The fungi live as coils inside the outer cells of the finest hair roots. Their threads secrete enzymes into the litter and humus, releasing nitrogen and phosphorus that an uncolonised plant cannot use, and the plant pays them in sugar. How much sugar has never been measured for blueberry. For growers the evidence is thin. Inoculation raises colonisation and often growth in pots, but no field trial I found shows a yield gain, and in one trial colonisation was gone a year after planting. On Michigan farms colonisation was lower where soil mineral nitrogen was high, and I found no test of fungicides. Afterwards you should be able to explain what an ericoid fungus gives and takes, and judge an inoculant claim or a fertiliser plan against what the trials actually show.
+:::
+
+## Three kinds of mycorrhiza
+
+A **mycorrhiza** is a partnership between a plant root and a soil fungus: the fungus supplies mineral nutrients and the plant supplies sugar from photosynthesis. In short: most plant species form the arbuscular type, many trees form the ectomycorrhizal type, and blueberries form the ericoid type. Products sold for arbuscular fungi therefore do not apply to blueberries.
+
+The numbers behind that summary come from a survey of global host plant diversity: 72% of vascular plant species are arbuscular mycorrhizal, 2.0% ectomycorrhizal and 1.5% ericoid mycorrhizal, and only 8% have no mycorrhiza at all[^1]. The three types also put the fungus in different places[^2]:
+
+| Type | Typical hosts | Where the fungus sits |
+|---|---|---|
+| Arbuscular (72%) | Most plants, including herbs and grasses | **Arbuscules** inside root cells |
+| Ectomycorrhizal (2.0%) | Trees and shrubs such as willow and birch | A **mantle** around the root tip and a **Hartig net** between cells, never inside them |
+| Ericoid (1.5%) | Heather family: blueberry, cranberry, heather | **Coils** inside the outer cells of hair roots |
+
+A **hypha** (plural hyphae) is a single fungal thread; mantles, nets and coils are all built of them. The members of the ericoid club, as [Roots, and why blueberries want acid soil](roots-and-why-blueberries-want-acid-soil.qmd) described, tend to grow on nutrient-poor soils with tough, carbon-rich litter. The rest of this module follows the ericoid fungus into the root and back out into that soil.
+
+## Coils in the hair roots
+
+The ericoid fungus lives only in the finest part of the root system. Ericaceae hair roots are the thinnest roots on the plant, whitish to yellowish when alive, with inflated epidermal cells, a reduced cortex and no root hairs[^3]. The **epidermis** (also called the rhizodermis in these roots) is the outermost cell layer, the one touching the soil.
+
+The fungi form fine, compact coils of hyphae *inside* those epidermal cells[^3]. A hypha can enter a cell from the soil or pass into it from a neighbouring cell, and in principle every colonised cell may hold a different fungus[^3]. The coils are so small that a hand lens or stereomicroscope is of little use. Roots have to be cleared, stained, and examined under a compound microscope, and colonisation is usually reported as the percentage of epidermal cells that contain coils[^3].
+
+The arrangement is temporary. Vohník's guide, citing the standard textbook by Smith and Read, gives the active lifespan of a colonised cell as "not more than five or six weeks", after which both partners in that cell break down[^3]. The hair root is itself built, used and replaced, as the roots module described, so the partnership is renewed continually as new root tips grow out and are colonised afresh. One caution for reading any colonisation figure: hair roots also host other fungi that form similar coils, and the ericoid fungi themselves can also live as decomposers in the soil, so a coil is not proof of a working partnership[^3]<sup>,</sup>[^4].
+
+## Nitrogen and phosphorus for sugar
+
+Ericaceae dominate heathland and other nutrient-poor soils, where much of the nitrogen and phosphorus is held in litter and humus rather than dissolved in soil water. Read's 1996 review argued that the ericoid fungi, mostly ascomycetes with a considerable ability to decompose organic matter, give the plant access to nitrogen and phosphorus in litter rich in carbon and poor in nutrients, sources the plant could not otherwise tap[^5]. The fungi secrete enzymes into the soil around the root[^2], and the genes they switch on most strongly in a root include those for protein-cutting proteases and for enzymes that break down plant and fungal cell walls[^4].
+
+Laboratory experiments that grew plants with and without the fungus show what this buys. Colonised blueberry seedlings grew better on short peptides as their only nitrogen source[^6], colonised cranberry and heather could draw nitrogen from dead fungal mycelium, whose chitin held more than 20% of the nitrogen in a heathland litter layer[^7], and colonised cranberry used DNA-containing nuclei as its only phosphorus source[^8]. In each case the uncolonised plants could use the source poorly or not at all. These experiments leave out the soil microbes that would release some of the same nutrients in a field, and in a fertilised field the plant also takes up mineral nitrogen directly through its roots, which is the subject of [Nitrogen as ammonium, not nitrate](nitrogen-as-ammonium-not-nitrate.qmd).
+
+**Metals.** Ericoid fungi can evolve resistance to toxic metals[^9], and in a short laboratory test colonised highbush blueberry took up less aluminium, the metal that becomes a problem in very acid soil, apparently because the fungus held it back[^10].
+
+**Carbon.** The fungus is paid in sugar. When the shoots of colonised cranberry were fed radioactively labelled carbon dioxide, the label turned up in mannitol and trehalose, sugars made by the fungus and absent from uncolonised roots[^11]. The trade looks like this:
+
+```{mermaid}
+flowchart TD
+    LEAF["Leaf: photosynthesis"] -->|"sugar"| COIL["Fungal coil in a hair-root cell"]
+    COIL -->|"sugar"| HYPHAE["Fungal threads in the soil"]
+    HYPHAE -->|"enzymes"| OM["Litter and humus: organic N and P"]
+    OM -->|"released N and P"| HYPHAE
+    HYPHAE -->|"N and P"| COIL
+    COIL -->|"N and P to the shoot"| LEAF
+
+    class LEAF olive
+    class COIL indigo
+    class HYPHAE ochre
+    class OM sienna
+    classDef indigo fill:#1d4a62,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef sienna fill:#6c2b27,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef olive fill:#5b6e34,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef ochre fill:#d69a2e,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+```
+
+How large the payment is remains unknown. For ectomycorrhizal plants, culture studies put the fungus's share at 1% to 21% of the plant's net primary production, the carbon fixed minus what the plant respires[^12], but no comparable measurement exists for blueberry or any other ericoid plant that I could find. Whatever its size, it is one more sink in [The carbon budget of a bush](the-carbon-budget-of-a-bush.qmd), drawing on the same pool as roots, wood, flower buds and fruit.
+
+## Inoculants and field practice
+
+Commercial ericoid inoculants exist, and the evidence on blueberry runs from encouraging in pots to inconclusive in the field.
+
+**In pots.** Seven highbush cultivars inoculated with one of three ericoid fungi and grown in pots for two years reached 15% to 30% root colonisation, against less than 15% in uninoculated plants. Inoculation generally increased growth, especially with organic fertiliser, and closely related cultivars responded very differently[^13]. A mixed inoculum of ericoid and endophytic fungi improved highbush biomass and vitality on a semi-industrial scale[^14]. In Vermont, inoculated 'Bluecrop' plants flowered more readily, but inoculation did not change fruit set, berry mass or sugar content[^15].
+
+**In the field.** A trial in Mississippi inoculated three-year-old rabbiteye plants before planting them out. Inoculation had no effect on yield in the first year, and although the roots were visibly colonised at transplanting, no colonisation was found in any treatment a year later. The authors note that earlier field studies with northern highbush were less conclusive than nursery results[^16].
+
+**Fertiliser.** In a comparison of eight organic and conventional blueberry farm pairs in Michigan, colonisation was higher on the organic farms and was negatively correlated with total soil nitrogen and soil ammonium[^17]. The pot study above also found colonisation typically higher with organic fertiliser[^13]. Both fit the idea that a plant well supplied with mineral nitrogen supports less fungus, though neither shows that the fertiliser caused the difference. The Michigan farms also differed in pesticide use, with up to 16 synthetic sprays a year on the conventional farms[^17].
+
+**Substrates.** Container plants start with whatever fungi the substrate carries. Seedlings of another ericoid host, *Pieris floribunda*, grown for 75 days in commercial peat and peat-based media, were colonised in the majority of products tested[^18].
+
+::: {.callout-tip appearance="simple" icon=false}
+## On the farm
+
+- **Inoculants.** No field trial I found shows a yield gain from inoculating blueberry, and in the one field trial I could read, colonisation was gone after a year. Treat a product as an experiment: leave untreated rows and compare.
+- **Fertiliser.** Higher soil mineral nitrogen went with lower colonisation on Michigan farms. No study gives a fertiliser rate at which blueberry colonisation drops, so there is no threshold to manage to.
+- **Fungicides.** No study I found tests their effect on ericoid colonisation in blueberry. It is an open question, not a known harm.
+- **Checking colonisation.** It cannot be seen in the field or with a hand lens. Hair roots must be washed, cleared, stained and examined under a compound microscope by someone who knows what the coils look like.
+- **Substrates.** Peat-based media often carry the fungi. I found no data for pine bark or coir.
+:::
+
+So the defensible position for a grower is narrow. The fungi are real partners with a demonstrated ability to unlock organic nitrogen and phosphorus, and they are lost more easily than they are added. Whether they matter in a field fed with ammonium is the unanswered question.
+
+## Key takeaways
+
+- Products and advice built around arbuscular fungi do not apply to blueberry; check that an inoculant names ericoid fungi.
+- The benefit ericoid fungi are known for, access to organic nitrogen and phosphorus, matters most where those are the main supply; in a field fed mineral ammonium the plant can take nitrogen directly.
+- Inoculation is unproven in the field: no yield gain shown, and colonisation can disappear within a year of planting. Test it against untreated rows.
+- High soil mineral nitrogen went with lower colonisation on farms, but there is no known fertiliser threshold.
+- Fungicide effects and bark or coir substrates are untested; colonisation can only be checked by staining and microscopy.
+
+## References
+
+[^1]: Brundrett, M. C. & Tedersoo, L. Evolutionary history of mycorrhizal symbioses and global host plant diversity. *New Phytol.* **220**, 1108–1115 (2018). https://doi.org/10.1111/nph.14976
+[^2]: Newsham, K. K. & Convey, P. Mycorrhizal symbioses and Arctic shrubification. *Sustain. Microbiol.* **2**, qvaf009 (2025). https://doi.org/10.1093/sumbio/qvaf009
+[^3]: Vohník, M. Ericoid mycorrhizal symbiosis: theoretical background and methods for its comprehensive investigation. *Mycorrhiza* **30**, 671–695 (2020). https://doi.org/10.1007/s00572-020-00989-1
+[^4]: Martino, E. et al. Comparative genomics and transcriptomics depict ericoid mycorrhizal fungi as versatile saprotrophs and plant mutualists. *New Phytol.* **217**, 1213–1229 (2018). https://doi.org/10.1111/nph.14974
+[^5]: Read, D. J. The structure and function of the ericoid mycorrhizal root. *Ann. Bot.* **77**, 365–374 (1996). https://doi.org/10.1006/anbo.1996.0044
+[^6]: Bajwa, R. & Read, D. J. The biology of mycorrhiza in the Ericaceae. IX. Peptides as nitrogen sources for the ericoid endophyte and for mycorrhizal and non-mycorrhizal plants. *New Phytol.* **101**, 459–467 (1985). https://doi.org/10.1111/j.1469-8137.1985.tb02852.x
+[^7]: Kerley, S. J. & Read, D. J. The biology of mycorrhiza in the Ericaceae. XIX. Fungal mycelium as a nitrogen source for the ericoid mycorrhizal fungus *Hymenoscyphus ericae* and its host plants. *New Phytol.* **136**, 691–701 (1997). https://doi.org/10.1046/j.1469-8137.1997.00778.x
+[^8]: Myers, M. D. & Leake, J. R. Phosphodiesters as mycorrhizal P sources. II. Ericoid mycorrhiza and the utilization of nuclei as a phosphorus and nitrogen source by *Vaccinium macrocarpon*. *New Phytol.* **132**, 445–451 (1996). https://doi.org/10.1111/j.1469-8137.1996.tb01864.x
+[^9]: Cairney, J. W. G. & Meharg, A. A. Ericoid mycorrhiza: a partnership that exploits harsh edaphic conditions. *Eur. J. Soil Sci.* **54**, 735–740 (2003). https://doi.org/10.1046/j.1351-0754.2003.0555.x
+[^10]: Yang, W. Q. & Goulart, B. L. Mycorrhizal infection reduces short-term aluminum uptake and increases root cation exchange capacity of highbush blueberry plants. *HortScience* **35**, 1083–1086 (2000). https://doi.org/10.21273/HORTSCI.35.6.1083
+[^11]: Stribley, D. P. & Read, D. J. The biology of mycorrhiza in the Ericaceae. III. Movement of carbon-14 from host to fungus. *New Phytol.* **73**, 731–741 (1974). https://doi.org/10.1111/j.1469-8137.1974.tb01301.x
+[^12]: Hobbie, E. A. Carbon allocation to ectomycorrhizal fungi correlates with belowground allocation in culture studies. *Ecology* **87**, 563–569 (2006). https://doi.org/10.1890/05-0755
+[^13]: Scagel, C. F. Inoculation with ericoid mycorrhizal fungi alters fertilizer use of highbush blueberry cultivars. *HortScience* **40**, 786–794 (2005). https://doi.org/10.21273/HORTSCI.40.3.786
+[^14]: Ważny, R., Jędrzejczyk, R. J., Rozpądek, P., Domka, A. & Turnau, K. Biotization of highbush blueberry with ericoid mycorrhizal and endophytic fungi improves plant growth and vitality. *Appl. Microbiol. Biotechnol.* **106**, 4775–4786 (2022). https://doi.org/10.1007/s00253-022-12019-5
+[^15]: O'Neill, E., Brody, A. K. & Ricketts, T. Inoculum source dependent effects of ericoid, mycorrhizal fungi on flowering and reproductive success in highbush blueberry (*Vaccinium corymbosum*). *PLoS ONE* **18**, e0284631 (2023). https://doi.org/10.1371/journal.pone.0284631
+[^16]: Stafne, E. T., Matta, F. B. & Barickman, T. C. Effects of inoculation with ericoid mycorrhizal fungi on leaf nutrients of two field-grown rabbiteye blueberry cultivars. *Acta Hortic.* **1180**, 117–122 (2017). https://doi.org/10.17660/ActaHortic.2017.1180.16
+[^17]: Sadowsky, J. & Schilder, A. *Determination of the Relationship between Soil Nutrients, Mycorrhizae, and Plant Health in Organic Blueberry Production*. Final report GNC08-099 (North Central SARE, Michigan State Univ., accessed 12 October 2026). https://projects.sare.org/project-reports/gnc08-099/
+[^18]: Gorman, N. R. & Starrett, M. C. Screening commercial peat and peat-based products for the presence of ericoid mycorrhizae. *J. Environ. Hortic.* **21**, 30–33 (2003). https://doi.org/10.24266/0738-2898-21.1.30
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/roots-and-why-blueberries-want-acid-soil.html"><span>Previous</span>Roots, and why blueberries want acid soil</a><a class="mf-up" href="/series/plants/index.html"><span>Series</span>Plant biology, one blueberry at a time</a><a class="mf-next" href="/blogs/nitrogen-as-ammonium-not-nitrate.html"><span>Next</span>Nitrogen as ammonium, not nitrate</a></div>
+<!-- CURRICULUM_FOOTER_END -->

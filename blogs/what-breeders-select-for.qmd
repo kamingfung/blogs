@@ -1,0 +1,213 @@
+---
+title: What breeders select for
+description: A blueberry cultivar is picked from tens of thousands of seedlings over a decade or more, and the breeder's equation says how far each round of selection moves a trait and what it drags along with it.
+date: 2026-10-12
+categories:
+- plant biology
+- horticulture
+- statistics
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/plants/index.html">Plant biology, one blueberry at a time</a><span class="sep">·</span>Part 6 · Breeding</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Assumes <a href="/blogs/sugar-acid-and-what-ripe-measures.html">Sugar, acid, and what &quot;ripe&quot; measures</a> and <a href="/blogs/the-growth-curve-of-a-berry.html">The growth curve of a berry</a>.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+A new blueberry cultivar has to please growers, packers and eaters at once. It needs high yield, large firm berries that keep, good flavour, a harvest date that fits the market, a chill requirement that fits the climate and resistance to local diseases. Increasingly it also needs fruit a machine can pick. Industry surveys rank firmness, flavour and shelf life first. The targets pull against each other: across cultivars, bigger berries have tended to be tarter, and early ripening tends to mean early bloom and frost risk. Breeders cross parents, grow thousands of seedlings and discard almost all of them. One Florida programme plants about 20,000 seedlings a year and sends 15 to 20 to its final trials, and cross to release takes a decade or more. Afterwards you should be able to list the main targets, explain why selected parents pass on only part of their advantage, and say what genomic selection and consumer panels change.
+:::
+
+## What a cultivar has to do
+
+A cultivar is judged by everyone who handles its fruit. When Gallardo and colleagues surveyed the industry at commodity meetings in nine U.S. states and British Columbia in 2016 and 2017, fruit quality, meaning firmness, flavour and shelf life, came first overall; regions disagreed more on disease, insect and climate tolerance[^1]. The main targets:
+
+| Trait | Why it matters | Notes from the literature |
+|---|---|---|
+| Yield | Income per hectare | Polygenic and strongly affected by environment; narrow-sense heritabilities of 0.30 to 0.58 reported[^2] |
+| Berry size | Grade, price, picking speed | Standards rose from over 10 mm across to over 15 mm[^2]. Final size is set early, while the fruit's cells are still dividing; see [the growth curve of a berry](the-growth-curve-of-a-berry.qmd) |
+| Firmness and shelf life | Survives packing, shipping, storage and machine harvest | Standards rose from over 70 g to over 200 g of force[^2]; a proxy for texture |
+| Flavour | Repeat purchase | Sugar, acid and aroma, the quantities measured in [Sugar, acid, and what "ripe" measures](sugar-acid-and-what-ripe-measures.qmd) |
+| Harvest date | Market window, frost risk | Bloom date is strongly correlated with ripening date[^3] |
+| Machine harvestability | Labour cost | Firm fruit, ripe berries that detach easily, green berries that hold on[^2] |
+| Chill requirement | Where the cultivar can grow | Cultivars now span 0 to 1000 hours below 7 °C, largely through genes from the southern species *Vaccinium darrowii*[^3] |
+| Disease resistance | Fewer sprays, fewer losses | Priorities differ by region[^1] |
+| Plant architecture | Pruning, picking, machine access | Growth habit is scored by eye in conventional trials[^3] |
+
+The traits pull against each other. Comparing highbush and rabbiteye cultivars over locations and years, Gündüz, Serçe and Hancock found heavier fruit carried lower soluble solids and antioxidants, and suggested that selecting for size had inadvertently selected for tarter fruit[^4]. Timing makes a second conflict: since bloom tracks ripening, an early-ripening cultivar tends to bloom early and meet spring frost, though early ripeners with later-than-average bloom have been bred[^3]. Firmness serves both grower and eater: it protects the berry through a harvester and a cold chain, and it stands in for texture, which buyers punish when it is poor[^5].
+
+## From a cross to a cultivar
+
+A breeder cannot design a berry, only choose parents and discard seedlings. Each seedling is genetically unique, and once chosen it is propagated by cuttings, so every bush of a cultivar is a clone of one seedling.
+
+Ferrão and colleagues describe the University of Florida programme, whose low-chill cultivars helped spread blueberry growing into subtropical and Mediterranean climates[^6]:
+
+```{mermaid}
+flowchart LR
+    A["Crosses<br/>more than 200 a year"] --> B["Stage I<br/>about 20,000 seedlings<br/>dense nursery, 1 year"]
+    B -->|"keep about 10%"| C["Stage II<br/>about 2,000 plants<br/>3 more years, same plot"]
+    C -->|"keep about 10%"| D["Stage III<br/>about 200 clones<br/>15-plant plots, commercial field, several years"]
+    D --> E["Stage IV<br/>15 to 20 clones<br/>trial sites across Florida, sensory panels"]
+    E --> F["Named, patented, released"]
+    D -.->|"elite selections become parents"| A
+
+    class A plum
+    class B,C indigo
+    class D ochre
+    class E,F olive
+    classDef indigo fill:#1d4a62,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef plum fill:#48304a,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef olive fill:#5b6e34,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef ochre fill:#d69a2e,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+```
+
+Early stages are judged by eye on fruit size, colour and the picking scar, and by the breeder's "bite test" for flavour; Stage III is the first time a selection is grown as a clonal plot under commercial conditions[^6]. Of the 20,000 seedlings planted in a year, 15 to 20 reach Stage IV, so the survivors are about one seedling in $20{,}000/20 = 1{,}000$ to $20{,}000/15 \approx 1{,}333$.
+
+The authors put the pipeline at up to 12 years, citing a long juvenile phase, sensitivity to inbreeding and multi-year trials on large areas[^6]. Lobos and Hancock give 10 to 20 years from cross to release for highbush breeding generally[^3].
+
+**If you are choosing a cultivar.** Start from type and climate, using [Highbush, lowbush, rabbiteye](highbush-lowbush-rabbiteye.qmd) and [Chill hours and dormancy](chill-hours-and-dormancy.qmd), then treat a new release as partly unknown. Lobos and Hancock note that a cultivar's precise adaptive range is often not known until farmers have grown it for a number of years[^3]. This module's inference, not the source's: trial a few rows before planting a block.
+
+## The breeder's equation
+
+Selected parents pass on only part of their advantage. With the illustrative numbers below, keep the sweetest 10% of seedlings and their offspring are only about 1 °Brix sweeter than the starting population, not the 2.6 °Brix their parents showed. The rest of the parents' edge was not inherited: a sunny position, a good year, measurement error, or gene combinations that crossing breaks up.
+
+The **breeder's equation** puts this in symbols[^7]:
+
+$$R = h^2 S$$
+
+where $S$ is the **selection differential**, the selected parents' mean minus the population mean (trait units, here °Brix); $h^2$ is the **narrow-sense heritability**, the share of phenotypic variance that is additive genetic, the part reliably passed on (dimensionless, 0 to 1); and $R$ is the **response to selection**, the offspring mean minus the original mean (trait units).
+
+When a fixed top share of a normally distributed trait is kept, $S = i\,\sigma_P$, where $\sigma_P$ is the trait's phenotypic standard deviation among seedlings (trait units) and $i$ is the **selection intensity** (dimensionless), how many standard deviations the kept plants average above the mean: 1.755 for the top 10%, computed from the normal distribution, higher if fewer are kept.
+
+With **illustrative numbers**, not measurements from any programme: seedlings average 12.0 °Brix with $\sigma_P = 1.5$ °Brix, the breeder keeps the top 10%, and $h^2 = 0.4$. Then $S = 1.755 \times 1.5 = 2.63$ °Brix, so the kept seedlings average about 14.6 °Brix, and $R = 0.4 \times 2.63 = 1.05$ °Brix: their offspring are expected to average about 13.05 °Brix. Compiled blueberry estimates of $h^2$ are 0.35 to 0.65 for soluble solids, 0.40 to 0.70 for firmness and 0.14 to 0.65 for size[^2]. Because a released cultivar is a clone that keeps its whole genotype, the equation predicts progress in the next generation of seedlings, not how the cultivar itself performs.
+
+Traits also travel together. If the genes that make berries big tend to make them less sweet, selecting for size drags sugar down even though nobody selected on sugar. The widget starts at an illustrative $-0.4$: the only verified evidence here is the correlation among cultivars above[^4], not a genetic correlation measured in a breeding population.
+
+::: {.callout-note collapse="true"}
+## The correlated response, in symbols
+
+Selecting on trait $x$ moves trait $y$ by the **correlated response**[^7]:
+
+$$\text{CR}_y = i \, h_x \, h_y \, r_A \, \sigma_{P,y}$$
+
+where $h_x$ and $h_y$ are the square roots of the two narrow-sense heritabilities; $r_A$ is the additive genetic correlation between the traits (dimensionless, $-1$ to $1$); $\sigma_{P,y}$ is the phenotypic standard deviation of $y$; and $\text{CR}_y$ is in $y$'s units. The direct response in the same notation is $R_x = i \, h_x^2 \, \sigma_{P,x}$. At the widget's opening settings, $R = 1.755 \times 0.5 \times 0.4 = 0.351$ g and $\text{CR} = 1.755 \times \sqrt{0.5} \times \sqrt{0.4} \times (-0.4) \times 1.5 = -0.47$ °Brix.
+:::
+
+The widget builds a synthetic batch of 2,000 seedlings, the size of the Florida Stage II, with berry weight (mean 2.0 g, $\sigma_P = 0.4$ g) and soluble solids (mean 12.0 °Brix, $\sigma_P = 1.5$ °Brix), all illustrative. "Expected" is what the formulas predict for the offspring; "this batch" is the average inherited value of the seedlings actually kept.
+
+::: {.sim-card}
+#### Selecting on one trait, moving two
+
+```{ojs}
+//| echo: false
+hint = t => html`<div style="font-size:0.8em;color:#94a3b8;margin:-2px 0 10px">${t}</div>`
+
+viewof selTrait = Inputs.radio(["Berry weight", "Soluble solids"], {value: "Berry weight", label: "Select on"})
+viewof keepPct = Inputs.radio([1, 5, 10, 20, 50], {value: 10, label: "Keep the top (%)", format: x => x + "%"})
+viewof rA = Inputs.range([-0.9, 0.9], {value: -0.4, step: 0.05, label: "Genetic correlation r_A"})
+hint("The genetic link between the traits. Negative means bigger berries tend to be less sweet.")
+viewof h2w = Inputs.range([0.05, 0.95], {value: 0.5, step: 0.05, label: "Heritability h², weight"})
+hint("The share of the weight differences you see that is passed on to offspring.")
+viewof h2b = Inputs.range([0.05, 0.95], {value: 0.4, step: 0.05, label: "Heritability h², soluble solids"})
+hint("The share of the sweetness differences you see that is passed on to offspring.")
+
+// Synthetic population: means and phenotypic SDs are illustrative, not measured.
+mw = 2.0; sw = 0.4    // berry weight, g
+mb = 12.0; sb = 1.5   // soluble solids, °Brix
+// Selection intensity i = phi(z_p)/p for the top p% of a normal distribution.
+intensity = ({1: 2.665, 5: 2.063, 10: 1.755, 20: 1.400, 50: 0.798})
+
+// Four standard normal draws per seedling, seeded so the same settings always give the same plants.
+base = {
+  const z = d3.randomNormal.source(d3.randomLcg(2026))();
+  return d3.range(2000).map(() => [z(), z(), z(), z()]);
+}
+
+seedlings = base.map(([z1, z2, e1, e2]) => {
+  const aw = Math.sqrt(h2w) * sw * z1;
+  const ab = Math.sqrt(h2b) * sb * (rA * z1 + Math.sqrt(1 - rA * rA) * z2);
+  return {aw, ab, w: mw + aw + Math.sqrt(1 - h2w) * sw * e1, b: mb + ab + Math.sqrt(1 - h2b) * sb * e2};
+})
+
+onWeight = selTrait === "Berry weight"
+kept = new Set(d3.sort(seedlings, d => onWeight ? -d.w : -d.b).slice(0, 2000 * keepPct / 100))
+pop = seedlings.map(d => ({...d, status: kept.has(d) ? "Kept" : "Discarded"}))
+keptArr = [...kept]
+
+// Breeder's equation and correlated response.
+i = intensity[keepPct]
+hh = Math.sqrt(h2w * h2b) * rA
+predW = onWeight ? i * h2w * sw : i * hh * sw
+predB = onWeight ? i * hh * sb : i * h2b * sb
+simW = d3.mean(keptArr, d => d.aw)
+simB = d3.mean(keptArr, d => d.ab)
+selS = onWeight ? d3.mean(keptArr, d => d.w) - d3.mean(seedlings, d => d.w)
+                : d3.mean(keptArr, d => d.b) - d3.mean(seedlings, d => d.b)
+
+sgn = (v, k) => (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(k)
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${card("Selection differential S", sgn(selS, onWeight ? 3 : 2) + (onWeight ? " g" : " °Brix"), "#cbd5e1")}
+  ${card("Weight response: expected / this batch", sgn(predW, 3) + " / " + sgn(simW, 3) + " g", "#38bdf8")}
+  ${card("Soluble solids response: expected / this batch", sgn(predB, 2) + " / " + sgn(simB, 2) + " °Brix", "#10b981")}
+</div>`
+
+Plot.plot({
+  height: 380,
+  marginLeft: 55,
+  // Plot paints its own white ground otherwise, which the dark card fights.
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0.4, 3.6], label: "Berry weight (g) →", grid: true},
+  y: {domain: [6, 18.5], label: "↑ Soluble solids (°Brix)", grid: true},
+  color: {legend: true, domain: ["Discarded", "Kept"], range: ["#64748b", "#f59e0b"]},
+  marks: [
+    Plot.dot(pop.filter(d => d.status === "Discarded"), {x: "w", y: "b", fill: "status", r: 2, fillOpacity: 0.6, clip: true}),
+    Plot.dot(pop.filter(d => d.status === "Kept"), {x: "w", y: "b", fill: "status", r: 2.5, clip: true}),
+    Plot.dot([{w: mw, b: mb}], {x: "w", y: "b", r: 7, fill: "#cbd5e1", stroke: "#0f172a", strokeWidth: 1.5}),
+    Plot.dot([{w: mw + predW, b: mb + predB}], {x: "w", y: "b", r: 7, fill: "#ef4444", stroke: "#0f172a", strokeWidth: 1.5}),
+    Plot.arrow([{x1: mw, y1: mb, x2: mw + predW, y2: mb + predB}],
+               {x1: "x1", y1: "y1", x2: "x2", y2: "y2", stroke: "#ef4444", strokeWidth: 2, inset: 8})
+  ]
+})
+```
+
+Synthetic data: 2,000 seeded seedlings with illustrative means, spreads, heritabilities and genetic correlation. The grey dot is the starting mean; the red dot is where the formulas expect the offspring mean to move.
+:::
+
+At the opening settings, keeping the heaviest 10% is expected to add 0.351 g per berry and cost 0.47 °Brix; this batch carries +0.312 g and −0.34 °Brix, because one batch, like one breeding cycle, is a sample that lands near the expectation rather than on it. Select on soluble solids instead and the expected gain is the worked example's 1.05 °Brix, at a cost of 0.126 g per berry.
+
+This is why breeders rank seedlings on an index, a weighted combination of several traits[^6]. A negative genetic link does not forbid a large, sweet berry; it makes such seedlings rarer, so finding them takes larger populations.
+
+## Genomic selection and consumer panels
+
+**Genomic selection** predicts a seedling's breeding value from its DNA. A model is trained on plants that have been both genotyped, at many markers across the genome, and measured in the field; it then predicts new seedlings from their markers alone. Ferrão and colleagues describe genotyping every Stage II plant in the Florida programme and predicting soluble solids, titratable acidity, weight, size, firmness, yield and consumer liking. They expect two gains: choosing parents earlier and more accurately, and moving the top predicted plants from Stage II straight to Stage IV, skipping at least 3 years of Stage III[^6]. Their independent validation gave low-to-moderate accuracies, which they trace partly to training fruit measured on few berries from young, crowded plants[^6]. Blueberry's extra chromosome copies add complications of their own, which the module on ploidy takes up.
+
+**Consumer panels** measure what no instrument does: whether people like the berry. In a consumer study of 36 blueberry traits, Gilbert and colleagues found sweet, intense blueberry flavour raised purchase interest most and poor texture such as seediness lowered it most; 61% of respondents responded mainly to flavour and 39% to health associations[^5]. Panels are expensive, so the Florida programme uses them only at Stage IV and is adding chemical profiling of sugars, acids and aroma volatiles to predict flavour ratings earlier; it cites an analysis in which volatiles explained 55% of the variation in overall liking[^6]. Aroma, the part of flavour a refractometer cannot see, may be one of the easier targets: genomic and pedigree-based heritabilities above 0.5 have been reported for a group of eleven flavour-related volatiles[^2].
+
+## Key takeaways
+
+- Industry surveys put fruit quality first, firmness, flavour and shelf life, with yield, size, harvest date, machine harvestability, chill requirement, disease resistance and plant architecture also selected for.
+- The traits conflict. Across cultivars, heavier fruit has tended to carry lower soluble solids, and early ripening tends to mean early bloom and frost risk.
+- A cultivar is one seedling in roughly a thousand that survives several years of trials, then cloned. Published estimates put cross-to-release at 10 to 20 years, and a new cultivar's adaptive range is often unknown until growers have farmed it.
+- Selected parents pass on only the heritable share of their advantage: $R = h^2 S$. The equation predicts the next generation of seedlings, not the cloned cultivar.
+- Selecting on one trait drags genetically linked traits with it, so breeders select on weighted indices of several traits.
+- Genomic selection predicts breeding value from DNA to choose parents earlier and skip trial years; consumer panels and chemical profiling bring eaters' preferences into selection.
+
+## References
+
+[^1]: Gallardo, R. K. et al. Breeding trait priorities of the blueberry industry in the United States and Canada. *HortScience* **53**, 1021–1028 (2018). https://doi.org/10.21273/HORTSCI12964-18
+[^2]: Edger, P. P. et al. There and back again; historical perspective and future directions for *Vaccinium* breeding and research studies. *Hortic. Res.* **9**, uhac083 (2022). https://doi.org/10.1093/hr/uhac083
+[^3]: Lobos, G. A. & Hancock, J. F. Breeding blueberries for a changing global environment: a review. *Front. Plant Sci.* **6**, 782 (2015). https://doi.org/10.3389/fpls.2015.00782
+[^4]: Gündüz, K., Serçe, S. & Hancock, J. F. Variation among highbush and rabbiteye cultivars of blueberry for fruit quality and phytochemical characteristics. *J. Food Compos. Anal.* **38**, 69–79 (2015). https://doi.org/10.1016/j.jfca.2014.09.007
+[^5]: Gilbert, J. L. et al. Consumer-assisted selection of blueberry fruit quality traits. *HortScience* **49**, 864–873 (2014). https://doi.org/10.21273/HORTSCI.49.7.864
+[^6]: Ferrão, L. F. V., Amadeu, R. R., Benevenuto, J., de Bem Oliveira, I. & Munoz, P. R. Genomic selection in an outcrossing autotetraploid fruit crop: lessons from blueberry breeding. *Front. Plant Sci.* **12**, 676326 (2021). https://doi.org/10.3389/fpls.2021.676326
+[^7]: Falconer, D. S. & Mackay, T. F. C. *Introduction to Quantitative Genetics* 4th edn (Longman, 1996).
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/highbush-lowbush-rabbiteye.html"><span>Previous</span>Highbush, lowbush, rabbiteye</a><a class="mf-up" href="/series/plants/index.html"><span>Series</span>Plant biology, one blueberry at a time</a></div>
+<!-- CURRICULUM_FOOTER_END -->

@@ -1,0 +1,231 @@
+---
+title: "Heat and drought: the stomata close"
+description: How hot, dry afternoon air and drying soil push a blueberry leaf to close its stomata, and what that costs in carbon, leaf temperature and fruit.
+date: 2026-10-12
+categories:
+- plant biology
+- horticulture
+- meteorology
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/plants/index.html">Plant biology, one blueberry at a time</a><span class="sep">·</span>Part 5 · Seasons and stress</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Assumes <a href="/blogs/photosynthesis-in-one-leaf.html">Photosynthesis, in one leaf</a>.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+On a hot, dry afternoon a blueberry leaf partly shuts its pores, the stomata. It saves water, but it takes in less $\text{CO}_2$ and loses some of the evaporative cooling that keeps it near air temperature. Fruit has to shed its heat the same way, and in Oregon sun-exposed berries ran 7 to 11 °C above the air on days over 35 °C. Green berries were damaged within hours once they reached 42 to 48 °C. What drives the closing is the vapour pressure deficit (VPD), how drying the air is. It comes from temperature and humidity alone, and it climbs steeply as the day warms. Drying soil closes stomata too, and blueberries feel it early because their roots are shallow and have no root hairs. Pulsed overhead cooling above about 32 to 35 °C cut fruit damage in trials, at some cost in sugar. Afterwards you should be able to read VPD off a weather station's temperature and humidity, explain why a stressed bush stops gaining carbon before it stops losing water, and say what fruit cooling can and cannot do.
+:::
+
+## A valve with two loads
+
+[Photosynthesis, in one leaf](photosynthesis-in-one-leaf.qmd) needs $\text{CO}_2$ inside the leaf, and the way in is through stomata. These are pores that two guard cells open by swelling and close by going slack. Behind each pore the cell walls are wet, so the opening that lets $\text{CO}_2$ in also lets water vapour out. Put in words: the drier the air and the wider the pores, the more water the leaf loses each second. How open the pores are is measured as a **stomatal conductance**, $g_s$:
+
+$$E = g_s \, \frac{D}{P}$$
+
+where $E$ is transpiration, the water vapour flux out of the leaf in $\text{mol m}^{-2}\,\text{s}^{-1}$; $g_s$ is the stomatal conductance to water vapour in $\text{mol m}^{-2}\,\text{s}^{-1}$; $D$ is the leaf-to-air vapour pressure deficit in kPa; and $P$ is air pressure, $101.3$ kPa at sea level[^1]; the still air on the leaf surface is ignored. The same pores also let in ozone, as [How ozone damages crops](how-ozone-damages-crops.qmd) explains.
+
+**Vapour pressure deficit.** The air inside the leaf is taken as saturated at leaf temperature, so the deficit is the saturation vapour pressure there minus what the outside air holds. The FAO guide to crop water requirements computes saturation vapour pressure with this empirical formula[^1]:
+
+$$e_s(T) = 0.6108 \exp\!\left( \frac{17.27\, T}{T + 237.3} \right)$$
+
+where $e_s$ is the saturation vapour pressure in kPa and $T$ is temperature in °C. With relative humidity $\text{RH}$ in percent,
+
+$$e_a = \frac{\text{RH}}{100}\, e_s(T_a), \qquad D_\text{air} = e_s(T_a) - e_a, \qquad D = e_s(T_L) - e_a$$
+
+where $e_a$ is the actual vapour pressure of the air in kPa, $T_a$ is the air temperature and $T_L$ the leaf temperature in °C, $D_\text{air}$ is the air's VPD, and $D$ is the leaf-to-air VPD. The two are equal when the leaf is at air temperature. [How much water can air hold?](how-much-water-air-holds.qmd) explains why $e_s$ climbs exponentially.
+
+Take a morning at 20 °C and 70% relative humidity: $e_s(20) = 2.338$ kPa, $e_a = 0.7 \times 2.338 = 1.637$ kPa, and $D = 0.70$ kPa. Warm the same air to 32 °C by afternoon. $e_a$ is unchanged, but $e_s(32) = 4.755$ kPa, so $D = 3.12$ kPa, 4.4 times the morning value, while relative humidity falls to $100 \times 1.637 / 4.755 = 34\%$.
+
+Temperature and relative humidity are all the widget needs, so readings from any farm weather station or logger will do. It starts at a hot afternoon.
+
+::: {.sim-card}
+#### Vapour pressure deficit from temperature and humidity
+
+```{ojs}
+//| echo: false
+viewof Ta = Inputs.range([0, 45], {value: 35, step: 0.5, label: "Air temperature (°C)"})
+viewof RH = Inputs.range([5, 100], {value: 30, step: 1, label: "Relative humidity (%)"})
+viewof dTL = Inputs.range([-5, 12], {value: 0, step: 0.5, label: "Leaf minus air temperature (°C)"})
+
+// FAO-56 Eq. 11: saturation vapour pressure in kPa, T in °C.
+es = T => 0.6108 * Math.exp(17.27 * T / (T + 237.3))
+
+TL = Ta + dTL
+ea = RH / 100 * es(Ta)
+Dair = es(Ta) - ea
+Dleaf = Math.max(0, es(TL) - ea)
+
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${card("Saturation vapour pressure at air temperature", es(Ta).toFixed(2) + " kPa", "#cbd5e1")}
+  ${card("Actual vapour pressure", ea.toFixed(2) + " kPa", "#10b981")}
+  ${card("Air VPD", Dair.toFixed(2) + " kPa", "#38bdf8")}
+  ${card("Leaf-to-air VPD", Dleaf.toFixed(2) + " kPa", "#ef4444")}
+</div>`
+
+Plot.plot({
+  height: 340,
+  marginLeft: 55,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, 50], label: "Temperature (°C) →", grid: true},
+  y: {domain: [0, 12], label: "↑ Vapour pressure (kPa)", grid: true},
+  color: {legend: true,
+          domain: ["Saturation curve", "Actual vapour pressure", "Air VPD", "Leaf-to-air VPD"],
+          range: ["#cbd5e1", "#10b981", "#38bdf8", "#ef4444"]},
+  marks: [
+    Plot.line(d3.range(0, 50.1, 0.5).map(T => ({T, e: es(T)})),
+              {x: "T", y: "e", stroke: () => "Saturation curve", strokeWidth: 2, clip: true}),
+    Plot.ruleY([ea], {stroke: () => "Actual vapour pressure", strokeDasharray: "4 4"}),
+    Plot.link([{x: Ta, lo: ea, hi: es(Ta)}], {x1: "x", x2: "x", y1: "lo", y2: "hi", stroke: () => "Air VPD", strokeWidth: 5, clip: true}),
+    Plot.link([{x: TL, lo: ea, hi: Math.max(ea, es(TL))}], {x1: "x", x2: "x", y1: "lo", y2: "hi", stroke: () => "Leaf-to-air VPD", strokeWidth: 2, clip: true}),
+    Plot.dot([{x: Ta, y: ea}], {x: "x", y: "y", fill: "#10b981", stroke: "#0f172a", r: 5, clip: true})
+  ]
+})
+```
+
+VPD is the vertical gap between the saturation curve and the dashed actual vapour pressure, read at air temperature (thick bar) or leaf temperature (thin bar). This is physics only: no verified source gives a VPD at which blueberry stomata start to close.
+:::
+
+At the starting settings, 35 °C and 30% relative humidity, the widget reads $e_s = 5.62$ kPa, $e_a = 1.69$ kPa and a VPD of 3.94 kPa. A leaf 3 °C warmer than the air faces 4.94 kPa.
+
+## Why stomata close on hot afternoons
+
+On a curve fitted across many species, above about 2 kPa a leaf stops losing *more* water as the air dries, because it closes its stomata instead. The cost shows up as lost photosynthesis, not extra water use. Oren and colleagues gathered leaf, tree and stand measurements across many species and described the decline with[^2]
+
+$$g_s = g_\text{ref}\left[1 - s \ln\!\left(\frac{D}{1\ \text{kPa}}\right)\right]$$
+
+where $g_\text{ref}$ is the conductance at $D = 1$ kPa in $\text{mol m}^{-2}\,\text{s}^{-1}$. $s$ is the dimensionless sensitivity, their slope $m$ divided by $g_\text{ref}$. Across species and methods, $m$ was close to $0.6\, g_\text{ref}$, so $s \approx 0.6$. This is the slope a simple hydraulic model predicts if stomata act to regulate leaf water potential. 
+
+Multiply by $D$ and transpiration peaks where $g_s = s\, g_\text{ref}$. For $s = 0.6$ that is $D = e^{1/s - 1} = e^{0.667} = 1.95$ kPa. On the morning-to-afternoon example above, conductance falls from $1.21\, g_\text{ref}$ at 0.70 kPa to $0.32\, g_\text{ref}$ at 3.12 kPa, about a quarter. Transpiration moves only from 0.85 to 0.99 times its value at 1 kPa: VPD quadrupled, water loss barely moved.
+
+::: {.sim-card}
+#### How conductance and transpiration respond to VPD
+
+```{ojs}
+//| echo: false
+viewof sens = Inputs.range([0.3, 0.9], {value: 0.6, step: 0.05, label: "Relative sensitivity s"})
+
+// Oren et al. (1999): g/gref = 1 - s ln(D / 1 kPa). Relative transpiration = g/gref × D / 1 kPa.
+gRel = D => Math.max(0, 1 - sens * Math.log(D))
+Dpeak = Math.exp(1 / sens - 1)
+DMIN = 0.5   // the log form runs off to infinity as D → 0, so it is not drawn below this
+resp = d3.range(DMIN, 6.001, 0.02).map(D => ({D, g: gRel(D), E: gRel(D) * D}))
+here = Dleaf >= DMIN ? [{D: Dleaf, g: gRel(Dleaf), E: gRel(Dleaf) * Dleaf}] : []
+
+html`<div class="sim-readouts">
+  ${card("Leaf-to-air VPD (from the widget above)", Dleaf.toFixed(2) + " kPa", "#ef4444")}
+  ${card("Conductance, relative to 1 kPa", here.length ? here[0].g.toFixed(2) : "below 0.5 kPa", "#10b981")}
+  ${card("Transpiration, relative to 1 kPa", here.length ? here[0].E.toFixed(2) : "below 0.5 kPa", "#38bdf8")}
+  ${card("Transpiration peaks at", Dpeak.toFixed(2) + " kPa", "#f59e0b")}
+</div>`
+
+Plot.plot({
+  height: 340,
+  marginLeft: 55,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, 6], label: "Leaf-to-air VPD (kPa) →", grid: true},
+  y: {domain: [0, 2], label: "↑ Relative to the value at 1 kPa", grid: true},
+  color: {legend: true,
+          domain: ["Conductance", "Transpiration", "Field effects usually noticeable", "Your leaf"],
+          range: ["#10b981", "#38bdf8", "#f59e0b", "#ef4444"]},
+  marks: [
+    Plot.ruleX([1], {stroke: () => "Field effects usually noticeable", strokeDasharray: "4 4"}),
+    Plot.line(resp, {x: "D", y: "g", stroke: () => "Conductance", strokeWidth: 2.5, clip: true}),
+    Plot.line(resp, {x: "D", y: "E", stroke: () => "Transpiration", strokeWidth: 2.5, clip: true}),
+    Plot.dot(here, {x: "D", y: "g", fill: () => "Your leaf", stroke: "#0f172a", r: 6}),
+    Plot.dot(here, {x: "D", y: "E", fill: () => "Your leaf", stroke: "#0f172a", r: 6})
+  ]
+})
+```
+
+The curves are the Oren et al. fit, not a blueberry measurement; the red dots follow the first widget. The dashed line at 1 kPa is where, citing Körner, Oren and colleagues say field effects of VPD on conductance usually become noticeable[^2]. It is a survey-wide rule of thumb, not a blueberry threshold.
+:::
+
+At the hot-afternoon start, 3.94 kPa, the widget reads a conductance of 0.18 and a transpiration of 0.70 times the 1 kPa values, well past the peak.
+
+On a clear day this produces a **midday depression**: conductance sags through the early afternoon as VPD climbs. The pattern is common across many species and is linked to the plant's midday water status[^3]. The cost is carbon. A narrower pore admits less $\text{CO}_2$, and RuBisCO turns more often to oxygen, the photorespiration described in [Photosynthesis, in one leaf](photosynthesis-in-one-leaf.qmd). In five species compiled by Grossiord and colleagues, photosynthesis fell by 9.4% to 36.6% as leaf-to-air VPD rose through the day[^3]. Meanwhile [respiration](respiration-the-cost-of-being-alive.qmd) speeds up with temperature, so a hot afternoon squeezes [the carbon budget of the bush](the-carbon-budget-of-a-bush.qmd) from both sides.
+
+Warmth on its own is a different signal from dry air. Held at a VPD of 1 kPa, poplar and pine leaves *opened* their stomata as they warmed from 30 to 40 °C[^4]. On a hot afternoon stomata close mainly because hot air is dry air.
+
+## Leaves and berries in the sun
+
+Closing the stomata sets off a loop:
+
+```{mermaid}
+flowchart LR
+    A["Hot afternoon:<br/>VPD rises"] --> B["Stomata partly close"]
+    B --> C["Less CO₂ in:<br/>photosynthesis falls"]
+    B --> D["Less evaporative cooling"]
+    D --> E["Leaf warms above air"]
+    E -->|"higher leaf-to-air VPD"| B
+
+    class A ochre
+    class B indigo
+    class C plum
+    class D sage
+    class E rust
+    classDef indigo fill:#1d4a62,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef plum fill:#48304a,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef rust fill:#a04b2d,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef ochre fill:#d69a2e,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+    classDef sage fill:#95a87f,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+```
+
+A sunlit leaf has to get rid of the energy it absorbs, and leaving out the small amount it stores,
+
+$$R_\text{abs} = \varepsilon \sigma T_L^4 + H + \lambda E$$
+
+$R_\text{abs}$ is the absorbed solar and thermal radiation and $\varepsilon \sigma T_L^4$ the thermal radiation emitted, with emissivity $\varepsilon$, the Stefan–Boltzmann constant $\sigma$ and leaf temperature $T_L$ in K. $H$ is the heat passed to the air and $\lambda E$ the heat carried off by evaporation, all in $\text{W m}^{-2}$, with $\lambda = 2.45\ \text{MJ kg}^{-1}$ near 20 °C[^1]. With water at $18.02\ \text{g mol}^{-1}$, each $1\ \text{mmol m}^{-2}\,\text{s}^{-1}$ of transpiration removes $10^{-3} \times 0.01802 \times 2.45 \times 10^{6} = 44\ \text{W m}^{-2}$. Close the stomata and $\lambda E$ shrinks, so the other two terms must grow, and they grow only as the leaf warms. In the same chamber study, evaporation cooled well-watered poplar leaves by up to 9 °C, and drought-stressed ones by only 1 °C[^4]. In heatwaves above 40 °C, some droughted tree and shrub species did the opposite and opened their stomata to shed heat, pushing themselves faster towards drought mortality[^5].
+
+**Fruit.** The same energy balance applies to a berry. Sunlight it absorbs comes in; radiation, heat to the air and any evaporation go out. In western Oregon, sun-exposed 'Elliott' berries on hot, sunny days above 35 °C were 7 to 11 °C warmer than the air[^6]. Damage, seen as softening, shrivelling and necrosis, was mostly on sun-exposed berries and typically appeared 1 to 3 days after an extreme heat event[^6]. The extra heat comes from absorbed sunlight. In an open leaf, evaporation carries much of that load; a berry running 7 to 11 °C above the air is probably shedding less of it that way, though a dark, compact fruit may also absorb more and lose heat to the air less readily.
+
+Green berries were the more vulnerable when clusters were heated deliberately. At berry temperatures of 42 to 48 °C, significant damage appeared within 1.5 to 2 hours in 'Aurora' and 3 to 3.5 hours in 'Elliott'. Blue berries were damaged only at 46 and 48 °C in 'Aurora' and at 48 °C in 'Elliott'[^6]. The authors suggest the thicker wax and cutin of ripening fruit may explain the difference.
+
+**Bloom.** Across crops, pollen development and fertilisation are often the stages most sensitive to heat, and a single hot day can sometimes ruin reproductive success[^7]. That review does not include blueberry; [Pollination and fruit set](pollination-and-fruit-set.qmd) covers how pollen becomes fruit.
+
+## Drought from the roots up
+
+Soil drought closes stomata by a second route. As the soil dries, leaf water potential falls, and stomata close to hold it up. A 2024 review of blueberry drought tolerance describes blueberries as **isohydric**, keeping leaf water potential roughly constant by closing stomata, which protects the xylem at the cost of photosynthesis[^8]. The signal involves the hormone abscisic acid (ABA). That review describes it as sent from the roots, while Buckley's review of the mechanism finds the clearest evidence for a response inside the leaf[^8][^9].
+
+Blueberries feel drought early because of their roots. Most grow less than 40 cm deep, and they have no root hairs, which the review states cuts their absorptive root surface by 90% compared with roots that have them[^8]. A shallow root system without root hairs draws on a small volume of soil, and that soil dries first. Northern and southern highbush are the most drought-susceptible cultivated types, and rabbiteye is considered more tolerant[^8].
+
+**What growers can do.**
+
+- *Evaporative cooling of fruit.* In Oregon trials, over-canopy sprinklers run for 15 minutes every hour kept berries from exceeding air temperature during cooling cycles. On a commercial farm, microsprinklers pulsed in short cycles held berries near air temperature and cut water use by 50%[^10]. Damage was low even without cooling in the sprinkler trial, under 2% of fruit. Cooling from 32 °C still reduced it and raised berry weight, by an average of 10% in the microsprinkler trial. It also lowered soluble solids, and continuous wetting raised concerns about slugs, insects and fungal disease[^10]. The same group recommends cooling when air exceeds 32 °C during green fruit stages and 35 °C during ripening[^6]. A Washington State University fact sheet adds bloom, with cooling above 85–90 °F (29–32 °C)[^11].
+- *Shade nets.* The same fact sheet recommends 30–50% shade nets for blueberry. It warns that 75% or more can reduce fruit quality and flower-bud development, and that nets cost more than sprinklers and may reduce pollinator activity during bloom[^11].
+- *Irrigation.* The FAO procedure warns that computing $e_s$ from mean daily temperature underestimates VPD and so water demand[^1]. For a shallow-rooted crop, the reserve between irrigations is small. This module does not cover irrigation scheduling or how to spot water stress in the field; no verified blueberry source for either is cited here.
+
+These berry thresholds come from northern highbush in western Oregon. Drier climates, other cultivar types and substrate production may differ.
+
+## Key takeaways
+
+- VPD comes from temperature and humidity alone, $D = e_s(T_L) - e_a$, and it climbs steeply as the day warms. Air at 20 °C and 70% humidity gives 0.70 kPa; the same air at 32 °C gives 3.12 kPa.
+- On a curve fitted across many species, stomata close fast enough above about 2 kPa that water loss stops rising. The cost is photosynthesis, the midday depression.
+- Closing cuts evaporative cooling, so leaves warm. Sunlit berries ran 7 to 11 °C above air on hot Oregon days, and green berries were damaged at 42 to 48 °C within hours.
+- Shallow roots without root hairs make blueberries quick to feel drought. Stomata close through the plant's water status and ABA.
+- Pulsed cooling from 32 to 35 °C reduced fruit heat damage in Oregon trials, at some cost in sugar. These thresholds are from one region and crop type.
+
+## References
+
+[^1]: Allen, R. G., Pereira, L. S., Raes, D. & Smith, M. *Crop Evapotranspiration: Guidelines for Computing Crop Water Requirements*. FAO Irrigation and Drainage Paper 56 (Food and Agriculture Organization of the United Nations, 1998).
+[^2]: Oren, R. et al. Survey and synthesis of intra- and interspecific variation in stomatal sensitivity to vapour pressure deficit. *Plant Cell Environ.* **22**, 1515–1526 (1999). https://doi.org/10.1046/j.1365-3040.1999.00513.x
+[^3]: Grossiord, C. et al. Plant responses to rising vapor pressure deficit. *New Phytol.* **226**, 1550–1566 (2020). https://doi.org/10.1111/nph.16485
+[^4]: Urban, J., Ingwers, M. W., McGuire, M. A. & Teskey, R. O. Increase in leaf temperature opens stomata and decouples net photosynthesis from stomatal conductance in *Pinus taeda* and *Populus deltoides* x *nigra*. *J. Exp. Bot.* **68**, 1757–1767 (2017). https://doi.org/10.1093/jxb/erx052
+[^5]: Marchin, R. M. et al. Extreme heat increases stomatal conductance and drought-induced mortality risk in vulnerable plant species. *Glob. Change Biol.* **28**, 1133–1146 (2022). https://doi.org/10.1111/gcb.15976
+[^6]: Yang, F.-H., Bryla, D. R. & Strik, B. C. Critical temperatures and heating times for fruit damage in northern highbush blueberry. *HortScience* **54**, 2231–2239 (2019). https://doi.org/10.21273/HORTSCI14427-19
+[^7]: Zinn, K. E., Tunc-Ozdemir, M. & Harper, J. F. Temperature stress and plant sexual reproduction: uncovering the weakest links. *J. Exp. Bot.* **61**, 1959–1968 (2010). https://doi.org/10.1093/jxb/erq053
+[^8]: Ru, S., Sanz-Saez, A., Leisner, C. P., Rehman, T. & Busby, S. Review on blueberry drought tolerance from the perspective of cultivar improvement. *Front. Plant Sci.* **15**, 1352768 (2024). https://doi.org/10.3389/fpls.2024.1352768
+[^9]: Buckley, T. N. How do stomata respond to water status? *New Phytol.* **224**, 21–36 (2019). https://doi.org/10.1111/nph.15899
+[^10]: Yang, F.-H., Bryla, D. R., Orr, S. T., Strik, B. C. & Zhao, Y. Thermal cooling with sprinklers or microsprinklers reduces heat damage and improves fruit quality in northern highbush blueberry. *HortScience* **55**, 1365–1371 (2020). https://doi.org/10.21273/HORTSCI15119-20
+[^11]: DeVetter, L. W. et al. Reducing heat damage in blueberry. Fact sheet (Washington State University Extension and USDA Agricultural Research Service, 2025; accessed 12 October 2026). https://wpcdn.web.wsu.edu/wp-extension/uploads/sites/3274/2025/08/FactSheet_ReducingHeatDamageinBlueberries.pdf
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/frost-and-the-night-the-crop-is-lost.html"><span>Previous</span>Frost, and the night the crop is lost</a><a class="mf-up" href="/series/plants/index.html"><span>Series</span>Plant biology, one blueberry at a time</a><a class="mf-next" href="/blogs/highbush-lowbush-rabbiteye.html"><span>Next</span>Highbush, lowbush, rabbiteye</a></div>
+<!-- CURRICULUM_FOOTER_END -->

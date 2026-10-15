@@ -51,10 +51,12 @@ parts:
       - id: plants/ericoid-mycorrhizae
         title: Ericoid mycorrhizae
         level: intermediate
+        path: blogs/ericoid-mycorrhizae.md
         requires: [plants/roots-and-why-blueberries-want-acid-soil]
       - id: plants/nitrogen-as-ammonium-not-nitrate
         title: Nitrogen as ammonium, not nitrate
         level: intermediate
+        path: blogs/nitrogen-as-ammonium-not-nitrate.md
         requires: [plants/roots-and-why-blueberries-want-acid-soil, air-land-climate/fixed-nitrogen]
   - title: Ripening
     modules:
@@ -87,15 +89,18 @@ parts:
       - id: plants/heat-and-drought-stomata-close
         title: "Heat and drought: the stomata close"
         level: intermediate
+        path: blogs/heat-and-drought-stomata-close.md
         requires: [plants/photosynthesis-in-one-leaf]
   - title: Breeding
     modules:
       - id: plants/highbush-lowbush-rabbiteye
         title: Highbush, lowbush, rabbiteye
         level: introductory
+        path: blogs/highbush-lowbush-rabbiteye.md
       - id: plants/what-breeders-select-for
         title: What breeders select for
         level: intermediate
+        path: blogs/what-breeders-select-for.md
         requires: [plants/sugar-acid-and-what-ripe-measures, plants/the-growth-curve-of-a-berry]
       - id: plants/ploidy-and-why-blueberries-are-odd
         title: Ploidy, and why blueberries are odd

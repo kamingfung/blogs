@@ -1,0 +1,239 @@
+---
+title: Baselines first
+description: A baseline is the forecast you get for free, and a model has to beat the right one on the backtest before it earns its complexity.
+date: 2026-10-12
+categories:
+- forecasting
+- time series
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/forecasting/index.html">Forecasting with Machine Learning</a><span class="sep">·</span>Part 3 · Models</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">Python and pandas. Basic statistics. No prior forecasting.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+A baseline is a forecast that needs no fitting: repeat last week (naive), or repeat the same week last season (seasonal naive). A model earns its complexity only by beating the right baseline on the same backtest. Which baseline is right depends on the series. Naive is the best possible forecast for a random walk, and seasonal naive is hard to beat while seasons keep the same calendar. On a synthetic weekly harvest, seasonal naive's error four weeks ahead rises from 8.0 to 17.9 t/week when the peak moves by about four weeks, and it falls behind naive. Re-aligning last season's curve, or averaging it with naive, recovers most of that loss. Afterwards you should be able to compute these baselines in pandas, predict which one a series favours, build a combined baseline as a stronger floor, and report a model's skill and forecast value added against it.
+:::
+
+## The forecast you get for free
+
+The two baselines that matter most are the simplest: **naive** repeats last week, and **seasonal naive** repeats the same week last season. Each forecast is issued at an origin week $t$ for a target $h$ weeks later, written $\hat{y}_{t+h \mid t}$, from the observed series $y_1, \dots, y_t$ in tonnes per week (t/week), with $m = 52$ weeks in a season. The first four rows below are the standard benchmark set of Hyndman and Athanasopoulos[^1]; mean, drift and moving average are there for completeness.
+
+| Baseline | Forecast $\hat{y}_{t+h \mid t}$ | Assumes |
+|---|---|---|
+| Naive | $y_t$ | The level now is the best guess for later |
+| Seasonal naive | $y_{t+h-m}$ | This season repeats last season, week for week |
+| Mean | $\bar{y} = \frac{1}{t}\sum_{i=1}^{t} y_i$ | Nothing changes, not even the season |
+| Drift | $y_t + h \, \dfrac{y_t - y_1}{t - 1}$ | The average change over the whole history continues |
+| Moving average | $\frac{1}{k}\sum_{j=0}^{k-1} y_{t-j}$ | The recent level, with noise averaged over $k$ weeks |
+
+Here $\bar{y}$ is the mean of everything observed so far, $k$ is the window in weeks ($k = 4$ below), and the seasonal-naive formula holds for $h \le m$.
+
+For fresh produce the season's calendar moves with the weather, and seasonal naive cannot follow it. **Aligned seasonal naive** can. It finds the lag $\delta$, within $\pm 12$ weeks, at which last season best matches the last eight weeks, and reads last season at that lag:
+
+$$\hat{\delta}_t = \arg\min_{\lvert \delta \rvert \le 12} \sum_{j=0}^{7} \left\lvert y_{t-j} - y_{t-j-m-\delta} \right\rvert$$
+
+$$\hat{y}_{t+h \mid t} = y_{t+h-m-\hat{\delta}_t}$$
+
+where $\hat{\delta}_t$ is the estimated delay in weeks, positive when this season is later than the last. For example, if the last eight weeks best match last season's weeks three weeks earlier in the calendar, this season is running three weeks late, $\hat{\delta}_t = +3$, and the forecast for week $t+h$ reads last season's week $t+h-3$. The sum reaches back to $y_{t-7-m-12}$, so the first forecast needs $m + 8 + 12 = 72$ weeks of history; and the forecast reads only observed weeks while $h \le m - 12 = 40$. A scaled variant corrects last season's size instead of its timing; it is not used here.
+
+In pandas, for your own weekly series:
+
+```python
+import numpy as np
+import pandas as pd
+
+def baselines(y, h, m=52, w=8, max_lag=12):
+    """Row t holds the forecasts of y[t + h] issued at origin t."""
+    v = y.to_numpy()
+    def delay(t):  # lag d whose last-season weeks best match the last w weeks
+        cost = lambda d: np.abs(v[t - w + 1:t + 1] - v[t - w + 1 - m - d:t + 1 - m - d]).sum()
+        return min(range(-max_lag, max_lag + 1), key=cost)
+    out = pd.DataFrame({"naive": y, "seasonal_naive": y.shift(m - h)})
+    out["naive_plus_seasonal"] = (out["naive"] + out["seasonal_naive"]) / 2
+    first = m + w + max_lag - 1  # earliest origin with enough history
+    out["aligned"] = [v[t + h - m - delay(t)] if t >= first else np.nan for t in range(len(v))]
+    return out
+```
+
+It expects a gap-free weekly `pd.Series`; `baselines(y, h).shift(h)` lines each forecast up with the week it targets. [Backtesting properly](backtesting/backtesting_properly.ipynb) covers scoring them per horizon over rolling origins; this module is about which baselines to score.
+
+## Which baseline is hard to beat
+
+**Random walks favour naive.** If each week's value is last week's plus an unpredictable shock, $y_{t+1} = y_t + \varepsilon_{t+1}$ with $\varepsilon$ independent and of mean zero, the expected value of any future week given the past is $y_t$, and no model can do better on average; hence the book's other name for naive, the random-walk forecast.
+
+**Stable seasons favour seasonal naive.** If each season repeats the last plus noise, last season's same week already carries the whole shape, and what is left is noise no model can forecast.
+
+Fresh produce is strongly seasonal, but its timing moves from year to year. Drag $S$ to simulate an earlier or later season. The widget generates five seasons of a synthetic weekly harvest; seasons 1–4 are history, and every baseline forecasts each week of season 5 four weeks ahead ($h = 4$), scored by its mean absolute error (MAE) over those 52 weeks. Season 5 peaks $2.1 S$ weeks later than season 4.
+
+::: {.sim-card}
+#### Seven baselines on one held-out season
+
+```{ojs}
+//| echo: false
+viewof shift = Inputs.range([0, 6], {value: 0, step: 0.5, label: "Timing shift S (weeks)"})
+viewof noise = Inputs.range([0, 15], {value: 5, step: 1, label: "Noise σ (t/week)"})
+
+P = 52  // weeks per season
+H = 4   // forecast horizon, weeks
+offsets = [-0.6, 0.9, -0.2, -1.1, 1.0]  // peak-week offset per season, in units of S
+heights = [95, 110, 100, 90, 105]       // peak height per season, t/week
+
+// Unit-variance AR(1) noise from a seeded generator (mulberry32, Box–Muller): same series for every reader.
+e = {
+  let a = 7, prev = 0;
+  const rand = () => {
+    a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  return d3.range(5 * P).map(i => {
+    const z = Math.sqrt(-2 * Math.log(1 - rand())) * Math.cos(2 * Math.PI * rand());
+    prev = i === 0 ? z : 0.6 * prev + 0.8 * z;
+    return prev;
+  });
+}
+
+y = d3.range(5 * P).map(t => {
+  const s = Math.floor(t / P), w = t % P, peak = 26 + shift * offsets[s];
+  return Math.max(0, 5 + heights[s] * Math.exp(-0.5 * ((w - peak) / 6) ** 2) + noise * e[t]);
+})
+
+// Lag (weeks) that best matches the last 8 weeks to last season.
+delay = (y, t) => {
+  let best = Infinity, dh = 0;
+  for (let d = -12; d <= 12; d++) {
+    let c = 0;
+    for (let j = 0; j < 8; j++) c += Math.abs(y[t - j] - y[t - j - P - d]);
+    if (c < best - 1e-12) { best = c; dh = d; }
+  }
+  return dh;
+}
+
+// Each baseline: forecast of y[t + H] made at origin t.
+baselines = [
+  {name: "Naive", f: (y, t) => y[t]},
+  {name: "Seasonal naive", f: (y, t) => y[t + H - P]},
+  {name: "Mean", f: (y, t) => d3.mean(y.slice(0, t + 1))},
+  {name: "Drift", f: (y, t) => y[t] + H * (y[t] - y[0]) / t},
+  {name: "Moving average (4 weeks)", f: (y, t) => d3.mean(y.slice(t - 3, t + 1))},
+  {name: "Aligned seasonal naive", f: (y, t) => y[t + H - P - delay(y, t)]},
+  {name: "Naive + seasonal naive", f: (y, t) => (y[t] + y[t + H - P]) / 2}
+]
+
+// Score every week of season 5, each forecast from H weeks earlier.
+results = baselines.map(b => {
+  const fc = d3.range(4 * P, 5 * P).map(target =>
+    ({week: target - 4 * P, forecast: b.f(y, target - H), actual: y[target]}));
+  return {name: b.name, fc, mae: d3.mean(fc, d => Math.abs(d.forecast - d.actual))};
+})
+winner = d3.least(results, r => r.mae)
+seasonalNaive = results.find(r => r.name === "Seasonal naive")
+naive = results.find(r => r.name === "Naive")
+
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${card("Lowest MAE", winner.name, "#10b981")}
+  ${card("Its MAE", winner.mae.toFixed(1) + " t/week", "#10b981")}
+  ${card("Seasonal naive MAE", seasonalNaive.mae.toFixed(1) + " t/week", "#38bdf8")}
+  ${card("Skill over seasonal naive", (1 - winner.mae / seasonalNaive.mae).toFixed(2), "#a78bfa")}
+</div>`
+
+Plot.plot({
+  height: 250,
+  marginLeft: 175,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {label: "MAE on season 5 (t/week) →", grid: true, domain: [0, 45]},
+  y: {label: null},
+  marks: [
+    Plot.barX(results, {y: "name", x: "mae", sort: {y: "x"},
+                        fill: d => d === winner ? "#10b981" : "#475569"}),
+    Plot.text(results, {y: "name", x: "mae", text: d => d.mae.toFixed(1),
+                        dx: 18, fill: "#cbd5e1"})
+  ]
+})
+
+lines = [
+  ...naive.fc.map(d => ({week: d.week, v: d.actual, series: "Season 5 (actual)"})),
+  ...seasonalNaive.fc.map(d => ({week: d.week, v: d.forecast, series: "Seasonal naive = season 4"})),
+  ...naive.fc.map(d => ({week: d.week, v: d.forecast, series: "Naive"})),
+  ...winner.fc.map(d => ({week: d.week, v: d.forecast, series: "Lowest-MAE baseline"}))
+]
+
+Plot.plot({
+  height: 300,
+  marginLeft: 55,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, 51], label: "Week of season 5 →", grid: true},
+  y: {domain: [0, 160], label: "↑ Harvest (t/week)", grid: true},
+  color: {legend: true,
+          domain: ["Season 5 (actual)", "Seasonal naive = season 4", "Naive", "Lowest-MAE baseline"],
+          range: ["#cbd5e1", "#38bdf8", "#f59e0b", "#10b981"]},
+  marks: [
+    Plot.line(lines, {x: "week", y: "v", stroke: "series", clip: true,
+                      strokeWidth: d => d.series === "Lowest-MAE baseline" ? 3 : 1.5,
+                      strokeDasharray: d => d.series === "Lowest-MAE baseline" ? "6 4" : null})
+  ]
+})
+```
+
+The data are synthetic. Season $s$ peaks in week $26 + S\,o_s$, with fixed offsets $o_s = -0.6, 0.9, -0.2, -1.1, 1.0$, at heights $95, 110, 100, 90, 105$ t/week above a floor of 5. The noise is autocorrelated, drawn once from a fixed seed and scaled to standard deviation $\sigma$. Each forecast is made four weeks before the week it targets.
+:::
+
+At the start, timing held still and $\sigma = 5$ t/week, seasonal naive wins with an MAE of 8.0 t/week against 17.1 for naive. Aligned seasonal naive scores 11.3: it pays in noise for estimating a shift that is not there. The others are in the widget.
+
+Now move the timing. At $S = 2$, season 5 peaks $2.1 \times 2 = 4.2$ weeks later than season 4, and seasonal naive's MAE rises to 17.9, worse than repeating last week (17.0). The plot shows why: last season's curve rises and falls a month too early, so it over-forecasts the rise and under-forecasts the fall. Aligned seasonal naive holds up at 10.4. At $S = 5$, a 10.5-week shift, it wins clearly, 12.5 against 36.4. Its estimate $\hat{\delta}_t$, tracked week by week during a season, is also an early warning: a value moving away from zero says the calendar has shifted before the errors pile up.
+
+## Combining baselines
+
+The seventh bar averages naive and seasonal naive. At $S = 2$ it wins outright at 9.3 t/week, beating both its parts. On the rise of a late season naive is below the actual because it lags four weeks, and seasonal naive is above it because last season rose earlier. Their errors have opposite signs, so the average cancels much of both. When the timing holds still the errors no longer offset, and the combination (9.8) loses to seasonal naive alone (8.0).
+
+Clemen's review of the literature on combining forecasts found that combining can improve accuracy substantially, and that simple combinations often work reasonably well relative to more complex ones[^2]. An equal-weight average has no parameter to fit, so it cannot overfit the backtest; in a sweep over all 208 slider settings, since the page shows one at a time, it never ranked below fourth of the seven. A model that cannot beat it has not earned a place in production. No single baseline wins everywhere, so backtest several rather than picking the one that flatters the model.
+
+## Reporting value added
+
+The **skill score** is the fraction of a baseline's error that a model removes:
+
+$$\text{skill} = 1 - \frac{\text{MAE}_\text{model}}{\text{MAE}_\text{baseline}}$$
+
+where both mean absolute errors, in t/week, are computed over the same origins, horizons and weeks. A skill of 0 means no better than the baseline, 1 means perfect, and a negative skill means worse than the free forecast. In [Backtesting properly](backtesting/backtesting_properly.ipynb), a gradient-boosted model averaged an MAE of 8.7 t/week over horizons 1–8 against 10.6 for seasonal naive, a skill of $1 - 8.7/10.6 = 0.18$. At $h = 8$ alone it scored 10.5 against 10.6, a skill of $1 - 10.5/10.6 = 0.01$, so report skill per horizon. (The MASE of [Which metric](which-metric.qmd) is a different ratio: it is usually scaled by the in-sample one-step naive error, seasonal naive for seasonal data, so a MASE below 1 does not mean the model beats seasonal naive four weeks ahead.)
+
+There is no universal threshold for enough skill. The model above removes $10.6 - 8.7 = 1.9$ t/week of absolute error; whether that is enough depends on what a tonne mis-planned costs in waste, missed orders or labour, against what the model costs to build, run and monitor.
+
+**Forecast value added** (FVA) applies the same comparison to every step of a forecasting process. Gilliland has long advocated FVA for assessing each stage, including managerial adjustments to statistical forecasts, as a way to remove steps that are unnecessary or harmful[^3]. Here the value added by a step is the error before it minus the error after it, so a negative value means the step made the forecast worse. With the widget at $S = 2$ and $\sigma = 5$:
+
+| Step | MAE (t/week) | Value added by this step | Value added over naive |
+|---|---|---|---|
+| Naive | 17.0 | | |
+| Seasonal naive | 17.9 | $17.0 - 17.9 = -0.9$ | $-0.9$ |
+| Naive + seasonal naive | 9.3 | $17.9 - 9.3 = 8.6$ | $17.0 - 9.3 = 7.7$ |
+
+In practice the table continues with the model and each human override, scored on the same backtest; a step stays only if its row is positive.
+
+The next module, [Gradient boosting for tabular time series](forecast/gradient_boosting_for_time_series.ipynb), applies the rule at once: a LightGBM model of monthly Mauna Loa $\text{CO}_2$ cannot forecast above its training maximum and barely beats repeating last year, until its target is changed to the year-on-year change.
+
+## Key takeaways
+
+- A baseline is a forecast with no training; a model's backtest error means little until it sits beside the baselines'.
+- Naive is the best forecast for a random walk; seasonal naive is hard to beat while seasons keep the same calendar.
+- Seasonal naive collapses when the timing moves: a 4.2-week shift raised its MAE from 8.0 to 17.9 t/week, worse than naive. Re-aligning last season's curve held it at 10.4.
+- The average of naive and seasonal naive is a stronger floor than either when their errors have opposite signs, as on the flanks of a shifted season (9.3 t/week here).
+- Report skill per horizon, weigh it against what errors and the model cost, and keep a forecast-value-added table for every step, overrides included.
+
+## References
+
+[^1]: Hyndman, R. J. & Athanasopoulos, G. *Forecasting: Principles and Practice* 3rd edn, Section 5.2 (OTexts, 2021).
+[^2]: Clemen, R. T. Combining forecasts: a review and annotated bibliography. *Int. J. Forecast.* **5**, 559–583 (1989). https://doi.org/10.1016/0169-2070(89)90012-5
+[^3]: Gilliland, M. FVA: a reality check on forecasting practices. *Foresight* **29**, 14–18 (2013).
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/lags-and-rolling-windows/lags_and_rolling_windows.html"><span>Previous</span>Lags and rolling windows</a><a class="mf-up" href="/series/forecasting/index.html"><span>Series</span>Forecasting with Machine Learning</a><a class="mf-next" href="/blogs/forecast/gradient_boosting_for_time_series.html"><span>Next</span>Gradient boosting for tabular time series</a></div>
+<!-- CURRICULUM_FOOTER_END -->
