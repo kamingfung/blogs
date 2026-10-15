@@ -63,17 +63,20 @@ parts:
       - id: plants/why-blueberries-are-blue
         title: "Why blueberries are blue: anthocyanins"
         level: introductory
+        path: blogs/why-blueberries-are-blue.md
       - id: plants/sugar-acid-and-what-ripe-measures
         title: Sugar, acid, and what "ripe" measures
         level: introductory
         path: blogs/sugar-acid-and-what-ripe-measures.md
       - id: plants/why-a-picked-blueberry-stops
-        title: "Non-climacteric: why a picked blueberry stops"
+        title: "Why a picked blueberry stops ripening"
         level: intermediate
+        path: blogs/why-a-picked-blueberry-stops.md
         requires: [plants/sugar-acid-and-what-ripe-measures]
       - id: plants/the-bloom
         title: "The bloom: the wax coat and what it protects"
         level: introductory
+        path: blogs/the-bloom.md
   - title: Seasons and stress
     modules:
       - id: plants/chill-hours-and-dormancy
@@ -105,4 +108,5 @@ parts:
       - id: plants/ploidy-and-why-blueberries-are-odd
         title: Ploidy, and why blueberries are odd
         level: intermediate
+        path: blogs/ploidy-and-why-blueberries-are-odd.md
         requires: [plants/highbush-lowbush-rabbiteye]

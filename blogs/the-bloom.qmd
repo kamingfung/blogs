@@ -1,0 +1,179 @@
+---
+title: "The bloom: the wax coat and what it protects"
+description: What the pale, dusty film on a ripe blueberry is made of, why it makes a near-black berry look blue, what it does for the fruit, and how picking and packing wear it away.
+date: 2026-10-14
+categories:
+- plant biology
+- horticulture
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/plants/index.html">Plant biology, one blueberry at a time</a><span class="sep">·</span>Part 4 · Ripening</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">School biology. The forecasting series models this crop&#x27;s data; this series explains where the data comes from.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+The bloom is the pale, dusty film on a ripe blueberry. It is a layer of wax crystals only a few micrometres thick. The skin under it is near black, and the crystals scatter blue light, which is why the berry looks powder-blue. Rubbing knocks the crystals off and leaves the berry dark and shiny. In lab trials, berries that lost their bloom also lost water faster, and in one study they rotted sooner. Researchers name picking, packing lines and some coatings as places where bloom is lost, but no study found here measures how much each step removes. A tasting panel liked bare berries less, but only when they could see them. The practical message is to handle the fruit gently and cool it fast.
+:::
+
+## A coat of wax crystals
+
+A blueberry that comes off a packing line dark and shiny instead of dusty blue has lost its bloom. This module explains what that layer is, what it does, and what takes it off. (On a farm, "bloom" also means the flowers in spring. [Pollination and fruit set](pollination-and-fruit-set.qmd) covers those.)
+
+Every plant surface exposed to air is sealed by a **cuticle**. This is a film of a waxy polymer called cutin, with wax mixed through it. More wax sits on top of it as a separate outer layer, called **epicuticular wax**, meaning "on the cuticle". On a blueberry, this outer wax grows as tiny crystals, mostly small tubes, and that crystal layer is the bloom[^1]. The USDA storage handbook sums it up: the skin is blue to blue-black, and a waxy bloom over it gives the fruit its light-blue appearance[^2].
+
+The wax is mostly two kinds of compound: **triterpenoids**, chiefly ursolic and oleanolic acid, and **β-diketones**. Highbush and rabbiteye berries carry different β-diketones, and the cultivar decides which triterpenoid leads.
+
+There is very little of it. On a berry of about 2 g it comes to less than a milligram of wax, in a layer 2 to 4 µm thick[^3]. It sits on the outside of the berry and is not stuck down hard, which is why it rubs off so easily.
+
+::: {.callout-note collapse="true"}
+## Composition and amount, for plant scientists
+
+Three studies agree on the proportions:
+
+| Study | Fruit sampled | Triterpenoids | β-diketones |
+|---|---|---:|---:|
+| Chu et al. 2017 | 9 cultivars, mature | 64.2% | 16.4% |
+| Yan et al. 2023[^4] | 12 genotypes, at harvest | 62.5% | 22.9% |
+| Yan et al. 2024[^5] | 'Calypso', all stages | 59.6% | 27.5% |
+
+<small>Shares of total cuticular wax. Each study washed the wax off whole berries with a solvent, which collects some of the wax inside the cuticle as well as the bloom on top.</small>
+
+Triterpenoids are built from six isoprene units of five carbons each, so they have $6 \times 5 = 30$ carbons, folded into rings. β-diketones are long, unbranched carbon chains with two ketone groups (C=O) one carbon apart. In the nine-cultivar study (Chu et al.), highbush berries carried hentriacontane-10,12-dione, which has 31 carbons. Rabbiteye berries carried tritriacontane-12,14-dione, which has 33. Neither type had the other's compound. In 'Calypso', three compounds made up 70.9% of the wax: oleanolic acid, ursolic acid and the 31-carbon β-diketone.
+
+**Amount.** Across 12 genotypes at the first commercial pick, total wax ranged from 27.7 to 95.8 µg cm⁻². By the second pick it had fallen by 23.9% on average. In 'Calypso', wax per unit area fell by 51.7% between green fruit and harvest, but the amount per berry stayed constant: the same wax was spread over a growing berry. In storage at 0.5 °C, wax per unit area then rose by 28.4%, which the authors take as a sign the berry was still making wax. Absolute values depend on method; one rabbiteye study reported several times more wax per square centimetre than these[^6].
+
+**Per berry.** Take a berry 15 mm across. This size is chosen for illustration. Treat it as a sphere of diameter $d = 1.5$ cm:
+
+$$A = \pi d^2 = \pi \times 1.5^2 = 7.07\ \text{cm}^2, \qquad V = \frac{\pi d^3}{6} = 1.77\ \text{cm}^3$$
+
+where $A$ is surface area and $V$ volume. The wax is then $27.7 \times 7.07 = 196\ \mu\text{g}$ to $95.8 \times 7.07 = 677\ \mu\text{g}$, or about 0.20 to 0.68 mg. At roughly the density of water, 1 g cm⁻³ (an assumption), the berry weighs 1.77 g, so the wax is $0.20/1770 = 0.011\%$ to $0.68/1770 = 0.038\%$ of its mass.
+:::
+
+## Why a black berry looks blue
+
+Blueberries contain no blue pigment. Their skin is full of anthocyanins, which on their own look dark red to black. The 2024 optics study that measured the bloom's thickness found that the blue comes from the wax crystals themselves. Their random, irregular arrangement reflects blue and ultraviolet light more than other colours, and the dark skin underneath absorbs the rest. The researchers made the same blue in the lab by letting dissolved bloom wax re-form as crystals on a plain surface. [Why blueberries are blue](why-blueberries-are-blue.qmd) covers the pigments underneath.
+
+The same study explains why a handled berry looks *shiny* as well as dark. Rubbing knocks off the loose crystals but leaves the smooth wax film of the cuticle underneath, and that film polishes to a gloss. Dissolving the wax off instead left a dull surface.
+
+Between varieties, how light a berry looks follows its wax more closely than its pigment. Across 12 genotypes, more β-diketone meant a lighter berry, and pigment content had no significant link to surface colour. The authors also note that consumers normally prefer the lighter look a dense bloom gives.
+
+**What a tasting panel made of it.** A Californian study rubbed some of the bloom off berries of three cultivars, and all of it off others[^7]. The bare berries looked much darker. Panellists tasted the berries first in the dark and then in the light. In the dark they liked all three treatments equally. In the light they liked the bare berries significantly less. Partial bloom was usually still rated appealing, but not for 'Jewel'. This was one panel of about 60 people per cultivar, eating berries from one research field under lab conditions. It shows that people notice bloom loss and mark it down. It does not show how buyers judge commercial lots.
+
+::: {.callout-note collapse="true"}
+## How the colour and panel were measured
+
+Colour was measured on the CIELAB scale, whose lightness value $L^*$ runs from 0 for black to 100 for white. Partial bloom was made by rolling a single layer of berries for 30 seconds over an aluminium pizza pan. Full removal was done by wiping each berry with a laboratory tissue.
+
+| Cultivar | Full bloom $L^*$ | Partial $L^*$ | Removed $L^*$ |
+|---|---:|---:|---:|
+| 'Snowchaser' | 41.19 | 35.04 | 25.93 |
+| 'Jewel' | 42.37 | 35.02 | 26.71 |
+| 'San Joaquin' | 45.31 | 37.01 | 26.54 |
+
+Wiping off the bloom lowered $L^*$ by $41.19 - 25.93 = 15.26$, $42.37 - 26.71 = 15.66$ and $45.31 - 26.54 = 18.77$ points. The wiped berries were also less firm. The authors attribute this to the rubbing rather than water loss, because the berries were held for only about 5 hours at 20 °C before tasting. The fruit came from a USDA research field in Parlier, California.
+:::
+
+## What the bloom protects
+
+**Water.** A picked berry has no water supply, so any water it loses is gone for good. Water loss shows up as shrivel, which the USDA handbook names as one of blueberry's main disorders. Water leaves through the skin and through the stem scar where the berry was attached. A Chilean study sealed the stem scar on half the berries with nail polish. At 20 °C the scar accounted for about 40% of water loss, so the skin accounted for the other $100 - 40 = 60\%$. Temperature mattered more than either route: storage at 0 °C cut the rate of water loss by 90%[^8].
+
+The bloom is the outer part of that skin barrier, and removing it costs water. In a 2018 study, berries wiped clean of wax lost water and decayed faster, scored lower for sensory and nutritional quality, and had a shorter shelf life[^9]. A Californian coatings study wiped the bloom off with Blu Tack putty and weighed berries held at 20 °C[^10]:
+
+| Uncoated berries | Day 1 | Day 2 | Day 3 |
+|---|---:|---:|---:|
+| Bloom present | 1.44% | 3.11% | 4.52% |
+| Bloom removed | 2.24% | 4.44% | 6.48% |
+
+<small>Percentage of fresh weight lost. Across all treatments in the trial, berries without bloom lost significantly more weight.</small>
+
+By day 3 the bare berries had lost $6.48 - 4.52 = 1.96$ percentage points more, or $6.48 / 4.52 = 1.43$ times as much. The same paper puts the point where blueberries can become unmarketable at 5 to 8% weight loss. The bare berries had reached that range by day 3, and the berries with bloom had not. These were small trials at room temperature. In a cold chain everything happens more slowly, so the gap would be smaller.
+
+Which wax compounds do the most work is unsettled: two studies point to different triterpenoids.
+
+**Rain and dew.** Discs pressed from the two main triterpenoids repel water, but nobody in these sources has tested water running off whole berries.
+
+**Disease.** The evidence is thin. Only the 2018 study above found faster decay after the bloom was removed. No source found here tested a named blueberry rot, such as grey mould (*Botrytis*) or anthracnose, on berries with and without bloom.
+
+**Heat.** In [Heat and drought: the stomata close](heat-and-drought-stomata-close.qmd), the authors suggested that thicker wax and cutin may help ripe berries tolerate heat. Whether the bloom reflects enough sunlight to keep a berry cooler has not been tested in any source cited here.
+
+**Field conditions.** No source found for cultivated blueberry links the amount of bloom to rain, dew, heat or the time of day of picking. In bilberry, a wild relative, berries ripened at 18 °C had more triterpenoid in their wax than berries ripened at 12 °C[^11]. Whether that carries over to cultivated blueberry, and whether it changes how the bloom looks, is unknown.
+
+## How it is lost
+
+The crystals sit loose on the surface, so rubbing removes them. The lab studies above removed bloom with a tissue, with putty, or by rolling berries on a metal pan for 30 seconds. The 2018 wax-removal study describes the bloom as easily damaged during harvesting and postharvest handling. The Californian tasting study lists harvesting, transporting, grading, sizing and packing as steps where bloom can come off. Its evidence for that list is work on plums and a personal communication from a grower. No study found here measures how much bloom a blueberry loses at each step from bush to clamshell.
+
+```{mermaid}
+flowchart LR
+    H["Rubbing and handling"] -->|"measured in lab trials"| R["Wax crystals<br/>rubbed off"]
+    C["Postharvest coatings"] -->|"measured"| R
+    M["Machine harvest"] -.->|"named, not measured"| R
+    P["Packing line<br/>grading and sizing"] -.->|"named, not measured"| R
+    S["Field sprays"] -.->|"no data found"| R
+    R --> D["Darker, glossier berry"]
+    R --> W["Faster water loss"]
+    R --> X["Faster decay<br/>(one study)"]
+    D --> L["Less liked<br/>when seen"]
+    W --> Sh["Shrivel and<br/>softening"]
+
+    class H,C ochre
+    class M,P sienna
+    class S umber
+    class R rust
+    class D,W,X plum
+    class L,Sh indigo
+    classDef indigo fill:#1d4a62,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef umber fill:#3b1a18,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef sienna fill:#6c2b27,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef plum fill:#48304a,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef rust fill:#a04b2d,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef ochre fill:#d69a2e,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+```
+
+<small>Solid arrows: removal measured in a blueberry study. Dashed arrows: named by researchers but not measured, or not found in any source.</small>
+
+**Machine harvest.** The USDA handbook says machine harvesting can cut storage life to half that of hand-picked fruit. It puts the cause down to bruising and does not mention bloom.
+
+**Coatings and washes.** Edible coatings are thin films applied after harvest to try to slow water loss. In the Californian coatings trial, chitosan and carnauba coatings stripped all or nearly all of the bloom, and the commercial coating Semperfresh usually removed less. None of the coatings reliably reduced weight loss. Even some uncoated 'Jewel' berries lost enough wax over 6 weeks of storage that their marketability might have suffered. The tasting study raises the same concern about washing, spraying or dipping fruit. No source found here looked at sprays applied in the field.
+
+**Does it grow back?** No source here shows a rubbed berry rebuilding a visible bloom. In one study, wax increased during cold storage but the berries' colour barely changed. In two other cultivars, total wax fell during 30 days at 4 °C[^12]. If bloom does not come back, an intact bloom is a record of gentle handling. That is an inference, not a measured result.
+
+**Grading.** None of the sources found here describe commercial rejection criteria for lost bloom. The only scale in them is a research one, used in the coatings trial: 0 for unchanged, 1 for slight loss but acceptable, 2 for moderate loss and 3 for severe loss, with 2 and 3 judged not acceptable.
+
+### What this means for growers and packers
+
+As far as these sources go:
+
+- *Touch the fruit less.* Thirty seconds of rolling on a metal pan was enough to strip part of the bloom.
+- *Partial loss is often tolerated; full loss is not.* Panellists still liked partly bloomed berries for two of the three cultivars, and liked bare berries less.
+- *Cool fast, whatever state the bloom is in.* Storage at 0 °C cut water loss by 90%. The USDA handbook recommends forced-air cooling and refrigeration within an hour of harvest. [Respiration: the cost of being alive](respiration-the-cost-of-being-alive.qmd) explains why cooling also slows sugar loss, and [Why a picked blueberry stops](why-a-picked-blueberry-stops.qmd) covers what changes after picking.
+- *Before adopting a coating or wash, check what it does to the bloom as well as to weight loss.* The coatings study makes this point.
+- *Find where your own line takes the bloom off.* This is this module's suggestion, not a published method. Take berries from the picking row, from each main step on the line and from pack-out. Photograph them side by side under the same light, or score them on the 0 to 3 scale above. The step where berries turn dark and shiny is where the bloom is being lost.
+
+## Key takeaways
+
+- The bloom is a layer of wax crystals 2 to 4 µm thick, less than a milligram on a 2 g berry. It is mostly triterpenoids and β-diketones.
+- The skin under the bloom is near black. The crystals scatter blue light, and rubbing them off leaves a dark, shiny berry.
+- With the bloom wiped off, berries lost 6.48% of their weight in 3 days at 20 °C, against 4.52% with it. The unmarketable range is 5 to 8%. Cooling to 0 °C cut water loss by 90%.
+- Coatings such as chitosan and carnauba strip the bloom. Machine harvest and packing lines are named as causes of loss but have not been measured. No study of field sprays was found.
+- One tasting panel liked bare berries less, but only when it could see them. Effects on disease and links to field conditions are largely unknown.
+
+## References
+
+[^1]: Chu, W. et al. Composition and morphology of cuticular wax in blueberry (*Vaccinium* spp.) fruits. *Food Chem.* **219**, 436–442 (2017). https://doi.org/10.1016/j.foodchem.2016.09.186
+[^2]: Perkins-Veazie, P. in *The Commercial Storage of Fruits, Vegetables, and Florist and Nursery Stocks* (eds Gross, K. C., Wang, C. Y. & Saltveit, M.) Agriculture Handbook 66, 240–242 (U.S. Department of Agriculture, Agricultural Research Service, 2016).
+[^3]: Middleton, R. et al. Self-assembled, disordered structural color from fruit wax bloom. *Sci. Adv.* **10**, eadk4219 (2024). https://doi.org/10.1126/sciadv.adk4219
+[^4]: Yan, Y., Dossett, M. & Castellarin, S. D. Cuticular waxes affect fruit surface color in blueberries. *Plants People Planet* **5**, 736–751 (2023). https://doi.org/10.1002/ppp3.10368
+[^5]: Yan, Y., Gagalova, K. K., Gerbrandt, E. M. & Castellarin, S. D. Cuticular wax biosynthesis in blueberries (*Vaccinium corymbosum* L.): transcript and metabolite changes during ripening and storage affect key fruit quality traits. *Hortic. Res.* **11**, uhae004 (2024). https://doi.org/10.1093/hr/uhae004
+[^6]: Kong, Q. et al. Cuticular wax triterpenes maintain storage quality of blueberries by reducing water loss. *Foods* **12**, 2643 (2023). https://doi.org/10.3390/foods12142643
+[^7]: Asensio, C., Arpaia, M. L. & Obenland, D. The role of fruit surface bloom in consumer preference for blueberries: sensory evaluation and multisensory interactions. *Foods* **14**, 455 (2025). https://doi.org/10.3390/foods14030455
+[^8]: Moggia, C., Beaudry, R. M., Retamales, J. B. & Lobos, G. A. Variation in the impact of stem scar and cuticle on water loss in highbush blueberry fruit argue for the use of water permeance as a selection criterion in breeding. *Postharvest Biol. Technol.* **132**, 88–96 (2017). https://doi.org/10.1016/j.postharvbio.2017.05.019
+[^9]: Chu, W., Gao, H., Chen, H., Fang, X. & Zheng, Y. Effects of cuticular wax on the postharvest quality of blueberry fruit. *Food Chem.* **239**, 68–74 (2018). https://doi.org/10.1016/j.foodchem.2017.06.024
+[^10]: Obenland, D., Leyva-Gutierrez, F. M. & Wang, T. Investigations into determinants of blueberry coating effectiveness. *Foods* **12**, 174 (2023). https://doi.org/10.3390/foods12010174
+[^11]: Trivedi, P. et al. Temperature has a major effect on the cuticular wax composition of bilberry (*Vaccinium myrtillus* L.) fruit. *Front. Plant Sci.* **13**, 980427 (2022). https://doi.org/10.3389/fpls.2022.980427
+[^12]: Chu, W., Gao, H., Chen, H., Wu, W. & Fang, X. Changes in cuticular wax composition of two blueberry cultivars during fruit ripening and postharvest cold storage. *J. Agric. Food Chem.* **66**, 2870–2876 (2018). https://doi.org/10.1021/acs.jafc.7b05020
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/why-a-picked-blueberry-stops.html"><span>Previous</span>Why a picked blueberry stops ripening</a><a class="mf-up" href="/series/plants/index.html"><span>Series</span>Plant biology, one blueberry at a time</a><a class="mf-next" href="/blogs/chill-hours-and-dormancy.html"><span>Next</span>Chill hours and dormancy</a></div>
+<!-- CURRICULUM_FOOTER_END -->

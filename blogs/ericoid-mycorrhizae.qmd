@@ -128,3 +128,4 @@ So the defensible position for a grower is narrow. The fungi are real partners w
 <!-- CURRICULUM_FOOTER_START -->
 <div class="mf"><a class="mf-prev" href="/blogs/roots-and-why-blueberries-want-acid-soil.html"><span>Previous</span>Roots, and why blueberries want acid soil</a><a class="mf-up" href="/series/plants/index.html"><span>Series</span>Plant biology, one blueberry at a time</a><a class="mf-next" href="/blogs/nitrogen-as-ammonium-not-nitrate.html"><span>Next</span>Nitrogen as ammonium, not nitrate</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+

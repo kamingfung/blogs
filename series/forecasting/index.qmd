@@ -6,7 +6,7 @@ description: "Tabular machine learning for time series, from framing the problem
 <dl class="syl-meta">
 <div><dt>Level</dt><dd>Introductory to advanced</dd></div>
 <div><dt>Parts</dt><dd>15</dd></div>
-<div><dt>Modules</dt><dd>23 of 34 written</dd></div>
+<div><dt>Modules</dt><dd>27 of 34 written</dd></div>
 <div class="wide"><dt>Assumes</dt><dd>Python and pandas. Basic statistics. No prior forecasting.</dd></div>
 </dl>
 
@@ -23,7 +23,7 @@ description: "Tabular machine learning for time series, from framing the problem
 <ul class="syl">
 <li class="w"><a href="/blogs/forecast/1_feature_engineering.html">Feature engineering with feature_engine</a><span class="m">Intermediate</span></li>
 <li class="w"><a href="/blogs/lags-and-rolling-windows/lags_and_rolling_windows.html">Lags and rolling windows</a><span class="m">Introductory</span></li>
-<li class="g">Calendar and cyclical encodings<span class="m">Introductory · not written</span></li>
+<li class="w"><a href="/blogs/calendar-encodings/calendar_and_cyclical_encodings.html">Calendar and cyclical encodings</a><span class="m">Introductory</span></li>
 </ul>
 
 ## Part 3 · Models
@@ -82,7 +82,7 @@ description: "Tabular machine learning for time series, from framing the problem
 
 <ul class="syl">
 <li class="w"><a href="/blogs/quantile-regression/quantile_regression.html">Quantile regression</a><span class="m">Intermediate</span></li>
-<li class="g">Conformal prediction<span class="m">Advanced · not written</span></li>
+<li class="w"><a href="/blogs/conformal-prediction/conformal_prediction.html">Conformal prediction</a><span class="m">Advanced</span></li>
 </ul>
 
 ## Part 11 · Hierarchies
@@ -95,7 +95,7 @@ description: "Tabular machine learning for time series, from framing the problem
 ## Part 12 · Classical models
 
 <ul class="syl">
-<li class="g">ETS and ARIMA<span class="m">Intermediate · not written</span></li>
+<li class="w"><a href="/blogs/ets-and-arima/ets_and_arima.html">ETS and ARIMA</a><span class="m">Intermediate</span></li>
 <li class="g">When classical beats machine learning<span class="m">Intermediate · not written</span></li>
 </ul>
 
@@ -116,5 +116,5 @@ description: "Tabular machine learning for time series, from framing the problem
 
 <ul class="syl">
 <li class="w"><a href="/blogs/retraining-and-drift/retraining_and_drift.html">Retraining and drift</a><span class="m">Intermediate</span></li>
-<li class="g">Monitoring a forecast<span class="m">Intermediate · not written</span></li>
+<li class="w"><a href="/blogs/monitoring/monitoring_a_forecast.html">Monitoring a forecast</a><span class="m">Intermediate</span></li>
 </ul>

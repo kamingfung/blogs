@@ -137,6 +137,7 @@ parts:
       - id: air-land-climate/heat-stress-on-crops
         title: "Heat stress on crops"
         level: intermediate
+        path: blogs/heat-stress-on-crops.md
   - title: "Earth system models"
     modules:
       - id: air-land-climate/what-an-earth-system-model-is

@@ -38,6 +38,7 @@ parts:
       - id: forecasting/calendar-and-cyclical-encodings
         title: "Calendar and cyclical encodings"
         level: introductory
+        path: blogs/calendar-encodings/calendar_and_cyclical_encodings.ipynb
   - title: "Models"
     modules:
       - id: forecasting/baselines-first
@@ -147,6 +148,7 @@ parts:
       - id: forecasting/conformal-prediction
         title: "Conformal prediction"
         level: advanced
+        path: blogs/conformal-prediction/conformal_prediction.ipynb
         requires:
           - forecasting/quantile-regression
           - statistics/cross-validation
@@ -167,6 +169,7 @@ parts:
       - id: forecasting/ets-and-arima
         title: "ETS and ARIMA"
         level: intermediate
+        path: blogs/ets-and-arima/ets_and_arima.ipynb
       - id: forecasting/when-classical-beats-machine-learning
         title: "When classical beats machine learning"
         level: intermediate
@@ -192,3 +195,4 @@ parts:
       - id: forecasting/monitoring-a-forecast
         title: "Monitoring a forecast"
         level: intermediate
+        path: blogs/monitoring/monitoring_a_forecast.ipynb
