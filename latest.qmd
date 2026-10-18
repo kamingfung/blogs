@@ -1,0 +1,19 @@
+---
+title: Latest
+description: Every post, newest first. Also available as an RSS feed.
+listing:
+  # Every post, wherever it sits; the feed (latest.xml) is generated from this list.
+  contents:
+    - "blogs/**/*.qmd"
+    - "blogs/**/*.ipynb"
+    - "!blogs/index.qmd"
+    - "!blogs/templates-showcase.qmd"
+  type: table
+  sort: "date desc"
+  fields: [date, title, description]
+  date-format: "YYYY-MM-DD"
+  feed:
+    items: 30
+---
+
+Subscribe with any feed reader: [latest.xml](latest.xml).

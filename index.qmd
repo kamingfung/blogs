@@ -1,5 +1,6 @@
 ---
 pagetitle: "Ka Ming Fung"
+image: assets/img/share.png
 ---
 
 ::: {.profile-hero}
