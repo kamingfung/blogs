@@ -23,6 +23,11 @@ website:
   title: "Blogs"
   description: "Course-style notes on atmospheric science, forecasting and scientific computing."
   site-url: https://blogs.kamingfung.workers.dev
+  # Default share card for every page; a post's own `image:` overrides it.
+  image: /assets/img/share.png
+  open-graph: true
+  twitter-card:
+    creator: "@kamingfung"
   # palette.yml assigns indigo the role "header and footer bars". Without a
   # navbar nothing painted it, so the site lost the blue the MkDocs header
   # carries. background: primary reads $primary from the generated palette.
@@ -34,7 +39,12 @@ website:
         text: Home
       - href: series/index.qmd
         text: Series
+      - href: latest.qmd
+        text: Latest
     right:
+      - icon: rss
+        href: latest.xml
+        aria-label: RSS feed
       - icon: github
         href: https://github.com/kamingfung/blogs
         aria-label: Source on GitHub
