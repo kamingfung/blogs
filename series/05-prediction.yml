@@ -17,6 +17,7 @@ parts:
       - id: prediction/what-a-climatology-is
         title: "What a climatology is"
         level: introductory
+        path: blogs/what-a-climatology-is.md
       - id: prediction/anomalies
         title: "Anomalies"
         level: introductory
@@ -53,6 +54,7 @@ parts:
       - id: prediction/skill-scores
         title: "Skill scores"
         level: intermediate
+        path: blogs/skill-scores.md
         requires:
           - prediction/persistence-and-climatology-baselines
   - title: "Trend and season"

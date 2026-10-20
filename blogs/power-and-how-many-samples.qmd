@@ -271,5 +271,6 @@ My suggestions, from the arithmetic above rather than a cited study. Fix $\delta
 [^2]: Button, K. S. et al. Power failure: why small sample size undermines the reliability of neuroscience. *Nat. Rev. Neurosci.* **14**, 365–376 (2013). https://doi.org/10.1038/nrn3475
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/normal-lognormal-poisson.html"><span>Previous</span>Normal, lognormal, Poisson</a><a class="mf-up" href="/series/statistics/index.html"><span>Series</span>Statistics</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/controls-and-randomisation.html"><span>Previous</span>Controls and randomisation</a><a class="mf-up" href="/series/statistics/index.html"><span>Series</span>Statistics</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+

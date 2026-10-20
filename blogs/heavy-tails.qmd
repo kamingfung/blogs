@@ -1,0 +1,288 @@
+---
+title: Heavy tails
+description: What makes a distribution's tail heavy, why the sample mean and variance stop settling when it is, how to spot it in data, and which summaries and losses still work.
+date: 2026-10-19
+categories:
+- statistics
+- data science
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/statistics/index.html">Statistics</a><span class="sep">·</span>Part 6 · Distributions</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">School maths. Python or R for the notebooks.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+A distribution has a heavy tail when the chance of exceeding a value falls off slowly, like a power of the value, instead of exponentially as it does for the normal. Three families cover most cases. A Student t with few degrees of freedom has power-law tails on both sides. A lognormal has a long right tail, yet every moment is finite. A Pareto has a power-law tail whose index α decides which moments exist: below α = 2 the variance is infinite, and at or below α = 1 so is the mean. With an infinite variance the sample variance never settles, a few huge values set the sample mean, its error shrinks more slowly than 1/√n, and the central limit theorem's normal approximation fails. You can see it as a straight line on a log–log survival plot, Q–Q plot ends that curl away, and a running mean that keeps jumping. Before averaging anything, check what share of the total its largest few values hold.
+:::
+
+## What makes a tail heavy
+
+A tail is heavy when the probability of a large value shrinks slowly as the value grows. The quantity that measures this directly is the **survival function**,
+
+$$S(x) = P(X > x)$$
+
+where $X$ is the random quantity, $x$ a threshold in the same units, and $S(x)$ the dimensionless probability of exceeding it. It starts at 1 and falls to 0; the tail is how fast it falls for large $x$.
+
+Two shapes of fall separate light tails from heavy ones. An exponential tail, $S(x) = e^{-x/\beta}$ with scale $\beta$ in the units of $x$, loses a fixed factor for every extra $\beta$: going from $10\beta$ to $20\beta$ multiplies the probability by $e^{-10} = 4.5 \times 10^{-5}$. A power-law tail,
+
+$$S(x) = \left(\frac{x}{x_m}\right)^{-\alpha}, \qquad x \ge x_m$$
+
+where $x_m > 0$ is the smallest possible value (units of $x$) and $\alpha > 0$ the dimensionless **tail index**, loses the same factor every time $x$ doubles, $2^{-\alpha}$, whatever $x$ is. With $\alpha = 1.5$ that factor is $2^{-1.5} = 0.35$: a value twice as large as one you have already seen is about a third as likely, at 10 or at 10 000. That is the Pareto distribution. Taking logs of the power law gives $\ln S = -\alpha \ln(x/x_m)$, a straight line of slope $-\alpha$ on log–log axes; the exponential and the normal bend down and off such a plot.
+
+The working definition used here: a tail is **heavy** if it falls more slowly than any exponential. Rainfall is a documented case. Papalexiou, Koutsoyiannis and Makropoulos compared the upper tails of 15 029 daily rainfall records, 50 to 163 years long, with Pareto, lognormal, Weibull and gamma tails, and found that the heavier-tailed distributions agreed better with the observed extremes than the light-tailed gamma traditionally used[^1]. Three families come up most often.
+
+| Distribution | How the tail falls | Moments that exist |
+|---|---|---|
+| Normal | Like $e^{-x^2/2}$, faster than exponential | All |
+| Student t, $\nu$ degrees of freedom | Power law, index $\nu$, on both sides | Order below $\nu$ |
+| Lognormal | Slower than any exponential, faster than any power | All |
+| Pareto, index $\alpha$ | Power law, index $\alpha$ | Order below $\alpha$ |
+
+The **Student t** at $\nu = 1$ is the Cauchy distribution, which has no mean; as $\nu$ grows it approaches the normal. The **lognormal** from the [previous module](normal-lognormal-poisson.qmd) is heavy by this definition but has every moment finite. The **Pareto** is the pure power law. Real data usually follow a power law only above some threshold, and then the *tail* is called a power law[^2].
+
+A Pareto's $k$-th moment is finite only for $k < \alpha$ (derivation below), so $\alpha \le 2$ means an infinite variance and $\alpha \le 1$ an infinite mean. Empirical power laws often sit in the infinite-variance range: Clauset, Shalizi and Newman report that the exponent "typically lies in the range 2 < α < 3"[^2], where they write the density as $p(x) \propto x^{-\alpha'}$ with $\alpha' = \alpha + 1$, so in this module's convention the tail index is typically between 1 and 2.
+
+::: {.callout-note collapse="true"}
+## Which moments exist, and why
+
+The Pareto density is the derivative of $1 - S(x)$, $p(x) = \alpha x_m^\alpha x^{-\alpha - 1}$ for $x \ge x_m$. Its $k$-th moment is
+
+$$\operatorname{E}[X^k] = \alpha x_m^\alpha \int_{x_m}^{\infty} x^{k - \alpha - 1}\,dx = \frac{\alpha\, x_m^k}{\alpha - k} \quad \text{for } k < \alpha$$
+
+and the integral diverges for $k \ge \alpha$, because $x^{k-\alpha-1}$ then falls no faster than $1/x$. The mean is $\alpha x_m/(\alpha - 1)$ for $\alpha > 1$, so $\alpha = 1.5$ and $x_m = 1$ give a mean of $1.5/0.5 = 3$, and the variance is
+
+$$\operatorname{Var}(X) = \frac{\alpha\, x_m^2}{(\alpha - 1)^2(\alpha - 2)} \quad \text{for } \alpha > 2.$$
+
+The Student t density falls like $|x|^{-(\nu + 1)}$, so the same argument gives moments of order below $\nu$: a mean for $\nu > 1$, a variance $\nu/(\nu - 2)$ for $\nu > 2$.
+:::
+
+## When the average will not settle
+
+The standard error of a mean, $\sigma/\sqrt{n}$ for $n$ independent values ([Variance and standard error](variance-and-standard-error.qmd)), and the central limit theorem both need a finite standard deviation $\sigma$, the third condition the [previous module](normal-lognormal-poisson.qmd) listed. With an infinite variance the sample standard deviation, always finite itself, converges to nothing: it grows in jumps as the sample does.
+
+The mean of a heavy-tailed sample still closes in when $1 < \alpha < 2$, but slowly. By a rough argument of mine (below), its error shrinks like $n^{1/\alpha - 1}$ instead of $n^{-1/2}$: at $\alpha = 1.5$, ten times the precision costs a thousand times the data, not a hundred. At $\alpha \le 1$ it does not close in at all. Even with a finite variance, the approach to a normal is slower than the previous module's rule of thumb, which assumes a finite skewness that a Pareto lacks for $\alpha \le 3$.
+
+::: {.callout-note collapse="true"}
+## Where $n^{1/\alpha - 1}$ comes from
+
+In $n$ independent draws, the expected number of values above a threshold $x$ is $n\,S(x)$. The largest value sits roughly where that count falls to one:
+
+$$n\,S(x_{\max}) = 1 \;\Rightarrow\; n \left(\frac{x_{\max}}{x_m}\right)^{-\alpha} = 1 \;\Rightarrow\; x_{\max} \approx x_m\, n^{1/\alpha}$$
+
+where $x_{\max}$ is the sample's largest value, in the units of $x$. With a finite mean $\mu$ the sample sums to about $n\mu$, so the largest value alone is a share
+
+$$\frac{x_{\max}}{n\mu} \approx \frac{x_m}{\mu}\, n^{1/\alpha - 1}$$
+
+of the total, and whether such a draw has arrived yet moves the sample mean by about that fraction. For $\alpha = 1.5$ the exponent is $1/1.5 - 1 = -1/3$, so a tenfold smaller error needs $10^3 = 1000$ times the data, against $10^2 = 100$ when the error falls like $n^{-1/2}$. For $\alpha \le 1$ there is no finite $\mu$: the sum grows like its largest value, faster than $n$, and the sample mean climbs without limit. This gets the rates right, not the constants, and is not a proof.
+:::
+
+The widget draws up to 10 000 synthetic values from a fixed seed (growing $n$ extends the same sample), with $x_m = 1$ for the Pareto and $\mu = 0$ for the lognormal. The top plot is the running mean, which for a light tail flattens onto the dashed true mean; the bottom is the log–log survival plot of $|x|$, where a straight line means a power-law tail and the grey normal bends steeply away.
+
+::: {.sim-card}
+#### Draw from a heavy tail
+
+```{ojs}
+//| echo: false
+viewof tailDist = Inputs.radio(["Normal", "Student t", "Lognormal", "Pareto"], {value: "Normal", label: "Distribution"})
+viewof tNu = Inputs.range([1, 30], {value: 3, step: 1, label: "Student t: degrees of freedom ν"})
+viewof lnSigma = Inputs.range([0.25, 2.5], {value: 1, step: 0.25, label: "Lognormal: σ of ln x"})
+viewof parAlpha = Inputs.range([0.8, 4], {value: 1.5, step: 0.1, label: "Pareto: tail index α"})
+viewof tailN = Inputs.range([100, 10000], {value: 1000, step: 100, label: "Sample size n"})
+
+// Seeded generator (mulberry32) so every reader sees the same synthetic sample.
+rng32 = a => () => {
+  a = (a + 0x6D2B79F5) | 0;
+  let t = Math.imul(a ^ (a >>> 15), 1 | a);
+  t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+}
+
+// 10 000 draws from one seed; a smaller n uses the first n, so growing n extends the sample.
+drawTail = dist => {
+  const u = rng32(11);
+  const z = () => Math.sqrt(-2 * Math.log(1 - u())) * Math.cos(2 * Math.PI * u());  // Box–Muller
+  const out = new Float64Array(10000);
+  for (let i = 0; i < 10000; i++) {
+    if (dist === "Normal") out[i] = z();
+    else if (dist === "Student t") {
+      const z0 = z();
+      let c = 0;
+      for (let j = 0; j < tNu; j++) c += z() ** 2;   // chi-square with ν degrees of freedom
+      out[i] = z0 / Math.sqrt(c / tNu);
+    }
+    else if (dist === "Lognormal") out[i] = Math.exp(lnSigma * z());
+    else out[i] = (1 - u()) ** (-1 / parAlpha);       // Pareto with x_m = 1, by inversion
+  }
+  return out;
+}
+
+xs = drawTail(tailDist).subarray(0, tailN)
+refAbs = Float64Array.from(drawTail("Normal").subarray(0, tailN), Math.abs).sort().reverse()
+
+// True mean and SD; NaN means undefined, Infinity means infinite.
+trueMean = tailDist === "Normal" ? 0
+  : tailDist === "Student t" ? (tNu > 1 ? 0 : NaN)
+  : tailDist === "Lognormal" ? Math.exp(lnSigma ** 2 / 2)
+  : (parAlpha > 1 ? parAlpha / (parAlpha - 1) : Infinity)
+trueSD = tailDist === "Normal" ? 1
+  : tailDist === "Student t" ? (tNu > 2 ? Math.sqrt(tNu / (tNu - 2)) : Infinity)
+  : tailDist === "Lognormal" ? Math.sqrt((Math.exp(lnSigma ** 2) - 1) * Math.exp(lnSigma ** 2))
+  : (parAlpha > 2 ? Math.sqrt(parAlpha / ((parAlpha - 1) ** 2 * (parAlpha - 2))) : Infinity)
+showTrue = v => Number.isNaN(v) ? "undefined" : (v === Infinity ? "infinite" : v.toFixed(2))
+
+sMean = d3.mean(xs)
+sAbs = Float64Array.from(xs, Math.abs).sort().reverse()
+sqDev = Float64Array.from(xs, v => (v - sMean) ** 2)
+shareTotal = sAbs[0] / d3.sum(sAbs)
+shareSq = d3.max(sqDev) / d3.sum(sqDev)
+
+// Running mean at every i; running median at about 120 log-spaced checkpoints.
+runMean = {
+  let s = 0;
+  return Array.from(xs, (v, i) => ({i: i + 1, m: (s += v) / (i + 1)}));
+}
+checkpoints = [...new Set(d3.range(0, Math.log10(tailN) + 1e-9, 0.025).map(e => Math.round(10 ** e)))]
+runMedian = checkpoints.map(i => ({i, m: d3.median(xs.subarray(0, i))}))
+
+// Survival points at log-spaced ranks k: P(|X| >= k-th largest) is about k / n.
+ranks = [...new Set(d3.range(0, Math.log10(tailN / 2) + 1e-9, 0.02).map(e => Math.round(10 ** e)))]
+survival = ranks.flatMap(k => [
+  {x: sAbs[k - 1], p: k / tailN, s: "This sample"},
+  {x: refAbs[k - 1], p: k / tailN, s: "Normal, same n"}
+])
+
+tailCard = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${tailCard(`Sample mean · true ${showTrue(trueMean)}`, sMean.toFixed(2), "#38bdf8")}
+  ${tailCard("Sample median", d3.median(xs).toFixed(2), "#f59e0b")}
+  ${tailCard(`Sample SD · true ${showTrue(trueSD)}`, d3.deviation(xs).toFixed(2), "#cbd5e1")}
+  ${tailCard("Largest |x| ÷ total of |x|", (100 * shareTotal).toFixed(2) + "%", "#ef4444")}
+  ${tailCard("Largest squared deviation ÷ all", (100 * shareSq).toFixed(1) + "%", "#ef4444")}
+</div>`
+
+Plot.plot({
+  height: 260,
+  marginLeft: 55,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {type: "log", domain: [1, tailN], label: "values used, i (log scale) →", grid: true, tickFormat: "~g"},
+  y: {label: "↑ running value", grid: true},
+  color: {legend: true, domain: ["Running mean", "Running median", "True mean"], range: ["#38bdf8", "#f59e0b", "#10b981"]},
+  marks: [
+    Number.isFinite(trueMean) ? Plot.ruleY([trueMean], {stroke: "#10b981", strokeWidth: 2, strokeDasharray: "6 4"}) : null,
+    Plot.line(runMedian, {x: "i", y: "m", stroke: () => "Running median", strokeWidth: 2}),
+    Plot.line(runMean, {x: "i", y: "m", stroke: () => "Running mean", strokeWidth: 2})
+  ]
+})
+
+Plot.plot({
+  height: 260,
+  marginLeft: 55,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {type: "log", label: "size |x| (log scale) →", grid: true, tickFormat: "~g"},
+  y: {type: "log", label: "↑ share of values at least this large", grid: true, tickFormat: "~g"},
+  color: {legend: true, domain: ["This sample", "Normal, same n"], range: ["#38bdf8", "#64748b"]},
+  marks: [
+    Plot.line(survival, {x: "x", y: "p", z: "s", stroke: "s", strokeWidth: 2.5}),
+  ]
+})
+```
+
+Start with the normal at n = 10 000. Then pick the Pareto at α = 1.5 and step n through 100, 1000 and 10 000; drop α to 0.8; try the Student t at ν = 1; and the lognormal at σ = 2.
+:::
+
+- **Normal, $n = 10\,000$:** the running mean flattens onto the true mean and the largest value is 0.05% of the total; no single value matters.
+- **Pareto, $\alpha = 1.5$:** the sample mean reads 2.20, 2.84 and 2.82 at $n = 100$, 1000 and 10 000 against a true 3, and the sample standard deviation (2.11, 7.29, 6.73) is estimating something infinite, so more data does not fix it.
+- **Pareto, $\alpha = 0.8$, $n = 1000$:** one value is 45.24% of the total, and there is no true mean to approach.
+- **Student t, $\nu = 1$:** the mean wanders (−1.14 at $n = 1000$, 1.04 at 10 000) while the median stays near zero (0.03, −0.01); the median settles when the mean cannot.
+- **Lognormal, $\sigma = 2$:** the sample mean is 6.34 at $n = 1000$ and 7.43 at 10 000 against a true 7.39, and the survival curve bends; every moment is finite, but the mean needs a lot of data.
+
+These are one seed's samples; another seed gives other numbers.
+
+## How to see a heavy tail in data
+
+Four checks show whether a tail is heavy and roughly how heavy.
+
+**The log–log survival plot.** Sort the values from largest to smallest and plot each against its rank divided by $n$ on log–log axes, as in the widget's lower panel. A power-law tail is a straight line of slope $-\alpha$; a normal bends down and off; a lognormal bends gradually. Clauset and colleagues plot this curve rather than a histogram because it is more robust to noise in the tail. They warn that a straight line is "a necessary but by no means sufficient condition" for a power law, that least-squares fits of its slope can be substantially inaccurate, and that a lognormal and a power law are hard to tell apart without a very large data set[^2].
+
+**The tail index.** Instead of fitting a line, estimate $\alpha$ from the $k$ largest values with the **Hill estimator**,
+
+$$\hat{\alpha} = \frac{k}{\sum_{i=1}^{k} \ln\!\left(x_{(i)}/x_{(k+1)}\right)}$$
+
+where $x_{(1)} \ge x_{(2)} \ge \dots$ are the sizes sorted from largest down, $x_{(k+1)}$ is the threshold above which the tail is taken to be a power law, and $\hat{\alpha}$ is dimensionless. Clauset and colleagues note that their maximum-likelihood estimator of the exponent is equivalent to the Hill estimator[^2]. It assumes a power law, and the answer depends on $k$, so compute it at several thresholds.
+
+**The Q–Q plot against a normal**, as in the [previous module](normal-lognormal-poisson.qmd). Heavy tails on both sides, as in a t, make an S: the lowest points fall below the line and the highest rise above it. A heavy right tail alone, as in a Pareto or lognormal, curls the right end upward.
+
+**The running mean and the largest values' share.** Jumps in the cumulative mean that do not shrink as the count grows are the widget's Pareto signature; the share of the total held by the largest value, or the top 1%, puts a number on it.
+
+The function below runs all four on a one-dimensional array; the data here are synthetic.
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy import stats
+
+def tail_report(x, tops=(0.02, 0.05, 0.10)):
+    x = np.asarray(x, dtype=float)
+    a = np.sort(np.abs(x))[::-1]                     # sizes, largest first
+    surv = np.arange(1, len(a) + 1) / len(a)         # share of values at least this large
+    hill = [k / np.sum(np.log(a[:k] / a[k]))         # Hill estimate using the k largest
+            for k in (max(int(t * len(a)), 10) for t in tops)]
+    print(f"largest {a[0] / a.sum():.2%} of total, top 1% {a[:len(a) // 100].sum() / a.sum():.1%};",
+          "tail index at top", ", ".join(f"{t:.0%}: {h:.2f}" for t, h in zip(tops, hill)))
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 3.5))
+    ax1.loglog(a, surv, ".")                         # straight line: power-law tail
+    stats.probplot(x, dist="norm", plot=ax2)         # ends curling away: heavy tails
+
+rng = np.random.default_rng(1)
+tail_report(rng.pareto(1.5, 5000) + 1)               # synthetic Pareto, alpha = 1.5
+tail_report(rng.standard_t(3, 5000))                 # synthetic Student t, 3 d.o.f.
+tail_report(rng.normal(10, 2, 5000))                 # synthetic normal
+```
+
+For the Pareto the estimate stays between 1.41 and 1.47 across the three thresholds (true 1.5), and for the t between 2.49 and 2.72 (true 3). For the normal it runs from 20.40 down to 12.71: a large number that moves with the threshold is the mark of a light tail, not a tail index. The top 1% of values hold 20.0%, 8.1% and 1.5% of the three totals.
+
+## What a heavy tail does to models and summaries
+
+**Squared error lets a few rows decide.** Root mean squared error (RMSE) squares each miss, so a value far from the rest counts by the square of its distance. In the widget, for the Pareto with $\alpha = 1.5$ at $n = 1000$, the single largest value accounts for 57.4% of the sum of squared deviations from the mean, against 1.2% for the normal. An RMSE on such data mostly reports how a model did on one or two rows, and two models scored on different test windows can swap places depending on which window caught a big value. [Which metric?](which-metric.qmd) shows that RMSE is lowest at the mean and mean absolute error (MAE) at the median; a heavy tail widens the gap between them and makes RMSE the noisier of the two.
+
+**Averages swing.** With rainfall's heavy tail, a seasonal mean can be set by one storm. In a produce business my guess, untested, is that heavy tails are likelier in order size per customer or in claim sizes than in daily volume, which acreage bounds.
+
+**Robust summaries trade the target for stability.** The median ignores how large the largest values are, so it settles where the mean does not. A **trimmed mean** drops a fixed fraction from each end before averaging (`scipy.stats.trim_mean(x, 0.1)` drops 10% from each). The **Huber loss** is quadratic for small residuals and linear beyond a threshold; Huber introduced such estimators as intermediaries between the sample mean and the sample median[^3]. In scikit-learn it is `HuberRegressor`, or `loss="huber"` in `GradientBoostingRegressor`; [Least squares](least-squares.qmd) shows the outlier problem it addresses. The catch, for skewed data, is that these estimate a *smaller* number than the mean: for the widget's Pareto at $n = 1000$ the sample median reads 1.55, against a true mean of 3. If the figure will be summed into a weekly total or a truck plan, you need the mean, because means add and medians do not, as [Which metric?](which-metric.qmd) shows.
+
+**Logs tame a Pareto, on the log scale.** If $X$ is Pareto with $x_m = 1$, then $P(\ln X > y) = e^{-\alpha y}$: the log is exponential, with every moment finite, so a model of $\ln y$ is stable. Its back-transform to a mean is not, because the corrections in [Log and Box–Cox transforms](log-and-boxcox-transforms.qmd) assume roughly normal errors on the log scale.
+
+::: {.callout-tip appearance="simple" icon=false}
+## What this means for you
+
+My own suggestions, built on the sources above but not tested on your data:
+
+- **Run the tail check before the summary.** If the top 1% hold a large share of the total, or the Hill estimate is below about 2 at every threshold, treat the sample variance, the standard error and any RMSE as unreliable.
+- **Do not drop the largest rows.** If they are real, they are the part of the distribution that decides the total.
+- **If the business needs a total, keep the mean.** Say that its interval is wide rather than quoting $s/\sqrt{n}$, or model the bulk and the large events separately, how often the large ones come and how large they are, and add the two.
+- **Forecast a quantile when the decision is about a level, not a total.** A sample quantile settles even when the variance is infinite; [Pinball loss and quantiles](pinball-loss-and-quantiles.qmd) shows how to train and score one.
+- **Cap, winsorise, use a Huber loss or a log target only inside the fitting loss**, never in the figure you report: a capped total is short by exactly the tail you removed.
+:::
+
+## Key takeaways
+
+- Compute the Hill estimate at several thresholds and report the spread. A stable value below 2 means the sample variance is estimating nothing; a value that rises as the threshold rises points to a light tail.
+- Budget data by $n^{1/\alpha - 1}$, not $n^{-1/2}$, when the tail index is between 1 and 2: at $\alpha = 1.5$, ten times the precision costs a thousand times the data.
+- Before comparing models by RMSE on heavy-tailed targets, check what share of the squared error the top few rows carry; if it is large, compare MAE as well and use more than one test window.
+- Robust estimators buy stability by estimating something other than the mean. Use them for typical values, not for quantities that will be summed.
+
+## References
+
+[^1]: Papalexiou, S. M., Koutsoyiannis, D. & Makropoulos, C. How extreme is extreme? An assessment of daily rainfall distribution tails. *Hydrol. Earth Syst. Sci.* **17**, 851–862 (2013). https://doi.org/10.5194/hess-17-851-2013
+[^2]: Clauset, A., Shalizi, C. R. & Newman, M. E. J. Power-law distributions in empirical data. *SIAM Rev.* **51**, 661–703 (2009). https://doi.org/10.1137/070710111
+[^3]: Huber, P. J. Robust estimation of a location parameter. *Ann. Math. Statist.* **35**, 73–101 (1964). https://doi.org/10.1214/aoms/1177703732
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/normal-lognormal-poisson.html"><span>Previous</span>Normal, lognormal, Poisson</a><a class="mf-up" href="/series/statistics/index.html"><span>Series</span>Statistics</a><a class="mf-next" href="/blogs/controls-and-randomisation.html"><span>Next</span>Controls and randomisation</a></div>
+<!-- CURRICULUM_FOOTER_END -->

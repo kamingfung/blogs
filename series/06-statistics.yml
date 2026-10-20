@@ -36,6 +36,7 @@ parts:
       - id: statistics/permutation-tests
         title: "Permutation tests"
         level: intermediate
+        path: blogs/permutation-tests.md
         requires:
           - statistics/the-t-test-and-when-not-to-use-it
   - title: "Resampling"
@@ -43,6 +44,7 @@ parts:
       - id: statistics/bootstrapping
         title: "Bootstrapping"
         level: intermediate
+        path: blogs/bootstrapping/bootstrapping.ipynb
         requires:
           - statistics/variance-and-standard-error
       - id: statistics/cross-validation
@@ -58,6 +60,7 @@ parts:
       - id: statistics/is-the-trend-significant
         title: "Is the trend significant?"
         level: intermediate
+        path: blogs/trend-significance/is_the_trend_significant.ipynb
         requires:
           - statistics/least-squares
           - statistics/confidence-intervals
@@ -83,6 +86,7 @@ parts:
       - id: statistics/heavy-tails
         title: "Heavy tails"
         level: intermediate
+        path: blogs/heavy-tails.md
   - title: "Bayesian basics"
     modules:
       - id: statistics/bayes-rule
@@ -98,6 +102,7 @@ parts:
       - id: statistics/controls-and-randomisation
         title: "Controls and randomisation"
         level: introductory
+        path: blogs/controls-and-randomisation.md
       - id: statistics/power-and-how-many-samples
         title: "Power, and how many samples"
         level: intermediate

@@ -12,7 +12,7 @@ categories:
 ---
 
 <!-- CURRICULUM_HEADER_START -->
-<div class="mh"><p class="mh-crumb"><a href="/series/air-land-climate/index.html">Air, Land and Climate</a><span class="sep">·</span>Part 5 · Ammonia, forests and ozone</p><p class="mh-facts"><span class="lvl lvl-advanced">Advanced</span></p><p class="mh-assumes">Assumes <a href="/blogs/where-ammonia-comes-from.html">Where ammonia comes from</a>, <a href="/blogs/deposition-how-nitrogen-leaves-the-air.html">Deposition: how nitrogen leaves the air</a> and <span class="unwritten" title="not written yet">NOx, VOCs and sunlight</span>.</p></div>
+<div class="mh"><p class="mh-crumb"><a href="/series/air-land-climate/index.html">Air, Land and Climate</a><span class="sep">·</span>Part 5 · Ammonia, forests and ozone</p><p class="mh-facts"><span class="lvl lvl-advanced">Advanced</span></p><p class="mh-assumes">Assumes <a href="/blogs/where-ammonia-comes-from.html">Where ammonia comes from</a>, <a href="/blogs/deposition-how-nitrogen-leaves-the-air.html">Deposition: how nitrogen leaves the air</a> and <a href="/blogs/nox-vocs-and-sunlight.html">NOx, VOCs and sunlight</a>.</p></div>
 <!-- CURRICULUM_HEADER_END -->
 
 ::: {.callout-note appearance="simple" icon=false}
@@ -221,6 +221,6 @@ html`<div style="font-size: 0.9em; background: rgba(56, 189, 248, 0.1); border-l
 [^4]: Liu, X., Tai, A. P. K. & Fung, K. M. Responses of surface ozone to future agricultural ammonia emissions and subsequent nitrogen deposition through terrestrial ecosystem changes. *Atmos. Chem. Phys.* **21**, 17743–17758 (2021). https://doi.org/10.5194/acp-21-17743-2021
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/deposition-how-nitrogen-leaves-the-air.html"><span>Previous</span>Deposition: how nitrogen leaves the air</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/cesm2-fertilizer-climate-feedback.html"><span>Next</span>Fertiliser ammonia in CESM2</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/deposition-how-nitrogen-leaves-the-air.html"><span>Previous</span>Deposition: how nitrogen leaves the air</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/stomata-and-dry-deposition.html"><span>Next</span>Stomata and dry deposition</a></div>
 <!-- CURRICULUM_FOOTER_END -->
 

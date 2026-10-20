@@ -249,5 +249,6 @@ These rules are my own inference from the sources above[^1][^5].
 [^5]: Amrhein, V., Greenland, S. & McShane, B. Scientists rise up against statistical significance. *Nature* **567**, 305–307 (2019). https://doi.org/10.1038/d41586-019-00857-9
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/least-squares.html"><span>Previous</span>Least squares</a><a class="mf-up" href="/series/statistics/index.html"><span>Series</span>Statistics</a><a class="mf-next" href="/blogs/p-values/what_a_p_value_is_not.html"><span>Next</span>What a p-value is not</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/trend-significance/is_the_trend_significant.html"><span>Previous</span>Is the trend significant?</a><a class="mf-up" href="/series/statistics/index.html"><span>Series</span>Statistics</a><a class="mf-next" href="/blogs/p-values/what_a_p_value_is_not.html"><span>Next</span>What a p-value is not</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+

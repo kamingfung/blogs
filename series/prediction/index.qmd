@@ -6,7 +6,7 @@ description: "What can and cannot be predicted about the atmosphere, and the sta
 <dl class="syl-meta">
 <div><dt>Level</dt><dd>Introductory to advanced</dd></div>
 <div><dt>Parts</dt><dd>11</dd></div>
-<div><dt>Modules</dt><dd>6 of 27 written</dd></div>
+<div><dt>Modules</dt><dd>8 of 27 written</dd></div>
 <div class="wide"><dt>Assumes</dt><dd>Comfort with averages and histograms. Python for the notebooks.</dd></div>
 </dl>
 
@@ -14,7 +14,7 @@ description: "What can and cannot be predicted about the atmosphere, and the sta
 
 <ul class="syl">
 <li class="w"><a href="/blogs/climate-vs-weather/climate-vs-weather.html">Climate vs weather</a><span class="m">Introductory</span></li>
-<li class="g">What a climatology is<span class="m">Introductory · not written</span></li>
+<li class="w"><a href="/blogs/what-a-climatology-is.html">What a climatology is</a><span class="m">Introductory</span></li>
 <li class="w"><a href="/blogs/anomalies/anomalies.html">Anomalies</a><span class="m">Introductory</span></li>
 </ul>
 
@@ -31,7 +31,7 @@ description: "What can and cannot be predicted about the atmosphere, and the sta
 <ul class="syl">
 <li class="w"><a href="/blogs/markov-weather/why-markov-chains-work-for-weather.html">Markov chains for weather</a><span class="m">Introductory</span></li>
 <li class="w"><a href="/blogs/persistence-and-climatology-baselines.html">Persistence and climatology baselines</a><span class="m">Introductory</span></li>
-<li class="g">Skill scores<span class="m">Intermediate · not written</span></li>
+<li class="w"><a href="/blogs/skill-scores.html">Skill scores</a><span class="m">Intermediate</span></li>
 </ul>
 
 ## Part 4 · Trend and season

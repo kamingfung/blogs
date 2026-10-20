@@ -6,7 +6,7 @@ description: "Tabular machine learning for time series, from framing the problem
 <dl class="syl-meta">
 <div><dt>Level</dt><dd>Introductory to advanced</dd></div>
 <div><dt>Parts</dt><dd>15</dd></div>
-<div><dt>Modules</dt><dd>30 of 34 written</dd></div>
+<div><dt>Modules</dt><dd>31 of 34 written</dd></div>
 <div class="wide"><dt>Assumes</dt><dd>Python and pandas. Basic statistics. No prior forecasting.</dd></div>
 </dl>
 
@@ -45,7 +45,7 @@ description: "Tabular machine learning for time series, from framing the problem
 
 <ul class="syl">
 <li class="w"><a href="/blogs/darts-direct-vs-recursive.html">Direct vs recursive in Darts</a><span class="m">Intermediate</span></li>
-<li class="g">Multi-output models<span class="m">Intermediate · not written</span></li>
+<li class="w"><a href="/blogs/multi-output/multi_output_models.html">Multi-output models</a><span class="m">Intermediate</span></li>
 </ul>
 
 ## Part 6 · Forecasting distributions

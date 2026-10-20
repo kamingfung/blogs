@@ -1,0 +1,255 @@
+---
+title: Skill scores
+description: A skill score is the fraction of a reference forecast's error that a forecast removes, and its value depends on the reference, the score, the cases and the sample size as much as on the forecast.
+date: 2026-10-19
+categories:
+- meteorology
+- forecasting
+- statistics
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/prediction/index.html">Weather, Climate and Prediction</a><span class="sep">·</span>Part 3 · Simple models that work</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Assumes <a href="/blogs/persistence-and-climatology-baselines.html">Persistence and climatology baselines</a>.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+A skill score says what fraction of a reference forecast's error a forecast removes: 1 is perfect, 0 is no better than the reference, and below 0 is worse. The number depends on the reference as much as on the forecast: one hypothetical temperature forecast scores 0.60 against climatology, 0.29 against persistence and 0.17 against damped persistence. For rain/no rain the Brier score splits into reliability (are the probabilities honest?), resolution (do they separate wet days from dry?) and uncertainty (set by the climate); the CRPS extends it to whole distributions. Two traps remain: skill pooled across sites is not the average of the sites' skills, and can appear where no site has any; and on 100 synthetic days a Brier skill score of 0.19 has a 95% interval reaching down to 0.02.
+
+Quote the reference, the cases and an interval with every skill score.
+:::
+
+## One formula for every skill score
+
+A skill score rescales any accuracy score so that the reference forecast sits at 0 and a perfect forecast at 1:
+
+$$\text{SS} = \frac{S - S_\text{ref}}{S_\text{perf} - S_\text{ref}}$$
+
+where $S$ is the forecast's score averaged over a set of cases, $S_\text{ref}$ is the reference forecast's score over the same cases, and $S_\text{perf}$ is the score a perfect forecast would get. SS is dimensionless, at most 1, and has no lower bound. For an error measure such as the mean squared error, where $S_\text{perf} = 0$, it becomes the form [Persistence and climatology baselines](persistence-and-climatology-baselines.qmd) ended with:
+
+$$\text{SS}_\text{MSE} = 1 - \frac{\text{MSE}}{\text{MSE}_\text{ref}}$$
+
+with both mean squared errors in the squared units of the forecast variable (°C² for temperature). [Baselines first](baselines-first.qmd) uses the same form with mean absolute error for weekly produce volumes.
+
+**The reference changes the number.** Murphy notes the general agreement that the most accurate naive method should be the standard of reference, and expected the skill scores of many operational forecasts to fall if the optimal linear combination of climatology and persistence were used instead[^1]. The previous module gave that combination, damped persistence, and the errors of all three references for an AR(1) anomaly with lag-one autocorrelation $r$, as multiples of the anomaly variance $\sigma^2$: 1 for climatology, $2(1 - r^\tau)$ for persistence and $1 - r^{2\tau}$ for damped persistence, at lead $\tau$ days. Take Hannover's $r = 0.72$ and a hypothetical model whose MSE is $0.40\sigma^2$ one day ahead and $0.80\sigma^2$ three days ahead:
+
+| Reference | MSE~ref~ / σ² | Skill at 1 day | Skill at 3 days |
+|---|---|---|---|
+| Climatology | 1 and 1 | $1 - 0.40 = 0.600$ | $1 - 0.80 = 0.200$ |
+| Persistence | 0.560 and 1.254 | $1 - 0.40/0.560 = 0.286$ | $1 - 0.80/1.254 = 0.362$ |
+| Damped persistence | 0.482 and 0.861 | $1 - 0.40/0.482 = 0.169$ | $1 - 0.80/0.861 = 0.071$ |
+
+The same forecast has skill between 0.07 and 0.60 depending on the reference; against persistence it even rises with lead. Only the damped-persistence row, the smallest in each column, says what the model adds beyond the memory in today's anomaly.
+
+::: {.callout-note collapse="true"}
+## What an MSE skill score is made of
+
+Murphy decomposed MSE skill scores into terms for correlation, conditional bias and unconditional bias[^2]. Against the sample climatology, with forecasts $f$, observations $x$, sample means $\bar f$, $\bar x$, standard deviations $s_f$, $s_x$ and correlation $\rho$, expanding the squared error gives
+
+$$\text{SS}_\text{MSE} = \rho^2 - \left(\rho - \frac{s_f}{s_x}\right)^2 - \left(\frac{\bar f - \bar x}{s_x}\right)^2$$
+
+The first term is the skill reachable after linear recalibration; the second is lost to conditional bias and the third to mean bias. Persistence has $s_f/s_x = 1$, so its skill is $2r^\tau - 1 = 0.44$ at $r = 0.72$ one day ahead; damped persistence has $s_f/s_x = \rho$, so it is persistence with the conditional bias removed.
+:::
+
+## Yes/no events: the Brier skill score
+
+For a yes/no event such as measurable rain, a probability forecast is scored by the **Brier score**[^3], the mean squared error of the probability against the outcome coded 1 or 0:
+
+$$\text{BS} = \frac{1}{n}\sum_{i=1}^{n} (f_i - o_i)^2$$
+
+where $f_i$ is the forecast probability of rain on day $i$, $o_i$ is 1 if it rained and 0 if not, and $n$ is the number of days. BS is a probability squared, dimensionless, between 0 (perfect) and 1. The usual reference is the constant forecast $\bar o$, the observed frequency of rain over the same days, whose Brier score is $\bar o(1 - \bar o)$. The **Brier skill score** is then
+
+$$\text{BSS} = 1 - \frac{\text{BS}}{\bar o (1 - \bar o)}$$
+
+Of all constant forecasts, $\bar o$ scores best on these days, since a constant $c$ scores $\bar o(1 - \bar o) + (c - \bar o)^2$; a climatology taken from other years can only be easier to beat. The Seattle chain in the previous module scored $1 - \lambda^2$ of this reference with $\lambda = 0.429$, a BSS of $0.429^2 = 0.184$; "same as today" scored $2\lambda - 1 = -0.142$.
+
+Murphy partitioned the Brier score into three terms: the uncertainty of the events (the score of the sample relative frequency), the reliability of the forecasts and their resolution[^4]. When the forecasts take a few distinct values $p_k$, as precipitation probabilities issued in steps of 0.1 do, the partition is exact (the widget below rounds to 0.1 for this reason):
+
+$$\text{BS} = \underbrace{\frac{1}{n}\sum_k n_k (p_k - \bar o_k)^2}_{\text{reliability}} - \underbrace{\frac{1}{n}\sum_k n_k (\bar o_k - \bar o)^2}_{\text{resolution}} + \underbrace{\bar o(1 - \bar o)}_{\text{uncertainty}}$$
+
+where $n_k$ is the number of days on which $p_k$ was issued and $\bar o_k$ the frequency of rain on those days. **Reliability** is small when it rains on about 30% of the days given 0.3; **resolution** is large when days given different probabilities have different rain frequencies; **uncertainty** belongs to the climate. Dividing through, $\text{BSS} = (\text{resolution} - \text{reliability})/\text{uncertainty}$.
+
+::: {.callout-note collapse="true"}
+## Why the partition is exact
+
+Group the days by the forecast value issued. Within group $k$, every forecast equals $p_k$, so $\sum_{i \in k} (p_k - o_i)^2 = n_k (p_k - \bar o_k)^2 + n_k \bar o_k (1 - \bar o_k)$, using $o_i^2 = o_i$. Summing over groups and dividing by $n$ gives reliability plus $\frac{1}{n}\sum_k n_k \bar o_k (1 - \bar o_k)$. That last sum is the within-group variance of the outcomes, which equals the total variance $\bar o (1 - \bar o)$ minus the between-group variance, the resolution. If forecasts take continuous values and are binned, each bin adds a within-bin term and the three terms no longer sum exactly to BS.
+:::
+
+The widget scores a fixed **synthetic** set of 1,000 days. Each day has a hidden predictor $z$ (standard normal), and it rains with probability $1/(1 + e^{-(-1 + 1.2z)})$; both are drawn once from a seeded generator, giving 306 rainy days. The forecaster knows $z$ and issues $\text{logistic}(-1 + b + 1.2kz)$, rounded to 0.1. At sharpness $k = 1$ and bias $b = 0$ it is the honest forecaster, issuing the true probability of rain; $k < 1$ pulls them towards the base rate and $k > 1$ pushes them to the extremes, without adding information; $b$ shifts every forecast wetter or drier on the log-odds scale. Move sharpness first, both ways, then add a wet bias.
+
+::: {.sim-card}
+#### Score probability forecasts of rain
+
+```{ojs}
+//| echo: false
+viewof sharp = Inputs.range([0, 2], {value: 1, step: 0.05, label: "Sharpness k"})
+viewof bias = Inputs.range([-1.5, 1.5], {value: 0, step: 0.1, label: "Wet bias b (log-odds)"})
+
+// Seeded generator (mulberry32) so every reader sees the same 1,000 synthetic days.
+mulberry32 = seed => () => {
+  seed = (seed + 0x6D2B79F5) | 0;
+  let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+  t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+}
+logistic = x => 1 / (1 + Math.exp(-x))
+
+// Each day: hidden predictor z ~ N(0, 1) (Box-Muller), rain with probability logistic(-1 + 1.2 z).
+days = {
+  const rand = mulberry32(2026);
+  return Array.from({length: 1000}, () => {
+    const z = Math.sqrt(-2 * Math.log(1 - rand())) * Math.cos(2 * Math.PI * rand());
+    return {z, rain: rand() < logistic(-1 + 1.2 * z) ? 1 : 0};
+  });
+}
+
+// Forecasts in steps of 0.1, then the Brier score and Murphy's exact partition.
+scores = {
+  const n = days.length;
+  const f = days.map(d => Math.round(10 * logistic(-1 + bias + sharp * 1.2 * d.z)) / 10);
+  const obar = d3.mean(days, d => d.rain);
+  const bs = d3.mean(f, (p, i) => (p - days[i].rain) ** 2);
+  const bins = d3.range(11).map(j => ({p: j / 10, n: 0, hits: 0}));
+  f.forEach((p, i) => { const b = bins[Math.round(10 * p)]; b.n += 1; b.hits += days[i].rain; });
+  const used = bins.filter(b => b.n > 0).map(b => ({...b, freq: b.hits / b.n}));
+  const rel = d3.sum(used, b => b.n * (b.p - b.freq) ** 2) / n;
+  const res = d3.sum(used, b => b.n * (b.freq - obar) ** 2) / n;
+  const unc = obar * (1 - obar);
+  return {bs, bss: 1 - bs / unc, rel, res, unc, obar, fbar: d3.mean(f), used};
+}
+
+fix = (v, d) => (Math.abs(v) < 0.5 * 10 ** -d ? 0 : v).toFixed(d).replace("-", "−")
+
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${card("Brier score", fix(scores.bs, 4), "#38bdf8")}
+  ${card("BSS against climatology", fix(scores.bss, 3), "#38bdf8")}
+  ${card("Reliability (lower is better)", fix(scores.rel, 4), "#ef4444")}
+  ${card("Resolution (higher is better)", fix(scores.res, 4), "#10b981")}
+  ${card("Uncertainty", fix(scores.unc, 4), "#cbd5e1")}
+  ${card("Mean forecast · rain frequency", fix(scores.fbar, 3) + " · " + fix(scores.obar, 3), "#f59e0b")}
+</div>`
+
+Plot.plot({
+  height: 320,
+  marginLeft: 55,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, 1], label: "Forecast probability →", grid: true},
+  y: {domain: [0, 1], label: "↑ Observed frequency of rain", grid: true},
+  r: {range: [2, 14]},
+  color: {legend: true, domain: ["Perfect reliability", "Climatology", "No skill", "Forecast bins"],
+          range: ["#64748b", "#38bdf8", "#a78bfa", "#f59e0b"]},
+  marks: [
+    Plot.line([[0, 0], [1, 1]], {stroke: () => "Perfect reliability", strokeDasharray: "4 4"}),
+    Plot.ruleY([scores.obar], {stroke: () => "Climatology", strokeDasharray: "2 3"}),
+    Plot.line([[0, scores.obar / 2], [1, (1 + scores.obar) / 2]], {stroke: () => "No skill", strokeDasharray: "6 3"}),
+    Plot.dot(scores.used, {x: "p", y: "freq", r: "n", fill: () => "Forecast bins", stroke: "#0f172a", strokeWidth: 1})
+  ]
+})
+
+Plot.plot({
+  height: 120,
+  marginLeft: 55,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [-0.05, 1.05], label: "Forecast probability →"},
+  y: {label: "↑ Days", grid: true},
+  marks: [Plot.rectY(scores.used, {x1: d => d.p - 0.04, x2: d => d.p + 0.04, y: "n", fill: "#f59e0b"}), Plot.ruleY([0])]
+})
+```
+
+Synthetic data from a fixed seed. Dot area is the number of days on which each probability was issued; the lower panel shows how often each was used. A bin adds skill when $(p_k - \bar o_k)^2 < (\bar o_k - \bar o)^2$, that is, when its dot is vertically nearer the diagonal than the climatology line; the no-skill line, halfway between them, is the boundary.
+:::
+
+At the start, $k = 1$ and $b = 0$, the Brier score is 0.1747 against an uncertainty of $0.306 \times 0.694 = 0.2124$, a BSS of 0.177. Reliability is 0.0025 and resolution 0.0401, and $(0.0401 - 0.0025)/0.2124 = 0.177$. This is the honest forecaster, so 0.18 is roughly the ceiling on these days, set by how noisy rain is given $z$: numerical integration over endless days gives an expected BSS of 0.207 (0.204 after rounding), and this sample of 1,000 falls below it. At $k = 0$ every forecast is 0.3: resolution is exactly zero and the BSS is 0.000 to three decimals. At $k = 2$ the BSS falls to 0.083; reliability has grown to 0.0226 while resolution, 0.0402, has hardly moved. At $k = 0.5$ the BSS is 0.140, with reliability 0.0093 and resolution 0.0390. The mechanism: for any $k > 0$ the map from $z$ to forecast is monotone, so it keeps the order of the days, and the bins separate wet days from dry about as well as before; resolution stays near 0.04, nudged only by where the 0.1 rounding cuts. What changes is the label on each bin. At $k = 2$ it rains on 59% of the 76 days labelled 0.9 and on 10% of the 196 labelled 0, and that drift between bin label and bin frequency is the reliability term. A wet bias of $b = 1$ at $k = 1$ raises the mean forecast to 0.503 against a rain frequency of 0.306, reliability to 0.0442, and the BSS to $-0.029$: a forecast with genuine resolution scores below climatology.
+
+Over the slider grid the lowest Brier score on these 1,000 days is at $k = 0.95$ (BSS 0.182), not 1. The honest forecaster is best in expectation, but 1,000 days is a finite sample and can favour a neighbour by chance. Rounding is not the main cause: without it, the best $k$ on a grid of 0.01 is 0.94.
+
+## Whole distributions: the CRPS and its skill score
+
+For a continuous variable, the forecast can be a whole distribution, and the **continuous ranked probability score** scores it against the single value observed:
+
+$$\text{CRPS}(F, y) = \int_{-\infty}^{\infty} \bigl(F(u) - \mathbb{1}\{y \le u\}\bigr)^2 \, du$$
+
+where $F(u)$ is the forecast probability that the variable is at most $u$, $y$ is the observation, $\mathbb{1}\{\cdot\}$ is 1 when its condition holds and 0 otherwise, and the CRPS is in the units of the variable (°C). Each value of $u$ defines a yes/no event, "at most $u$", and the integrand is that event's Brier score, so Hersbach describes the CRPS as the integral of the Brier score over all thresholds; it reduces to the absolute error for a deterministic forecast, and for an ensemble it splits into a reliability part and a resolution/uncertainty part, much as the Brier score does[^5]. [Pinball loss and quantiles](pinball-loss-and-quantiles.qmd) shows the equivalent form as twice the pinball loss averaged over quantile levels. Both scores are proper in the sense Gneiting and Raftery define: a forecaster expects the best score by issuing the distribution they believe[^6]. The skill score is $\text{CRPSS} = 1 - \overline{\text{CRPS}}/\overline{\text{CRPS}}_\text{ref}$, with the climatological distribution as the usual reference.
+
+The CRPS also scores point forecasts and distributions on one scale, and that changes the ranking. Assume the AR(1) anomaly of the previous module has normally distributed shocks, and take $r = 0.72$ one day ahead. The climatological reference is now the distribution $N(0, \sigma^2)$ rather than its mean, and its expected CRPS is $\sigma/\sqrt{\pi} = 0.564\sigma$:
+
+| Forecast | MSE skill | Expected CRPS | CRPS skill |
+|---|---|---|---|
+| Climatology, $N(0, \sigma^2)$ | 0 | $0.564\sigma$ | 0 |
+| Persistence, point | 0.440 | $0.597\sigma$ | $-0.058$ |
+| Damped persistence, point | 0.518 | $0.554\sigma$ | 0.019 |
+| Damped persistence, $N(r x_t, (1 - r^2)\sigma^2)$ | 0.518 | $0.392\sigma$ | 0.306 |
+
+These rankings rest on the Gaussian AR(1) assumption; heavier tails or slower memory would change the numbers. Persistence beats climatology on squared error and loses on the CRPS, because a single number says nothing about its own uncertainty. The full damped-persistence distribution has a CRPS skill of $1 - \sqrt{1 - r^2} = 0.306$ against an MSE skill of $r^2 = 0.518$. The CRPS grows like a standard deviation and the MSE like a variance, so the same forecast earns smaller skill on the CRPS. Skill values from different scores cannot be compared.
+
+::: {.callout-note collapse="true"}
+## Where the table's numbers come from
+
+A point forecast's CRPS is its absolute error, $s\sqrt{2/\pi}$ for a normal error of standard deviation $s$: $s = \sqrt{0.56}\,\sigma$ gives $0.597\sigma$ for persistence and $s = 0.694\sigma$ gives $0.554\sigma$ for damped persistence. A normal forecast $N(\mu, s^2)$ has $\text{CRPS} = s\,[z(2\Phi(z) - 1) + 2\varphi(z) - 1/\sqrt{\pi}]$ with $z = (y - \mu)/s$ and $\Phi$, $\varphi$ the standard normal distribution and density; when $y$ comes from that distribution its expectation is $s/\sqrt{\pi}$, giving $0.564\sigma$ and $0.392\sigma$. A Monte Carlo check with 400,000 simulated pairs (NumPy seed 1) gave 0.563, 0.596 and 0.391.
+:::
+
+## Comparing and trusting a skill score
+
+A skill score is a ratio of two averages, and three things decide whether it can be compared with another.
+
+**The same cases.** The forecast and the reference must be scored on identical days, sites and leads. If a model's output is missing on some days, drop those days from the reference too; otherwise the reference is charged for cases the model never faced. Our inference, not a tested result: missing model runs are not random (data feeds fail in storms, models are rerun after big errors), so the bias usually flatters the model.
+
+**Pooling is not averaging.** Take two synthetic sites with equal numbers of days. At site A the model has MSE 0.5 °C² against a reference of 1.0, skill 0.50; at site B, 8.1 against 9.0, skill 0.10. The mean of the two skills is 0.30. Pooling all days gives $1 - (0.5 + 8.1)/(1.0 + 9.0) = 0.14$, because the pooled ratio weights each site by its reference error, so the hard site dominates. They answer different questions; say which you report.
+
+Pooling can also create skill. Hamill and Juras show that when forecasts from places with different climatological event frequencies are verified together, the Brier skill score can report skill where there is none; in one of their synthetic examples, forecasts drawn at random from each location's own climatology showed positive skill that grew as the two climatologies diverged[^7]. The arithmetic is short. Let site A have rain on 10% of days and site B on 50%, and forecast each site's own frequency every day: the Brier scores are $0.1 \times 0.9 = 0.09$ and $0.5 \times 0.5 = 0.25$, and each site's BSS against its own climatology is exactly 0. Pooled, the reference becomes the overall frequency of 0.3, scoring $0.3 \times 0.7 = 0.21$, and the BSS is $1 - 0.17/0.21 = 0.190$. Different base rates at different sites masquerade as resolution, much as mixing two regimes creates a Simpson-style association that neither regime has: the "skill" is knowledge of the two climates. Compute the reference per site (or per season) and combine afterwards; Hamill and Juras give guidelines for adjusting the computation.
+
+**Sampling uncertainty.** A skill score from a finite verification set is an estimate. Bradley, Schwartz and Hashino derive the sampling variance of the Brier score, which is an unbiased estimator, and show that the BSS against climatology is biased; for infrequent events, a few hundred forecast–observation pairs are needed to establish that a forecast is skilful[^8]. The simplest general error bar is a bootstrap that resamples whole cases, keeping each forecast with its outcome:
+
+```python
+import numpy as np
+
+def bss(f, o):
+    """Brier skill score against the climatology of the same cases."""
+    obar = o.mean()
+    return 1 - np.mean((f - o) ** 2) / (obar * (1 - obar))
+
+def bootstrap_interval(score, f, o, n_boot=10_000, seed=42):
+    """95% interval from resampling whole cases, forecast and outcome together."""
+    rng = np.random.default_rng(seed)
+    idx = (rng.integers(0, len(o), len(o)) for _ in range(n_boot))
+    return np.percentile([score(f[i], o[i]) for i in idx], [2.5, 97.5])
+```
+
+On the widget's 1,000 days at $k = 1$ and $b = 0$, the BSS of 0.177 has a 95% interval of 0.125 to 0.226. On the first 100 of those days, with 39 rainy, the BSS is 0.194 with an interval of 0.022 to 0.337: the same forecaster could plausibly have looked almost skill-free. To compare two forecasts, bootstrap the difference of their scores with the same resampled indices, since their errors are correlated. Daily weather is autocorrelated and this bootstrap assumes independent days; resampling blocks of several days or whole weeks is our suggestion for the usual case, and widens the interval. Our rule of thumb, not a published one: make the blocks at least as long as the lag at which the autocorrelation of the score differences dies out.
+
+::: {.callout-tip}
+## What this means for you
+
+Our recommendations, drawn from the results above: score against damped persistence on exactly the forecast's cases; report reliability and resolution beside the BSS, since a negative BSS with high resolution can be rescued by recalibration; and do not rank forecasts whose bootstrap intervals overlap heavily.
+:::
+
+## Key takeaways
+
+- State the score, the reference and the case set with every skill value.
+- Against sample climatology, an MSE skill score is $\rho^2$ minus a conditional-bias and a mean-bias penalty; the gap between skill and $\rho^2$ is what recalibration can recover.
+- Sharpening probabilities without new information does not raise resolution; it trades reliability, and the BSS falls.
+- Score point forecasts and distributions with the CRPS when they must share one table; a point forecast that beats climatology on squared error can lose to the climatological distribution.
+- Never compare skill across different scores, and compute climatology per site and season before pooling.
+- With a few hundred cases or fewer, especially for rare events, the interval on a skill score is often wider than the difference between competing forecasts.
+
+## References
+
+[^1]: Murphy, A. H. Climatology, persistence, and their linear combination as standards of reference in skill scores. *Wea. Forecasting* **7**, 692–698 (1992). https://doi.org/10.1175/1520-0434(1992)007<0692:CPATLC>2.0.CO;2
+[^2]: Murphy, A. H. Skill scores based on the mean square error and their relationships to the correlation coefficient. *Mon. Wea. Rev.* **116**, 2417–2424 (1988). https://doi.org/10.1175/1520-0493(1988)116<2417:SSBOTM>2.0.CO;2
+[^3]: Brier, G. W. Verification of forecasts expressed in terms of probability. *Mon. Wea. Rev.* **78**, 1–3 (1950). https://doi.org/10.1175/1520-0493(1950)078<0001:VOFEIT>2.0.CO;2
+[^4]: Murphy, A. H. A new vector partition of the probability score. *J. Appl. Meteor.* **12**, 595–600 (1973). https://doi.org/10.1175/1520-0450(1973)012<0595:ANVPOT>2.0.CO;2
+[^5]: Hersbach, H. Decomposition of the continuous ranked probability score for ensemble prediction systems. *Wea. Forecasting* **15**, 559–570 (2000). https://doi.org/10.1175/1520-0434(2000)015<0559:DOTCRP>2.0.CO;2
+[^6]: Gneiting, T. & Raftery, A. E. Strictly proper scoring rules, prediction, and estimation. *J. Am. Stat. Assoc.* **102**, 359–378 (2007). https://doi.org/10.1198/016214506000001437
+[^7]: Hamill, T. M. & Juras, J. Measuring forecast skill: is it real skill or is it the varying climatology? *Q. J. R. Meteorol. Soc.* **132**, 2905–2923 (2006). https://doi.org/10.1256/qj.06.25
+[^8]: Bradley, A. A., Schwartz, S. S. & Hashino, T. Sampling uncertainty and confidence intervals for the Brier score and Brier skill score. *Wea. Forecasting* **23**, 992–1006 (2008). https://doi.org/10.1175/2007WAF2007049.1
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/persistence-and-climatology-baselines.html"><span>Previous</span>Persistence and climatology baselines</a><a class="mf-up" href="/series/prediction/index.html"><span>Series</span>Weather, Climate and Prediction</a><a class="mf-next" href="/blogs/detrending/detrend_hk_temperature.html"><span>Next</span>Decomposing Hong Kong temperature</a></div>
+<!-- CURRICULUM_FOOTER_END -->

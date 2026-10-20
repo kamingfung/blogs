@@ -6,7 +6,7 @@ description: "The statistics the other series lean on, kept short and separate s
 <dl class="syl-meta">
 <div><dt>Level</dt><dd>Introductory to intermediate</dd></div>
 <div><dt>Parts</dt><dd>8</dd></div>
-<div><dt>Modules</dt><dd>9 of 19 written</dd></div>
+<div><dt>Modules</dt><dd>14 of 19 written</dd></div>
 <div class="wide"><dt>Assumes</dt><dd>School maths. Python or R for the notebooks.</dd></div>
 </dl>
 
@@ -23,13 +23,13 @@ description: "The statistics the other series lean on, kept short and separate s
 <ul class="syl">
 <li class="w"><a href="/blogs/ks_test/ks_test.html">The Kolmogorov–Smirnov test</a><span class="m">Intermediate</span></li>
 <li class="w"><a href="/blogs/t-test/the_t_test.html">The t-test, and when not to use it</a><span class="m">Introductory</span></li>
-<li class="g">Permutation tests<span class="m">Intermediate · not written</span></li>
+<li class="w"><a href="/blogs/permutation-tests.html">Permutation tests</a><span class="m">Intermediate</span></li>
 </ul>
 
 ## Part 3 · Resampling
 
 <ul class="syl">
-<li class="g">Bootstrapping<span class="m">Intermediate · not written</span></li>
+<li class="w"><a href="/blogs/bootstrapping/bootstrapping.html">Bootstrapping</a><span class="m">Intermediate</span></li>
 <li class="w"><a href="/blogs/cross-validation/cross_validation.html">Cross-validation</a><span class="m">Intermediate</span></li>
 </ul>
 
@@ -37,7 +37,7 @@ description: "The statistics the other series lean on, kept short and separate s
 
 <ul class="syl">
 <li class="w"><a href="/blogs/least-squares.html">Least squares</a><span class="m">Introductory</span></li>
-<li class="g">Is the trend significant?<span class="m">Intermediate · not written</span></li>
+<li class="w"><a href="/blogs/trend-significance/is_the_trend_significant.html">Is the trend significant?</a><span class="m">Intermediate</span></li>
 <li class="g">Reading residuals<span class="m">Intermediate · not written</span></li>
 </ul>
 
@@ -52,7 +52,7 @@ description: "The statistics the other series lean on, kept short and separate s
 
 <ul class="syl">
 <li class="w"><a href="/blogs/normal-lognormal-poisson.html">Normal, lognormal, Poisson</a><span class="m">Introductory</span></li>
-<li class="g">Heavy tails<span class="m">Intermediate · not written</span></li>
+<li class="w"><a href="/blogs/heavy-tails.html">Heavy tails</a><span class="m">Intermediate</span></li>
 </ul>
 
 ## Part 7 · Bayesian basics
@@ -65,6 +65,6 @@ description: "The statistics the other series lean on, kept short and separate s
 ## Part 8 · Experimental design
 
 <ul class="syl">
-<li class="g">Controls and randomisation<span class="m">Introductory · not written</span></li>
+<li class="w"><a href="/blogs/controls-and-randomisation.html">Controls and randomisation</a><span class="m">Introductory</span></li>
 <li class="w"><a href="/blogs/power-and-how-many-samples.html">Power, and how many samples</a><span class="m">Intermediate</span></li>
 </ul>

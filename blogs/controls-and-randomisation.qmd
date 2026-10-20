@@ -1,0 +1,239 @@
+---
+title: Controls and randomisation
+description: Why a trial needs an untreated comparison group, why a coin should decide who gets the treatment, and how blocking, true replication, blinding and a recorded seed make a field, packhouse or pricing trial worth believing.
+date: 2026-10-19
+categories:
+- statistics
+- data science
+- agriculture
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/statistics/index.html">Statistics</a><span class="sep">·</span>Part 8 · Experimental design</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">School maths. Python or R for the notebooks.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+A treatment's effect is the difference between what happened and what would have happened without it. You never see the second, so you need a control group: similar units, left untreated, living through the same weather, season and market. The control only works if chance, not you, decides which units get treated. Choose the best-looking rows, or let the keenest farms volunteer, and whatever made them look good or volunteer travels with the treatment and gets credited to it. Random assignment breaks that link for every confounder, including the ones nobody measured. Blocking goes further: group similar plots (by field, row or week), then randomise within each group, and the estimate gets more precise at no extra cost. Count replicates as the units the coin was tossed for, not the fruit weighed inside them. Hide which sample is which from tasters and scorers. In practice: randomise with a script, write the seed in the trial log, and keep the layout file.
+:::
+
+## The control and the coin
+
+A control group is there to answer one question: what would have happened anyway? Yields rise in a good season, defect rates fall as the harvest moves from early to late fruit, sales climb before a holiday. A before-and-after comparison credits all of that to whatever changed in between. Untreated units observed over the same period carry the same weather, season and trend, so the difference between treated and control units is left with only the treatment and chance.
+
+That holds only if the two groups would have behaved alike without the treatment. Suppose an agronomist applies a biostimulant to the north half of a field because it is nearest the gate. If the north half also has better soil, the comparison measures soil plus product, and nothing in the data can separate them. Anything that affects the outcome and is also linked to who got treated is a **confounder**.
+
+Random assignment removes confounders by cutting the link. If a coin decides which plots are treated, soil quality cannot influence the decision, nor can drainage, the previous crop, or anything else, measured or not. The groups still differ by chance, but chance differences average out over repeats and are exactly what the standard error and p-value account for.
+
+```{mermaid}
+flowchart LR
+  S["Soil, drainage,<br/>management"] -->|"affects"| Y["Yield"]
+  S -.->|"cut when a coin decides"| T["Treated?"]
+  T -->|"the effect we want"| Y
+  class S ochre
+  class T indigo
+  class Y sage
+    classDef indigo fill:#1d4a62,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef ochre fill:#d69a2e,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+    classDef sage fill:#95a87f,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+```
+
+**Two ways non-random assignment misleads.** "Treat the best-looking rows" is the field version: rows that look vigorous in spring are the ones with better soil or water, so they would have out-yielded the rest without any treatment. The volunteer version is subtler. Offer a new irrigation-scheduling tool to growers and compare the farms that sign up with those that do not. Farms that volunteer for new tools may well be the better-managed ones (a plausible guess, not a measured fact). Suppose, for illustration, that they would have out-yielded the others by 1.5 t/ha in any case: a tool that does nothing then appears to add 1.5 t/ha, and a tool that does harm can still look good. Pricing trials have the same trap: stores whose managers ask for a promotion may be the ones that already expected sales to rise.
+
+In every case, the bias does not shrink with more data. Doubling the number of volunteer farms gives a more precise estimate of the same wrong number.
+
+## Blocking: randomise within like with like
+
+Randomisation removes bias; blocking also buys precision. A **block** is a group of units expected to behave alike: adjacent plots, rows within one field, pallets packed on the same day, stores in one region, or one week of a pricing test. Randomise separately within each block, so every block holds both treatments, and the comparison happens within blocks, where background differences are small. With $k$ treatments, each block holds $k$ units, one per treatment. Blocks need not be pairs, and they need not all be the same size, as long as every block contains every treatment. When conditions vary in two directions, say slope down the field and an irrigation line across it, a **Latin square** uses rows and columns both as blocks, so each treatment appears once in every row and once in every column. Casler counts blocking among the four pillars of field design, with replication, randomisation and the size of the experimental unit[^1].
+
+The widget compares three ways to assign a strip of 40 plots running north to south, with fertility falling steadily from north to south. Each design treats 20 plots:
+
+- **North half:** the 20 northern plots get the treatment.
+- **Random:** a random 20 of the 40.
+- **Blocked:** the strip is split into 20 pairs of neighbouring plots, and a coin picks one plot in each pair.
+
+Every repeat draws fresh plot-to-plot noise, uses it for all three designs, and estimates the effect as treated mean minus control mean. The data are synthetic: 2,000 repeats from a fixed seed. Watch the bottom chart, where each box is the spread of one design's estimates and the dashed line is the true effect:
+
+- **Defaults (gradient 4):** the red North-half box sits far right of the true effect; the blue Random box is centred on it but wide; the green Blocked box is centred and narrow.
+- **Gradient 0:** all three boxes line up on the true effect, with about the same width.
+- **Gradient 8:** the red box moves even further off; Random widens; Blocked stays as narrow as before.
+
+::: {.sim-card}
+#### Three ways to assign a field
+
+```{ojs}
+//| echo: false
+viewof grad = Inputs.range([0, 8], {value: 4, step: 0.5, label: "Fertility gradient, north minus south (t/ha)"})
+viewof noise = Inputs.range([0.2, 3], {value: 1, step: 0.1, label: "Plot-to-plot noise SD (t/ha)"})
+viewof effect = Inputs.range([0, 2], {value: 0.5, step: 0.1, label: "True treatment effect (t/ha)"})
+
+N = 40
+REPS = 2000
+
+// Seeded generator (mulberry32) and Box-Muller normals, so every visit draws the same repeats.
+mulberry32 = seed => () => {
+  seed = seed + 0x6D2B79F5 | 0;
+  let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+  t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+  return ((t ^ t >>> 14) >>> 0) / 4294967296;
+}
+normal = rand => () => Math.sqrt(-2 * Math.log(1 - rand())) * Math.cos(2 * Math.PI * rand())
+
+// Plot i = 0 is the north end; fertility falls linearly by `grad` over the strip.
+sim = {
+  const rand = mulberry32(1), z = normal(rand);
+  const fert = d3.range(N).map(i => grad * (0.5 - i / (N - 1)));
+  const est = {north: [], random: [], blocked: []};
+  const diff = (y, T) => d3.mean(y.filter((_, i) => T[i])) - d3.mean(y.filter((_, i) => !T[i]));
+  let first = null;
+  for (let r = 0; r < REPS; r++) {
+    const e = fert.map(() => noise * z());
+    const north = fert.map((_, i) => i < N / 2);
+    const idx = d3.range(N);                                   // Fisher-Yates shuffle
+    for (let i = N - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); [idx[i], idx[j]] = [idx[j], idx[i]]; }
+    const random = Array(N).fill(false); idx.slice(0, N / 2).forEach(i => random[i] = true);
+    const blocked = Array(N).fill(false);
+    for (let k = 0; k < N; k += 2) blocked[rand() < 0.5 ? k : k + 1] = true;
+    const designs = {north, random, blocked};
+    for (const [name, T] of Object.entries(designs))
+      est[name].push(diff(fert.map((f, i) => 10 + f + e[i] + (T[i] ? effect : 0)), T));
+    if (r === 0) first = designs;
+  }
+  const summ = a => ({mean: d3.mean(a), sd: d3.deviation(a)});
+  return {fert, first, est, s: {north: summ(est.north), random: summ(est.random), blocked: summ(est.blocked)}};
+}
+
+labels = ({north: "North half", random: "Random", blocked: "Blocked"})
+colours = ({north: "#ef4444", random: "#38bdf8", blocked: "#10b981"})
+
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${["north", "random", "blocked"].map(k => card(labels[k] + ": average ± spread",
+      sim.s[k].mean.toFixed(2) + " ± " + sim.s[k].sd.toFixed(2) + " t/ha", colours[k]))}
+  ${card("Plots needed, random ÷ blocked (variance ratio)", (sim.s.random.sd ** 2 / sim.s.blocked.sd ** 2).toFixed(2) + "×", "#f59e0b")}
+</div>`
+
+Plot.plot({
+  height: 170,
+  marginLeft: 90,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {label: "Plot, north (1) to south (40) →", ticks: [1, 10, 20, 30, 40]},
+  y: {label: null, domain: ["North half", "Random", "Blocked"]},
+  color: {type: "linear", scheme: "YlGn"},
+  marks: [
+    Plot.cell(["north", "random", "blocked"].flatMap(k => sim.fert.map((f, i) => ({plot: i + 1, design: labels[k], f}))),
+              {x: "plot", y: "design", fill: "f", inset: 0.5}),
+    Plot.dot(["north", "random", "blocked"].flatMap(k => sim.first[k].map((t, i) => ({plot: i + 1, design: labels[k], t}))).filter(d => d.t),
+             {x: "plot", y: "design", fill: "#f59e0b", stroke: "#0f172a", r: 3})
+  ]
+})
+
+Plot.plot({
+  height: 300,
+  marginLeft: 90,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {label: "Estimated effect (t/ha) →", grid: true},
+  y: {label: null, domain: ["North half", "Random", "Blocked"]},
+  color: {domain: ["North half", "Random", "Blocked"], range: [colours.north, colours.random, colours.blocked]},
+  marks: [
+    Plot.boxX(["north", "random", "blocked"].flatMap(k => sim.est[k].map(v => ({design: labels[k], v}))),
+              {x: "v", y: "design", fill: "design", stroke: "#cbd5e1", fillOpacity: 0.7, r: 1.5}),
+    Plot.ruleX([effect], {stroke: "#f59e0b", strokeWidth: 2, strokeDasharray: "6 4"})
+  ]
+})
+```
+
+Top: the fertility of each plot (darker green is more fertile) and, as amber dots, the plots each design treated in the first repeat. Bottom: the spread of the 2,000 estimates for each design; the dashed amber line is the true effect. "Spread" is the standard deviation of the estimates across repeats. The amber dots show which plots each design treated in one draw; North half is always plots 1–20.
+:::
+
+At the defaults (gradient 4 t/ha, noise 1 t/ha, true effect 0.5 t/ha) the widget reads:
+
+| Design | Average estimate | Spread |
+|---|---:|---:|
+| North half | 2.54 t/ha | 0.31 t/ha |
+| Random | 0.51 t/ha | 0.50 t/ha |
+| Blocked | 0.51 t/ha | 0.31 t/ha |
+
+**North half** is precise and wrong. Its estimates cluster tightly around 2.54 t/ha, five times the true 0.5, because the northern plots are on average 2.05 t/ha more fertile ($4 \times 20/39$; plot centres in the two halves are 20 plot-widths apart on a strip whose ends are 39 apart). Set the true effect to 0 and it still reports 2.04 t/ha. This is the field version of the volunteer problem, and more plots would not fix it.
+
+**Random** is right on average, 0.51 t/ha, but its spread of 0.50 t/ha is wide: by chance some draws put more fertile plots in the treated group, some in the control group.
+
+**Blocked** is right on average and as tight as the north half, 0.31 t/ha. Neighbouring plots share almost the same fertility, so comparing within pairs removes the gradient from the error. In plain terms, a completely random layout on this field would need about two and a half times as many plots to be as sure of the answer as the blocked one. That figure is the **variance ratio**, 2.61 on the last card; variance is the square of the spread, and it shrinks roughly in proportion to the number of plots (my approximation), so the ratio of variances is the ratio of plots needed. Set the gradient to 0 and the ratio falls to 1.08: blocking on a uniform field buys almost nothing, but costs little either. Set it to 8 and the ratio is 7.10.
+
+::: {.callout-note collapse="true"}
+## The exact numbers behind the widget
+
+Write plot $i = 0, \dots, 39$ (north to south), fertility $f_i = G(0.5 - i/39)$ with gradient $G$ in t/ha, and independent noise of standard deviation $s$ (t/ha). The estimate is $\hat{\delta} = \bar{y}_T - \bar{y}_C$, the treated mean minus the control mean, with 20 plots in each.
+
+- **North half:** bias $= G \times 20/39 = 2.051$ t/ha at $G = 4$. The spread is noise alone, $s\sqrt{2/20} = 0.316$ t/ha at $s = 1$.
+- **Random:** unbiased. With fertility variance $S_f^2 = \sum_i (f_i - \bar{f})^2/39 = 1.438$ (t/ha)$^2$ at $G = 4$, the variance of $\hat{\delta}$ over random splits is $(S_f^2 + s^2)(1/20 + 1/20) = 0.2438$, a spread of 0.494 t/ha.
+- **Blocked:** unbiased. Within a pair the fertility differs by only $G/39$, so the variance is $s^2/10 + (G/39)^2/20 = 0.1005$, a spread of 0.317 t/ha.
+
+The exact variance ratio is $0.2438/0.1005 = 2.42$; the widget reads 2.61 because 2,000 repeats estimate each spread only to within a few per cent, and squaring and dividing two such estimates makes their ratio wobble by more.
+
+Pairing costs degrees of freedom: an unpaired t-test on 40 plots has 38, a paired test on 20 pairs has 19, and the 5% two-sided critical value rises from 2.024 to 2.093. That is the small price paid on a uniform field.
+:::
+
+With equal numbers per arm, the blocked estimate is the same number whether or not the analysis knows about the blocks; the design, not the analysis, made it precise. The analysis must still include the blocks (a paired t-test, or a block term in the model), or the standard error it reports will include the gradient the design removed and the test will be needlessly weak. Precision is what lowers the noise term in a sample-size calculation, which is where [Power, and how many samples](power-and-how-many-samples.qmd) picks it up.
+
+Blocks should follow whatever you expect to vary: slope, irrigation line, harvest crew, packing day, region, week. In pricing tests on stores, pair stores of similar size and region and randomise within each pair; in a test that switches a whole market between prices, the week is the block, and the order within it is randomised.
+
+## Replicates, blinding and a recorded seed
+
+**Replicate the unit you randomised.** A replicate is an independent unit that received its treatment by its own toss of the coin. Ten berries from one treated bush are ten measurements of one replicate, not ten replicates. Treating them as independent is **pseudoreplication**: Hurlbert found it in 27% of the 176 published ecological experiments he examined, and in 48% of those that used inferential statistics[^2]. [The t-test](t-test/the_t_test.ipynb) shows how fast the false-positive rate climbs when it happens. The most common grower case follows from the same rule: when one valve or fertigation line feeds a whole zone, the zone is the experimental unit, so you need several zones per treatment, assigned at random, and the rows inside one zone are subsamples. The same applies to two treatments on two fields, or two packing lines each running one setting: the treatment is confounded with the field or the line, and no number of samples from each will separate them.
+
+Hurlbert also stresses **interspersion**: treated and control units should be mixed across the site, so a local event such as a hailstorm or a blocked emitter cannot hit one treatment only[^2]. A plain random layout can, by bad luck, cluster one treatment at one end. Blocking guarantees interspersion and keeps the randomisation.
+
+**Blind whoever judges the outcome.** When a score involves judgement (taste, defects, disease severity, a "marketable or not" call), the person scoring should not know which unit got which treatment. In a review of 21 medical trials that scored the same binary outcome with both blinded and unblinded assessors, the unblinded assessors exaggerated the treatment's odds ratio by 36% on average, and the bias came from reclassifying a median of only 3% of patients[^3]. Trials of crops and fruit are not medical trials, but the mechanism, a few borderline calls nudged towards the expected answer, carries over (my inference). For taste panels: label samples with random three-digit codes, randomise the serving order for each panellist, and keep the key away from the panel leader. For field scoring: have someone other than the person who applied the treatment walk the plots with a sheet that shows only plot numbers.
+
+**Randomise with code and record the seed.** A pseudo-random number generator started from a fixed number, the **seed**, produces the same "random" assignment every time, so the layout can be rebuilt and audited. Blocked assignment of the 40-plot strip takes three lines after the import:
+
+```python
+import numpy as np, pandas as pd
+rng = np.random.default_rng(20261019)                      # write this seed in the trial log
+plan = pd.DataFrame({"block": np.repeat(np.arange(1, 21), 2), "plot": np.arange(1, 41)})
+plan["arm"] = np.concatenate([rng.permutation(["control", "treated"]) for _ in range(20)])
+#  block  plot     arm
+#      1     1 control
+#      1     2 treated
+#      2     3 treated
+```
+
+Each block gets exactly one of each arm, 20 treated and 20 control in all. For a completely randomised plan, drop the blocks and use `rng.permutation(40)[:20]` as the treated plots. Save `plan` as a file next to the trial protocol before anyone goes into the field.
+
+In a spreadsheet: put a `=RAND()` column next to the plot list, copy it and paste it back as values (otherwise it changes on every edit), sort by it within each block, and treat the first plot of each block. A spreadsheet's `RAND()` cannot be seeded, so the saved file is the record. Never re-draw because the first layout "looked unbalanced": choosing among draws is choosing the layout yourself. If a layout you cannot accept is possible, add blocks to rule it out before you draw.
+
+## When you cannot randomise
+
+When a practice, a frost or a national price change cannot be assigned, the data are observational and carry whatever made the treated units different. A difference-in-differences comparison sets the change in treated units beside the change in untreated ones over the same period. A regression discontinuity compares units just either side of an arbitrary cut-off, such as a subsidy's farm-size limit. Each rests on an assumption the data cannot fully check, so the result is weaker than a randomised trial; [Reading a nutrition study](reading-a-nutrition-study.qmd) shows the cost.
+
+::: {.callout-tip}
+## What this means for you
+
+My suggestions, drawn from the arguments above rather than from a cited study. Before a trial, write down the unit you will randomise, the blocks, the seed and the scorer, and save the layout file. If a colleague proposes treating "the good rows", "the farms that want it" or "the stores that asked", say that the comparison will credit the treatment with whatever made those units different. If the field, packhouse or market has any known gradient, block on it: on the synthetic field above, blocking cut the variance of the estimate by more than half for free.
+:::
+
+## Key takeaways
+
+- A before-and-after comparison without a concurrent control measures the treatment plus the season. Run the control at the same time and place.
+- Let a recorded random draw, not a person, decide treatment. Any choice by a person, however well meant, is a possible confounder.
+- Block on what you expect to vary, randomise within blocks, and keep the blocks in the analysis.
+- Count replicates as the units that were randomised; subsamples within a unit make its mean more precise but add no replicates.
+- Blind anyone who scores, tastes or classifies, and keep the code key with someone else.
+- If randomisation is impossible, say so in the report and name the assumption your comparison rests on.
+
+## References
+
+[^1]: Casler, M. D. Fundamentals of experimental design: guidelines for designing successful experiments. *Agron. J.* **107**, 692–705 (2015). https://doi.org/10.2134/agronj2013.0114
+[^2]: Hurlbert, S. H. Pseudoreplication and the design of ecological field experiments. *Ecol. Monogr.* **54**, 187–211 (1984). https://doi.org/10.2307/1942661
+[^3]: Hróbjartsson, A. et al. Observer bias in randomised clinical trials with binary outcomes: systematic review of trials with both blinded and non-blinded outcome assessors. *BMJ* **344**, e1119 (2012). https://doi.org/10.1136/bmj.e1119
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/heavy-tails.html"><span>Previous</span>Heavy tails</a><a class="mf-up" href="/series/statistics/index.html"><span>Series</span>Statistics</a><a class="mf-next" href="/blogs/power-and-how-many-samples.html"><span>Next</span>Power, and how many samples</a></div>
+<!-- CURRICULUM_FOOTER_END -->
