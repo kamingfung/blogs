@@ -82,6 +82,7 @@ parts:
       - id: forecasting/multi-output-models
         title: "Multi-output models"
         level: intermediate
+        path: blogs/multi-output/multi_output_models.ipynb
   - title: "Forecasting distributions"
     modules:
       - id: forecasting/forecasting-a-size-distribution

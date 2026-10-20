@@ -1,0 +1,216 @@
+---
+title: Stomata and dry deposition
+description: How the surface resistance in dry deposition splits into stomatal, cuticular and soil pathways, how models compute the stomatal part, and why that choice moves deposition and ozone damage estimates.
+date: 2026-10-19
+categories:
+- atmospheric chemistry
+- ozone
+- plant biology
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/air-land-climate/index.html">Air, Land and Climate</a><span class="sep">·</span>Part 5 · Ammonia, forests and ozone</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">School chemistry. Parts 1 and 5 of Clouds and Aerosols help but are not required.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+A gas reaching a canopy is absorbed by three routes in parallel: through stomata into the leaf, onto the waxy cuticle, and down to the soil. Only the stomatal route opens and closes, and on field evidence it carries about 45% of ozone deposition on average. Deposition schemes mostly compute stomatal conductance as a Jarvis-type product of light, temperature, air-dryness and soil-water factors; land models increasingly tie it to photosynthesis (Ball–Berry, Medlyn). A conductance measured for water vapour converts to another gas through a ratio of molecular diffusivities. Darkness, dry air and dry soil close the stomata and leave the slower cuticle and soil routes, so deposition slows. In practice, check which stomatal model and soil-water limit your scheme uses before trusting its ozone sink or damage estimate.
+:::
+
+## Three pathways in parallel
+
+[Deposition: how nitrogen leaves the air](deposition-how-nitrogen-leaves-the-air.qmd) left the surface resistance $R_\text{c}$ in $v_\text{d} = 1/(R_\text{a} + R_\text{b} + R_\text{c})$ as one number. Inside it, routes add as conductances in parallel. The European EMEP model, which shares its stomatal model with the UNECE ozone-flux method, writes the bulk canopy conductance as[^1]
+
+$$G_\text{c} = \frac{1}{R_\text{c}} = \text{LAI}\, g_\text{sto} + G_\text{ns}, \qquad G_\text{ns} = \frac{\text{SAI}}{r_\text{ext}} + \frac{1}{R_\text{inc} + R_\text{gs}}$$
+
+where $G_\text{c}$ and the non-stomatal $G_\text{ns}$ are canopy conductances ($\text{m s}^{-1}$); $\text{LAI}$ is the one-sided leaf area index and $\text{SAI}$ the surface area index, leaves plus stems and dead leaves ($\text{m}^2\,\text{m}^{-2}$); $g_\text{sto}$ is the stomatal conductance per unit leaf area ($\text{m s}^{-1}$); $r_\text{ext} = 2500\text{ s m}^{-1}$ is EMEP's cuticular resistance per unit leaf area for ozone; $R_\text{inc} = b\,\text{SAI}\,h/u_*$ is the in-canopy transport resistance, with $b = 14\text{ m}^{-1}$ (printed as $\text{s}^{-1}$ in the source; $\text{m}^{-1}$ gives $\text{s m}^{-1}$), canopy height $h$ (m) and friction velocity $u_*$ ($\text{m s}^{-1}$); and $R_\text{gs}$ is the ground-surface resistance, $200\text{ s m}^{-1}$ for ozone over crops and forests in EMEP's table.
+
+```{mermaid}
+flowchart TD
+    AIR["Ozone at reference height"] -->|"R_a: turbulence"| TOP["Canopy air"]
+    TOP -->|"R_b: still-air layer"| SURF["Canopy surfaces"]
+    SURF -->|"LAI x g_sto"| STO["Stomata: into the leaf"]
+    SURF -->|"SAI / r_ext"| CUT["Cuticles and stems"]
+    SURF -->|"R_inc + R_gs"| SOIL["Soil and litter"]
+
+    class AIR,TOP indigo
+    class SURF ochre
+    class STO olive
+    class CUT plum
+    class SOIL sienna
+    classDef indigo fill:#1d4a62,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef sienna fill:#6c2b27,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef plum fill:#48304a,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef olive fill:#5b6e34,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef ochre fill:#d69a2e,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+```
+
+**Only one path is controlled by the plant.** Cuticle and soil uptake vary with wetness and temperature, but only the stomatal path opens and closes, through the guard cells of [Heat and drought: the stomata close](heat-and-drought-stomata-close.qmd). A review of ozone flux sites put the stomatal fraction of ozone dry deposition at 45% on average, with non-stomatal pathways co-dominant and highly variable[^2].
+
+**One conductance serves several gases.** Stomatal conductance is measured for water vapour, through transpiration. Another gas uses the same pore, so its conductance is the water-vapour value divided by the ratio of the two gases' molecular diffusivities in air, $D_{\text{H}_2\text{O}}/D_\text{gas}$:
+
+| Gas | $D_{\text{H}_2\text{O}} / D_\text{gas}$ | Source |
+|:--|:--|:--|
+| $\text{CO}_2$ | 1.6 in the stomata, 1.4 in the leaf boundary layer | CLM5 technical note[^3] |
+| $\text{O}_3$ | $1/0.663 = 1.51$ | UNECE mapping manual, citing Massman[^4] |
+| $\text{O}_3$ | 1.6 / 1.61 | EMEP table[^1] / ozone review, citing Massman[^2] |
+| $\text{NH}_3$ | 1.0 | EMEP table[^1] |
+| $\text{SO}_2$, $\text{HNO}_3$ | 1.9 | EMEP table[^1] |
+
+The two ozone values citing Massman's 1998 compilation differ by $1.61/1.51 = 1.07$, or 7%, an uncertainty that passes straight into any stomatal ozone flux. On EMEP's numbers ammonia's stomatal conductance is $1.6/1.0 = 1.6$ times ozone's, though for ammonia the pore can also emit, around the compensation point of the deposition module.
+
+## Models of stomatal conductance
+
+**The Jarvis approach** starts from a maximum conductance and multiplies it by factors between 0 and 1. Jarvis's 1976 hypothesis was that stomatal conductance expresses the influence of every variable "without any synergistic interactions", so a leaf held to 80% of its maximum by light and 80% by temperature sits at 64%[^5]<sup>,</sup>[^6]. Being simple and cheap, it is still the most common choice in deposition schemes, but it must be tuned per ecosystem[^2]. The UNECE manual's version, from the DO3SE model, is[^4]
+
+$$g_\text{sto} = g_\text{max} \cdot \min(f_\text{phen}, f_{\text{O}_3}) \cdot f_\text{light} \cdot \max\{f_\text{min},\ f_\text{temp}\, f_\text{VPD}\, f_\text{SW}\}$$
+
+where $g_\text{max}$ is the conductance of a fully open, unstressed leaf ($\text{mmol O}_3\,\text{m}^{-2}$ projected leaf area $\text{s}^{-1}$, converted from water vapour with the factor 0.663), $f_\text{min}$ is the minimum daytime conductance as a fraction of $g_\text{max}$, and the other factors, each between 0 and 1, describe growth stage, ozone-induced senescence, light, temperature, vapour pressure deficit (VPD) and soil water. Their shapes are in the callout.
+
+::: {.callout-note collapse="true"}
+## The response factors for a wheat flag leaf
+
+Bread wheat, Atlantic, Boreal and Continental regions (UNECE manual, Table III.9)[^4].
+
+- **Light:** $f_\text{light} = 1 - \exp(-a\,\text{PPFD})$, with $\text{PPFD}$ the photosynthetic photon flux density ($\text{µmol m}^{-2}\,\text{s}^{-1}$) and $a = 0.0105$.
+- **Temperature:** $f_\text{temp} = [(T - T_\text{min})/(T_\text{opt} - T_\text{min})]\,[(T_\text{max} - T)/(T_\text{max} - T_\text{opt})]^{b_t}$ with $b_t = (T_\text{max} - T_\text{opt})/(T_\text{opt} - T_\text{min})$, floored at $f_\text{min}$; $T_\text{min} = 12$, $T_\text{opt} = 26$, $T_\text{max} = 40\,^\circ\text{C}$. Here $b_t = 14/14 = 1$, so $f_\text{temp} = (8/14)(20/14) = 0.816$ at $20\,^\circ\text{C}$ and $(20/14)(8/14) = 0.816$ at $32\,^\circ\text{C}$.
+- **Air dryness:** $f_\text{VPD} = \min\{1, \max[f_\text{min},\ (1 - f_\text{min})(\text{VPD}_\text{min} - \text{VPD})/(\text{VPD}_\text{min} - \text{VPD}_\text{max}) + f_\text{min}]\}$, fully open below $\text{VPD}_\text{max} = 1.2\text{ kPa}$ and at $f_\text{min}$ above $\text{VPD}_\text{min} = 3.2\text{ kPa}$.
+- **Soil water:** for wheat the manual uses plant-available water, $\text{PAW}$ (%, 100 at field capacity, 0 at wilting point): $f_\text{PAW} = 1$ above the threshold $\text{PAW}_\text{t} = 50\%$, and $1 + (\text{PAW} - \text{PAW}_\text{t})/\text{PAW}_\text{t}$ below it.
+- $g_\text{max} = 500$, $f_\text{min} = 0.01$. The widget omits the manual's rule that stops afternoon reopening once summed VPD passes 8 kPa.
+:::
+
+**Photosynthesis-linked models** tie conductance to how fast the leaf is fixing carbon. Ball, Woodrow and Berry built theirs on the observation that conductance tracks assimilation, with the ratio set by humidity[^7]. In the form Medlyn and colleagues give it[^8],
+
+$$g_\text{s} = g_0 + g_1 \frac{A\, h_\text{s}}{C_\text{s}}$$
+
+where $g_\text{s}$ is the conductance to water vapour and $A$ the net assimilation (both $\text{mol m}^{-2}\,\text{s}^{-1}$), $g_0$ and $g_1$ are fitted, $h_\text{s}$ is the leaf-surface relative humidity (a fraction) and $C_\text{s}$ the $\text{CO}_2$ mole fraction there ($\text{mol mol}^{-1}$). Medlyn's group derived the same shape from the theory that stomata minimise water lost per carbon gained; their version responds to VPD rather than humidity, and its slope $g_1$ rises with growth temperature and the marginal water cost of carbon[^8]. As implemented in the land model CLM5, which uses it in place of Ball–Berry (see [The land model CLM](the-land-model-clm.qmd)),
+
+$$g_\text{s} = g_0 + 1.6\left(1 + \frac{g_1}{\sqrt{D}}\right)\frac{A_\text{n}}{C_\text{s}}$$
+
+with $D$ the leaf-surface VPD (kPa), $A_\text{n}$ the net photosynthesis, the factor 1.6 the water-vapour-to-$\text{CO}_2$ diffusivity ratio, and $g_1 = 5.79\text{ kPa}^{1/2}$ for spring wheat[^3], in $\text{kPa}^{1/2}$ because it is divided by $\sqrt{D}$.
+
+The structural difference shows in the VPD response. Hold $A_\text{n}$ fixed, which a coupled model would not, and raise $D$ from 1.0 to 2.8 kPa. For wheat, Medlyn's factor goes from $1 + 5.79 = 6.79$ to $1 + 5.79/\sqrt{2.8} = 4.46$, a fall of $1 - 4.46/6.79 = 34\%$. The manual's $f_\text{VPD}$ falls from 1 to 0.208, or 79%. In the coupled model the rest of the closure comes through $A_\text{n}$, and light, temperature and $\text{CO}_2$ act through it too, so these models need a photosynthesis scheme such as the one in [Photosynthesis, in one leaf](photosynthesis-in-one-leaf.qmd).
+
+The widget runs the Jarvis-type wheat model and feeds it into the EMEP canopy. Start with a well-watered 20 °C morning, then warm the air and raise the VPD, then dry the soil.
+
+::: {.sim-card}
+#### Wheat stomata and the ozone deposition velocity
+
+```{ojs}
+//| echo: false
+viewof Tair = Inputs.range([5, 40], {value: 20, step: 1, label: "Air temperature (°C)"})
+viewof ppfd = Inputs.range([0, 1000], {value: 800, step: 25, label: "Light, PPFD (µmol m⁻² s⁻¹)"})
+viewof vpdSet = Inputs.range([0.2, 5], {value: 1, step: 0.1, label: "Vapour pressure deficit (kPa)"})
+viewof paw = Inputs.range([0, 100], {value: 100, step: 5, label: "Plant-available soil water (%)"})
+
+// Wheat flag leaf (CLRTAP 2017, Table III.9; eqs III.1, III.4-III.11). f_phen = f_O3 = 1.
+P = ({gmax: 500, fmin: 0.01, a: 0.0105, Tmin: 12, Topt: 26, Tmax: 40, Vmax: 1.2, Vmin: 3.2, PAWt: 50})
+es = 0.6108 * Math.exp(17.27 * Tair / (Tair + 237.3))          // kPa: VPD cannot exceed e_s(T)
+vpd = Math.min(vpdSet, es)
+fTemp = Tair <= P.Tmin || Tair >= P.Tmax ? P.fmin : Math.max(P.fmin,
+  (Tair - P.Tmin) / (P.Topt - P.Tmin) * ((P.Tmax - Tair) / (P.Tmax - P.Topt)) ** ((P.Tmax - P.Topt) / (P.Topt - P.Tmin)))
+fVPD = D => Math.min(1, Math.max(P.fmin, (1 - P.fmin) * (P.Vmin - D) / (P.Vmin - P.Vmax) + P.fmin))
+fPAW = w => w >= P.PAWt ? 1 : 1 + (w - P.PAWt) / P.PAWt
+gsto = (q, D, w) => P.gmax * (1 - Math.exp(-P.a * q)) * Math.max(P.fmin, fTemp * fVPD(D) * fPAW(w))  // mmol m-2 s-1
+cAir = 101300 / (8.31447 * (Tair + 273.15))                    // mol m-3
+
+// EMEP canopy (Simpson et al. 2012, eqs 55, 60): one sunlit leaf layer for stomata (illustrative),
+// SAI = 3, r_ext = 2500, R_inc = b SAI h / u* with b = 14 m-1, R_gs = 200 s m-1; h = 1 m, u* = 0.3 m s-1.
+Gns = 3 / 2500 + 1 / (14 * 3 * 1 / 0.3 + 200)                  // m s-1, held constant
+RaRb = Math.log((2 - 0.7) / 0.1) / (0.4 * 0.3) + 2 / (0.4 * 0.3)  // s m-1, neutral, z = 2 m
+vd = g => 1 / (RaRb + 1 / (g / 1000 / cAir + Gns))             // m s-1, g in mmol m-2 s-1
+
+g = gsto(ppfd, vpd, paw)
+Gs = g / 1000 / cAir
+share = Gs / (Gs + Gns)
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${card("VPD used (at most e_s)", vpd.toFixed(1) + " of " + es.toFixed(2) + " kPa", "#cbd5e1")}
+  ${card("Leaf stomatal conductance", g.toFixed(0) + " mmol O₃ m⁻² s⁻¹", "#10b981")}
+  ${card("Canopy resistance", (1 / (Gs + Gns)).toFixed(0) + " s m⁻¹", "#cbd5e1")}
+  ${card("Stomatal share of uptake", (100 * share).toFixed(0) + "%", "#f59e0b")}
+  ${card("Ozone deposition velocity", (100 * vd(g)).toFixed(2) + " cm s⁻¹", "#38bdf8")}
+  ${card("Canopy stomatal O₃ flux at 50 ppb, per m² ground", (50 * cAir * vd(g) * share).toFixed(1) + " nmol m⁻² s⁻¹", "#ef4444")}
+</div>`
+
+Plot.plot({
+  height: 300,
+  marginLeft: 50,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, 5], label: "Vapour pressure deficit (kPa) →", grid: true},
+  y: {domain: [0, 1], label: "↑ v_d for ozone (cm s⁻¹)", grid: true},
+  color: {legend: true, domain: ["All pathways", "Cuticle and soil only", "Driest air possible, e_s(T)", "Your settings"],
+          range: ["#38bdf8", "#64748b", "#f59e0b", "#ef4444"]},
+  marks: [
+    Plot.line(d3.range(0.2, es, 0.02).concat([es]).map(D => ({D, v: 100 * vd(gsto(ppfd, D, paw))})),
+              {x: "D", y: "v", stroke: () => "All pathways", strokeWidth: 2.5}),
+    Plot.ruleY([100 * vd(0)], {stroke: () => "Cuticle and soil only", strokeDasharray: "6 4"}),
+    Plot.ruleX([es], {stroke: () => "Driest air possible, e_s(T)", strokeDasharray: "2 3"}),
+    Plot.dot([{D: vpd, v: 100 * vd(g)}], {x: "D", y: "v", fill: () => "Your settings", stroke: "#0f172a", r: 6})
+  ]
+})
+```
+
+Stomatal model: UNECE mapping manual, wheat flag leaf, with phenology and ozone factors set to 1. VPD is capped at the saturation vapour pressure $e_\text{s}(T)$, from the FAO formula of [Heat and drought: the stomata close](heat-and-drought-stomata-close.qmd). Canopy: EMEP non-stomatal terms, held constant, with $\text{SAI} = 3$ and one stomatal leaf layer. $R_\text{a} = 21.4$ and $R_\text{b} = 16.7\text{ s m}^{-1}$: neutral, $u_* = 0.3\text{ m s}^{-1}$, 2 m over a 1 m crop ($d = 0.7h$, $z_0 = 0.1h$, as in EMEP). All inputs are illustrative.
+:::
+
+At the starting morning, 20 °C with PPFD 800, VPD 1.0 kPa and moist soil, the leaf conductance is $408\text{ mmol m}^{-2}\,\text{s}^{-1}$, the full $g_\text{max}$ times $f_\text{temp} = 0.816$. To use it in a resistance sum, divide by 1000 and by the molar density of air, $c_\text{air} = P/(RT) = 41.56\text{ mol m}^{-3}$ at 20 °C: $0.408/41.56 = 0.0098\text{ m s}^{-1}$. The canopy resistance is $72\text{ s m}^{-1}$, stomata take 70% of the uptake, and $v_\text{d} = 0.91\text{ cm s}^{-1}$. The dashed floor, $0.36\text{ cm s}^{-1}$, is cuticles and soil alone; the ceiling with $R_\text{c} = 0$ is $1/38.0\text{ s m}^{-1} = 2.6\text{ cm s}^{-1}$.
+
+That 70% sits well above the 45% field mean, partly by construction. Stomata count one layer of flag-leaf-like leaves, because lower leaves are shaded and older, while every leaf and stem surface takes up ozone on its cuticle, hence $\text{SAI} = 3$; neither number is fitted, and $G_\text{ns}$ is held constant by design. The widget also omits a sink that flux towers see: fast reaction with nitric oxide and highly reactive biogenic VOCs in the canopy air, which the ozone review finds can be a non-negligible part of measured ozone fluxes at some sites[^2]. Read the share for how it moves, not for its size.
+
+## The day, the season and a drought
+
+**Through the day.** Set the light to 0: $f_\text{light} = 0$ shuts the stomatal path and $v_\text{d}$ drops to the floor of $0.36\text{ cm s}^{-1}$. At dawn, with PPFD 100 and VPD 0.5 kPa, $f_\text{light} = 0.65$ and $v_\text{d} = 0.75\text{ cm s}^{-1}$. In the afternoon VPD, not light, takes over. Set 32 °C, PPFD 1000 and 2.8 kPa, which at that temperature is 41% relative humidity. $f_\text{temp}$ is again 0.816, but $f_\text{VPD} = 0.208$, so the stomatal share falls to 34% and $v_\text{d}$ to $0.51\text{ cm s}^{-1}$, in full sun. At 20 °C that VPD is impossible, since $e_\text{s} = 2.34$ kPa. A modelled day therefore peaks in the late morning; at night, weaker turbulence also raises $R_\text{a}$, which the widget holds fixed. The default stomatal term of the widely used Wesely scheme, with no VPD or water-stress response, could not reproduce this diurnal course in an evaluation by Sun and colleagues[^9].
+
+**Through the season.** The growth-stage factor $f_\text{phen}$ and the leaf area ramp stomatal uptake up after emergence or leaf-out and down at senescence, and at four long-term flux sites it dominated ozone deposition in summer[^9]. Years differ too: at Harvard Forest $v_\text{d}$ varied by a factor of two across eleven years, which a standard scheme did not capture[^2].
+
+**In a drought.** Lower the soil water to 25% at the morning settings: $f_\text{PAW} = 0.5$, the conductance halves to $204\text{ mmol m}^{-2}\,\text{s}^{-1}$, the stomatal share falls to 54% and $v_\text{d}$ to $0.67\text{ cm s}^{-1}$. Combine it with the 32 °C, 2.8 kPa afternoon and the share is 20%, with $v_\text{d} = 0.43\text{ cm s}^{-1}$, close to the floor. Deposition shifts to the slower cuticle and soil routes. In a European chemistry transport model, Anav and colleagues found that limiting stomata by soil water cut ozone dry deposition from about 8.5 to $7.7\text{ Tg O}_3$ a year, around 10%, mostly in semi-arid regions, and changed ozone by up to 4 ppb[^10].
+
+The floor moves too. The ozone review finds cuticular uptake rising with humidity, consistent with chemistry in thin water films, while soil uptake falls in wetter soil as water blocks the pores; one compilation gives soil resistances of $100\text{ s m}^{-1}$ dry and $500\text{ s m}^{-1}$ wet[^2]. If drying halved the widget's $R_\text{gs}$ from 200 to $100\text{ s m}^{-1}$, $G_\text{ns}$ would rise from 0.0041 to $0.0054\text{ m s}^{-1}$ and the floor from 0.36 to $0.45\text{ cm s}^{-1}$, offsetting part of the stomatal loss.
+
+**From leaf to canopy.** EMEP multiplies $g_\text{sto}$ by the full LAI and notes the product is non-linear in LAI, because light falls through the canopy[^1]. Counting three leaf layers instead of the widget's one triples the stomatal conductance but raises $v_\text{d}$ only from 0.91 to $1.47\text{ cm s}^{-1}$, or 62%, because $R_\text{a} + R_\text{b}$ caps it. Several observational studies suggest only a weak LAI dependence, so many models may exaggerate it, though neither that nor the best scaling is settled[^2]. The thicker canopy of [Ammonia deposition and ozone feedbacks](ammonia-deposition-ozone.qmd) lowers $R_\text{c}$ less than in proportion.
+
+## Why the model choice matters
+
+**For the deposition velocity.** Sun and colleagues ran four stomatal schemes on the same meteorology and compared them with canopy conductance inferred from flux-tower water vapour[^9]. For deciduous broadleaf forests the inferred mean daytime growing-season value was $0.37\text{ cm s}^{-1}$. The Wesely default gave 0.72, nearly double, and Medlyn with plant-type slopes 0.61, while Ball–Berry and the Zhang multiplicative scheme, which has a VPD response, gave 0.39 and 0.40. The responses and parameters matter more than the family label. Across five complete schemes driven by the same data at a Canadian forest, the review reports two- to threefold differences in ozone $v_\text{d}$[^2].
+
+**For the future.** Jarvis-type schemes have no built-in $\text{CO}_2$ response; photosynthesis-linked ones respond through $A_\text{n}/C_\text{s}$. When Sun and colleagues raised $\text{CO}_2$ from 390 to 550 ppm, mean July daytime canopy conductance fell by 14% with Ball–Berry and 19% with Medlyn. A Jarvis scheme fitted with an empirical $\text{CO}_2$ function fell by 35%. Free-air enrichment experiments on forest trees found about 20%[^9].
+
+**For ozone damage.** The widget's last readout is the canopy stomatal flux per square metre of ground. It is not the phytotoxic ozone dose of [How ozone damages crops](how-ozone-damages-crops.qmd), which is per square metre of leaf, uses the canopy-top concentration and counts only flux above a threshold, but it moves with the same stomatal conductance. At 50 ppb it is $13.3\text{ nmol m}^{-2}\,\text{s}^{-1}$ on the moist morning and $1.8$ on the hot afternoon with soil water at 25%. Leaving out the soil-water factor, as the manual's large-scale method does[^4] and risk assessments often have[^10], puts that afternoon at $3.4$, nearly double. My untested inference: in a coupled chemistry model such an error partly cancels, because stomata opened too wide also lower the ozone they see; a dose driven by measured ozone has no such buffer.
+
+::: {.callout-tip}
+## What this means for you
+
+My suggestions, not tested here. In a chemistry transport model, check that the stomatal term responds to VPD and soil water; the Wesely default does neither[^9], and soil water alone moved European ozone deposition by about 10%[^10]. Report the stomatal share with $v_\text{d}$, since schemes can match observed $v_\text{d}$ with different splits[^2]. In flux-based risk assessment, use the manual's soil-water function rather than $f_\text{SW} = 1$.
+:::
+
+## Key takeaways
+
+- Ask which pathway dominates before interpreting a change in $v_\text{d}$: a midday fall points to stomata; a rise after rain or dew is often, not certainly, wet surfaces.
+- Convert water-vapour conductance with a stated diffusivity ratio, and say which: published ozone values range from 1.51 to 1.61.
+- A Jarvis-type product sees $\text{CO}_2$ only if you add it; photosynthesis-linked models need a carbon model and well-chosen $g_1$.
+- Night, drought and dry air push deposition onto cuticles and soil, whose resistances also change with wetness.
+- Keep inputs physically consistent: VPD cannot exceed $e_\text{s}(T)$.
+
+## References
+
+[^1]: Simpson, D. et al. The EMEP MSC-W chemical transport model – technical description. *Atmos. Chem. Phys.* **12**, 7825–7865 (2012), including its Supplement (Tables S18 and S19). https://doi.org/10.5194/acp-12-7825-2012
+[^2]: Clifton, O. E. et al. Dry deposition of ozone over land: processes, measurement, and modeling. *Rev. Geophys.* **58**, e2019RG000670 (2020). https://doi.org/10.1029/2019RG000670
+[^3]: CTSM development team. Stomatal resistance and photosynthesis. Section 2.9 of the CLM5.0 Technical Note (ctsm release-clm5.0 documentation, NCAR; accessed 19 October 2026). https://escomp.github.io/CTSM/release-clm5.0/tech_note/Photosynthesis/CLM50_Tech_Note_Photosynthesis.html
+[^4]: CLRTAP. Mapping critical levels for vegetation. Chapter III of *Manual on Methodologies and Criteria for Modelling and Mapping Critical Loads and Levels and Air Pollution Effects, Risks and Trends* (UNECE Convention on Long-range Transboundary Air Pollution, 2017).
+[^5]: Jarvis, P. G. The interpretation of the variations in leaf water potential and stomatal conductance found in canopies in the field. *Phil. Trans. R. Soc. Lond. B* **273**, 593–610 (1976). https://doi.org/10.1098/rstb.1976.0035
+[^6]: Beerling, D. J. Gas valves, forests and global change: a commentary on Jarvis (1976) ‘The interpretation of the variations in leaf water potential and stomatal conductance found in canopies in the field’. *Phil. Trans. R. Soc. B* **370**, 20140311 (2015). https://doi.org/10.1098/rstb.2014.0311
+[^7]: Ball, J. T., Woodrow, I. E. & Berry, J. A. A model predicting stomatal conductance and its contribution to the control of photosynthesis under different environmental conditions. In *Progress in Photosynthesis Research* (ed. Biggins, J.) 221–224 (Martinus Nijhoff, 1987). https://doi.org/10.1007/978-94-017-0519-6_48
+[^8]: Medlyn, B. E. et al. Reconciling the optimal and empirical approaches to modelling stomatal conductance. *Glob. Change Biol.* **17**, 2134–2144 (2011). https://doi.org/10.1111/j.1365-2486.2010.02375.x
+[^9]: Sun, S. et al. Influence of plant ecophysiology on ozone dry deposition: comparing between multiplicative and photosynthesis-based dry deposition schemes and their responses to rising CO2 level. *Biogeosciences* **19**, 1753–1776 (2022). https://doi.org/10.5194/bg-19-1753-2022
+[^10]: Anav, A. et al. Sensitivity of stomatal conductance to soil moisture: implications for tropospheric ozone. *Atmos. Chem. Phys.* **18**, 5747–5763 (2018). https://doi.org/10.5194/acp-18-5747-2018
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/ammonia-deposition-ozone.html"><span>Previous</span>Ammonia deposition and ozone feedbacks</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/cesm2-fertilizer-climate-feedback.html"><span>Next</span>Fertiliser ammonia in CESM2</a></div>
+<!-- CURRICULUM_FOOTER_END -->

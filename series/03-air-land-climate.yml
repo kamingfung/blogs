@@ -39,6 +39,7 @@ parts:
       - id: air-land-climate/nox-vocs-and-sunlight
         title: "NOx, VOCs and sunlight"
         level: intermediate
+        path: blogs/nox-vocs-and-sunlight.md
       - id: air-land-climate/why-ozone-peaks-in-the-afternoon
         title: "Why ozone peaks in the afternoon"
         level: intermediate
@@ -74,6 +75,7 @@ parts:
       - id: air-land-climate/stomata-and-dry-deposition
         title: "Stomata and dry deposition"
         level: intermediate
+        path: blogs/stomata-and-dry-deposition.md
       - id: air-land-climate/leaf-area-index
         title: "Leaf area index"
         level: intermediate

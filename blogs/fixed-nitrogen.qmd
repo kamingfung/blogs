@@ -124,6 +124,6 @@ This is why the rest of this part follows the atom rather than the problem. The 
 [^4]: Forster, P. et al. in *Climate Change 2021: The Physical Science Basis. Contribution of Working Group I to the Sixth Assessment Report of the Intergovernmental Panel on Climate Change* (eds Masson-Delmotte, V. et al.) 923–1054 (Cambridge Univ. Press, 2021). https://doi.org/10.1017/9781009157896.009
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/organic-aerosols-health-climate.html"><span>Previous</span>Organic aerosols: health versus climate</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/where-ammonia-comes-from.html"><span>Next</span>Where ammonia comes from</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/nox-vocs-and-sunlight.html"><span>Previous</span>NOx, VOCs and sunlight</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/where-ammonia-comes-from.html"><span>Next</span>Where ammonia comes from</a></div>
 <!-- CURRICULUM_FOOTER_END -->
 

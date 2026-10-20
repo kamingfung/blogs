@@ -221,3 +221,4 @@ Report which spread an error bar shows: $s$ for the variability of the data, $s/
 <!-- CURRICULUM_FOOTER_START -->
 <div class="mf"><a class="mf-up" href="/series/statistics/index.html"><span>Series</span>Statistics</a><a class="mf-next" href="/blogs/ks_test/ks_test.html"><span>Next</span>The Kolmogorov–Smirnov test</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+

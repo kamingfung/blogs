@@ -1,0 +1,248 @@
+---
+title: What a climatology is
+description: A climatology is the statistics of weather at one place and time of year, from the average to the chance of a late frost, and how many years it takes to estimate each part.
+date: 2026-10-19
+categories:
+- climate
+- statistics
+- meteorology
+- agriculture
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/prediction/index.html">Weather, Climate and Prediction</a><span class="sep">·</span>Part 1 · Weather or climate?</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">Comfort with averages and histograms. Python for the notebooks.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+A climatology is the statistics of weather at one place and time of year: not only the average, but the spread, the percentiles and the chance of a particular event, such as a frost after a given date. In a synthetic 30-year record of spring night temperatures, the week of 15 April averages 3.4 °C, yet 13% of its nights reach 0 °C and 19 of the 30 springs still have a frost after 15 April. The usual 30-year window is a compromise between two errors: fewer years give a noisier estimate, more years lag a warming climate. Rare events need more years than averages do. Asked for the date after which a frost comes in only 1 spring in 10, the full 30 years miss the true date by 5.7 days in a typical record, and the last 10 years alone by 8.6 days. And every climatology describes its own period: a 1991–2020 normal describes about 2005.
+
+Quote a climatology as a probability with its period, and correct it for trend.
+:::
+
+## A climatology is a distribution, not a number
+
+A climatology answers one question: what weather should I expect here, at this time of year, and how sure can I be? In [Climate vs weather](climate-vs-weather/climate-vs-weather.ipynb), climate was the distribution that each day's weather is drawn from. A climatology is that distribution estimated from a stated set of past years and written down as numbers. It has four kinds of number:
+
+- **Centre:** the mean or median, for example of the daily minimum temperature on 15 April.
+- **Spread:** the standard deviation, or the range between the 10th and 90th percentiles.
+- **Percentiles:** the value that a given share of days falls below. A cold night in the 10th percentile is colder than 90% of nights at that time of year.
+- **Event probabilities:** the share of past years in which something happened, such as a night at or below 0 °C, a day above 35 °C, or rain on a given day.
+
+An event probability is a count: count the springs (or summers, or years) it happened in, and divide by the number of springs in the record. In symbols, $\hat p = n_E / N$, where $n_E$ is the number of years in which event $E$ happened, $N$ is the number of years in the reference period, and $\hat p$ (no units) estimates the event's probability in any one year. The definition of the event belongs to the climatology: the threshold, the period it must fall in, and how the variable was measured. A frost climatology is built from air temperature in a standard instrument shelter, and on a clear night the air at flower height is colder still, for reasons set out in [Frost, and the night the crop is lost](frost-and-the-night-the-crop-is-lost.qmd).
+
+The example in this module is synthetic, so that its true climatology is known. It is 30 springs, 1996–2025, of daily minimum temperature (°C) from 1 March to 31 May. In the middle of the record the average night warms from −1.5 °C on 1 March by 0.11 °C per day, the whole spring warms by 0.04 °C per year, and each night scatters around the average, with cold and warm spells lasting a few nights. All of these numbers are my choices; the record describes no real place (night-to-night scatter $\sigma = 3.0$ °C, autocorrelation $\varphi = 0.6$ from one night to the next). The cards below summarise one week of it.
+
+::: {.sim-card}
+#### One week of the synthetic record, 12–18 April
+
+```{ojs}
+//| echo: false
+// Synthetic daily minimum temperature (°C), 1 March (d = 0) to 31 May (d = 91).
+NDAYS = 92
+YEARS = d3.range(1996, 2026)
+
+springs = (seed, years) => {
+  let s = seed;
+  // mulberry32: a small seeded generator, so every reader sees the same record.
+  const rand = () => { s = s + 0x6D2B79F5 | 0; let t = Math.imul(s ^ s >>> 15, 1 | s);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  const gauss = () => Math.sqrt(-2 * Math.log(1 - rand())) * Math.cos(2 * Math.PI * rand());
+  return years.map(year => {
+    let e = gauss();
+    const tmin = [];
+    for (let d = 0; d < NDAYS; d++) {
+      if (d > 0) e = 0.6 * e + 0.8 * gauss();   // AR(1), phi = 0.6, unit variance
+      tmin.push(-1.5 + 0.11 * d + 0.04 * (year - 2010.5) + 3.0 * e);
+    }
+    return {year, tmin};
+  });
+}
+
+record = springs(20261019, YEARS)
+
+// Last day of each spring at or below the threshold; -1 if there was none.
+lastFrost = (rec, thr) => rec.map(r => r.tmin.reduce((L, t, d) => t <= thr ? d : L, -1))
+riskAfter = (L, D) => L.filter(l => l > D).length / L.length
+// First date after which at most a share p of springs had a frost.
+dateFor = (L, p) => { for (let D = -1; D < NDAYS; D++) if (riskAfter(L, D) <= p + 1e-9) return D; return NDAYS; }
+lab = d => d < 0 ? "before 1 Mar" : d < 31 ? `${d + 1} Mar` : d < 61 ? `${d - 30} Apr` : `${d - 60} May`
+
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+week = record.flatMap(r => r.tmin.slice(42, 49))   // 12-18 April, all 30 years
+after15 = lastFrost(record, 0).filter(l => l > 45).length
+
+html`<div class="sim-readouts">
+  ${card("Average night (mean minimum)", d3.mean(week).toFixed(1) + " °C", "#38bdf8")}
+  ${card("Typical spread night to night (SD)", d3.deviation(week).toFixed(1) + " °C", "#38bdf8")}
+  ${card("Coldest tenth of nights below", d3.quantile(week, 0.1).toFixed(1) + " °C", "#10b981")}
+  ${card("Nights at or below 0 °C", (100 * week.filter(t => t <= 0).length / week.length).toFixed(0) + "% (" + week.filter(t => t <= 0).length + " of " + week.length + ")", "#f59e0b")}
+  ${card("Springs with a frost after 15 April", after15 + " of 30", "#ef4444")}
+</div>`
+```
+
+Synthetic data, seed 20261019. The week pools 7 days × 30 years = 210 nights.
+:::
+
+The mean minimum for the week is 3.4 °C, above freezing, as if the frosts were over. The rest of the climatology says otherwise. The spread is 3.1 °C, the coldest tenth of nights are below −1.0 °C, and 13% of the nights (28 of 210) reach 0 °C. The last card answers a different question: in 19 of the 30 springs, 63%, there was at least one frost on some night after 15 April. The chance of frost on one night and the chance of frost on any night after a date are different events, and the second is much larger because it collects every remaining night of the season. A grower's question is almost always the second.
+
+The week is pooled because 30 values for a single date are a small sample: on 15 April itself, 4 of the 30 years had a frost. Pooling neighbouring days, or smoothing across them, is how a daily climatology is steadied; [Anomalies](anomalies/anomalies.ipynb) works through the smoothing and its errors.
+
+## How many years: sampling against change
+
+The length of the reference period trades two errors: fewer years give a noisier estimate, more years reach back into a climate that has since changed. For an average, the answer depends on how fast the climate is warming. With fast warming (0.3–0.4 °C per decade), a window of about 11–13 years beats 30; with slow warming (0.1 °C per decade), about 30 years is close to the best. These figures assume the yearly value varies by 1 °C from year to year, an illustrative choice; the note below has the formula behind them. The World Meteorological Organization's standard normal is a 30-year average over the most recent 30 years ending in a year ending in 0, now 1991–2020[^1]; [Anomalies](anomalies/anomalies.ipynb) covers that definition and what changing the baseline does.
+
+::: {.callout-note collapse="true"}
+## The best window length
+
+Take the simplest case: an $N$-year mean of some quantity, used as the normal for the year just after the window. Suppose the quantity rises by $\beta$ (°C per year) and varies from year to year with standard deviation $\sigma$ (°C), independently between years. The window's mean describes its own midpoint, $(N - 1)/2$ years before its last year, so its expected squared error is
+
+$$\text{MSE}(N) = \frac{\sigma^2}{N} + \left( \beta \, \frac{N - 1}{2} \right)^2 ,$$
+
+where the first term is sampling noise and the second is the squared lag behind the trend. Evaluating it at every $N$ from 2 to 100 with $\sigma = 1$ °C gives a best window of 27 years at $\beta = 0.01$ °C per year, 17 at 0.02, 13 at 0.03 and 11 at 0.04. At 0.03 °C per year the 30-year normal's root-mean-square error is 0.47 °C, against 0.33 °C at the best length.
+
+Setting the derivative to zero gives $\sigma^2 / N^2 = \beta^2 (N - 1)/2$, and for $N$ much larger than 1,
+
+$$N^* \approx \left( \frac{2 \sigma^2}{\beta^2} \right)^{1/3}.$$
+
+The best length grows with $\sigma$: the noisier the statistic, the longer the window it needs. Two simplifications hold this up. Real years are not independent (multi-year swings such as those tied to ENSO add slow noise), and real trends are not straight lines.
+:::
+
+Real records agree: at 344 US climate divisions, normals averaged over fewer than 30 years and updated every year predicted the next year's seasonal temperature better than the WMO 30-year normal, and the operational forecasts described used a fixed 10 years[^3]. A later study judged 30-year normals often unrepresentative of the current climate and proposed record-specific window lengths and trend fits instead[^2].
+
+### Extremes need more years than means
+
+An event that happens 1 year in 100 is missing altogether from 74% of 30-year records ($0.99^{30} = 0.74$). Extremes need more years because the estimate rests on the few years in which the rare thing happened, and a count of a few is noisy. A frequency $\hat p$ counted over $N$ independent years has standard error $\sqrt{p(1-p)/N}$, where $p$ is the true probability. For an event that happens in 1 year in 10, that is $\sqrt{0.1 \times 0.9 / 30} = 0.055$ from 30 years, already half of $p$, and $\sqrt{0.1 \times 0.9 / 10} = 0.095$ from 10 years, about $p$ itself. Percentiles behave the same way: the further into the tail, the noisier the estimate (note below). So the best window for a tail statistic is longer than for an average, which the widget in the next section shows on the frost record.
+
+::: {.callout-note collapse="true"}
+## How much noisier the tails are
+
+For independent draws from a normal distribution with standard deviation $\sigma$, the standard error of the mean of $N$ values is $\sigma / \sqrt{N}$. The standard error of an estimated percentile is that quantity times a factor that grows towards the tail:
+
+| Statistic | Multiplier on $\sigma/\sqrt{N}$ |
+|---|---:|
+| Mean | 1.00 |
+| Median | 1.25 |
+| 10th percentile | 1.71 |
+| 5th percentile | 2.11 |
+| 1st percentile | 3.73 |
+
+The factor comes from the large-sample variance of the sample $p$-quantile $\hat x_p$, which is $p(1-p) / [N f(x_p)^2]$ for a distribution with density $f$ and true quantile $x_p$. For a normal distribution, $f(x_p) = \phi(z_p)/\sigma$, where $\phi$ is the standard normal density and $z_p$ the standard normal quantile, so the multiplier is $\sqrt{p(1-p)} / \phi(z_p)$. For the 10th percentile, $z = 1.2816$ and $\phi(z) = 0.1755$, so $\sqrt{0.09}/0.1755 = 1.71$. Daily values that are correlated from one day to the next carry less information than their count suggests, so for pooled daily data the effective $N$ is smaller than the number of days.
+:::
+
+## Climatology as a forecast and as a plan
+
+A climatology is the forecast you fall back on when the weather cannot be predicted. For daily temperature, the average for the date beats persisting today's anomaly at leads beyond about two days at the station used in [Persistence and climatology baselines](persistence-and-climatology-baselines.qmd). It also gives a probability forecast with no model: "frost on a night in mid-April: 13%" is the frequency from the week above. My inference: such a forecast adds nothing beyond the base rate, but it is calibrated as long as the climate it was counted in has not moved.
+
+For planning, the question is usually the chance of an event after a date: when is it safe enough to plant out tender transplants, or to stop budgeting for frost protection? The answer is a **planning date**: the date after which only 1 spring in 10 (or whatever share you accept) still had a frost. In symbols, if $r(D)$ is the share of springs with a frost after date $D$, the planning date at risk level $p$ is the first date $D_p$ with $r(D_p) \le p$. At $p = 50\%$ it is the median last frost date: half of springs have a frost after it. The risk level is the grower's choice, set by what a late frost would cost. For a perennial crop the frost that matters is the one that comes after the flowers have lost their hardiness, and when bloom comes depends on winter chill and spring heat, the subject of [Chill hours and dormancy](chill-hours-and-dormancy.qmd). My inference: the full planning quantity is the chance of a frost after bloom, which needs a climatology of bloom dates as well as one of frost dates.
+
+A real record usually comes from the nearest long-running weather station; published normals such as the WMO 1991–2020 set are built from station records like these[^1]. If a farm has only a few years from its own logger, my suggestion is to compare it with the nearest long station over the years they overlap and carry the difference across to the long record. Expect the logger to read differently on clear, calm nights: a frost pocket collects cold air and canopy height is colder than a standard shelter, as [Frost, and the night the crop is lost](frost-and-the-night-the-crop-is-lost.qmd) explains, along with which threshold matters at which stage of the crop.
+
+The widget computes the planning date from the 30-year record and from its last 10 years. Because the record is synthetic, it also computes the true planning date for the climate of 2025 from 4,000 simulated springs, and the typical miss of each window from 1,000 further synthetic 30-year records. Start at a 10% risk and 0 °C, then move the risk to 50%, then switch the threshold.
+
+::: {.sim-card}
+#### Plant-out and frost-protection planning date
+
+```{ojs}
+//| echo: false
+viewof riskPct = Inputs.range([5, 50], {value: 10, step: 5, label: "Acceptable chance of a later frost (%)"})
+viewof thr = Inputs.radio(new Map([["0 °C", 0], ["−2.2 °C", -2.2]]), {value: 0, label: "Frost threshold (shelter air)"})
+
+p = riskPct / 100
+L30 = lastFrost(record, thr)
+L10 = L30.slice(20)                                    // 2016-2025
+
+// Truth for 2025's climate, and 1,000 more records to measure each window's typical error.
+truthSprings = springs(1, Array(4000).fill(2025))
+manySprings = springs(3, Array(1000).fill(YEARS).flat())
+truthL = lastFrost(truthSprings, thr)
+manyL = lastFrost(manySprings, thr)
+
+d30 = dateFor(L30, p)
+d10 = dateFor(L10, p)
+dTrue = dateFor(truthL, p)
+rms = w => Math.sqrt(d3.mean(d3.range(1000), k =>
+  (dateFor(manyL.slice(k * 30 + 30 - w, k * 30 + 30), p) - dTrue) ** 2))
+
+html`<div class="sim-readouts">
+  ${card("Planning date from 30 years (1996–2025)", lab(d30), "#38bdf8")}
+  ${card("From the last 10 years (2016–2025)", lab(d10), "#f59e0b")}
+  ${card("True planning date, 2025 climate", lab(dTrue), "#10b981")}
+  ${card("Typical miss, 30-year record", rms(30).toFixed(1) + " days", "#38bdf8")}
+  ${card("Typical miss, 10-year record", rms(10).toFixed(1) + " days", "#f59e0b")}
+</div>`
+
+dt = D => new Date(Date.UTC(2001, 2, 1 + D))
+SERIES = ["30 years", "Last 10 years", "True, 2025 climate"]
+curves = d3.range(-1, NDAYS).flatMap(D => [
+  {x: dt(D), r: 100 * riskAfter(L30, D), s: SERIES[0]},
+  {x: dt(D), r: 100 * riskAfter(L10, D), s: SERIES[1]},
+  {x: dt(D), r: 100 * riskAfter(truthL, D), s: SERIES[2]}
+])
+
+Plot.plot({
+  height: 340,
+  marginLeft: 55,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {type: "utc", label: "Date →", grid: true, tickFormat: "%-d %b"},
+  y: {domain: [0, 100], label: "↑ Springs with a frost after the date (%)", grid: true},
+  color: {legend: true, domain: [...SERIES, "Your risk level"],
+          range: ["#38bdf8", "#f59e0b", "#10b981", "#ef4444"]},
+  marks: [
+    Plot.ruleY([riskPct], {stroke: () => "Your risk level", strokeDasharray: "4 4"}),
+    Plot.line(curves, {x: "x", y: "r", stroke: "s", curve: "step-after", strokeWidth: 2.5}),
+    Plot.ruleX([d30, d10, dTrue].map(dt), {stroke: ["#38bdf8", "#f59e0b", "#10b981"], strokeOpacity: 0.5})
+  ]
+})
+```
+
+Synthetic data. Typical miss is the root-mean-square difference from the true date over 1,000 synthetic records with the same trend and weather.
+:::
+
+At a 10% risk and 0 °C, the 30-year record gives 9 May and the last 10 years give 26 April. The true date for 2025 is 8 May. The 10-year estimate is 12 days early, the risky direction: a decision based on it would treat a fortnight of real frost risk as safe. That is sampling, not trend. The trend alone moves the whole distribution earlier by about $0.04 \times 14.5 / 0.11 = 5.3$ days between the middle of the 30-year window (2010–11) and 2025, using the record's built-in trend and seasonal warming. With 10 springs, a 10% risk can only mean "at most 1 spring in 10 had a later frost", so the estimate rests on the second-latest frost in the decade. This record is one draw; over 1,000 synthetic records the typical miss is 5.7 days for the 30-year window and 8.6 days for the 10-year one.
+
+Move the risk to 50% and the two windows nearly tie: typical misses of 5.5 days and 5.7 days, with estimates of 20 April and 12 April against a true 17 April. A median uses the middle of the distribution and needs fewer years, so the lag of the long window costs as much as the noise of the short one. At the −2.2 °C threshold and 10% risk, the 30-year record gives 28 April and the last 10 years 17 April, against a true 19 April. In this one record the short window lands closer, yet its typical miss is still the larger, 9.0 days against 6.4 days. The tail, which is the part a frost decision depends on, rewards the longer record even with the climate warming at 0.4 °C per decade.
+
+## Climatologies move
+
+A climatology describes its reference period, not the present. If the whole distribution shifts, a date moves by about $\Delta D \approx \beta \, \Delta t / s$ days: the trend $\beta$ (°C per year) times the years $\Delta t$ since the middle of the reference period, divided by the seasonal warming $s$ (°C per day) at that time of year. The middle of 1991–2020 is 2005.5, so in 2026 the synthetic record's 1991–2020 frost dates would sit $0.04 \times 20.5 / 0.11 = 7.5$ days late. My inference: if night-to-night variability changes too, tail dates move by a different amount.
+
+Real frost seasons have moved. Across the conterminous United States, the frost-free season, counted with a 0 °C threshold, lengthened by about 1 week after 1980 and by about 2 weeks from the start to the end of the 20th century, with much larger increases in the west than in the east[^4]. A frost-date table built from older decades describes a colder climate than today's, and how much colder depends on the region. The alternatives to a fixed 30-year normal discussed above, shorter windows and trend fits[^2] [^3], exist for this reason. The widget shows the price of the simplest one, keeping only recent years: for tail statistics it adds more noise than it removes lag.
+
+::: {.callout-tip}
+## What this means for you
+
+My inferences from the results above, not tested on a real site:
+
+- Ask for frost dates as probabilities. A median last frost date is a date after which half of springs still have a frost; a planting or protection decision usually needs the 10% or 20% date instead.
+- Prefer a long record corrected for trend over a short recent record for tail dates. Estimate the trend from the whole record, then move the long-record dates by $\beta\,\Delta t / s$.
+- Read the threshold and the measurement height. A shelter-air frost date at 0 °C is not a flower-height frost date, and the stage of the crop sets which threshold matters.
+:::
+
+## Key takeaways
+
+- State the reference period, the threshold and the measurement with every climatological number; without them the number cannot be reused.
+- For any decision about an event, use the probability of the event over the whole period at risk, not the frequency on a single day.
+- Choose the window by the statistic: means and medians tolerate short windows, percentiles and rare events need long ones.
+- Never estimate a 1-in-10 risk from 10 years of record; the answer is set by one or two springs.
+- In a warming climate, expect a fixed normal to be biased towards the climate of its midpoint, and correct for it explicitly.
+
+## References
+
+[^1]: NOAA National Centers for Environmental Information. WMO Climate Normals. [ncei.noaa.gov/products/wmo-climate-normals](https://www.ncei.noaa.gov/products/wmo-climate-normals) (accessed 19 October 2026).
+
+[^2]: Livezey, R. E., Vinnikov, K. Y., Timofeyeva, M. M., Tinker, R. & van den Dool, H. M. Estimation and extrapolation of climate normals and climatic trends. *J. Appl. Meteorol. Climatol.* **46**, 1759–1776 (2007). [doi:10.1175/2007JAMC1666.1](https://doi.org/10.1175/2007JAMC1666.1)
+
+[^3]: Huang, J., van den Dool, H. M. & Barnston, A. G. Long-lead seasonal temperature prediction using optimal climate normals. *J. Clim.* **9**, 809–817 (1996). [doi:10.1175/1520-0442(1996)009\<0809:LLSTPU\>2.0.CO;2](https://doi.org/10.1175/1520-0442(1996)009%3C0809:LLSTPU%3E2.0.CO;2)
+
+[^4]: Kunkel, K. E., Easterling, D. R., Hubbard, K. & Redmond, K. Temporal variations in frost-free season in the United States: 1895–2000. *Geophys. Res. Lett.* **31**, L03201 (2004). [doi:10.1029/2003GL018624](https://doi.org/10.1029/2003GL018624)
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/climate-vs-weather/climate-vs-weather.html"><span>Previous</span>Climate vs weather</a><a class="mf-up" href="/series/prediction/index.html"><span>Series</span>Weather, Climate and Prediction</a><a class="mf-next" href="/blogs/anomalies/anomalies.html"><span>Next</span>Anomalies</a></div>
+<!-- CURRICULUM_FOOTER_END -->

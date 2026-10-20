@@ -1,0 +1,268 @@
+---
+title: NOx, VOCs and sunlight
+description: How sunlight, nitrogen oxides and volatile organic compounds make surface ozone, why NO2 photolysis alone makes none, and why cutting NOx can raise ozone before it lowers it.
+date: 2026-10-19
+categories:
+- atmospheric chemistry
+- air quality
+- ozone
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/air-land-climate/index.html">Air, Land and Climate</a><span class="sep">·</span>Part 3 · Ozone chemistry</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">School chemistry. Parts 1 and 5 of Clouds and Aerosols help but are not required.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Sunlight splits nitrogen dioxide ($\text{NO}_2$) into nitric oxide (NO) and an oxygen atom that becomes ozone ($\text{O}_3$), and NO then destroys that ozone again. Within about a minute this settles into a photostationary state, the Leighton relationship, which makes no ozone. Net ozone needs another route from NO to $\text{NO}_2$: peroxy radicals ($\text{HO}_2$, $\text{RO}_2$), formed when the hydroxyl radical (OH) oxidises volatile organic compounds (VOCs) and carbon monoxide. Each conversion leaves one extra ozone, and the radical budget sets the pace. Where radicals are lost mostly by reacting with each other, ozone production rises with $\text{NO}_x$ and barely notices VOCs ($\text{NO}_x$-limited). Where they are lost mostly as nitric acid, more $\text{NO}_x$ slows ozone production and less speeds it up (VOC-limited, or $\text{NO}_x$-saturated). In practice: find out which regime the air is in before predicting what an emission cut will do.
+:::
+
+## Sunlight alone makes no ozone
+
+Three fast reactions in sunlit air only move oxygen atoms back and forth: $\text{NO}_2$ absorbs light below about $420\text{ nm}$ and splits[^2], the atom joins $\text{O}_2$, and NO takes it back from ozone[^1]:
+
+$$\begin{aligned}
+\text{NO}_2 + h\nu &\xrightarrow{\;j\;} \text{NO} + \text{O}(^3\text{P}) \\
+\text{O}(^3\text{P}) + \text{O}_2 + \text{M} &\longrightarrow \text{O}_3 + \text{M} \\
+\text{NO} + \text{O}_3 &\xrightarrow{\;k\;} \text{NO}_2 + \text{O}_2
+\end{aligned}$$
+
+where $h\nu$ is a photon, $\text{M}$ any air molecule, $j$ the photolysis frequency of $\text{NO}_2$ ($\text{s}^{-1}$) and $k$ the rate coefficient of $\text{NO} + \text{O}_3$. The O atom is so short-lived that the first two steps act as one; setting $d[\text{NO}_2]/dt = k[\text{NO}][\text{O}_3] - j[\text{NO}_2]$ to zero gives the Leighton relationship:
+
+$$[\text{O}_3] = \frac{j\,[\text{NO}_2]}{k\,[\text{NO}]}$$
+
+with mixing ratios in ppb. IUPAC recommends $k = 1.8 \times 10^{-14}\text{ cm}^3\,\text{molecule}^{-1}\,\text{s}^{-1}$ at $298\text{ K}$[^1]; air at $298\text{ K}$ and $1013.25\text{ hPa}$ holds $P/(k_\text{B}T) = 2.463 \times 10^{19}\text{ molecules cm}^{-3}$, so $k = 1.8 \times 10^{-14} \times 2.463 \times 10^{10} = 4.43 \times 10^{-4}\text{ ppb}^{-1}\,\text{s}^{-1}$.
+
+Sunlight enters only through $j$. Trebs and colleagues fitted its downwelling part near the ground as $j_\downarrow = B_1 G + B_2 G^2$, with $G$ the global irradiance ($\text{W m}^{-2}$), $B_1 = 1.47 \times 10^{-5}\text{ s}^{-1}$ per $\text{W m}^{-2}$ and $B_2 = -4.84 \times 10^{-9}\text{ s}^{-1}$ per $(\text{W m}^{-2})^2$; total $j$ is $(1 + \alpha)\,j_\downarrow$ with $\alpha$ the UV-A albedo, valid below $800\text{ m}$ and for $\alpha < 0.2$[^2]. At $G = 900\text{ W m}^{-2}$, a clear summer midday, $j_\downarrow = 0.0132 - 0.0039 = 9.3 \times 10^{-3}\text{ s}^{-1}$. The rest of the module uses $j = 8 \times 10^{-3}\text{ s}^{-1}$, a lower sun or thin cloud: the same fit with $\alpha = 0$ gives it at $G = 710\text{ W m}^{-2}$. Then $j/k = 18\text{ ppb}$, so if ozone were held at $40\text{ ppb}$, $[\text{NO}]/[\text{NO}_2] = 18/40 = 0.45$.
+
+**Why it makes no ozone.** All three reactions conserve odd oxygen, $\text{O}_x = \text{O}_3 + \text{NO}_2$, whose chemical lifetime in the lower troposphere is typically two to three days[^3]. Fresh NO lowers ozone by exactly what it adds to $\text{NO}_2$; this titration is why city-centre ozone at night is often below rural ozone[^3].
+
+::: {.callout-note collapse="true"}
+## Solving the photostationary state exactly
+
+With $N = [\text{NO}] + [\text{NO}_2]$ and $X = [\text{O}_3] + [\text{NO}_2]$ fixed and $x = [\text{NO}_2]$, the steady state $j x = k (N - x)(X - x)$ is a quadratic whose root with $x \le \min(N, X)$ is
+
+$$x = \frac{2kNX}{s + \sqrt{s^2 - 4k^2 N X}}, \qquad s = k(N + X) + j.$$
+
+Linearising about it gives the relaxation time, in seconds:
+
+$$\tau = \frac{1}{j + k\left([\text{NO}] + [\text{O}_3]\right)}$$
+
+The widget assumes $\text{NO}_x$ is emitted as NO (typically 90% or more of fresh $\text{NO}_x$[^3]), so $X$ is the background ozone.
+:::
+
+Start at the defaults, then set $j$ to zero (night), then push $\text{NO}_x$ above the background ozone.
+
+::: {.sim-card}
+#### The photostationary state
+
+```{ojs}
+//| echo: false
+viewof jNO2 = Inputs.range([0, 0.012], {value: 0.008, step: 0.0005, label: "j(NO₂) (s⁻¹)"})
+viewof noxT = Inputs.range([0, 100], {value: 20, step: 1, label: "Total NOₓ (ppb)"})
+viewof o3bg = Inputs.range([0, 100], {value: 40, step: 1, label: "Background O₃ (ppb)"})
+
+nAir = 101325 / (1.380649e-23 * 298) * 1e-6        // molecule cm-3 at 298 K, 1013.25 hPa
+ppbN = nAir * 1e-9                                  // molecule cm-3 per ppb
+kNO_O3 = 1.8e-14 * ppbN                             // IUPAC (Atkinson et al. 2004), 298 K; ppb-1 s-1
+
+pss = (j, N, X) => {      // j x = k (N - x)(X - x), x = [NO2]; NOx enters as NO, so odd oxygen X = background O3
+  const k = kNO_O3, s = k * (N + X) + j;
+  const x = N * X === 0 ? 0 : 2 * k * N * X / (s + Math.sqrt(Math.max(0, s * s - 4 * k * k * N * X)));
+  return {N, no2: x, no: N - x, o3: X - x, tau: 1 / (j + k * (N - x + X - x))};
+}
+ps = pss(jNO2, noxT, o3bg)
+curve = d3.range(0, 100.5, 0.5).map(N => pss(jNO2, N, o3bg))
+
+card = (label, value, colour) => html`<div class="sim-readout"><div class="sim-readout-label">${label}</div><div class="sim-readout-value" style="color:${colour}">${value}</div></div>`
+
+html`<div class="sim-readouts">
+  ${card("O₃", ps.o3.toFixed(1) + " ppb", "#38bdf8")}${card("NO₂", ps.no2.toFixed(1) + " ppb", "#f59e0b")}
+  ${card("NO", ps.no.toFixed(1) + " ppb", "#ef4444")}${card("NO / NO₂", ps.no2 > 0 ? (ps.no / ps.no2).toFixed(2) : "–", "#cbd5e1")}
+  ${card("Relaxation time", isFinite(ps.tau) ? ps.tau.toFixed(0) + " s" : "–", "#10b981")}
+</div>`
+
+Plot.plot({
+  height: 320, marginLeft: 50, style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, 100], label: "Total NOₓ (ppb) →", grid: true}, y: {domain: [0, 100], label: "↑ Mixing ratio (ppb)", grid: true},
+  color: {legend: true, domain: ["O₃", "NO₂", "NO", "O₃ + NO₂"], range: ["#38bdf8", "#f59e0b", "#ef4444", "#64748b"]},
+  marks: [
+    Plot.ruleX([noxT], {stroke: "#cbd5e1", strokeOpacity: 0.5}),
+    Plot.line(curve, {x: "N", y: d => d.o3 + d.no2, stroke: () => "O₃ + NO₂", strokeDasharray: "6 4", strokeWidth: 2}),
+    ...[["no", "NO"], ["no2", "NO₂"], ["o3", "O₃"]].map(([y, name]) => Plot.line(curve, {x: "N", y, stroke: () => name, strokeWidth: 2.5}))
+  ]
+})
+```
+
+The dashed line never moves off the background ozone: the photostationary state redistributes odd oxygen and creates none.
+:::
+
+At the defaults ($j = 0.008\text{ s}^{-1}$, $20\text{ ppb}$ $\text{NO}_x$, $40\text{ ppb}$ ozone), ozone falls to $27.9\text{ ppb}$ and $\text{NO}_2$ rises to $12.1\text{ ppb}$, with NO/$\text{NO}_2$ $= 0.65$ and $\tau = 42\text{ s}$. At $j = 0$ ozone drops to $40 - 20 = 20\text{ ppb}$; at $100\text{ ppb}$ $\text{NO}_x$ in daylight, to $8.4\text{ ppb}$.
+
+## Peroxy radicals make the ozone
+
+Net ozone needs a route from NO to $\text{NO}_2$ that spends no ozone. OH oxidation of CO and VOCs supplies it through peroxy radicals[^3]:
+
+$$\begin{aligned}
+\text{CO} + \text{OH} \;(+\text{O}_2) &\longrightarrow \text{HO}_2 + \text{CO}_2 \\
+\text{RH} + \text{OH} \;(+\text{O}_2) &\longrightarrow \text{RO}_2 + \text{H}_2\text{O} \\
+\text{RO}_2 + \text{NO} &\longrightarrow \text{RO} + \text{NO}_2 \\
+\text{RO} + \text{O}_2 &\longrightarrow \text{R'CHO} + \text{HO}_2 \\
+\text{HO}_2 + \text{NO} &\longrightarrow \text{OH} + \text{NO}_2
+\end{aligned}$$
+
+where RH is a hydrocarbon, RO an alkoxy radical and R'CHO a carbonyl. Each $\text{NO}_2$ made this way photolyses and its oxygen atom stays as ozone; with photolysis, a hydrocarbon gives $\text{RH} + 4\text{O}_2 \rightarrow \text{R'CHO} + \text{H}_2\text{O} + 2\text{O}_3$. Radicals and $\text{NO}_x$ are catalysts; VOCs and CO are the fuel.
+
+```{mermaid}
+flowchart LR
+    NO2["NO₂"] -->|"sunlight: makes O₃"| NO["NO"]
+    NO -->|"+ O₃: uses O₃ (null cycle)"| NO2
+    NO -->|"+ HO₂ or RO₂: no O₃ used (net O₃)"| NO2
+    VOC["VOC, CO"] -->|"+ OH"| PER["HO₂, RO₂"]
+    PER -->|"+ NO: OH returned"| OH["OH"]
+    OH -->|"oxidises more VOC"| VOC
+    class NO2 ochre
+    class NO rust
+    class VOC sage
+    class PER indigo
+    class OH indigo
+    classDef indigo fill:#1d4a62,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef rust fill:#a04b2d,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef ochre fill:#d69a2e,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+    classDef sage fill:#95a87f,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+```
+
+The peroxy route shows up in the Leighton balance as a ratio above one:
+
+$$\begin{aligned}\Phi &\equiv \frac{j\,[\text{NO}_2]}{k\,[\text{NO}][\text{O}_3]} \\ &= 1 + \frac{k_{\text{HO}_2+\text{NO}}\left([\text{HO}_2] + [\text{RO}_2]\right)}{k\,[\text{O}_3]}\end{aligned}$$
+
+with $k_{\text{HO}_2+\text{NO}} = 8.8 \times 10^{-12}\text{ cm}^3\,\text{molecule}^{-1}\,\text{s}^{-1}$[^1] and $\text{RO}_2$ assumed as fast. Sillman's model gives $\text{HO}_2 + \text{RO}_2$ of tens of ppt in polluted summer daytime[^3]; for an illustrative $40\text{ ppt}$ in $40\text{ ppb}$ of ozone, $\Phi = 1 + (8.8 \times 10^{-12} \times 0.04)/(1.8 \times 10^{-14} \times 40) = 1.49$. A measured $\text{NO}_2/\text{NO}$ above the photostationary value is evidence that ozone is being made[^3].
+
+**The radical budget.** The cycle conserves radicals, so the pace is set by new radicals, mainly from photolysis of ozone (with water vapour) and of formaldehyde, against terminations[^3]:
+
+$$\begin{aligned}
+\text{HO}_2 + \text{HO}_2 &\longrightarrow \text{H}_2\text{O}_2 + \text{O}_2 \\
+\text{RO}_2 + \text{HO}_2 &\longrightarrow \text{ROOH} + \text{O}_2 \\
+\text{OH} + \text{NO}_2 + \text{M} &\longrightarrow \text{HNO}_3 + \text{M}
+\end{aligned}$$
+
+plus PAN formation[^3]. In steady state $Q = L_\text{R} + L_\text{N}$: $Q$ is the production of new radicals, $P(\text{HO}_x)$, $L_\text{R}$ the loss to peroxides and $L_\text{N}$ the loss to nitric acid, all in $\text{molecules cm}^{-3}\,\text{s}^{-1}$ (the widget uses ppt $\text{s}^{-1}$; $0.5\text{ ppt s}^{-1} = 0.5 \times 10^{-12} \times 2.463 \times 10^{19} = 1.2 \times 10^{7}\text{ molecules cm}^{-3}\,\text{s}^{-1}$).
+
+## Two regimes and the ridge between them
+
+When peroxides dominate radical loss, ozone production rises with $\text{NO}_x$; when nitric acid dominates, it rises with VOCs and falls with $\text{NO}_x$[^3]. A three-equation model written for this module shows why. It lumps all peroxy radicals into $\text{HO}_2$ and fixes $Q$, so it gets the shape right, not the magnitudes.
+
+1. **Chain balance.** $R\,[\text{OH}] = k_{\text{HO}_2+\text{NO}}[\text{HO}_2][\text{NO}]$, where $R$ is the VOC reactivity with OH ($\text{s}^{-1}$, $\sum_i k_{\text{OH}+i}[\text{VOC}_i]$, CO included).
+2. **Radical budget.** $Q = k_{\text{OH}+\text{NO}_2}[\text{OH}][\text{NO}_2] + 2k_{\text{HO}_2+\text{HO}_2}[\text{HO}_2]^2$, that is $L_\text{N} + L_\text{R}$.
+3. **Ozone production.** $P(\text{O}_3) = k_{\text{HO}_2+\text{NO}}[\text{HO}_2][\text{NO}] = R\,[\text{OH}]$.
+
+If $L_\text{R}$ dominates, $P(\text{O}_3) \approx k_{\text{HO}_2+\text{NO}}[\text{NO}]\sqrt{Q/2k_{\text{HO}_2+\text{HO}_2}}$, linear in NO and independent of $R$: the $\text{NO}_x$-limited regime. If $L_\text{N}$ dominates, $P(\text{O}_3) \approx R\,Q/(k_{\text{OH}+\text{NO}_2}[\text{NO}_2])$: the $\text{NO}_x$-saturated regime, where $\text{NO}_2$ traps OH as nitric acid before it starts a chain.
+
+Kleinman and colleagues showed that the relative sensitivity to NO and hydrocarbons depends only on $L_\text{N}/Q$[^4]. Here the sensitivities (percent change in $P(\text{O}_3)$ per percent change in $\text{NO}_x$ or $R$) are
+
+$$S_{\text{NO}_x} = \frac{1 - \tfrac{3}{2}L}{1 - \tfrac{1}{2}L}, \qquad S_\text{VOC} = \frac{\tfrac{1}{2}L}{1 - \tfrac{1}{2}L}$$
+
+where $L = L_\text{N}/Q$ runs from 0 (all loss to peroxides) to 1 (all to nitric acid). They are equal at $L = 1/2$, and $S_{\text{NO}_x}$ changes sign at $L = 2/3$, where production peaks with respect to $\text{NO}_x$. Following Sillman's definitions[^3], the widget labels $L < 1/2$ $\text{NO}_x$-sensitive ($\text{NO}_x$ cuts help more), $1/2 \le L < 2/3$ VOC-sensitive (VOC cuts help more) and $L \ge 2/3$ $\text{NO}_x$-saturated (more $\text{NO}_x$ lowers production).
+
+::: {.callout-note collapse="true"}
+## Derivation and rate constants
+
+With $[\text{NO}]/[\text{NO}_2]$ fixed, both scale with $\text{NO}_x$, written $N$. Eliminating $[\text{HO}_2]$ turns equation 2 into $a[\text{OH}]^2 + b[\text{OH}] = Q$, with $a = 2k_{\text{HO}_2+\text{HO}_2}R^2/(k_{\text{HO}_2+\text{NO}}[\text{NO}])^2 \propto R^2/N^2$ and $b = k_{\text{OH}+\text{NO}_2}[\text{NO}_2] \propto N$. The positive root is $[\text{OH}] = 2Q/(b + \sqrt{b^2 + 4aQ})$. Differentiating logarithmically, with $L_\text{R} = a[\text{OH}]^2 = Q - L_\text{N}$, gives $d\ln[\text{OH}]/d\ln N = (2L_\text{R} - L_\text{N})/(2L_\text{R} + L_\text{N})$ and $d\ln[\text{OH}]/d\ln R = -2L_\text{R}/(2L_\text{R} + L_\text{N})$; with $P(\text{O}_3) = R[\text{OH}]$ these give $S_{\text{NO}_x}$ and $S_\text{VOC}$. Setting $L_\text{N} = 2L_\text{R}$ gives the ridge $[\text{NO}][\text{NO}_2] = R\sqrt{8k_{\text{HO}_2+\text{HO}_2}Q/3}\,/\,(k_{\text{HO}_2+\text{NO}}\,k_{\text{OH}+\text{NO}_2})$, so in this model the $\text{NO}_x$ at the ridge grows as $R^{1/2}Q^{1/4}$.
+
+IUPAC preferred values at $298\text{ K}$, $1013.25\text{ hPa}$, air 78% $\text{N}_2$ and 21% $\text{O}_2$[^1]:
+
+| Reaction | Expression | Value used |
+|---|---|---|
+| $\text{HO}_2 + \text{NO}$ | $8.8 \times 10^{-12}$ | $8.8 \times 10^{-12}$ |
+| $\text{HO}_2 + \text{HO}_2$ | $1.6 \times 10^{-12} + 5.2 \times 10^{-32}[\text{N}_2] + 4.5 \times 10^{-32}[\text{O}_2]$ | $2.83 \times 10^{-12}$ |
+| $\text{OH} + \text{NO}_2 + \text{M}$ | falloff: $k_0 = 3.3 \times 10^{-30}(T/300)^{-3}[\text{M}]$, $k_\infty = 4.1 \times 10^{-11}$, $F_\text{c} = 0.4$ | $1.16 \times 10^{-11}$ |
+
+Units $\text{cm}^3\,\text{molecule}^{-1}\,\text{s}^{-1}$; falloff by the evaluation's Troe formula with the $\text{N}_2$ $k_0$ applied to air; $\text{HO}_2 + \text{HO}_2$ without its water-vapour enhancement; $\text{NO}/\text{NO}_2$ fixed at $0.45$.
+:::
+
+Sillman draws this as isopleths of production against $\text{NO}_x$ and VOC, split by a ridge of maximum production[^3]. Start at the defaults, halve $\text{NO}_x$, then keep lowering it.
+
+::: {.sim-card}
+#### Ozone production isopleths
+
+```{ojs}
+//| echo: false
+viewof noxP = Inputs.range([0.1, 50], {value: 20, step: 0.1, label: "NOₓ (ppb)"})
+viewof rVOC = Inputs.range([1, 50], {value: 10, step: 0.5, label: "VOC reactivity R (s⁻¹)"})
+viewof qHOx = Inputs.range([0.1, 2], {value: 0.5, step: 0.05, label: "Radical source Q (ppt s⁻¹)"})
+
+kHO2_NO = 8.8e-12        // IUPAC (Atkinson et al. 2004), 298 K, dry air, 1013.25 hPa; cm3 molecule-1 s-1
+kHO2_HO2 = 1.6e-12 + (5.2e-32 * 0.78 + 4.5e-32 * 0.21) * nAir
+kOH_NO2 = 1.155e-11                                 // Troe falloff from IUPAC k0, kinf, Fc = 0.4 (see callout)
+fNO = { const r = 0.008 / (kNO_O3 * 40); return r / (1 + r); }   // NO / NOx at j = 0.008 s-1, 40 ppb O3
+
+po3 = (N, R, Q) => {      // a OH^2 + b OH = q; P(O3) = R OH in ppb/h, and L = L_N / Q
+  const no = fNO * N * ppbN, q = Q * 1e-3 * ppbN, b = kOH_NO2 * (1 - fNO) * N * ppbN;
+  const a = 2 * kHO2_HO2 * (R / (kHO2_NO * no)) ** 2, oh = 2 * q / (b + Math.sqrt(b * b + 4 * a * q));
+  return {p: R * oh / ppbN * 3600, L: b * oh / q};
+}
+ridgeNOx = (R, Q) => Math.sqrt(R * Math.sqrt(8 * kHO2_HO2 * Q * 1e-3 * ppbN / 3) / (kHO2_NO * kOH_NO2 * fNO * (1 - fNO))) / ppbN
+pt = po3(noxP, rVOC, qHOx)
+lg = Math.log10
+pColour = ({type: "threshold", domain: [1, 2.5, 5, 10, 15, 20, 30, 40, 60, 80], scheme: "viridis", label: "P(O₃) (ppb/h)"})
+logAxis = (ticks, label) => ({domain: [lg(ticks[0]), lg(50)], ticks: ticks.map(lg), tickFormat: d => +(10 ** d).toPrecision(1), label})
+
+html`<div class="sim-readouts">
+  ${card("P(O₃)", pt.p.toFixed(1) + " ppb/h", "#38bdf8")}${card("Radicals lost to HNO₃, L", pt.L.toFixed(2), "#f59e0b")}
+  ${card("Sensitivity to NOₓ", ((2 - 3 * pt.L) / (2 - pt.L)).toFixed(2), "#ef4444")}${card("Sensitivity to VOC", (pt.L / (2 - pt.L)).toFixed(2), "#10b981")}
+  ${card("Regime", pt.L < 0.5 ? "NOₓ-sensitive" : pt.L < 2 / 3 ? "VOC-sensitive" : "NOₓ-saturated", "#cbd5e1")}
+</div>`
+
+Plot.legend({color: pColour, style: {background: "transparent", color: "#cbd5e1"}})
+
+Plot.plot({
+  height: 360, marginLeft: 50, style: {background: "transparent", color: "#cbd5e1"}, color: pColour,
+  x: logAxis([0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50], "NOₓ (ppb) →"), y: logAxis([1, 2, 5, 10, 20, 50], "↑ VOC reactivity R (s⁻¹)"),
+  marks: [
+    Plot.contour({fill: (x, y) => po3(10 ** x, 10 ** y, qHOx).p, x1: -1, x2: lg(50), y1: 0, y2: lg(50), thresholds: pColour.domain, stroke: "#0f172a", strokeWidth: 0.5, pixelSize: 3}),
+    Plot.line(d3.range(0, 1.71, 0.02), {x: y => lg(ridgeNOx(10 ** y, qHOx)), y: y => y, stroke: "#ef4444", strokeWidth: 2.5, strokeDasharray: "6 4", clip: true}),
+    Plot.dot([{x: lg(noxP), y: lg(rVOC)}], {x: "x", y: "y", r: 6, fill: "#f8fafc", stroke: "#0f172a", strokeWidth: 1.5})
+  ]
+})
+```
+
+Left of the ridge mostly $\text{NO}_x$ matters; right of it, more VOC raises production and more $\text{NO}_x$ lowers it. $\text{NO}/\text{NO}_2$ is fixed as if ozone stayed at $40\text{ ppb}$ with $j = 0.008\text{ s}^{-1}$, so at high $\text{NO}_x$ this model does not match the titrated ozone of the first widget.
+:::
+
+At the defaults ($20\text{ ppb}$ $\text{NO}_x$, $R = 10\text{ s}^{-1}$, $Q = 0.5\text{ ppt s}^{-1}$, all illustrative), $P(\text{O}_3) = 4.6\text{ ppb h}^{-1}$. Halving $\text{NO}_x$ doubles it to $9.1$; at the ridge, $2.7\text{ ppb}$, it peaks at $22.7$; at $1\text{ ppb}$ it is $13.4$. Doubling $R$ doubles production at $20\text{ ppb}$ $\text{NO}_x$ (to $9.2$) but adds 4% at $1\text{ ppb}$ (to $14.0$).
+
+**Why cutting $\text{NO}_x$ can raise urban ozone at first.** Fresh emissions are typically VOC-sensitive, where $\text{NO}_x$ reductions may increase ozone[^3]: less $\text{NO}_2$ traps less OH, so more chains run. Titration is a different process: it removes at most one ozone per NO, while formation typically makes four or more per $\text{NO}_x$, so it dominates only at night, in winter and in power-plant plumes[^3]. Downwind, radicals catch up and the chemistry turns $\text{NO}_x$-sensitive; $\text{NO}_x$ emissions largely set how much ozone forms, VOC emissions how fast[^3]. $P(\text{O}_3)$ is a rate, not a concentration; peak ozone usually lies 50–100 km downwind of the city centre[^3]. My inference: ozone at a crop or street also depends on deposition, chemical loss, dilution and the hours the air has been reacting, so a $\text{NO}_x$ cut changes the rate at once and downwind concentrations follow over hours to days. The same split decides whether extra isoprene from a fertilised forest raises or lowers ozone in [Ammonia deposition and ozone feedbacks](ammonia-deposition-ozone.qmd).
+
+Rural air over crops is usually on the other side: Sillman reports rural areas predominantly $\text{NO}_x$-sensitive, except where hit by urban plumes[^3]. Set $\text{NO}_x$ to $1\text{ ppb}$ to see that regime; what the ozone then does to a crop is in [How ozone damages crops](how-ozone-damages-crops.qmd).
+
+The older EKMA isopleths' rule of thumb from morning VOC/$\text{NO}_x$ ratios repeatedly fails in fuller models, which weight VOCs by reactivity and put the ridge near a constant VOC/$\text{NO}_x$ ratio[^3], unlike the $\sqrt{R}$ here, perhaps (untested) because real VOCs also feed $Q$.
+
+## Telling the regimes apart in real air
+
+Model predictions for individual places are often very uncertain, so indicators read the regime from measurements, such as the ratio of peroxide to nitric-acid production[^3]. From space, formaldehyde (HCHO), a short-lived product of many VOCs, stands in for VOC reactivity, so the HCHO/$\text{NO}_2$ column ratio tracks $R$ against $\text{NO}_x$. In a US modelling study, ozone formation fell with VOC cuts at ratios below 1 and with $\text{NO}_x$ cuts above 2, both helping in between; satellite data then showed US ozone formation turning more $\text{NO}_x$-sensitive from 2005 to 2007 as $\text{NO}_x$ emissions fell[^5]. The thresholds come from one model and region, and columns are not surface air; check them elsewhere.
+
+::: {.callout-tip appearance="simple" icon=false}
+## What this means for you
+
+My own suggestions, untested. Compare $\text{O}_3 + \text{NO}_2$ with the surroundings to tell titration from cleaner air. Before forecasting an emission control, place the air with an indicator, expect a $\text{NO}_x$ cut in a saturated core to raise local ozone first, and judge it downwind, where $\text{NO}_x$ largely sets the total[^3].
+:::
+
+## Key takeaways
+
+- $\text{NO}_2/\text{NO}$ above $j/(k[\text{O}_3])$ means peroxy radicals are making ozone; use a measured $j(\text{NO}_2)$, or the Trebs fit within its altitude and albedo limits.
+- Describe a regime by its sensitivities or by $L_\text{N}/Q$, not by a VOC/$\text{NO}_x$ ratio alone.
+- Weight VOCs by reactivity with OH, not by amount.
+
+## References
+
+[^1]: Atkinson, R. et al. Evaluated kinetic and photochemical data for atmospheric chemistry: Volume I – gas phase reactions of O~x~, HO~x~, NO~x~ and SO~x~ species. *Atmos. Chem. Phys.* **4**, 1461–1738 (2004). https://doi.org/10.5194/acp-4-1461-2004
+[^2]: Trebs, I. et al. Relationship between the NO~2~ photolysis frequency and the solar global irradiance. *Atmos. Meas. Tech.* **2**, 725–739 (2009). https://doi.org/10.5194/amt-2-725-2009
+[^3]: Sillman, S. The relation between ozone, NO~x~ and hydrocarbons in urban and polluted rural environments. *Atmos. Environ.* **33**, 1821–1845 (1999). https://doi.org/10.1016/S1352-2310(98)00345-8
+[^4]: Kleinman, L. I. et al. Dependence of ozone production on NO and hydrocarbons in the troposphere. *Geophys. Res. Lett.* **24**, 2299–2302 (1997). https://doi.org/10.1029/97GL02279
+[^5]: Duncan, B. N. et al. Application of OMI observations to a space-based indicator of NO~x~ and VOC controls on surface ozone formation. *Atmos. Environ.* **44**, 2213–2223 (2010). https://doi.org/10.1016/j.atmosenv.2010.03.010
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/organic-aerosols-health-climate.html"><span>Previous</span>Organic aerosols: health versus climate</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/fixed-nitrogen.html"><span>Next</span>Fixed nitrogen</a></div>
+<!-- CURRICULUM_FOOTER_END -->
