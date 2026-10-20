@@ -1,0 +1,250 @@
+---
+title: Persistence and climatology baselines
+description: Persistence and climatology are the two forecasts meteorology gets for free, and the lead time at which one overtakes the other is set by how fast anomalies lose their memory.
+date: 2026-10-19
+categories:
+- meteorology
+- forecasting
+- time series
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/prediction/index.html">Weather, Climate and Prediction</a><span class="sep">·</span>Part 3 · Simple models that work</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">Comfort with averages and histograms. Python for the notebooks.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Meteorology has two forecasts that need no model. Persistence says the anomaly tomorrow equals the anomaly today. Climatology says tomorrow will be the long-term average for that date. Persistence wins at short lead times and climatology at long ones, and the crossover comes when the anomaly's autocorrelation has fallen to one half. For daily temperature anomalies at Hannover, with a one-day autocorrelation of 0.72, that is about two days. Damped persistence, which shrinks today's anomaly towards climatology by the memory that remains, beats both at every lead. Afterwards you should be able to compute all three from a daily series, find the crossover lead, and check whether the simple memory model behind the formulas fits your data.
+
+Score a new forecast against damped persistence, not against whichever of the other two it beats more easily.
+:::
+
+## Two forecasts that need no model
+
+Both reference forecasts are easiest to write in terms of the **anomaly**, the departure of a day's value from the long-term average for its calendar date:
+
+$$x_t = T_t - c(t)$$
+
+where $T_t$ is the observed value on day $t$ (for example the daily mean temperature, in °C), $c(t)$ is the **climatology**, the average of $T$ on that calendar date over many past years (°C), and $x_t$ is the anomaly (°C). A forecast issued on day $t$ for day $t + \tau$ has a **lead time** of $\tau$ days.
+
+| Forecast | $\hat{T}_{t+\tau \mid t}$ | Forecast anomaly |
+|---|---|---|
+| Climatology | $c(t+\tau)$ | $0$ |
+| Persistence | $c(t+\tau) + x_t$ | $x_t$ |
+
+Climatology ignores today; persistence carries today's anomaly forward. The literal "tomorrow = today", $\hat{T}_{t+\tau \mid t} = T_t$, is the same forecast one day ahead, but at longer leads it adds the seasonal cycle's change $c(t+\tau) - c(t)$ as error.
+
+[Baselines first](baselines-first.qmd) covers the same habit for weekly produce volumes, where persistence is called naive; its seasonal naive repeats one past year, whereas climatology averages many and so carries less noise.
+
+The choice matters because forecasts are judged against these. Murphy notes that skill scores measure accuracy relative to a naive method, usually climatology or persistence, and that the most accurate naive method should be the standard of reference[^1]. The usual form is
+
+$$\text{skill} = 1 - \frac{\text{MSE}}{\text{MSE}_\text{ref}}$$
+
+where MSE is the forecast's mean squared error and $\text{MSE}_\text{ref}$ that of the reference, over the same days and leads. A forecast that beats the weaker reference has not yet shown it adds anything.
+
+## Which one wins, and when
+
+It depends on how long an anomaly lasts, and the simplest description of that memory is the **first-order autoregressive process**, AR(1), in which each day's anomaly keeps a fixed fraction of yesterday's and adds a fresh random shock:
+
+$$x_{t+1} = r\, x_t + \varepsilon_{t+1}$$
+
+where $r$ is the lag-one (one-day) autocorrelation of the anomaly, dimensionless, $0 \le r < 1$, and $\varepsilon$ are independent shocks of mean zero and variance $\sigma^2 (1 - r^2)$, chosen so that the anomaly's own variance stays at $\sigma^2$ (°C²). The correlation between anomalies $\tau$ days apart is then $r^\tau$.
+
+AR(1) is an empirical description, not a law of the atmosphere. Weather systems pass in a few days, which gives anomalies a short memory; slower parts of the system, such as soil moisture and sea surface temperature, add longer memory that AR(1) leaves out. Hasselmann's stochastic climate model describes that slower variability as the integrated response to random short-period weather forcing, held stationary by a stabilising feedback[^2].
+
+How large is $r$? For daily temperature anomalies at 12:00 UTC at Hannover, Germany, Siegert, Bröcker and Kantz fitted an AR(1) to 1946–1978 and found $r = 0.72$, with an anomaly standard deviation of 4.42 °C[^3]. It varies with place and season.
+
+The **mean squared error** (MSE) is the average of (forecast anomaly − observed anomaly)² over many forecasts, in °C²:
+
+$$\text{MSE}_\text{clim}(\tau) = \sigma^2, \qquad \text{MSE}_\text{pers}(\tau) = 2\sigma^2\left(1 - r^\tau\right)$$
+
+Climatology always misses by the whole anomaly. Persistence starts near zero when $r$ is near 1 and climbs towards $2\sigma^2$: once today and the target day are unrelated, it adds today's anomaly as a second, independent error.
+
+The two are equal when $r^\tau = 1/2$. Solving for the lead gives the **crossover lead time**, in days:
+
+$$\tau^* = \frac{\ln 2}{-\ln r}$$
+
+Persistence wins at leads shorter than $\tau^*$ and climatology at longer ones. In words, $\tau^*$ is the lag at which the autocorrelation has fallen to one half, $\ln 2 \approx 0.69$ times the e-folding time $-1/\ln r$.
+
+| Daily autocorrelation $r$ | Crossover lead $\tau^*$ (days) |
+|---|---|
+| 0.5 | 1.0 |
+| 0.72 (Hannover) | 2.1 |
+| 0.8 | 3.1 |
+| 0.9 | 6.6 |
+| 0.95 | 13.5 |
+
+The widget draws the three errors against lead time, each divided by $\sigma^2$ so they do not depend on the size of the anomalies. It opens at Hannover's $r = 0.72$. Move $r$ first and watch the dashed crossover line slide, then step the lead and see which readout wins.
+
+::: {.sim-card}
+#### Three reference forecasts against lead time
+
+```{ojs}
+//| echo: false
+viewof r = Inputs.range([0, 0.99], {value: 0.72, step: 0.01, label: "Daily autocorrelation r"})
+viewof lead = Inputs.range([1, 30], {value: 1, step: 1, label: "Lead time τ (days)"})
+
+// Mean squared error divided by the anomaly variance σ², for an AR(1) anomaly.
+msePers = tau => 2 * (1 - r ** tau)
+mseDamped = tau => 1 - r ** (2 * tau)
+crossover = r > 0 ? Math.log(2) / -Math.log(r) : Infinity  // lead at which r^τ = 1/2
+
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+persText = msePers(lead).toFixed(2)
+crossText = r === 0 ? "none" : crossover.toFixed(1) + " days" + (crossover > 30 ? " (beyond the plot)" : "")
+better = persText === "1.00" ? "Tie" : msePers(lead) < 1 ? "Persistence" : "Climatology"
+
+html`<div class="sim-readouts">
+  ${card("Persistence MSE", persText + " σ²", "#f59e0b")}
+  ${card("Climatology MSE", "1.00 σ²", "#38bdf8")}
+  ${card("Damped persistence MSE", mseDamped(lead).toFixed(2) + " σ²", "#10b981")}
+  ${card("Crossover lead τ*", crossText, "#a78bfa")}
+  ${card("Better of the simple two", better, "#cbd5e1")}
+</div>`
+
+curves = d3.range(0, 30.001, 0.1).flatMap(tau => [
+  {tau, v: msePers(tau), series: "Persistence"},
+  {tau, v: 1, series: "Climatology"},
+  {tau, v: mseDamped(tau), series: "Damped persistence"}
+])
+
+Plot.plot({
+  height: 300,
+  marginLeft: 55,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, 30], label: "Lead time τ (days) →", grid: true},
+  y: {domain: [0, 2.05], label: "↑ MSE / σ²", grid: true},
+  color: {legend: true, domain: ["Persistence", "Climatology", "Damped persistence"],
+          range: ["#f59e0b", "#38bdf8", "#10b981"]},
+  marks: [
+    Plot.ruleX([crossover].filter(c => c <= 30), {stroke: "#a78bfa", strokeDasharray: "4 4"}),
+    Plot.ruleX([lead], {stroke: "#64748b"}),
+    Plot.line(curves, {x: "tau", y: "v", stroke: "series", strokeWidth: 2}),
+    Plot.dot([
+      {v: msePers(lead), series: "Persistence"},
+      {v: 1, series: "Climatology"},
+      {v: mseDamped(lead), series: "Damped persistence"}
+    ], {x: () => lead, y: "v", fill: "series", stroke: "#0f172a", strokeWidth: 1.5, r: 5})
+  ]
+})
+```
+
+No data: the curves are the formulas in the text, exact for an AR(1) anomaly. The dashed violet line marks the crossover lead and the grey line your chosen lead.
+:::
+
+At Hannover's $r = 0.72$ and one day ahead, persistence's error is 0.56 of the variance against 1.00 for climatology. At 2 days it is 0.96, just ahead; at 3 days it is 1.25 and climatology has taken over, as $\tau^* = 2.1$ days says. Below $r = 0.5$, climatology wins even one day ahead. The green curve sits under both everywhere.
+
+## Damped persistence: the best of both
+
+Persistence trusts today's anomaly fully and climatology not at all; the better forecast shrinks it towards climatology by the memory left at the target day. **Damped persistence** forecasts:
+
+$$\hat{x}_{t+\tau \mid t} = r^\tau x_t, \qquad \hat{T}_{t+\tau \mid t} = c(t+\tau) + r^\tau x_t$$
+
+With $r = 0.72$, a +5 °C anomaly today becomes a forecast anomaly of $0.72 \times 5 = 3.6$ °C tomorrow, and $0.72^{10} \times 5 = 0.19$ °C ten days ahead.
+
+Its error is smaller than both:
+
+$$\text{MSE}_\text{damp}(\tau) = \sigma^2\left(1 - r^{2\tau}\right)$$
+
+It improves on climatology by $\sigma^2 r^{2\tau}$ and on persistence by $\sigma^2 (1 - r^\tau)^2$, since $2(1 - r^\tau) - (1 - r^{2\tau}) = (1 - r^\tau)^2$. The gain over persistence grows with lead and the gain over climatology shrinks, so it matters most around the crossover: at $r = 0.72$ and 2 days, damped persistence scores 0.73 of the variance where the better simple forecast scores 0.96.
+
+Murphy showed in general that a linear combination of climatology and persistence is more accurate than either, and expected the quoted skill of many operational forecasts to fall if it were adopted[^1]. In the notation here the best combination, derived below, puts weight $r^\tau$ on persistence: damped persistence. Our inference from the formulas, not a published rule: a skill score quoted against climatology at a one-day lead, or against persistence beyond the crossover, was measured against the weaker reference, so ask which reference and which leads were used.
+
+::: {.callout-note collapse="true"}
+## Derivation: why $r^\tau$ is the right weight
+
+Take any stationary anomaly with mean zero, variance $\sigma^2$, and correlation $\rho$ between days $\tau$ apart, and consider every forecast of the form $a\, x_t$ for a constant weight $a$. Its mean squared error is
+
+$$\text{MSE}(a) = E\left[(x_{t+\tau} - a x_t)^2\right] = \sigma^2 - 2a\rho\sigma^2 + a^2\sigma^2 = \sigma^2\left(1 - 2a\rho + a^2\right)$$
+
+using $E[x^2] = \sigma^2$ and $E[x_t x_{t+\tau}] = \rho\sigma^2$. Three weights give the three forecasts:
+
+- $a = 0$ (climatology): $\sigma^2$.
+- $a = 1$ (persistence): $2\sigma^2(1 - \rho)$.
+- Setting $d\,\text{MSE}/da = \sigma^2(2a - 2\rho) = 0$ gives $a = \rho$ (damped persistence): $\sigma^2(1 - \rho^2)$.
+
+None of this needs AR(1); it holds for any stationary series with lag-$\tau$ correlation $\rho$. AR(1) supplies $\rho = r^\tau$, and one thing more. Iterating $x_{t+1} = r x_t + \varepsilon_{t+1}$ gives
+
+$$x_{t+\tau} = r^\tau x_t + \sum_{j=0}^{\tau-1} r^j \varepsilon_{t+\tau-j}$$
+
+and the sum involves only shocks after day $t$, independent of everything observed so far. So $r^\tau x_t$ is the conditional mean of $x_{t+\tau}$ given the whole past, and no forecast built from the past can have a lower mean squared error. Its error variance is the variance of the sum, $\sigma^2(1 - r^2)\sum_{j=0}^{\tau-1} r^{2j} = \sigma^2(1 - r^{2\tau})$, matching the formula above.
+:::
+
+### The Markov chain was damped persistence
+
+The two-state chain in [Markov chains for weather](markov-weather/why-markov-chains-work-for-weather.ipynb) is the same forecast for a yes-or-no variable. Write $W_t = 1$ on a wet day and 0 on a dry one. The chain's probability of rain tomorrow can be rearranged as
+
+$$P(\text{wet tomorrow} \mid W_t) = \pi + \lambda\,(W_t - \pi)$$
+
+where $\pi$ is the climatological wet-day fraction and $\lambda = P(\text{wet} \mid \text{wet}) - P(\text{wet} \mid \text{dry})$ plays the role of $r$. Each day the expected departure from $\pi$ is multiplied by $\lambda$ again, so after $\tau$ days it is $\lambda^\tau (W_t - \pi)$ and the correlation decays as $\lambda^\tau$, just as in AR(1). For Seattle that module found $\pi = 0.427$, $P(\text{wet} \mid \text{wet}) = 0.673$ and $P(\text{wet} \mid \text{dry}) = 0.244$, so $\lambda = 0.673 - 0.244 = 0.429$.
+
+Because $\lambda$ is below 0.5, the crossover comes before the first day. On the **Brier score**, the mean squared error of a probability against the 0/1 outcome, "same as today" scores $2(1 - 0.429) = 1.14$ times the variance, worse than the wet-day fraction (1.00), while the chain's probability scores $1 - 0.429^2 = 0.82$.
+
+## Using them on real data
+
+On a real series the formulas are a check, not the answer. In pandas, for a gap-free daily `pd.Series` with a date index:
+
+```python
+import numpy as np
+import pandas as pd
+
+def anomalies(temp):
+    """Departures from the mean for each calendar date; 29 February pooled with 28 February."""
+    key = temp.index.strftime("%m-%d").str.replace("02-29", "02-28")
+    return temp - temp.groupby(key).transform("mean")
+
+def reference_errors(anom, max_lead=4):
+    """MSE / variance of persistence and damped persistence, by lead in days."""
+    lead = np.arange(1, max_lead + 1)
+    rho = np.array([anom.autocorr(k) for k in lead])
+    pers_obs = [((anom.shift(-k) - anom) ** 2).mean() / anom.var() for k in lead]
+    return pd.DataFrame({"rho": rho, "rho_ar1": anom.autocorr(1) ** lead,
+                         "pers": 2 * (1 - rho), "pers_obs": pers_obs,
+                         "damped": 1 - rho ** 2}, index=pd.Index(lead, name="lead"))
+```
+
+The climatology is keyed by month and day because `dayofyear` shifts every date after February by one in leap years. Here is `reference_errors(anomalies(temp))` on a **synthetic** series: 30 years of a seasonal cycle plus an AR(1) anomaly with $r = 0.8$ and a standard deviation of 3 °C, from a fixed seed:
+
+```
+        rho  rho_ar1   pers  pers_obs  damped
+lead
+1     0.808    0.808  0.383     0.383   0.346
+2     0.657    0.654  0.687     0.687   0.569
+3     0.531    0.528  0.939     0.939   0.718
+4     0.428    0.427  1.144     1.144   0.817
+```
+
+`pers_obs` is persistence's error measured directly; `pers` and `damped` put the observed correlation into the derivation's general formulas; `rho_ar1` is the AR(1) prediction $r^\tau$. On this series, built as AR(1), they agree and persistence crosses 1 between leads 3 and 4, as the widget says for $r = 0.8$.
+
+Four things to watch for:
+
+- **Slower memory than AR(1).** At 14 stations, the correlation of daily maximum temperature anomalies $s$ days apart decays roughly as the power law $s^{-0.7}$ over more than a decade of lags[^4], slower than $r^\tau$. AR(1) then understates persistence at long leads; damp with the observed `rho` instead.
+- **Seasons differ.** The anomaly's variance and autocorrelation change through the year, and so does the crossover lead. `anom.groupby(anom.index.month).agg(['std', lambda g: g.autocorr(1)])` gives both by month (the few pairs that straddle a year boundary add a small error); compute $\tau^*$ for the season you forecast.
+- **Climatology has its own error.** A plain mean of $N$ independent years misses the true average with variance $\sigma^2/N$, raising climatology's error to $\sigma^2(1 + 1/N)$: $1 + 1/30 = 1.033$ times the variance for 30 years. Smoothing $c$ across neighbouring dates reduces this.
+- **Estimate on the past only.** The snippet works in-sample, which is fine for describing a series and optimistic for scoring forecasts. Estimate the climatology and correlations on earlier years and score on later ones, as in [Backtesting properly](backtesting/backtesting_properly.ipynb).
+
+For skewed or bounded variables such as daily precipitation or PM2.5, a few large values dominate squared error on raw values; transform first (a logarithm, a wet/dry threshold) or use a different score.
+
+## Key takeaways
+
+- Write every reference forecast as a forecast of the anomaly, with the climatology keyed by month and day; persisting the raw value adds the seasonal cycle's drift as error.
+- Find the crossover lead from your own data and season: it is where the anomaly's autocorrelation falls to one half, about $0.69$ times its e-folding time.
+- Use damped persistence, $r^\tau x_t$, as the reference by default; its error, $\sigma^2(1 - r^{2\tau})$, is below both simple forecasts at every lead.
+- Measure persistence's error directly beside the AR(1) prediction; where they part, damp with the observed lag correlations.
+
+## References
+
+[^1]: Murphy, A. H. Climatology, persistence, and their linear combination as standards of reference in skill scores. *Wea. Forecasting* **7**, 692–698 (1992). https://doi.org/10.1175/1520-0434(1992)007<0692:CPATLC>2.0.CO;2
+[^2]: Hasselmann, K. Stochastic climate models Part I. Theory. *Tellus* **28**, 473–485 (1976). https://doi.org/10.3402/tellusa.v28i6.11316
+[^3]: Siegert, S., Bröcker, J. & Kantz, H. Skill of data-based predictions versus dynamical models. In *Extreme Events: Observations, Modeling, and Economics* (eds Chavez, M., Ghil, M. & Urrutia-Fucugauchi, J.) 35–50 (Wiley, 2015). https://doi.org/10.1002/9781119157052.ch4 (values quoted from the preprint, arXiv:1312.4323)
+[^4]: Koscielny-Bunde, E. et al. Indication of a universal persistence law governing atmospheric variability. *Phys. Rev. Lett.* **81**, 729–732 (1998). https://doi.org/10.1103/PhysRevLett.81.729
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/markov-weather/why-markov-chains-work-for-weather.html"><span>Previous</span>Markov chains for weather</a><a class="mf-up" href="/series/prediction/index.html"><span>Series</span>Weather, Climate and Prediction</a><a class="mf-next" href="/blogs/detrending/detrend_hk_temperature.html"><span>Next</span>Decomposing Hong Kong temperature</a></div>
+<!-- CURRICULUM_FOOTER_END -->

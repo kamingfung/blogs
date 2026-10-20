@@ -20,6 +20,7 @@ parts:
       - id: prediction/anomalies
         title: "Anomalies"
         level: introductory
+        path: blogs/anomalies/anomalies.ipynb
   - title: "Limits of prediction"
     modules:
       - id: prediction/why-can-t-we-forecast-rain-six-months-out
@@ -48,6 +49,7 @@ parts:
       - id: prediction/persistence-and-climatology-baselines
         title: "Persistence and climatology baselines"
         level: introductory
+        path: blogs/persistence-and-climatology-baselines.md
       - id: prediction/skill-scores
         title: "Skill scores"
         level: intermediate

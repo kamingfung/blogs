@@ -268,6 +268,6 @@ The first row is the one [Fitting a season from its first weeks](curve-fitting-p
 [^2]: Frost, C. & Thompson, S. G. Correcting for regression dilution bias: comparison of methods for a single predictor variable. *J. R. Stat. Soc. A* **163**, 173–189 (2000). https://doi.org/10.1111/1467-985X.00164
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/cross-validation/cross_validation.html"><span>Previous</span>Cross-validation</a><a class="mf-up" href="/series/statistics/index.html"><span>Series</span>Statistics</a><a class="mf-next" href="/blogs/p-values/what_a_p_value_is_not.html"><span>Next</span>What a p-value is not</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/cross-validation/cross_validation.html"><span>Previous</span>Cross-validation</a><a class="mf-up" href="/series/statistics/index.html"><span>Series</span>Statistics</a><a class="mf-next" href="/blogs/confidence-intervals.html"><span>Next</span>Confidence intervals</a></div>
 <!-- CURRICULUM_FOOTER_END -->
 

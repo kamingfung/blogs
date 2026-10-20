@@ -195,6 +195,6 @@ For anything resembling a seasonal harvest window — where biological limits ca
 - Default to direct for multi-week seasonal horizons; recursive is worth keeping when the next step is what matters and current momentum is the strongest signal.
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/forecast/3_shap_explainability.html"><span>Previous</span>SHAP</a><a class="mf-up" href="/series/forecasting/index.html"><span>Series</span>Forecasting with Machine Learning</a><a class="mf-next" href="/blogs/darts-size-distribution-forecast.html"><span>Next</span>Forecasting a size distribution</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/partial-dependence/partial_dependence.html"><span>Previous</span>Partial dependence</a><a class="mf-up" href="/series/forecasting/index.html"><span>Series</span>Forecasting with Machine Learning</a><a class="mf-next" href="/blogs/darts-size-distribution-forecast.html"><span>Next</span>Forecasting a size distribution</a></div>
 <!-- CURRICULUM_FOOTER_END -->
 

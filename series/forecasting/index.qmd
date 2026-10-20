@@ -6,7 +6,7 @@ description: "Tabular machine learning for time series, from framing the problem
 <dl class="syl-meta">
 <div><dt>Level</dt><dd>Introductory to advanced</dd></div>
 <div><dt>Parts</dt><dd>15</dd></div>
-<div><dt>Modules</dt><dd>27 of 34 written</dd></div>
+<div><dt>Modules</dt><dd>30 of 34 written</dd></div>
 <div class="wide"><dt>Assumes</dt><dd>Python and pandas. Basic statistics. No prior forecasting.</dd></div>
 </dl>
 
@@ -38,7 +38,7 @@ description: "Tabular machine learning for time series, from framing the problem
 
 <ul class="syl">
 <li class="w"><a href="/blogs/forecast/3_shap_explainability.html">SHAP</a><span class="m">Intermediate</span></li>
-<li class="g">Partial dependence<span class="m">Intermediate · not written</span></li>
+<li class="w"><a href="/blogs/partial-dependence/partial_dependence.html">Partial dependence</a><span class="m">Intermediate</span></li>
 </ul>
 
 ## Part 5 · Multi-step forecasting
@@ -75,7 +75,7 @@ description: "Tabular machine learning for time series, from framing the problem
 <ul class="syl">
 <li class="w"><a href="/blogs/which-metric.html">Which metric</a><span class="m">Introductory</span></li>
 <li class="w"><a href="/blogs/pinball-loss-and-quantiles.html">Pinball loss and quantiles</a><span class="m">Intermediate</span></li>
-<li class="g">Backtest design<span class="m">Intermediate · not written</span></li>
+<li class="w"><a href="/blogs/backtest-design/backtest_design.html">Backtest design</a><span class="m">Intermediate</span></li>
 </ul>
 
 ## Part 10 · Uncertainty
@@ -96,7 +96,7 @@ description: "Tabular machine learning for time series, from framing the problem
 
 <ul class="syl">
 <li class="w"><a href="/blogs/ets-and-arima/ets_and_arima.html">ETS and ARIMA</a><span class="m">Intermediate</span></li>
-<li class="g">When classical beats machine learning<span class="m">Intermediate · not written</span></li>
+<li class="w"><a href="/blogs/when-classical-beats-machine-learning.html">When classical beats machine learning</a><span class="m">Intermediate</span></li>
 </ul>
 
 ## Part 13 · Deep learning

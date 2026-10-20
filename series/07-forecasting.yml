@@ -69,6 +69,7 @@ parts:
       - id: forecasting/partial-dependence
         title: "Partial dependence"
         level: intermediate
+        path: blogs/partial-dependence/partial_dependence.ipynb
   - title: "Multi-step forecasting"
     modules:
       - id: forecasting/direct-vs-recursive-in-darts
@@ -139,6 +140,7 @@ parts:
       - id: forecasting/backtest-design
         title: "Backtest design"
         level: intermediate
+        path: blogs/backtest-design/backtest_design.ipynb
   - title: "Uncertainty"
     modules:
       - id: forecasting/quantile-regression
@@ -173,6 +175,7 @@ parts:
       - id: forecasting/when-classical-beats-machine-learning
         title: "When classical beats machine learning"
         level: intermediate
+        path: blogs/when-classical-beats-machine-learning.md
   - title: "Deep learning"
     modules:
       - id: forecasting/when-deep-learning-helps

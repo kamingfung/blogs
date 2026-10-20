@@ -1,0 +1,187 @@
+---
+title: When classical beats machine learning
+description: What the M competitions found about statistical and machine-learning forecasts, the conditions that favour each, and a decision rule for weekly produce series.
+date: 2026-10-19
+categories:
+- forecasting
+- time series
+- machine learning
+- statistics
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/forecasting/index.html">Forecasting with Machine Learning</a><span class="sep">·</span>Part 12 · Classical models</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Python and pandas. Basic statistics. No prior forecasting.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+The big forecasting competitions do not name one winning family. On business series with nothing but their own past, statistical methods beat pure machine learning, and combinations filled most of the top places. On thousands of related retail series with explanatory variables, gradient-boosted trees led. The pattern follows the data, not the algorithm. A classical model such as seasonal ARIMA wins when each series has few seasons of history, its season keeps its calendar, and nothing outside the series explains it. Machine learning wins when related series can be pooled, informative covariates are known when the forecast is made, or the season's timing moves. Where the evidence is mixed, an equal-weight average of the two families is the first thing to score. Afterwards you should be able to place a forecasting problem on those conditions, choose which models to backtest first, and test a combination before picking a winner.
+
+Before choosing, count the seasons per series, the related series, and the covariates known at the forecast origin.
+:::
+
+## What the competitions found
+
+The evidence worth trusting comes from large, open comparisons on held-out data. Most of it is from the M competitions, run by Makridakis, Spiliotis and Assimakopoulos:
+
+| Competition | Data | What won |
+|---|---|---|
+| M3 series, 2018 study | 1045 monthly series, own past only | Statistical methods, at every horizon[^1] |
+| M4, 2018–2020 | 100,000 series, own past only | Combinations, and two methods mixing statistics and machine learning[^2][^3] |
+| M5, 2022 | 42,840 related Walmart sales series, with explanatory variables | Gradient-boosted trees[^4][^5][^6] |
+
+"Own past only" follows the M5 design paper, which lists explanatory variables and grouped, correlated series among what M5 added to the earlier competitions[^4]. Read together, the winner moved with the data. That reading is this module's synthesis, not a conclusion any of the papers states.
+
+One finding from the M3 study carries a habit worth keeping. A neural network fitted the training data better than ARIMA yet forecast worse, and the authors credit ARIMA's selection by AIC, a measure of fit penalised by the number of parameters, for avoiding the overfit[^1]. Always put in-sample and backtest error side by side; a model that wins only in-sample has learned noise.
+
+::: {.callout-note collapse="true"}
+## The papers in more detail
+
+**M3 series.** The 2018 study compared ten machine-learning methods, from multilayer perceptrons and regression trees to recurrent and long short-term memory networks, with eight statistical ones, including ARIMA, ETS and Theta, on 1045 monthly M3 series of 81 to 126 months, forecast up to 18 months ahead. The abstract reports that the machine-learning methods were "dominated across both accuracy measures used and for all forecasting horizons examined", at a considerably greater computational cost[^1]. In the full text, the perceptron's in-sample error was $2.11\%$ against ARIMA's $2.59\%$, but its held-out sMAPE (symmetric mean absolute percentage error) was $8.39\%$ against $7.19\%$.
+
+**M4.** The abstract of the first results paper lists five major findings[^2]. The three this module uses:
+
+- 12 of the 17 most accurate methods were combinations, mostly of statistical approaches.
+- The two most accurate methods both mixed the families: a hybrid of statistical and machine-learning features, with an average sMAPE close to $10\%$ better than the combination benchmark, and a combination of seven statistical methods and one machine-learning method, weighted by a machine-learning algorithm.
+- None of the six pure machine-learning methods beat the combination benchmark.
+
+**M5.** The design paper lists what was new: explanatory variables, grouped and correlated series, intermittent demand, and many more machine-learning entries[^4]. Januschowski and colleagues call the prevalence of gradient-boosted trees among the top entries "potentially the most eye-catching result"; the winners in both the accuracy and uncertainty tracks relied heavily on them[^6].
+:::
+
+## Conditions that favour each
+
+The two families differ less in cleverness than in what information they can use. ETS and ARIMA are **local**, one model per series, linear, with a handful of parameters. A gradient-boosted model can be fitted **globally** across many series, take any covariates and fit interactions, but needs far more rows.
+
+| Condition | Usually favours | Evidence |
+|---|---|---|
+| Few seasons per series, each series alone | Classical | M3 series: $81/12 = 6.75$ to $126/12 = 10.5$ seasons[^1] |
+| Seasonal calendar holds still | Classical | Seasonal ARIMA best in 10 of 10 regular histories ([ETS and ARIMA](ets-and-arima/ets_and_arima.ipynb)) |
+| Many related series, short histories | Global ML | One-season farms: local $1.02$, global $0.80$ ([Many series](many-series/forecasting_many_series.ipynb)) |
+| Covariates known at the origin | ML | M5 added explanatory variables; boosted trees led[^4][^6] |
+| Nonlinear effects, interactions | ML | A caveat the M3 authors raise themselves[^1] |
+| Season timing moves | ML, or an input that moves with the season | Gradient boosting best in 7 of 10 shifting histories ([ETS and ARIMA](ets-and-arima/ets_and_arima.ipynb)) |
+| Intervals and a model a planner can read | Classical, coverage checked | Likelihood intervals, two readable coefficients ([ETS and ARIMA](ets-and-arima/ets_and_arima.ipynb)) |
+
+The histories are synthetic weekly harvests. In the many-series row, error is relative to seasonal naive; below 1 beats it.
+
+**Count seasons, not weeks.** A weekly series of six seasons has $6 \times 52 = 312$ rows, which sounds like plenty for a tree model. But it shows the seasonal shape only six times, fewer than the shortest M3 series had. My inference, untested here, is that a seasonal pattern is learned from the number of seasons, which is why a two-coefficient seasonal ARIMA can beat a tree model on a series that looks long. How many seasons is too few has no general answer, and this module does not invent one: count your seasons, then let the backtest decide.
+
+**Pooling changes the count.** A global model sees every farm's seasons. In the many-series backtest the pooled model's advantage at one season of history was gone by five, where both scored $0.73$; farms with a season shaped like no other farm's did better alone, $0.61$ local against $0.67$ global. Pooling helps a series only as far as it resembles the others.
+
+**Covariates must be known when you forecast.** M5 supplied explanatory variables beside the sales[^4]. For produce, what matters is when each input becomes known, judged by the as-of rule of [Leakage](leakage/leakage.ipynb): every feature on every row must be computable from the data as they stood at the forecast origin.
+
+| Covariate | When it is known | How to use it |
+|---|---|---|
+| Degree-days | Observed up to the origin; at the target week only from a weather forecast | As degree-days to date; the target week's value only with a weather forecast, itself backtested |
+| Planted area | Before the season starts | At any horizon |
+| Orders placed | Only up to the origin | As orders to date, never the final order book |
+
+ARIMA takes regressors too (ARIMAX), but linearly, and it needs the regressors' values over the forecast horizon unless they are lagged by at least the horizon. A direct gradient-boosted model of [Gradient boosting for tabular time series](forecast/gradient_boosting_for_time_series.ipynb) uses whatever is known at the origin, as many inputs as you have, with interactions found for you.
+
+**Intervals and interpretability favour classical models, with a check.** The M3 authors argued that practitioners need to know how a forecast arose, and that machine-learning methods also needed to state their uncertainty[^1]. A seasonal ARIMA gives readable coefficients and likelihood intervals, but the intervals assume the model is right: once the peak moved, its nominal 80% intervals held $72\%$ of outcomes. Trees can be explained with [SHAP](forecast/3_shap_explainability.ipynb) and given intervals by [conformal prediction](conformal-prediction/conformal_prediction.ipynb). Either way, measure coverage on the backtest.
+
+## Combinations and hybrids
+
+The safest single lesson of M4 is that you rarely have to choose. Combinations filled most of the top places, and the two most accurate methods both mixed the two families[^2].
+
+**An equal-weight average** of a classical and a machine-learning forecast has no parameter to fit, so it cannot overfit the backtest. It is the first thing to score in your own backtest. In [Baselines first](baselines-first.qmd), at one widget setting, the average of naive and seasonal naive scored $9.3$ t/week against $17.0$ and $17.9$ alone, because their errors had opposite signs. The seasonal ARIMA and gradient boosting failed in different conditions, so an average of the two should help; that is untested, as neither backtest scored it. Learned weights, in this module's view, need many series to learn from; with a handful, keep equal weights.
+
+Three hybrids are practical for weekly produce, in rising order of effort. They are this module's suggestions, not methods tested here:
+
+1. **Classical forecast as a feature.** Give the seasonal ARIMA's $h$-week-ahead forecast to the gradient-boosted model beside lags and covariates. Every row's value must come from a fit on data up to that row's origin, training rows included, or it breaks the as-of rule. A sketch follows the list.
+2. **Deseasonalise, then learn**, as the M3 paper recommends[^1]: divide by a seasonal profile and let the trees model what is left.
+3. **Model the residual.** Fit trees with covariates to the classical model's errors; the classical part carries the season.
+
+A sketch of option 1, to drop into [ETS and ARIMA](ets-and-arima/ets_and_arima.ipynb), which defines `np`, `pd` and $P = 52$. It is checked only to run and to use nothing after each origin, not scored in a backtest:
+
+```python
+from statsmodels.tsa.statespace.sarimax import SARIMAX
+
+def sarima_feature(y, h, first):
+    """h-step SARIMA forecast issued at each origin t >= first, fitted on y[: t + 1] only."""
+    f = pd.Series(np.nan, index=y.index)
+    for t in range(first, len(y) - h):
+        fit = SARIMAX(y.iloc[: t + 1], order=(1, 0, 0), seasonal_order=(0, 1, 1, P)).fit(disp=False)
+        f.iloc[t] = fit.forecast(h).iloc[-1]
+    return f  # one more column beside y_t, y_t-1, ... in each tree's rows
+```
+
+It costs one fit per week, about 1 s each there; rows before `first` stay missing, which `HistGradientBoostingRegressor` accepts. Add the column in that module's `gbm_forecast`. [Ensemble models](forecast/2_ensemble_models.ipynb) covers stacking. Keep any hybrid only if it beats the better of its parts on the same backtest.
+
+## A decision rule
+
+What follows is this module's synthesis of the evidence above, not a rule from the literature. It says which models to backtest first; the backtest decides.
+
+```{mermaid}
+flowchart TD
+    A["One weekly series to forecast"] --> B{"Many related series<br/>to pool?"}
+    B -->|"yes"| C["Global gradient boosting,<br/>each series scaled"]
+    B -->|"no"| D{"Covariates known<br/>at the origin?"}
+    D -->|"yes"| E["Gradient boosting<br/>with those covariates"]
+    D -->|"no"| F{"Does the peak week<br/>move between seasons?"}
+    F -->|"yes"| G["Add an input that moves<br/>with the season"]
+    F -->|"no"| H["Seasonal ARIMA or ETS,<br/>order fixed once"]
+    C & E & G & H --> I["Backtest beside seasonal naive,<br/>the other family, and their average"]
+    class A,B,D,F indigo
+    class C,E,G ochre
+    class H sage
+    class I olive
+    classDef indigo fill:#1d4a62,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef olive fill:#5b6e34,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef ochre fill:#d69a2e,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+    classDef sage fill:#95a87f,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+```
+
+**Figure 1 | Which models to backtest first.** Every branch ends in the same backtest. The branches only decide where to spend effort first.
+
+To check the timing branch, measure how much the peak week moves. For your own gap-free weekly `pd.Series` starting at the first week of a season:
+
+```python
+import numpy as np
+import pandas as pd
+
+def peak_week_spread(y: pd.Series, m: int = 52) -> float:
+    """Standard deviation (weeks) of the peak week across the complete seasons of y."""
+    n = len(y) // m * m  # drop a trailing partial season
+    peaks = y.iloc[:n].groupby(np.arange(n) // m).apply(lambda s: s.to_numpy().argmax())
+    return peaks.std()
+```
+
+The shifting series of the ETS and ARIMA module drew its peak weeks with a standard deviation of 4 weeks, and that was enough to raise seasonal naive's error from $7.2$ to $18.7$ t/week. With six seasons the spread is itself a noisy estimate, so look at the printed peak weeks too.
+
+**The worked case.** Put the ETS and ARIMA backtest through the rule.
+
+- *Regular season.* One series, four to almost six seasons of history at each origin, no covariates, a peak fixed at week 26: every branch points to the classical model. The seasonal ARIMA won all 10 histories, with a mean absolute error (MAE) of $5.0$ t/week over 1 to 8 weeks ahead against $6.5$ for gradient boosting, $1 - 5.0/6.5 = 23\%$ lower.
+- *Shifting season.* Same series and no covariates, but the peak moves: the rule asks for an input that moves with the season. Gradient boosting, with none, won 7 of 10 histories, but only by $11.2$ against $12.3$ t/week, $1 - 11.2/12.3 = 9\%$ lower, and the classical 80% intervals held $66$–$72\%$ of outcomes. That margin is not a reason to switch families. It is a reason to add weeks since first harvest or accumulated heat, as the ETS and ARIMA module suggests, to score the average of the two, and to fix the intervals before they set safety stock.
+
+To run the classical benchmark on your own series, follow the ARIMA section of [ETS and ARIMA](ets-and-arima/ets_and_arima.ipynb): choose the order once with `AutoARIMA`, then refit only the coefficients with `SARIMAX` at each origin, as its `forecast_all` function does in the backtest section.
+
+If the classical model wins widely, a gradient-boosted model needs an input the classical model cannot use before it is worth building. If machine learning wins narrowly, keep the classical model running, so the skill check of [Monitoring a forecast](monitoring/monitoring_a_forecast.ipynb) can be scored against it too.
+
+::: {.callout-tip appearance="simple" icon=false}
+## What this means for you
+
+For one weekly series with a stable calendar and no covariates, start with a seasonal ARIMA and seasonal naive; the M3 and M4 results and the synthetic backtest point that way[^1][^2]. For many farms, varieties or customers, or inputs known at the origin, start with a global gradient-boosted model[^5][^6]. In between, where most produce forecasts sit, backtest both and, first, their equal-weight average, per horizon and group of series. These last two are inference, not tested results.
+:::
+
+## Key takeaways
+
+- Decide by the information available, not the algorithm's reputation: seasons per series, number of related series, and covariates known at the origin.
+- Fix a seasonal ARIMA's order once and refit only its coefficients at each origin; it is a cheap, strong benchmark for any machine-learning model.
+- Give a machine-learning model what the classical model knows (its forecast, or a deseasonalised target) before giving it more capacity.
+- Treat a narrow win for either family as a tie, and backtest the equal-weight average before choosing.
+- A covariate earns its place only if its value is known at the origin, or is itself forecast and backtested; judge intervals by measured coverage, whichever model wins.
+
+## References
+
+[^1]: Makridakis, S., Spiliotis, E. & Assimakopoulos, V. Statistical and machine learning forecasting methods: concerns and ways forward. *PLoS ONE* **13**, e0194889 (2018). https://doi.org/10.1371/journal.pone.0194889
+[^2]: Makridakis, S., Spiliotis, E. & Assimakopoulos, V. The M4 Competition: results, findings, conclusion and way forward. *Int. J. Forecast.* **34**, 802–808 (2018). https://doi.org/10.1016/j.ijforecast.2018.06.001
+[^3]: Makridakis, S., Spiliotis, E. & Assimakopoulos, V. The M4 Competition: 100,000 time series and 61 forecasting methods. *Int. J. Forecast.* **36**, 54–74 (2020). https://doi.org/10.1016/j.ijforecast.2019.04.014
+[^4]: Makridakis, S., Spiliotis, E. & Assimakopoulos, V. The M5 competition: background, organization, and implementation. *Int. J. Forecast.* **38**, 1325–1336 (2022). https://doi.org/10.1016/j.ijforecast.2021.07.007
+[^5]: Makridakis, S., Spiliotis, E. & Assimakopoulos, V. M5 accuracy competition: results, findings, and conclusions. *Int. J. Forecast.* **38**, 1346–1364 (2022). https://doi.org/10.1016/j.ijforecast.2021.11.013
+[^6]: Januschowski, T. et al. Forecasting with trees. *Int. J. Forecast.* **38**, 1473–1481 (2022). https://doi.org/10.1016/j.ijforecast.2021.10.004
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/ets-and-arima/ets_and_arima.html"><span>Previous</span>ETS and ARIMA</a><a class="mf-up" href="/series/forecasting/index.html"><span>Series</span>Forecasting with Machine Learning</a><a class="mf-next" href="/blogs/retraining-and-drift/retraining_and_drift.html"><span>Next</span>Retraining and drift</a></div>
+<!-- CURRICULUM_FOOTER_END -->

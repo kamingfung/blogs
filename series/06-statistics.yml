@@ -19,6 +19,7 @@ parts:
       - id: statistics/variance-and-standard-error
         title: "Variance and standard error"
         level: introductory
+        path: blogs/variance-and-standard-error.md
   - title: "Comparing two samples"
     modules:
       - id: statistics/the-kolmogorovsmirnov-test
@@ -31,6 +32,7 @@ parts:
       - id: statistics/the-t-test-and-when-not-to-use-it
         title: "The t-test, and when not to use it"
         level: introductory
+        path: blogs/t-test/the_t_test.ipynb
       - id: statistics/permutation-tests
         title: "Permutation tests"
         level: intermediate
@@ -67,6 +69,7 @@ parts:
       - id: statistics/confidence-intervals
         title: "Confidence intervals"
         level: introductory
+        path: blogs/confidence-intervals.md
       - id: statistics/what-a-p-value-is-not
         title: "What a p-value is not"
         level: introductory
@@ -76,6 +79,7 @@ parts:
       - id: statistics/normal-lognormal-poisson
         title: "Normal, lognormal, Poisson"
         level: introductory
+        path: blogs/normal-lognormal-poisson.md
       - id: statistics/heavy-tails
         title: "Heavy tails"
         level: intermediate
@@ -97,3 +101,4 @@ parts:
       - id: statistics/power-and-how-many-samples
         title: "Power, and how many samples"
         level: intermediate
+        path: blogs/power-and-how-many-samples.md

@@ -214,3 +214,4 @@ What this means for you, with the sources above:
 <!-- CURRICULUM_FOOTER_START -->
 <div class="mf"><a class="mf-prev" href="/blogs/nitrogen-as-ammonium-not-nitrate.html"><span>Previous</span>Nitrogen as ammonium, not nitrate</a><a class="mf-up" href="/series/plants/index.html"><span>Series</span>Plant biology, one blueberry at a time</a><a class="mf-next" href="/blogs/sugar-acid-and-what-ripe-measures.html"><span>Next</span>Sugar, acid, and what &quot;ripe&quot; measures</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+

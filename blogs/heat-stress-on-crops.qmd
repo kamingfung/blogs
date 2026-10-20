@@ -225,3 +225,4 @@ The ± values are about two standard errors. The estimates exclude $\text{CO}_2$
 <!-- CURRICULUM_FOOTER_START -->
 <div class="mf"><a class="mf-prev" href="/blogs/how-ozone-damages-crops.html"><span>Previous</span>How ozone damages crops</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/what-an-earth-system-model-is.html"><span>Next</span>What an Earth system model is</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+
