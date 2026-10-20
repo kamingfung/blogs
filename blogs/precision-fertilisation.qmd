@@ -1,0 +1,203 @@
+---
+title: Precision fertilisation
+description: How the right source, rate, time and place of nitrogen are chosen, why the economic optimum sits below the yield maximum, and what the evidence says about cutting emissions.
+date: 2026-10-19
+categories:
+- agriculture
+- agronomy
+- nitrogen
+- air quality
+- climate
+- horticulture
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/air-land-climate/index.html">Air, Land and Climate</a><span class="sep">·</span>Part 7 · Farming that cleans the air</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">School chemistry. Parts 1 and 5 of Clouds and Aerosols help but are not required.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Precision fertilisation means giving a crop the nitrogen it will use, in a form it takes up well, when it needs it and where its roots are: the right source, rate, time and place, known as the "4Rs". Rate comes first. Yield rises with nitrogen and then levels off, so the last few kilograms buy almost nothing. The economically optimal rate is the point where one more kilogram pays back its own price in crop, and it sits below the rate that maximises yield. For grain, overshooting costs the farmer little, which is why it is common. For a high-value fruit crop the optimum sits almost at the maximum, and for salt-sensitive blueberries the real cost of excess is injured plants. Either way, the unused nitrogen goes somewhere, and nitrous oxide rises faster than the rate once supply exceeds crop need. Small, frequent doses by fertigation, ammonium rather than nitrate, and annual leaf tests help the crop use what you apply. In practice, set the rate from leaf tests and the crop's response, not from a safety margin.
+:::
+
+Growing blueberries? The field summary is in [What this means for you](#for-growers), at the end of the last section.
+
+## Four questions about every dose
+
+The 4R framework comes from the fertiliser industry and asks four questions of each application[^1]. Right source matches the product to the crop and to soil properties such as pH. Right rate matches the amount to the crop's need; too much leaves residual nutrients in the soil to be lost. Right time makes the nutrient available when the crop needs it. Right place keeps it where roots can reach it[^1].
+
+The table answers the four questions for a fertigated blueberry field; sources come later.
+
+| R | The question | Blueberry example |
+|---|---|---|
+| Source | Which form of nitrogen? | Ammonium or urea, not nitrate |
+| Rate | How much this season? | Set by leaf N and crop response |
+| Time | When, and in how many doses? | Small weekly doses in the growing season |
+| Place | Where in the root zone? | Into the wetted strip by drip |
+
+Source is the question most specific to blueberries. [Nitrogen as ammonium, not nitrate](nitrogen-as-ammonium-not-nitrate.qmd) explains why the plant takes ammonium more readily than nitrate. The Florida guide puts it plainly: blueberries prefer the ammonium form, and fertilisers that supply only or mainly nitrate should not be used in conventional production[^2]. The rest of this module concentrates on rate, where the farmer's economics and the atmosphere's interests diverge.
+
+## The yield curve and the economic optimum
+
+The last kilograms of nitrogen buy almost no extra crop, and for a salt-sensitive crop they can cost plants. The widget shows both cases on one synthetic yield curve. Start at the grain-like price ratio of 5 kg of crop per kg of N. Then slide the ratio down to 0.4, and then switch to the decline shape.
+
+::: {.sim-card}
+#### Where the optimum sits
+
+```{ojs}
+//| echo: false
+viewof ratioKg = Inputs.range([0.1, 10], {value: 5, step: 0.1, label: "Price ratio: kg of crop that pays for 1 kg of N"})
+viewof shape = Inputs.radio(["Plateau", "Decline beyond the maximum (e.g. salt injury)"], {value: "Plateau", label: "Beyond the maximum"})
+viewof userN = Inputs.range([0, 250], {value: 180, step: 5, label: "Your rate (kg N/ha)"})
+
+// Synthetic quadratic-plateau curve (not field data); yields in t/ha.
+qa = 6
+qb = 0.06
+qc = -0.0002
+nMax = -qb / (2 * qc)                          // 150 kg N/ha
+yMax = qa + qb * nMax + qc * nMax * nMax       // 10.5 t/ha
+declineRate = 0.003                            // illustrative: 0.3% of max yield lost per kg N past nMax
+yieldAt = n => {
+  const m = Math.min(n, nMax), y = qa + qb * m + qc * m * m;
+  return shape !== "Plateau" && n > nMax ? Math.max(0, y - declineRate * yMax * (n - nMax)) : y;
+}
+r = ratioKg / 1000                             // t of crop per kg N
+nStar = Math.max(0, Math.min(nMax, (qb - r) / (-2 * qc)))
+ret = n => yieldAt(n) - r * n                  // return over N cost, in t of crop per ha
+lostPct = 100 * (ret(nStar) - ret(userN)) / ret(nStar)
+
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${card("Economic optimum N*", nStar.toFixed(1) + " kg N/ha", "#10b981")}
+  ${card("Surplus N (150 − N*)", (nMax - nStar).toFixed(1) + " kg N/ha", "#f59e0b")}
+  ${card("Your rate: yield", (100 * yieldAt(userN) / yMax).toFixed(1) + "% of max", "#38bdf8")}
+  ${card("Your rate: return given up", lostPct.toFixed(1) + "%", "#ef4444")}
+</div>`
+
+Plot.plot({
+  height: 300,
+  marginLeft: 50,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, 250], label: "Nitrogen rate (kg N/ha) →", grid: true},
+  y: {domain: [50, 102], label: "↑ Yield (% of maximum)", grid: true},
+  color: {legend: true,
+          domain: ["Yield", "Economic optimum", "Agronomic maximum", "Your rate"],
+          range: ["#cbd5e1", "#10b981", "#38bdf8", "#ef4444"]},
+  marks: [
+    Plot.rect([{x1: nStar, x2: nMax}], {x1: "x1", x2: "x2", y1: 50, y2: 102, fill: "#f59e0b", fillOpacity: 0.18}),
+    Plot.line(d3.range(0, 251, 2).map(n => ({n, y: 100 * yieldAt(n) / yMax})),
+              {x: "n", y: "y", stroke: () => "Yield", strokeWidth: 2.5}),
+    Plot.ruleX([nStar], {stroke: () => "Economic optimum", strokeWidth: 2}),
+    Plot.ruleX([nMax], {stroke: () => "Agronomic maximum", strokeWidth: 2, strokeDasharray: "6 4"}),
+    Plot.ruleX([userN], {stroke: () => "Your rate", strokeWidth: 2})
+  ]
+})
+```
+
+Synthetic curve, maximum at 150 kg N/ha; the decline shape is illustrative. Price ratio = nitrogen price ÷ crop price: \$1 per kg N against \$200 per tonne gives 5. Shaded band: surplus N. "Return given up": crop value minus nitrogen cost, against its value at the optimum.
+:::
+
+The **economic optimum**, $N^*$, is the rate at which the last kilogram of nitrogen adds just enough crop to pay its own price. The **agronomic maximum** is the rate where yield stops rising, 150 kg N/ha on this curve. This module calls the gap between them the **surplus N**.
+
+**Grain.** At a ratio of 5, the optimum is 137.5 kg N/ha, 12.5 kg below the maximum. Put your rate at 180 kg with the plateau shape and the return given up is 1.9%. On a flat top, extra nitrogen costs only its own price.
+
+**High-value fruit.** Slide the ratio to 0.4, where a kilogram of crop is worth two and a half times a kilogram of nitrogen. I assume fresh fruit sits at a ratio below 1; check that against your own prices. The optimum moves to 149.0 kg, only 1.0 kg below the maximum, and 180 kg on the plateau gives up 0.1% of the return. For a valuable crop, the fertiliser bill hardly argues for trimming nitrogen at all.
+
+**Salt-sensitive fruit.** Now switch to the decline shape. At 180 kg, yield falls to 91.0% of the maximum and the return given up rises to 9.2%. The size of this decline is invented, a straight fall of 0.3% of maximum yield per kilogram beyond 150 kg. Its direction is supported by field evidence. In young highbush blueberry, granular fertiliser at the highest rate killed 44 to 50% of plants, apparently from high soil ammonium and salinity, while no weekly-fertigated plants died[^9]. My inference: for blueberry, the plants are the main reason to avoid excess nitrogen, and the fertiliser bill comes a distant second.
+
+The shape assumed for the curve matters too. In maize, shapes that fitted the data equally well gave very different optimum rates, and the quadratic-plateau described the data best[^3].
+
+::: {.callout-note collapse="true"}
+## The model, the optimum and the cost of missing it
+
+The quadratic-plateau model is
+
+$$Y(N) = \begin{cases} a + bN + cN^2 & N < N_{\max} \\ Y_{\max} & N \ge N_{\max} \end{cases}$$
+
+where $Y$ is yield (t ha⁻¹), $N$ is the nitrogen rate (kg N ha⁻¹), $a$ is the yield with no added nitrogen (t ha⁻¹), $b$ is the initial slope (t ha⁻¹ per kg N ha⁻¹), $c$ is a negative curvature term (t ha⁻¹ per (kg N ha⁻¹)²), $N_{\max} = -b/(2c)$ is the agronomic maximum and $Y_{\max}$ is the yield there. The widget uses $a = 6$, $b = 0.06$, $c = -0.0002$, so $N_{\max} = 0.06/0.0004 = 150$ and $Y_{\max} = 6 + 9 - 4.5 = 10.5$ t ha⁻¹. These are invented numbers with the general shape of a grain-crop response. In the decline shape, yield beyond $N_{\max}$ falls by $0.003\,Y_{\max}$ per kg N, which is also invented.
+
+The return over nitrogen cost is $\pi(N) = P_c\,Y(N) - P_N N$, where $P_N$ is the nitrogen price (\$ per kg N) and $P_c$ the crop price (\$ per t). On the curved part, setting $d\pi/dN = 0$ gives
+
+$$b + 2cN^* = r \quad\Longrightarrow\quad N^* = \frac{b - r}{-2c}, \qquad r = \frac{P_N}{P_c}$$
+
+where $r$ is the price ratio in t of crop per kg N (the widget shows it in kg per kg, which is $1000\,r$). The surplus is $N_{\max} - N^* = r/(-2c)$. If $r \ge b$, no nitrogen pays and $N^* = 0$. At $r = 0.005$, $N^* = (0.06 - 0.005)/0.0004 = 137.5$.
+
+On the plateau, applying $N_{\max}$ instead of $N^*$ costs $P_c\, r^2/(-4c)$: the extra yield is $-c\,s^2$ with $s = r/(-2c)$, and the extra nitrogen costs $P_c\, r\, s$. The loss grows with the square of the price ratio, so it shrinks quickly as the crop becomes more valuable. The widget divides $\pi$ by $P_c$, so its percentages depend only on $r$.
+:::
+
+## Cheap for the farmer, costly downstream
+
+For grain, the flat top is the economic heart of the problem. Pannell showed that for many farm decisions the payoff is so flat near its top that even large departures from the optimum cost little, so fine-tuning input rates, including by precision farming, is often worth little to the farmer[^4]. A grower who fears losing yield in a wet spring can buy insurance in the form of extra nitrogen for a small premium. That is rational for one farm, and it helps explain why surpluses persist (this module's inference).
+
+Nitrogen above crop need is cheap to the farmer but not to anyone else. Little of it becomes crop, so more of it is left in the soil. There it can volatilise as ammonia, leach as nitrate, or be converted to nitrous oxide, as [Fixed nitrogen](fixed-nitrogen.qmd) and [Where ammonia comes from](where-ammonia-comes-from.qmd) trace. Two meta-analyses show that nitrous oxide responds most where the surplus is largest.
+
+- **Emissions grow faster than the rate.** Across 78 studies (233 site-years) with at least three nitrogen rates, Shcherbak and colleagues found that nitrous oxide grew significantly faster than linearly with synthetic fertiliser, with a trend of exponentially rising emissions as inputs exceed crop needs[^5]. A fixed percentage of applied nitrogen, the linear assumption examined in [Emission factors](emission-factors.qmd), understates what the last kilograms do.
+- **Per unit of crop, the minimum is in the middle.** Van Groenigen and colleagues expressed emissions per kilogram of nitrogen taken up by the crop. In 19 studies (147 data points) of non-legume annual crops, this yield-scaled emission was smallest, $8.4$ g N₂O-N per kg N uptake, at about $180$ to $190\text{ kg N ha}^{-1}$, and rose to $26.8$ g at $301\text{ kg N ha}^{-1}$[^6]. They stayed stable and small while the above-ground nitrogen surplus was zero or below, and had risen threefold at a surplus of $90\text{ kg N ha}^{-1}$[^6].
+
+Both results come from annual field crops, and the steep rise appears above crop need[^5]<sup>,</sup>[^6]. My inference, untested for perennial fruit: a drip-fertigated blueberry block already at the low end of its rate range probably sits on the flat part of the emission curve, where each kilogram saved avoids relatively little nitrous oxide. The van Groenigen authors argue that the aim should be high nitrogen use efficiency at moderate rates, not the lowest possible rate[^6]. Cutting below crop need lowers yield, and the lost production has to be grown somewhere else. [N₂O, the forgotten greenhouse gas](n2o-the-forgotten-greenhouse-gas.qmd) explains why each kilogram of nitrous oxide matters so much for climate.
+
+At global scale, Gu and colleagues identified 11 field measures that can cut nitrogen losses to air and water by 30 to 70% while raising yields, and estimated that the benefit to society would far exceed the cost[^7].
+
+## Timing, placement and measurement
+
+**Splitting and fertigation.** Several smaller doses keep less mineral nitrogen sitting in the soil at any one time. In the Shcherbak meta-analysis, each extra kilogram added more nitrous oxide where fertiliser was applied only once a year[^5]. Fertigation, injecting dissolved fertiliser into the drip line, takes splitting to its limit. The Florida blueberry guide recommends frequent light applications, such as by fertigation, and notes that frequent small doses are typically more efficient than large single ones[^2].
+
+A five-year trial on 'Bluecrop' northern highbush blueberry in western Oregon compared weekly drip fertigation (mid-April to early August) with granular fertiliser in three doses (mid-April to mid-June), at rates that rose as the plants matured: 63 to 93, 133 to 187 and 200 to 280 kg N ha⁻¹ a year[^8]. Yield was 12 to 40% greater with fertigation each year, and soil electrical conductivity was on average two to three times greater under granular fertiliser[^8]. Total yield was greatest when plants were fertigated at least at the lowest rates, 63 to 93 kg N ha⁻¹ a year, and berry weight fell at higher rates in the first three years[^8]. My inference, since the paper fits no response curve: the plateau in that trial began at or below the lowest rate tested.
+
+**Usable rates.** Published rates are specific to region and cultivar. The Florida guide for southern highbush gives no fixed annual rate. It asks growers to combine soil and leaf analysis with growth, environment and experience[^2]. Start from your regional extension guide; [Nitrogen as ammonium, not nitrate](nitrogen-as-ammonium-not-nitrate.qmd) quotes one Oregon guide's rates for fertigated plantings. The Florida guide warns that new pine bark can immobilise ammonium nitrogen, leaving too little for the plants. It suggests applying nitrogen to new bark beds at least three months before planting[^2].
+
+**Leaf tissue tests.** A test tells you whether the crop already has enough. For highbush blueberry, the Florida guide's table gives a standard leaf nitrogen range of $1.80$ to $2.10\%$, with deficiency below $1.70\%$ and excess above $2.50\%$[^2]. Samples are mature, fully expanded leaves from the current season's growth, taken after harvest and before hedging[^2].
+
+**Sensors and variable rate.** In winter wheat, optical sensing with variable-rate application raised nitrogen use efficiency by more than 15% over uniform rates[^10]. This module found no comparable evidence for blueberry. On the farmer's profit, Pannell's flat-payoff argument cuts the other way: the gain from fine-tuning rates is often small[^4]. My inference: the environmental gain from removing surplus nitrogen can still be worth more than the farmer's gain.
+
+**Enhanced-efficiency fertilisers.** These slow the conversion of nitrogen in soil. In a meta-analysis of 113 datasets from 35 field studies, nitrification inhibitors cut nitrous oxide by a mean of 38% (95% interval 31 to 44%) and polymer-coated fertilisers by 35% (14 to 58%). Urease inhibitors had no significant effect on nitrous oxide[^11].
+
+The best-documented emission gains come from bringing the rate to near the optimum and from inhibitors. I found no meta-analysis of measured nitrous oxide under variable-rate nitrogen.
+
+[]{#for-growers}
+
+::: {.callout-tip}
+## What this means for you
+
+For a fertigated blueberry field, the sources here support four habits:
+
+- Keep nitrogen as ammonium or urea, not nitrate[^2].
+- Deliver it in small, frequent doses through the drip line during the growing season[^2]<sup>,</sup>[^8].
+- Avoid concentrated granular doses near young plants[^9].
+- Use the annual leaf sample against the $1.80$ to $2.10\%$ range to adjust next season's rate[^2].
+
+My own inference from the response-curve argument: if leaf nitrogen sits above the range and yields have not responded to recent increases, the field is probably at or past the top of its curve. There, extra nitrogen risks plants as well as money, and a modest cut is unlikely to cost fruit. Test it on a few rows before the whole block.
+:::
+
+## Key takeaways
+
+- Fix the rate before the other three Rs: good source, timing and placement cannot rescue a rate well above the crop's need.
+- What excess costs depends on the crop. For grain it is mostly fertiliser money. For high-value fruit the optimum is almost at the maximum, and for salt-sensitive blueberry the cost is injured or dead plants.
+- The economic optimum moves with the price ratio and the agronomic maximum does not. Recheck the optimum when fertiliser or crop prices move.
+- Treat a "safety margin" of extra nitrogen as cheap insurance for the farm, paid for in nitrous oxide, ammonia and nitrate by everyone else.
+- Judge nitrous oxide per unit of crop, not per hectare. Aim for high nitrogen use efficiency near the optimum, not the lowest rate.
+- Splitting, fertigation and nitrification inhibitors have measured benefits. Claims that sensors alone cut emissions need field evidence.
+
+## References
+
+[^1]: Johnston, A. M. & Bruulsema, T. W. 4R nutrient stewardship for improved nutrient use efficiency. *Procedia Eng.* **83**, 365–370 (2014). https://doi.org/10.1016/j.proeng.2014.09.029
+[^2]: Phillips, D. & Williamson, J. G. Nutrition and fertilization practices for southern highbush blueberry in Florida. *EDIS* HS1356 (2020). https://doi.org/10.32473/edis-hs1356-2020
+[^3]: Cerrato, M. E. & Blackmer, A. M. Comparison of models for describing corn yield response to nitrogen fertilizer. *Agron. J.* **82**, 138–143 (1990). https://doi.org/10.2134/agronj1990.00021962008200010030x
+[^4]: Pannell, D. J. Flat earth economics: the far-reaching consequences of flat payoff functions in economic decision making. *Rev. Agric. Econ.* **28**, 553–566 (2006). https://doi.org/10.1111/j.1467-9353.2006.00322.x
+[^5]: Shcherbak, I., Millar, N. & Robertson, G. P. Global metaanalysis of the nonlinear response of soil nitrous oxide (N₂O) emissions to fertilizer nitrogen. *Proc. Natl Acad. Sci. USA* **111**, 9199–9204 (2014). https://doi.org/10.1073/pnas.1322434111
+[^6]: Van Groenigen, J. W., Velthof, G. L., Oenema, O., Van Groenigen, K. J. & Van Kessel, C. Towards an agronomic assessment of N₂O emissions: a case study for arable crops. *Eur. J. Soil Sci.* **61**, 903–913 (2010). https://doi.org/10.1111/j.1365-2389.2009.01217.x
+[^7]: Gu, B. et al. Cost-effective mitigation of nitrogen pollution from global croplands. *Nature* **613**, 77–84 (2023). https://doi.org/10.1038/s41586-022-05481-8
+[^8]: Vargas, O. L. & Bryla, D. R. Growth and fruit production of highbush blueberry fertilized with ammonium sulfate and urea applied by fertigation or as granular fertilizer. *HortScience* **50**, 479–485 (2015). https://doi.org/10.21273/HORTSCI.50.3.479
+[^9]: Bryla, D. R. & Machado, R. M. A. Comparative effects of nitrogen fertigation and granular fertilizer application on growth and availability of soil nitrogen during establishment of highbush blueberry. *Front. Plant Sci.* **2**, 46 (2011). https://doi.org/10.3389/fpls.2011.00046
+[^10]: Raun, W. R. et al. Improving nitrogen use efficiency in cereal grain production with optical sensing and variable rate application. *Agron. J.* **94**, 815–820 (2002). https://doi.org/10.2134/agronj2002.8150
+[^11]: Akiyama, H., Yan, X. & Yagi, K. Evaluation of effectiveness of enhanced-efficiency fertilizers as mitigation options for N₂O and NO emissions from agricultural soils: meta-analysis. *Glob. Change Biol.* **16**, 1837–1846 (2010). https://doi.org/10.1111/j.1365-2486.2009.02031.x
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/intercropping-air-quality.html"><span>Previous</span>Intercropping</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/enhanced-rock-weathering-nitrogen.html"><span>Next</span>Enhanced rock weathering</a></div>
+<!-- CURRICULUM_FOOTER_END -->

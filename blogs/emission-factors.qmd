@@ -1,0 +1,299 @@
+---
+title: Emission factors
+description: How an emission factor turns fertiliser records into nitrous oxide and ammonia estimates, what the IPCC default ranges mean, and how uncertain a farm total built from them is.
+date: 2026-10-19
+categories:
+- climate
+- agriculture
+- nitrogen
+- statistics
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/air-land-climate/index.html">Air, Land and Climate</a><span class="sep">·</span>Part 6 · Fertiliser and the atmosphere</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">School chemistry. Parts 1 and 5 of Clouds and Aerosols help but are not required.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+An emission factor turns something you can count into something that is hard to measure: emission equals activity times factor. For nitrous oxide ($\text{N}_2\text{O}$) from fertilised soil, the activity is the nitrogen applied. The guidelines countries use for their greenhouse gas inventories, written for the IPCC (the UN's climate science panel), set the default factor at 1%: about 1 kg of nitrogen leaves the field as $\text{N}_2\text{O}$ for every 100 kg applied. Their 2019 update splits that default by climate: 1.6% for synthetic fertiliser in wet climates, 0.5% in dry ones. Smaller indirect losses add to this after nitrogen escapes as ammonia or washes out as nitrate. Every factor comes with a wide range. For the synthetic 40-hectare farm in this module, the 95% interval on the total runs from about a fifth below the central estimate to two fifths above it, and perfect fertiliser records would barely narrow it. Report the interval with the total, and do not use default factors to rank one practice against another.
+:::
+
+## Activity times factor
+
+An emission factor exists because emissions are expensive to measure and activities are cheap to count. A national inventory cannot put a gas analyser on every field, but it can count tonnes of fertiliser sold. The factor is the bridge:
+
+$$E = A \times EF$$
+
+where $E$ is the emission (kg of gas per year), $A$ is the activity (here kg of nitrogen applied per year) and $EF$ is the emission factor (kg emitted per kg of activity). All the knowledge about soils, microbes and weather is compressed into $EF$.
+
+The IPCC guidelines offer three levels of detail, called tiers[^1]:
+
+| Tier | Where the factor comes from | Activity data needed |
+|---|---|---|
+| 1 | One IPCC global default | total nitrogen applied |
+| 2 | Factors for specific conditions: the IPCC's split defaults, or national values, for example for nitrification inhibitors or a response to application rate | nitrogen applied, split by those conditions |
+| 3 | Process models or measurements, validated against representative field data | soils, weather and management, often field by field |
+
+A company with fertiliser records by product and farm location can use the split defaults, which the 2019 update offers for use with its Tier 2 equation; the factors are still global averages. Moving further needs factors from its own conditions: $\text{N}_2\text{O}$ measured on its fields against unfertilised controls, or a process model validated against such measurements[^1].
+
+For synthetic fertiliser, the direct emission is[^1]
+
+$$\text{N}_2\text{O–N}_{\text{direct}} = F_{SN} \times EF_1, \qquad \text{N}_2\text{O} = \text{N}_2\text{O–N} \times \tfrac{44}{28}$$
+
+where $F_{SN}$ is synthetic fertiliser nitrogen applied (kg N yr⁻¹), $EF_1$ is the direct emission factor (kg $\text{N}_2\text{O–N}$ per kg N applied), and $\text{N}_2\text{O–N}$ is the mass of nitrogen in the emitted $\text{N}_2\text{O}$. The factor $44/28$ converts that nitrogen mass to the mass of the whole molecule: one mole of $\text{N}_2\text{O}$ weighs 44 g, of which 28 g is nitrogen. The full equation adds the same product for manure and other organic inputs, crop residues, nitrogen released from soil organic matter, drained organic soils and grazing animals' dung and urine; this module keeps to synthetic fertiliser. A fixed factor also means doubling the nitrogen doubles the emission, which is not what the coupled model in [Fertiliser ammonia in CESM2](cesm2-fertilizer-climate-feedback.qmd) found for ammonia.
+
+## The direct factor and what its range means
+
+The 2019 update kept the overall default at 1% and added split values for inventories that know their climate and fertiliser type[^1]:
+
+| Case | $EF_1$ (kg $\text{N}_2\text{O–N}$ per kg N) | Range |
+|---|---:|---:|
+| Aggregated: all inputs, all climates | 0.010 | 0.002–0.018 |
+| Synthetic N, wet climate | 0.016 | 0.013–0.019 |
+| Organic and other N, wet climate | 0.006 | 0.001–0.011 |
+| All N, dry climate | 0.005 | 0.000–0.011 |
+
+<small>"Wet" means a ratio of annual precipitation to potential evapotranspiration above 1 in temperate and boreal zones, or more than 1000 mm of rain a year in the tropics; "dry" is the rest[^1].</small>
+
+The split values come from a dataset of 848 field observations. Climate was a major driver: wet climates emit about three times as much per kilogram as dry ones, and in wet climates synthetic fertiliser emits almost three times as much as organic inputs[^2].
+
+**Some of these ranges describe uncertainty in the average across studies; others describe the spread across sites.** The difference is the one between a confidence interval and a prediction interval, covered in [Confidence intervals](confidence-intervals.qmd): a confidence interval for a mean narrows as more data arrive, while a prediction interval for one new case does not, because it includes the scatter of individual cases. For the three split values, the range is the 95% confidence interval of the fitted mean from a linear mixed-effects model, with the measurement site as a random effect. For the aggregated value, it is the 2.5th to 97.5th percentile of a bootstrapped dataset of 3000 values drawn from the three split distributions[^1].
+
+My inference: for a national total summed over thousands of fields, the confidence interval of the mean is the relevant uncertainty. A single farm's own factor can sit well outside it, so for one farm the split ranges understate the uncertainty and the aggregated range is closer to the spread to expect.
+
+::: {.callout-note collapse="true"}
+## How a field measurement becomes an emission factor
+
+Each observation in the dataset compares a fertilised plot with an unfertilised control over the same period[^1]:
+
+$$EF_{1,i} = \frac{\text{N}_2\text{O}_{T,i} - \text{N}_2\text{O}_{C,i}}{N_i}$$
+
+where $\text{N}_2\text{O}_{T,i}$ is the cumulative $\text{N}_2\text{O–N}$ flux from the treated plot (kg ha⁻¹ over the experiment), $\text{N}_2\text{O}_{C,i}$ is the flux from the control (same units), and $N_i$ is the nitrogen applied (kg N ha⁻¹). Because it is a difference of two noisy fluxes, a single $EF_{1,i}$ can be negative. Grouped by experiment length, one class (240–300 days, 40 cases) has a mean of $-0.002$[^1].
+
+The same analysis found no clear trend in $EF_1$ across application-rate classes from below 100 to above 700 kg N ha⁻¹[^1]. A different meta-analysis, restricted to 78 studies (233 site-years) that each tested at least three nitrogen rates, found that emissions from synthetic fertiliser grew significantly faster than linearly with rate[^3]. Comparing rates within a site removes the between-site noise that can hide such a trend in pooled data; that is my reading of why the two analyses differ, not a claim either paper makes.
+:::
+
+The rate question is where a fixed factor matters for decisions. With a fixed factor, cutting nitrogen by 10% cuts estimated $\text{N}_2\text{O}$ by exactly 10%, wherever the cut is made. If the response is faster than linear, the same reduction in an over-fertilised field removes disproportionately more $\text{N}_2\text{O}$, and in a low-input field very little[^3]; [N2O, the forgotten greenhouse gas](n2o-the-forgotten-greenhouse-gas.qmd) works through the fitted curve. The guidelines allow a Tier 2 factor that follows this response, but it needs application rates for individual fields[^1], which is where [Precision fertilisation](precision-fertilisation.qmd) comes in.
+
+## Indirect losses and ammonia
+
+Not all the nitrogen that leaves a field leaves as $\text{N}_2\text{O}$. Some escapes as ammonia ($\text{NH}_3$) and nitrogen oxides ($\text{NO}_x$), which deposit on soils and water elsewhere; some leaches or runs off as nitrate. Part of each becomes $\text{N}_2\text{O}$ downwind or downstream, and the inventory counts it against the place where the nitrogen was applied[^1]:
+
+```{mermaid}
+flowchart LR
+    F["Synthetic N applied"] -->|"EF1"| D["Direct N2O"]
+    F -->|"FracGASF"| G["NH3 and NOx to air"]
+    G -->|"deposition, EF4"| I1["Indirect N2O"]
+    F -->|"FracLEACH"| L["Leached and runoff N"]
+    L -->|"EF5"| I2["Indirect N2O"]
+
+    class F olive
+    class G ochre
+    class L indigo
+    class D,I1,I2 rust
+    classDef indigo fill:#1d4a62,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef rust fill:#a04b2d,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef olive fill:#5b6e34,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef ochre fill:#d69a2e,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+```
+
+Each indirect route is a chain of two factors[^1]:
+
+$$\text{N}_2\text{O–N}_{\text{vol}} = F_{SN} \times Frac_{GASF} \times EF_4, \qquad \text{N}_2\text{O–N}_{\text{leach}} = F_{SN} \times Frac_{LEACH} \times EF_5$$
+
+where $Frac_{GASF}$ is the fraction of synthetic nitrogen that escapes as $\text{NH}_3$ and $\text{NO}_x$ (kg N per kg N applied), $EF_4$ is the $\text{N}_2\text{O–N}$ emitted per kg of that nitrogen once deposited, $Frac_{LEACH}$ is the fraction lost by leaching and runoff (kg N per kg N applied), and $EF_5$ is the $\text{N}_2\text{O–N}$ emitted per kg of leached nitrogen. $Frac_{LEACH}$ is zero in dry climates unless the land is irrigated by a method other than drip[^1]; the calculator's two dry options follow that rule.
+
+The escape fraction depends most on the product: urea loses about 15 times as much nitrogen as gas as a nitrate fertiliser does (0.15 against 0.01 of the nitrogen applied)[^1], for the pH reasons in [Where ammonia comes from](where-ammonia-comes-from.qmd).
+
+::: {.callout-note collapse="true"}
+## Default indirect factors
+
+| Factor | Default | Range |
+|---|---:|---:|
+| $EF_4$, aggregated | 0.010 | 0.002–0.018 |
+| $EF_4$, wet / dry climate | 0.014 / 0.005 | 0.011–0.017 / 0.000–0.011 |
+| $EF_5$ | 0.011 | 0.000–0.020 |
+| $Frac_{LEACH}$, wet climate or non-drip irrigation | 0.24 | 0.01–0.73 |
+
+| Fertiliser class | $Frac_{GASF}$ | Range |
+|---|---:|---:|
+| Urea | 0.15 | 0.03–0.43 |
+| Ammonium-based | 0.08 | 0.02–0.30 |
+| Ammonium-nitrate-based | 0.05 | 0.00–0.20 |
+| Nitrate-based | 0.01 | 0.00–0.02 |
+| Aggregated | 0.11 | 0.02–0.33 |
+
+All values from the IPCC's 2019 update, Table 11.3[^1]. $EF_5$ sums three stages: groundwater and drainage, rivers and reservoirs, and estuaries. The split $EF_4$ values are the same numbers as the climate split of $EF_1$. $Frac_{GASF}$ counts ammonia and nitrogen oxides together and uses medians of right-skewed measurements; air-quality inventories, which need ammonia alone, use their own guidebook factors[^1]. An independent global synthesis put the median ammonia loss from synthetic fertiliser at 14% (range 10–19%)[^4].
+:::
+
+## How uncertain the total is
+
+A farm total multiplies and adds five uncertain factors, so their uncertainty has to be carried through to the total. The IPCC describes two ways[^5]. Approach 1 combines percentage uncertainties: for a product, the percentage uncertainty is the square root of the sum of the squared percentage uncertainties of its terms. In its simple form it assumes uncorrelated inputs, and it theoretically requires each input's standard deviation to be less than about 0.3 of its mean. Approach 2 is Monte Carlo simulation: draw every factor from its distribution many times and read the spread of the results.
+
+The leaching route shows why Approach 1 breaks here. Take half of each range, divided by the default, as its percentage uncertainty: $Frac_{LEACH}$ gives $0.36/0.24 = 150\%$ and $EF_5$ gives $0.010/0.011 = 91\%$, so their product is uncertain by about $\sqrt{150^2 + 91^2} \approx 175\%$, a symmetric interval that runs below zero. Ranges this wide and lopsided need Monte Carlo.
+
+The calculator below does that for one **synthetic** farm. Its defaults, 40 ha at 120 kg N ha⁻¹ yr⁻¹, are round numbers chosen for illustration, not figures from any real farm. Each factor is drawn from a two-sided normal distribution with its median at the IPCC default and its 2.5th and 97.5th percentiles at the ends of the published range. Draws below zero are set to zero; that leaves each factor's median at its default and touches at most the lowest 2.5% of draws. The fertiliser records get a symmetric uncertainty you set. All draws are independent, and the 20,000 runs use a fixed seed, so the same settings always give the same answer.
+
+::: {.sim-card}
+#### Farm N₂O calculator (synthetic inputs)
+
+```{ojs}
+//| echo: false
+viewof area = Inputs.range([1, 200], {value: 40, step: 1, label: "Area (ha)"})
+viewof rate = Inputs.range([10, 300], {value: 120, step: 5, label: "Synthetic N (kg N/ha/yr)"})
+viewof fert = Inputs.select(new Map([["Urea", "urea"], ["Ammonium-based", "amm"],
+  ["Ammonium-nitrate-based", "an"], ["Nitrate-based", "nit"]]), {value: "urea", label: "Fertiliser type"})
+viewof climate = Inputs.select(new Map([["Wet (leaching on)", "wet"], ["Dry, drip or no irrigation (leaching off)", "dry-drip"],
+  ["Dry, other irrigation (leaching on)", "dry-other"]]), {value: "wet", label: "Climate"})
+viewof useAgg = Inputs.radio(new Map([["Split by climate and type", false], ["Aggregated", true]]),
+  {value: false, label: "IPCC factors"})
+viewof actU = Inputs.range([0, 30], {value: 5, step: 1, label: "N records ± % (95%)"})
+
+// IPCC 2019 Refinement, Tables 11.1 and 11.3: [default, low, high].
+EF1 = ({wet: [0.016, 0.013, 0.019], dry: [0.005, 0.000, 0.011], agg: [0.010, 0.002, 0.018]})
+EF4 = ({wet: [0.014, 0.011, 0.017], dry: [0.005, 0.000, 0.011], agg: [0.010, 0.002, 0.018]})
+GASF = ({urea: [0.15, 0.03, 0.43], amm: [0.08, 0.02, 0.30], an: [0.05, 0.00, 0.20],
+         nit: [0.01, 0.00, 0.02], agg: [0.11, 0.02, 0.33]})
+LEACH = [0.24, 0.01, 0.73]
+EF5 = [0.011, 0.000, 0.020]
+
+// 20,000 runs x 6 standard normal draws (records, EF1, FracGASF, EF4, FracLEACH, EF5), fixed seed.
+Z = {
+  const z = d3.randomNormal.source(d3.randomLcg(42))();
+  return Array.from({length: 20000}, () => Array.from({length: 6}, () => z()));
+}
+
+// Median at the default, 2.5th/97.5th percentiles at the range ends, clipped at zero.
+split = ([m, lo, hi], z) => Math.max(0, m + z * (z < 0 ? m - lo : hi - m) / 1.96)
+
+mc = {
+  const c = climate === "wet" ? "wet" : "dry";
+  const ef1 = useAgg ? EF1.agg : EF1[c], ef4 = useAgg ? EF4.agg : EF4[c];
+  const gasf = useAgg ? GASF.agg : GASF[fert];
+  const leaches = climate !== "dry-drip";
+  const F = area * rate;
+  // kg N2O per year: direct + volatilised-and-deposited + leached, times 44/28.
+  const total = (f, e1, g, e4, l, e5) => (f * e1 + f * g * e4 + (leaches ? f * l * e5 : 0)) * 44 / 28;
+  const central = total(F, ef1[0], gasf[0], ef4[0], LEACH[0], EF5[0]);
+  const sims = Z.map(z => total(F * (1 + actU / 100 / 1.96 * z[0]), split(ef1, z[1]),
+    split(gasf, z[2]), split(ef4, z[3]), split(LEACH, z[4]), split(EF5, z[5])));
+  sims.sort(d3.ascending);
+  return {central, sims, direct: F * ef1[0] * 44 / 28, volat: F * gasf[0],
+          lo: d3.quantileSorted(sims, 0.025), hi: d3.quantileSorted(sims, 0.975)};
+}
+
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${card("Central estimate", mc.central.toFixed(0) + " kg N₂O/yr", "#ef4444")}
+  ${card("95% interval", `${mc.lo.toFixed(0)}–${mc.hi.toFixed(0)} kg N₂O/yr`, "#10b981")}
+  ${card("Direct share of central", (100 * mc.direct / mc.central).toFixed(0) + "%", "#38bdf8")}
+  ${card("N lost as NH₃ + NOₓ", mc.volat.toFixed(0) + " kg N/yr", "#cbd5e1")}
+</div>`
+
+Plot.plot({
+  height: 300,
+  marginLeft: 55,
+  // Plot paints its own white ground otherwise, which the dark card fights.
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {label: "Total N₂O (kg/yr) →", grid: true},
+  y: {label: "↑ Runs", grid: true},
+  marks: [
+    Plot.rectY(mc.sims, Plot.binX({y: "count"}, {x: d => d, thresholds: 60, fill: "#38bdf8", fillOpacity: 0.6})),
+    Plot.ruleX([mc.lo, mc.hi], {stroke: "#10b981", strokeWidth: 2, strokeDasharray: "6 4"}),
+    Plot.ruleX([mc.central], {stroke: "#ef4444", strokeWidth: 2}),
+    Plot.ruleY([0])
+  ]
+})
+```
+
+Bars: 20,000 Monte Carlo runs. Red line: central estimate from the defaults. Green dashed lines: the 2.5th and 97.5th percentiles. "N lost as NH₃ + NOₓ" is the nitrogen that starts the deposition route ($F_{SN} \times Frac_{GASF}$), mostly ammonia that matters for air quality in its own right.
+:::
+
+Start with the defaults: wet climate, urea, split factors, ±5% on the records. The central estimate is 156 kg $\text{N}_2\text{O}$ per year. By hand, $F_{SN} = 40 \times 120 = 4800$ kg N; direct $4800 \times 0.016 = 76.8$, volatilised $4800 \times 0.15 \times 0.014 = 10.08$ and leached $4800 \times 0.24 \times 0.011 = 12.67$ kg $\text{N}_2\text{O–N}$, a total of 99.55 kg $\text{N}_2\text{O–N}$ or $99.55 \times 44/28 = 156$ kg $\text{N}_2\text{O}$. At the 100-year global warming potential of 273 used in [N2O, the forgotten greenhouse gas](n2o-the-forgotten-greenhouse-gas.qmd)[^6], that is $156 \times 273 \approx 42{,}600$ kg, or about 42.6 t $\text{CO}_2$ equivalent. The 95% interval is 121–222 kg $\text{N}_2\text{O}$, from 22% below the central estimate to 42% above it. It is lopsided because the indirect factors can be much larger than their defaults but not below zero.
+
+Then try three changes:
+
+- **Set the records uncertainty to 0.** The interval becomes 122–222 kg. Perfect fertiliser records hardly help.
+- **Switch to aggregated factors.** The central estimate falls to 104 kg, and the interval widens to 39–186 kg. Part of that width is real (the aggregated factor ignores the wet climate), and part is the change in what the range measures, from uncertainty in a mean to spread across sites.
+- **Set the climate to dry with drip irrigation.** Leaching switches off and $EF_1$ falls to 0.005: 43 kg, with an interval of 7–92 kg.
+
+Which factor drives the width? The script below reruns the simulation with one factor at a time held at its default and reports how much of the variance of the total disappears.
+
+::: {.callout-note collapse="true"}
+## Python: the same Monte Carlo for your own records
+
+Replace `F` and the factor tuples with your nitrogen total, climate and product. It uses NumPy's generator, so its interval differs slightly from the calculator's.
+
+```python
+import numpy as np
+
+F = 40 * 120  # kg N applied per year: replace with your own records
+f = {"records": (1.0, 0.95, 1.05),  # (median, 2.5th, 97.5th percentile); wet climate, urea
+     "EF1": (0.016, 0.013, 0.019), "FracGASF": (0.15, 0.03, 0.43), "EF4": (0.014, 0.011, 0.017),
+     "FracLEACH": (0.24, 0.01, 0.73), "EF5": (0.011, 0.000, 0.020)}
+z = np.random.default_rng(42).standard_normal((20000, len(f)))
+
+def total(fixed=()):  # kg N2O per year; factors named in `fixed` are held at their median
+    d = {k: m if k in fixed else np.maximum(0, m + z[:, i] * np.where(z[:, i] < 0, m - lo, hi - m) / 1.96)
+         for i, (k, (m, lo, hi)) in enumerate(f.items())}
+    return F * d["records"] * (d["EF1"] + d["FracGASF"] * d["EF4"] + d["FracLEACH"] * d["EF5"]) * 44 / 28
+
+t = total()
+print(f"central {total(fixed=f):.0f} kg N2O; 95% interval {np.percentile(t, 2.5):.0f}-{np.percentile(t, 97.5):.0f}")
+for k in f:
+    print(f"{k:>9}: {1 - total(fixed=[k]).var() / t.var():4.0%} of variance removed if known exactly")
+```
+
+```
+central 156 kg N2O; 95% interval 122-222
+  records:   3% of variance removed if known exactly
+      EF1:  19% of variance removed if known exactly
+ FracGASF:  19% of variance removed if known exactly
+      EF4:   1% of variance removed if known exactly
+FracLEACH:  46% of variance removed if known exactly
+      EF5:  23% of variance removed if known exactly
+```
+
+The shares need not sum to 100%, because factors multiplied together interact.
+:::
+
+Knowing the leaching fraction exactly would remove 46% of the variance; knowing the fertiliser records exactly would remove 3%. The direct route is 77% of the central estimate, but the leaching chain carries most of the uncertainty.
+
+Scaling up to many farms changes less than it seems (my inference). Errors in records are independent between farms and largely cancel in a company total. The default factor is the same for every farm, so if it is wrong for a region it is wrong for all of them in the same direction, and a company total built on one default factor is not much tighter, in relative terms, than one farm's.
+
+The calculator still understates the uncertainty, in my judgement, for two reasons. It treats the split ranges as if they described one farm, which the previous section argued they do not. And it draws $EF_1$ and $EF_4$ independently, although the split $EF_4$ values are copied from $EF_1$; positively correlated inputs widen the output range[^5].
+
+::: {.callout-tip}
+## What this means for you
+
+- **Report a farm or company total with its interval**, and name the factors and range definition used. A central estimate alone looks more precise than it is.
+- **Record the fertiliser product, not just kilograms of nitrogen.** It changes the gas loss fifteenfold between urea and nitrate fertilisers, and in a wet climate the synthetic $EF_1$ is 2.7 times the organic one ($0.016/0.006$).
+- **Do not use default factors to rank practices.** They respond only to amount, product class and climate, so split application, inhibitors or better timing change nothing in the estimate; showing them needs condition-specific factors and field-level records (my inference from the structure of the equations).
+- **For year-on-year tracking**, the same default factor is used both years, so the change in the estimate reflects only the change in nitrogen applied and product class (my inference).
+:::
+
+## Key takeaways
+
+- Check which tier and which version of the guidelines produced a number before comparing it with another: the 2019 split factor for synthetic nitrogen in wet climates is 0.016, against the 1% default most inventories have used[^2].
+- Read the definition behind every uncertainty range. A confidence interval of a mean and a percentile range of the data answer different questions, and one farm sits closer to the second.
+- Once any factor's uncertainty exceeds about 30% of its value, propagate with Monte Carlo and look at which factor drives the variance. Here it is the leaching chain, not the fertiliser records, so better records alone will not tighten the total.
+- Keep the IPCC's escape fraction (ammonia plus nitrogen oxides, for $\text{N}_2\text{O}$ accounting) separate from ammonia-only factors used for air quality.
+
+## References
+
+[^1]: Hergoualc'h, K. et al. N2O emissions from managed soils, and CO2 emissions from lime and urea application. In *2019 Refinement to the 2006 IPCC Guidelines for National Greenhouse Gas Inventories*, Vol. 4, Ch. 11 (IPCC, 2019).
+[^2]: Hergoualc'h, K., Mueller, N., Bernoux, M., Kasimir, Å., van der Weerden, T. J. & Ogle, S. M. Improved accuracy and reduced uncertainty in greenhouse gas inventories by refining the IPCC emission factor for direct N2O emissions from nitrogen inputs to managed soils. *Glob. Change Biol.* **27**, 6536–6550 (2021). https://doi.org/10.1111/gcb.15884
+[^3]: Shcherbak, I., Millar, N. & Robertson, G. P. Global metaanalysis of the nonlinear response of soil nitrous oxide (N2O) emissions to fertilizer nitrogen. *Proc. Natl Acad. Sci. USA* **111**, 9199–9204 (2014). https://doi.org/10.1073/pnas.1322434111
+[^4]: Bouwman, A. F., Boumans, L. J. M. & Batjes, N. H. Estimation of global NH3 volatilization loss from synthetic fertilizers and animal manure applied to arable lands and grasslands. *Global Biogeochem. Cycles* **16** (2002). https://doi.org/10.1029/2000GB001389
+[^5]: Frey, C., Penman, J., Hanle, L., Monni, S. & Ogle, S. Uncertainties. In *2006 IPCC Guidelines for National Greenhouse Gas Inventories*, Vol. 1, Ch. 3 (IPCC, 2006).
+[^6]: Forster, P. et al. The Earth's energy budget, climate feedbacks and climate sensitivity. In *Climate Change 2021: The Physical Science Basis. Contribution of Working Group I to the Sixth Assessment Report of the Intergovernmental Panel on Climate Change* 923–1054 (Cambridge Univ. Press, 2021). https://doi.org/10.1017/9781009157896.009
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/n2o-the-forgotten-greenhouse-gas.html"><span>Previous</span>N2O, the forgotten greenhouse gas</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/intercropping-air-quality.html"><span>Next</span>Intercropping</a></div>
+<!-- CURRICULUM_FOOTER_END -->

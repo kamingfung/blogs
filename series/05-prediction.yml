@@ -74,6 +74,7 @@ parts:
       - id: prediction/enso
         title: "ENSO"
         level: introductory
+        path: blogs/enso.md
       - id: prediction/monsoons
         title: "Monsoons"
         level: introductory
@@ -85,6 +86,7 @@ parts:
       - id: prediction/why-seasonal-forecasting-is-possible-at-all
         title: "Why seasonal forecasting is possible at all"
         level: intermediate
+        path: blogs/why-seasonal-forecasting-is-possible-at-all.md
       - id: prediction/teleconnections
         title: "Teleconnections"
         level: intermediate
@@ -93,6 +95,7 @@ parts:
       - id: prediction/return-periods
         title: "Return periods"
         level: intermediate
+        path: blogs/return-periods.md
         requires:
           - statistics/normal-lognormal-poisson
       - id: prediction/extreme-value-theory
@@ -104,6 +107,7 @@ parts:
       - id: prediction/heatwaves-in-a-warming-climate
         title: "Heatwaves in a warming climate"
         level: intermediate
+        path: blogs/heatwaves-in-a-warming-climate.md
   - title: "Detecting climate change"
     modules:
       - id: prediction/signal-and-noise-in-temperature-records

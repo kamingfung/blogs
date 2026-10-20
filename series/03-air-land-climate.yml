@@ -24,6 +24,7 @@ parts:
       - id: air-land-climate/primary-and-secondary-aerosols
         title: "Primary and secondary aerosols"
         level: introductory
+        path: blogs/primary-and-secondary-aerosols.md
       - id: air-land-climate/organic-aerosols-health-versus-climate
         title: "Organic aerosols: health versus climate"
         level: advanced
@@ -79,6 +80,7 @@ parts:
       - id: air-land-climate/leaf-area-index
         title: "Leaf area index"
         level: intermediate
+        path: blogs/leaf-area-index.md
   - title: "Fertiliser and the atmosphere"
     modules:
       - id: air-land-climate/fertiliser-nitrogen-and-aerosol-cooling-in-cesm2
@@ -92,9 +94,11 @@ parts:
       - id: air-land-climate/n2o-the-forgotten-greenhouse-gas
         title: "N2O, the forgotten greenhouse gas"
         level: intermediate
+        path: blogs/n2o-the-forgotten-greenhouse-gas.md
       - id: air-land-climate/emission-factors
         title: "Emission factors"
         level: intermediate
+        path: blogs/emission-factors.md
   - title: "Farming that cleans the air"
     modules:
       - id: air-land-climate/intercropping
@@ -106,6 +110,7 @@ parts:
       - id: air-land-climate/precision-fertilisation
         title: "Precision fertilisation"
         level: intermediate
+        path: blogs/precision-fertilisation.md
       - id: air-land-climate/manure-and-livestock
         title: "Manure and livestock"
         level: introductory

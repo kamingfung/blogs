@@ -6,7 +6,7 @@ description: "Air pollution, the nitrogen cycle, farming, and how land and atmos
 <dl class="syl-meta">
 <div><dt>Level</dt><dd>Introductory to advanced</dd></div>
 <div><dt>Parts</dt><dd>14</dd></div>
-<div><dt>Modules</dt><dd>15 of 39 written</dd></div>
+<div><dt>Modules</dt><dd>20 of 39 written</dd></div>
 <div class="wide"><dt>Assumes</dt><dd>School chemistry. Parts 1 and 5 of Clouds and Aerosols help but are not required.</dd></div>
 </dl>
 
@@ -21,7 +21,7 @@ description: "Air pollution, the nitrogen cycle, farming, and how land and atmos
 ## Part 2 · Where aerosols come from
 
 <ul class="syl">
-<li class="g">Primary and secondary aerosols<span class="m">Introductory · not written</span></li>
+<li class="w"><a href="/blogs/primary-and-secondary-aerosols.html">Primary and secondary aerosols</a><span class="m">Introductory</span></li>
 <li class="w"><a href="/blogs/organic-aerosols-health-climate.html">Organic aerosols: health versus climate</a><span class="m">Advanced</span></li>
 <li class="g">Black carbon<span class="m">Intermediate · not written</span></li>
 </ul>
@@ -47,22 +47,22 @@ description: "Air pollution, the nitrogen cycle, farming, and how land and atmos
 <ul class="syl">
 <li class="w"><a href="/blogs/ammonia-deposition-ozone.html">Ammonia deposition and ozone feedbacks</a><span class="m">Advanced</span></li>
 <li class="w"><a href="/blogs/stomata-and-dry-deposition.html">Stomata and dry deposition</a><span class="m">Intermediate</span></li>
-<li class="g">Leaf area index<span class="m">Intermediate · not written</span></li>
+<li class="w"><a href="/blogs/leaf-area-index.html">Leaf area index</a><span class="m">Intermediate</span></li>
 </ul>
 
 ## Part 6 · Fertiliser and the atmosphere
 
 <ul class="syl">
 <li class="w"><a href="/blogs/cesm2-fertilizer-climate-feedback.html">Fertiliser ammonia in CESM2</a><span class="m">Advanced</span></li>
-<li class="g">N2O, the forgotten greenhouse gas<span class="m">Intermediate · not written</span></li>
-<li class="g">Emission factors<span class="m">Intermediate · not written</span></li>
+<li class="w"><a href="/blogs/n2o-the-forgotten-greenhouse-gas.html">N2O, the forgotten greenhouse gas</a><span class="m">Intermediate</span></li>
+<li class="w"><a href="/blogs/emission-factors.html">Emission factors</a><span class="m">Intermediate</span></li>
 </ul>
 
 ## Part 7 · Farming that cleans the air
 
 <ul class="syl">
 <li class="w"><a href="/blogs/intercropping-air-quality.html">Intercropping</a><span class="m">Introductory</span></li>
-<li class="g">Precision fertilisation<span class="m">Intermediate · not written</span></li>
+<li class="w"><a href="/blogs/precision-fertilisation.html">Precision fertilisation</a><span class="m">Intermediate</span></li>
 <li class="g">Manure and livestock<span class="m">Introductory · not written</span></li>
 </ul>
 

@@ -246,3 +246,4 @@ My inferences from the results above, not tested on a real site:
 <!-- CURRICULUM_FOOTER_START -->
 <div class="mf"><a class="mf-prev" href="/blogs/climate-vs-weather/climate-vs-weather.html"><span>Previous</span>Climate vs weather</a><a class="mf-up" href="/series/prediction/index.html"><span>Series</span>Weather, Climate and Prediction</a><a class="mf-next" href="/blogs/anomalies/anomalies.html"><span>Next</span>Anomalies</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+

@@ -1,0 +1,246 @@
+---
+title: "ENSO: El Niño and La Niña"
+description: What El Niño and La Niña are, what a coastal El Niño did to Peru's blueberries in 2023, how NOAA measures and forecasts ENSO, and how it shifts the odds in other fruit regions.
+date: 2026-10-19
+categories:
+- climate
+- meteorology
+- forecasting
+- agriculture
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/prediction/index.html">Weather, Climate and Prediction</a><span class="sep">·</span>Part 5 · Modes of variability</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">Comfort with averages and histograms. Python for the notebooks.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+El Niño is a warming of the tropical Pacific, lasting many months, that shifts heat and rain in farming regions far away; La Niña is the matching cooling. As of NOAA's 8 October 2026 discussion, a strong El Niño was under way and likely to last through January–March 2027. In 2023 the sea off Peru ran warm for months, the coast had a winter 4–5 °C above normal, flowering suffered, and the USDA forecast Peru's 2023/24 blueberry crop down 37%. The index most news quotes, Niño 3.4 in the mid-Pacific, read neutral that April while the sea off Peru was about 2.5 °C warmer than normal. Since 1950 new El Niños have started a median 2.7 years apart, and forecasts issued in northern spring are the least reliable. NOAA officially calls an El Niño when the three-month average of Niño 3.4, after removing how much the whole tropical ocean is running warm, is 0.5 °C or more above normal.
+
+If your fields are in Peru or Ecuador, watch the coastal index, not only Niño 3.4.
+:::
+
+## What El Niño is
+
+ENSO, the El Niño–Southern Oscillation, is the largest year-to-year swing in the global climate[^1]. In a normal year the trade winds blow from east to west along the equator, pile warm water up near Indonesia and pull cold water up from below off South America[^2]. If the winds slacken, warm water spreads back east and the eastern Pacific warms. Rain and rising air follow the warm water east, which weakens the winds further, so a warm sea and weak winds feed each other[^4]:
+
+```{mermaid}
+flowchart LR
+  A["Eastern Pacific<br/>warms"] -->|"rain shifts east"| B["Pressure gap<br/>shrinks"]
+  B -->|"less push"| C["Trade winds<br/>weaken"]
+  C -->|"less cold<br/>upwelling"| A
+  class A rust
+  class B ochre
+  class C indigo
+    classDef indigo fill:#1d4a62,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef rust fill:#a04b2d,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef ochre fill:#d69a2e,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+```
+
+La Niña is the same loop run the other way: a cooler east strengthens the trade winds, which pull up more cold water[^4]. Each event lasts many months before the ocean turns it round[^15].
+
+::: {.callout-note collapse="true"}
+## How it works: Walker circulation, thermocline and recharge
+
+**Walker circulation.** Air rises over the warm western Pacific, flows east high up and sinks over the cooler eastern Pacific, closing a loop driven by the trade winds[^2].
+
+**Thermocline.** The boundary between the warm surface layer and the cold water beneath is deep in the west, where warm water has piled up, and shallow in the east. That is why wind-driven upwelling off South America brings up cold water, and why weaker upwelling warms the surface quickly.
+
+**Bjerknes feedback.** In 1969 Jacob Bjerknes showed that the big eastern and central Pacific warmings came from weaker trade winds and weaker upwelling, tied to the seesaw in surface pressure across the Pacific that Gilbert Walker had named the Southern Oscillation[^3]. NOAA describes the Bjerknes feedback as a positive feedback between tropical Pacific surface wind and ocean temperature[^4].
+
+**Why it turns round.** A loop that only amplified would never stop. In Fei-Fei Jin's recharge oscillator, the Bjerknes feedback makes an event grow, and the loss or build-up of warm water along the whole equatorial band ends it: in outline, an El Niño drains warm water out of the band and leaves it primed to cool, and a La Niña recharges it. The model swings with a period of 3 to 5 years, on its own or kept going by random weather[^5]. The real cycle is far less regular, but in NOAA's words the events "sow the seeds of their own destruction"[^4].
+:::
+
+## Peru, 2023, and the index to watch
+
+The El Niño you hear about in the news is measured in the **Niño 3.4** box, 5°N to 5°S and 120°W to 170°W, in the middle of the Pacific[^6]. The box that touches the coast of Peru and Ecuador is **Niño 1+2**, 0° to 10°S and 80°W to 90°W[^10]. They can disagree, and when the coast warms on its own it is called a **coastal El Niño**:
+
+| Month | Niño 1+2 (°C) | Niño 3.4 (°C) |
+|---|---:|---:|
+| March 2017 | +1.83 | +0.21 |
+| April 2023 | +2.45 | +0.19 |
+| August 2023 | +3.30 | +1.30 |
+| August 2026 | +4.08 | +2.52 |
+| September 2026 | +4.69 | +2.84 |
+
+<small>Sea surface temperature anomalies, NOAA CPC monthly OISST v2.1 against 1991–2020, downloaded 19 October 2026; recent months may be revised[^10]. These are traditional anomalies, not the relative ones NOAA now uses for Niño 3.4, because a bush on the coast feels the actual warmth.</small>
+
+In March 2017 and April 2023 the sea off Peru was about 2 °C above normal while Niño 3.4 read neutral. Peru's Geophysical Institute (IGP) computes a coastal index from Niño 1+2, the ICEN, and publishes it in technical reports with a provisional two-month outlook; the official word in Peru comes from the reports of the multisectoral El Niño commission, ENFEN[^9]. Warning of a coastal event is short and uncertain. The 2017 event was largely unpredicted even a few weeks before it began[^11]; the 2023 one was predictable about a month ahead[^12].
+
+**What 2023 did to blueberries.** This is the clearest published case. In March 2023 an unusual low-pressure system off Ecuador and Peru brought heavy rain, heat, flooding and mudslides into May; then came a fall and winter 4–5 °C above average, Peru's warmest winter in 63 years[^13]. Warm conditions severely limited flowering between March and October, the bloom of the two leading cultivars, Ventura and Biloxi, was disrupted, and the USDA's Lima office forecast 2023/24 production at 195,000 t, down 37%. Almost 80% of Peru's blueberry area is in the northern coastal regions of Piura, La Libertad and Lambayeque, where the losses were heaviest; Ica, further south, held steady[^13]. Peng and colleagues traced the March warming to winds that suppressed coastal upwelling, amplified by a coastal version of the same feedback[^12].
+
+The USDA report does not say why heat cut flowering. Our inference is flower-bud formation: in Florida experiments, high temperatures reduced blueberry flower-bud initiation even under short days, and buds formed in heat were smaller[^14]. That evidence comes from Florida, not Peru.
+
+## How it is measured and forecast
+
+The **Oceanic Niño Index (ONI)** is the three-month running mean of the Niño 3.4 sea temperature anomaly, in °C, against a 30-year normal[^6]: an anomaly as in [Anomalies](anomalies/anomalies.ipynb), and the spike in the residual of [Decomposing Hong Kong temperature](detrending/detrend_hk_temperature.ipynb). Each value is named by its months, so JAS is July–September. Since February 2026 NOAA's official index is the **Relative ONI (RONI)**, which subtracts the average anomaly of the whole tropics (20°N to 20°S) and rescales. NOAA's reasons: it depends less on which 30 years count as normal, and it tracks the tropical rainfall that drives weather elsewhere more closely[^7]. For both, a season is El Niño-like at +0.5 °C or above and La Niña-like at −0.5 °C or below, and a historical episode needs five consecutive overlapping seasons[^6].
+
+::: {.sim-card}
+#### Classify seventy-six years of ENSO
+
+The list of El Niño years depends on the rule you choose. Start with the defaults, then switch to the ONI and try 3 seasons.
+
+```{ojs}
+//| echo: false
+// NOAA CPC indices, DJF 1950 to JAS 2026, °C (downloaded 19 Oct 2026; recent values may be revised).
+series = ({"RONI (official since Feb 2026)": "-1.19,-1.08,-0.96,-1,-0.99,-0.75,-0.38,-0.32,-0.29,-0.38,-0.36,-0.5,-0.28,0.09,0.48,0.63,0.59,0.69,0.79,0.97,1.04,0.98,0.94,0.71,0.65,0.33,0.46,0.24,-0.03,-0.45,-0.41,-0.14,0.08,0.04,-0.1,0.1,0.4,0.67,0.68,0.72,0.94,0.84,0.68,0.73,0.65,0.84,0.57,0.66,0.63,0.63,0.31,-0.02,-0.24,-0.21,-0.45,-0.62,-0.54,-0.31,-0.09,-0.18,-0.12,-0.14,-0.13,-0.38,-0.36,-0.52,-0.4,-0.7,-0.9,-1.31,-1.4,-1.31,-0.81,-0.4,-0.12,-0.09,-0.03,-0.01,-0.15,-0.18,-0.12,-0.14,-0.14,-0.17,0,0.22,0.53,0.83,0.88,0.9,1.03,1.05,1.14,1.16,1.45,1.75,1.89,1.79,1.31,0.95,0.66,0.56,0.45,0.26,0.23,0.24,0.36,0.64,0.77,0.83,0.64,0.48,0.33,0.09,-0.11,-0.23,-0.07,0.04,0.24,0.22,0.2,0.19,0.21,0.25,0.16,0.06,0.12,0.2,0.26,0.08,-0.07,-0.09,0.03,0.08,0.03,0.06,0.24,0.3,0.2,-0.07,-0.23,-0.16,-0.06,0.02,-0.01,-0.01,0,-0.16,-0.17,-0.14,0.01,-0.1,-0.15,-0.3,-0.29,-0.37,-0.29,-0.12,0.04,0.06,0.01,0.37,0.73,1.08,1.07,1.06,1.11,1.07,1,0.6,0.1,-0.37,-0.66,-0.66,-0.59,-0.55,-0.53,-0.64,-0.58,-0.48,-0.16,0.1,0.22,0.36,0.64,1.01,1.33,1.49,1.76,1.86,1.99,1.81,1.53,1.29,1.04,0.59,0.31,0.22,0.32,0.19,0,-0.03,-0.12,-0.22,-0.26,-0.24,-0.35,-0.31,-0.09,0.21,0.25,-0.01,-0.11,-0.08,0.01,-0.03,-0.23,-0.36,-0.32,-0.26,0.07,0.32,0.56,0.46,0.39,0.56,0.74,1.02,1.07,1,0.67,0.44,0.37,0.3,0.28,0.34,0.57,0.67,0.81,0.68,0.46,0.21,0.24,0.24,0.12,-0.23,-0.47,-0.64,-0.55,-0.57,-0.55,-0.85,-0.95,-1,-0.78,-0.57,-0.48,-0.37,-0.3,-0.25,-0.3,-0.4,-0.41,-0.38,-0.21,0.03,0.32,0.51,0.66,0.87,1.14,1.4,1.64,1.82,1.97,1.88,1.69,1.25,0.58,-0.17,-0.73,-0.98,-1.1,-1.19,-1.3,-1.63,-1.86,-1.91,-1.6,-1.28,-0.97,-0.84,-0.57,-0.5,-0.27,-0.21,-0.24,-0.45,-0.59,-0.35,-0.12,-0.13,-0.29,-0.42,-0.61,-0.73,-0.87,-0.88,-0.98,-0.95,-1.02,-1.11,-1,-0.65,-0.26,-0.14,0.01,0.27,0.52,0.72,0.89,1.04,1.05,1.08,0.96,0.89,0.46,0.32,0.25,0.51,0.48,0.48,0.62,0.89,1.1,1.05,0.96,0.71,0.26,-0.07,-0.33,-0.25,-0.32,-0.27,-0.27,-0.08,0.15,0.27,0.35,0.3,0.3,0.23,0.13,0.03,0.04,0.26,0.41,0.52,0.52,0.64,0.65,0.45,0.25,0.14,0.27,0.28,0.14,-0.1,-0.18,-0.06,0.14,0.09,-0.03,-0.18,-0.28,-0.24,-0.3,-0.26,-0.23,-0.16,-0.02,-0.17,-0.21,-0.08,0.11,0.22,0.23,0.46,0.74,0.84,0.89,1.14,1.64,2.03,2.24,2.36,2.4,2.15,1.67,1.3,0.87,0.47,0.03,-0.23,-0.59,-0.9,-1.1,-0.96,-0.63,-0.52,-0.45,-0.59,-0.62,-0.51,-0.32,-0.17,-0.28,-0.61,-0.88,-0.93,-0.83,-0.68,-0.75,-0.76,-0.77,-0.55,-0.33,-0.2,-0.16,-0.18,-0.14,-0.21,-0.26,-0.27,-0.19,-0.14,-0.11,-0.01,0.26,0.57,0.79,1,1.22,1.42,1.46,1.35,1.14,0.93,0.85,0.94,1.11,1.3,1.34,1.2,0.98,0.8,0.45,0.11,-0.4,-0.91,-1.49,-1.74,-1.64,-1.36,-1.44,-1.71,-1.95,-1.94,-1.64,-1.37,-1.11,-0.89,-0.65,-0.43,-0.41,-0.38,-0.31,-0.23,-0.08,0.06,0.32,0.3,0.32,0.26,0.19,0.2,0.21,0.33,0.33,0.27,0.3,0.43,0.57,0.53,0.42,0.42,0.56,0.7,0.86,0.83,1.01,1.2,1.66,1.97,2.12,2.08,1.94,1.76,1.4,0.93,0.52,0.3,0.13,0.1,0.12,0.35,0.55,0.7,0.86,1.06,1,0.77,0.45,0.46,0.48,0.46,0.44,0.42,0.33,0.24,0.23,0.32,0.4,0.41,0.53,0.6,0.79,0.97,1.23,1.28,1.17,0.86,0.55,0.2,-0.07,-0.23,-0.41,-0.57,-0.76,-0.93,-1.02,-0.99,-0.87,-0.75,-0.58,-0.37,-0.25,-0.24,-0.2,-0.2,-0.2,-0.25,-0.3,-0.29,-0.21,-0.03,0.17,0.47,0.83,1.2,1.5,1.84,2.07,2.22,2.25,2.28,2.13,1.82,1.22,0.81,0.07,-0.46,-1.05,-1.14,-1.24,-1.33,-1.51,-1.61,-1.56,-1.28,-0.99,-0.88,-0.81,-0.82,-0.83,-0.86,-0.87,-1.06,-1.33,-1.56,-1.5,-1.31,-1.06,-0.88,-0.68,-0.54,-0.35,-0.29,-0.36,-0.55,-0.79,-0.82,-0.79,-0.62,-0.55,-0.41,-0.28,-0.08,0.01,-0.02,-0.05,-0.18,-0.27,-0.32,-0.16,0.01,0.03,0.05,0.22,0.44,0.64,0.8,0.97,1.18,1.33,1.13,0.85,0.47,0.23,-0.19,-0.34,-0.24,0.04,0.09,0.17,0.17,0.25,0.22,0.23,0.12,0.07,0.09,0.18,0.36,0.54,0.69,0.71,0.7,0.7,0.69,0.54,0.4,0.26,0.25,0.2,0.05,-0.06,-0.11,-0.04,-0.18,-0.5,-0.81,-0.9,-0.87,-0.69,-0.49,-0.19,-0.05,0.15,0.36,0.57,0.73,0.91,0.89,0.6,0.16,-0.15,-0.33,-0.36,-0.44,-0.5,-0.79,-1.04,-1.33,-1.49,-1.65,-1.73,-1.62,-1.39,-1.04,-0.8,-0.46,-0.24,-0.17,-0.26,-0.38,-0.6,-0.86,-0.96,-0.92,-0.7,-0.43,-0.05,0.24,0.35,0.42,0.53,0.86,1.29,1.5,1.44,1.11,0.69,0.1,-0.5,-0.97,-1.21,-1.39,-1.54,-1.61,-1.63,-1.55,-1.42,-1.21,-0.97,-0.76,-0.52,-0.29,-0.29,-0.41,-0.7,-0.91,-1.02,-0.96,-0.77,-0.6,-0.5,-0.42,-0.26,0.01,0.33,0.43,0.37,0.21,-0.03,-0.27,-0.55,-0.57,-0.49,-0.44,-0.48,-0.48,-0.48,-0.38,-0.38,-0.22,-0.23,-0.27,-0.43,-0.38,-0.15,0.11,0.15,0,-0.14,-0.09,0.06,0.35,0.54,0.62,0.54,0.47,0.59,0.72,0.89,1.02,1.27,1.54,1.8,2.03,2.18,2.25,2.14,1.81,1.3,0.65,0.08,-0.43,-0.7,-0.81,-0.88,-0.96,-0.96,-0.89,-0.6,-0.44,-0.18,-0.1,-0.02,-0.04,-0.23,-0.46,-0.62,-0.82,-0.97,-1.14,-1.08,-1.04,-0.9,-0.69,-0.33,-0.02,0.08,0.16,0.35,0.62,0.82,0.78,0.68,0.64,0.57,0.53,0.37,0.24,0.04,-0.12,-0.01,0.15,0.29,0.22,0.14,0.1,0.02,-0.25,-0.55,-0.72,-0.76,-0.85,-1.16,-1.37,-1.46,-1.39,-1.32,-1.18,-1.08,-0.89,-0.68,-0.57,-0.6,-0.76,-0.95,-1.08,-1.24,-1.22,-1.18,-1.13,-1.19,-1.26,-1.17,-0.95,-0.86,-0.94,-1.07,-1.1,-1.05,-0.99,-0.86,-0.68,-0.55,-0.31,-0.04,0.28,0.54,0.79,1.04,1.3,1.42,1.4,1.13,0.78,0.42,0.04,-0.28,-0.45,-0.49,-0.56,-0.67,-0.76,-0.88,-1.05,-1.1,-0.85,-0.66,-0.5,-0.48,-0.36,-0.41,-0.59,-0.78,-0.93,-0.98,-1.04,-0.91,-0.76,-0.44,-0.04,0.49,0.97,1.36,1.69",
+           "ONI (traditional)": "-1.32,-1.2,-1.12,-1.08,-1.1,-0.9,-0.62,-0.57,-0.56,-0.62,-0.66,-0.79,-0.66,-0.36,-0.04,0.16,0.27,0.5,0.71,0.9,1.02,1.03,0.96,0.71,0.52,0.27,0.33,0.18,-0.07,-0.44,-0.45,-0.2,0.03,0.04,-0.11,0.06,0.25,0.5,0.48,0.56,0.77,0.74,0.63,0.68,0.59,0.78,0.52,0.56,0.41,0.35,0.01,-0.27,-0.48,-0.48,-0.67,-0.83,-0.73,-0.52,-0.4,-0.44,-0.5,-0.48,-0.58,-0.76,-0.78,-0.88,-0.72,-0.92,-1.11,-1.44,-1.59,-1.51,-1.17,-0.81,-0.57,-0.51,-0.49,-0.47,-0.55,-0.52,-0.43,-0.39,-0.37,-0.39,-0.27,-0.06,0.26,0.63,0.72,0.82,0.96,1.03,1.12,1.15,1.39,1.62,1.69,1.59,1.17,0.84,0.57,0.49,0.43,0.32,0.28,0.3,0.36,0.56,0.6,0.64,0.48,0.39,0.24,0.02,-0.19,-0.23,-0.04,0.11,0.23,0.14,0.02,0.03,0.06,0.17,0.04,0,0.01,0.15,0.19,0.08,-0.07,-0.07,0,0.03,0.01,0.05,0.22,0.22,0.08,-0.2,-0.32,-0.22,-0.11,-0.05,-0.16,-0.17,-0.15,-0.2,-0.19,-0.13,0,-0.1,-0.16,-0.25,-0.25,-0.32,-0.33,-0.17,0.01,0.13,0.12,0.45,0.76,1.09,1.09,1.13,1.19,1.13,0.95,0.52,0.06,-0.35,-0.6,-0.66,-0.67,-0.7,-0.72,-0.8,-0.79,-0.75,-0.51,-0.25,-0.04,0.16,0.47,0.79,1.1,1.27,1.55,1.7,1.82,1.6,1.24,0.95,0.76,0.43,0.24,0.18,0.25,0.13,-0.09,-0.12,-0.23,-0.35,-0.46,-0.48,-0.5,-0.37,-0.15,0.05,-0.02,-0.26,-0.4,-0.4,-0.36,-0.42,-0.62,-0.73,-0.63,-0.48,-0.1,0.17,0.44,0.38,0.34,0.5,0.66,0.93,0.98,0.98,0.77,0.69,0.62,0.48,0.37,0.41,0.61,0.71,0.81,0.71,0.46,0.23,0.23,0.28,0.11,-0.26,-0.55,-0.72,-0.69,-0.72,-0.78,-1.1,-1.29,-1.36,-1.08,-0.81,-0.72,-0.69,-0.68,-0.6,-0.68,-0.78,-0.86,-0.78,-0.57,-0.27,0.04,0.25,0.48,0.7,1,1.26,1.49,1.69,1.84,1.77,1.55,1.13,0.56,-0.03,-0.51,-0.8,-0.99,-1.11,-1.26,-1.58,-1.89,-2.04,-1.87,-1.59,-1.24,-0.99,-0.71,-0.64,-0.46,-0.4,-0.47,-0.69,-0.88,-0.71,-0.56,-0.55,-0.61,-0.66,-0.8,-0.92,-1.08,-1.12,-1.29,-1.32,-1.47,-1.58,-1.49,-1.11,-0.65,-0.45,-0.23,0,0.23,0.4,0.6,0.79,0.81,0.84,0.71,0.66,0.33,0.26,0.26,0.46,0.39,0.35,0.45,0.68,0.84,0.82,0.71,0.52,0.17,-0.06,-0.28,-0.24,-0.37,-0.37,-0.44,-0.27,-0.07,0.11,0.19,0.21,0.29,0.32,0.29,0.14,0.09,0.22,0.34,0.47,0.5,0.64,0.62,0.47,0.35,0.34,0.45,0.4,0.18,-0.06,-0.17,-0.07,0.08,-0.05,-0.27,-0.42,-0.41,-0.27,-0.28,-0.27,-0.28,-0.23,-0.08,-0.16,-0.19,-0.14,-0.05,0.02,0.07,0.34,0.65,0.73,0.78,0.99,1.45,1.82,2.03,2.12,2.14,1.91,1.52,1.23,0.95,0.62,0.25,-0.06,-0.43,-0.76,-0.96,-0.89,-0.63,-0.51,-0.38,-0.47,-0.55,-0.52,-0.39,-0.22,-0.32,-0.62,-0.95,-1.06,-1.01,-0.86,-0.85,-0.8,-0.79,-0.6,-0.44,-0.33,-0.31,-0.3,-0.28,-0.36,-0.4,-0.38,-0.25,-0.17,-0.09,0.02,0.24,0.46,0.64,0.86,1.06,1.21,1.18,1.13,1.02,0.94,0.95,1.11,1.3,1.46,1.49,1.41,1.2,1,0.63,0.37,-0.03,-0.45,-0.99,-1.3,-1.3,-1.14,-1.27,-1.54,-1.81,-1.85,-1.64,-1.38,-1.09,-0.85,-0.61,-0.4,-0.37,-0.36,-0.33,-0.25,-0.12,-0.04,0.18,0.19,0.3,0.27,0.25,0.25,0.26,0.32,0.31,0.27,0.31,0.34,0.35,0.26,0.23,0.29,0.49,0.63,0.77,0.67,0.72,0.83,1.18,1.43,1.54,1.5,1.4,1.3,1.08,0.72,0.35,0.08,-0.15,-0.22,-0.24,-0.05,0.13,0.31,0.5,0.73,0.76,0.56,0.28,0.22,0.2,0.2,0.2,0.19,0.07,0,0.04,0.17,0.25,0.23,0.3,0.3,0.47,0.66,0.93,0.97,0.88,0.65,0.46,0.19,0.03,-0.11,-0.3,-0.55,-0.81,-0.97,-1.05,-1.01,-0.88,-0.7,-0.52,-0.36,-0.25,-0.24,-0.22,-0.27,-0.3,-0.33,-0.39,-0.41,-0.41,-0.26,-0.03,0.3,0.71,1.13,1.48,1.79,2.04,2.24,2.34,2.37,2.22,1.91,1.4,1.03,0.4,-0.08,-0.63,-0.83,-1.02,-1.12,-1.31,-1.47,-1.51,-1.25,-0.93,-0.8,-0.79,-0.84,-0.9,-0.94,-1,-1.13,-1.35,-1.53,-1.47,-1.26,-0.98,-0.81,-0.67,-0.62,-0.48,-0.4,-0.42,-0.54,-0.76,-0.78,-0.76,-0.54,-0.43,-0.29,-0.19,-0.08,-0.05,-0.13,-0.15,-0.26,-0.33,-0.32,-0.15,0.07,0.11,0.15,0.3,0.45,0.57,0.63,0.78,0.99,1.19,1.08,0.9,0.59,0.38,-0.01,-0.18,-0.13,0.09,0.14,0.23,0.23,0.29,0.29,0.34,0.27,0.19,0.1,0.12,0.22,0.39,0.54,0.58,0.61,0.64,0.71,0.62,0.55,0.4,0.37,0.27,0.09,-0.04,-0.14,-0.11,-0.27,-0.57,-0.82,-0.86,-0.8,-0.63,-0.45,-0.19,-0.05,0.12,0.33,0.54,0.71,0.88,0.88,0.62,0.19,-0.12,-0.32,-0.34,-0.41,-0.49,-0.77,-1.05,-1.38,-1.57,-1.72,-1.76,-1.61,-1.37,-1.05,-0.85,-0.56,-0.33,-0.2,-0.25,-0.36,-0.57,-0.79,-0.89,-0.84,-0.63,-0.35,0.03,0.34,0.5,0.56,0.66,0.92,1.31,1.5,1.47,1.21,0.88,0.38,-0.16,-0.66,-0.98,-1.24,-1.43,-1.54,-1.57,-1.48,-1.29,-1.06,-0.85,-0.68,-0.5,-0.34,-0.37,-0.5,-0.76,-0.94,-1.02,-0.92,-0.71,-0.56,-0.44,-0.35,-0.18,0.03,0.28,0.39,0.37,0.28,0.13,-0.03,-0.24,-0.28,-0.23,-0.2,-0.3,-0.38,-0.45,-0.34,-0.32,-0.14,-0.12,-0.11,-0.24,-0.21,-0.02,0.25,0.35,0.22,0.07,0.07,0.24,0.51,0.7,0.8,0.73,0.65,0.72,0.86,1.04,1.19,1.44,1.73,2.02,2.28,2.45,2.59,2.5,2.21,1.69,1.11,0.57,0.09,-0.19,-0.34,-0.42,-0.51,-0.49,-0.37,-0.08,0.08,0.27,0.32,0.35,0.32,0.14,-0.07,-0.23,-0.44,-0.61,-0.76,-0.71,-0.67,-0.55,-0.35,-0.07,0.13,0.2,0.3,0.52,0.82,1.04,1.05,0.99,0.94,0.87,0.82,0.71,0.59,0.38,0.2,0.31,0.51,0.72,0.75,0.71,0.66,0.57,0.33,0.04,-0.18,-0.29,-0.43,-0.77,-1,-1.11,-1.06,-0.99,-0.85,-0.74,-0.56,-0.4,-0.31,-0.35,-0.46,-0.64,-0.77,-0.91,-0.83,-0.76,-0.68,-0.77,-0.86,-0.83,-0.73,-0.7,-0.78,-0.87,-0.89,-0.82,-0.7,-0.55,-0.33,-0.11,0.19,0.46,0.73,1,1.25,1.5,1.74,1.9,1.99,1.84,1.53,1.18,0.77,0.43,0.18,0.06,-0.04,-0.12,-0.19,-0.29,-0.43,-0.46,-0.22,-0.08,0.02,-0.04,-0.02,-0.11,-0.26,-0.43,-0.57,-0.61,-0.6,-0.39,-0.21,0.11,0.46,0.95,1.39,1.8,2.16"})
+seasonNames = ["DJF","JFM","FMA","MAM","AMJ","MJJ","JJA","JAS","ASO","SON","OND","NDJ"]
+viewof which = Inputs.radio(Object.keys(series), {value: "RONI (official since Feb 2026)", label: "Index"})
+viewof th = Inputs.range([0.3, 1.0], {value: 0.5, step: 0.1, label: "Threshold (± °C)"})
+viewof minRun = Inputs.range([1, 9], {value: 5, step: 1, label: "Seasons in a row needed"})
+vals = series[which].split(",").map(Number)
+n = vals.length
+
+// Classify on one decimal, as NOAA's tables print it, in runs of the same sign.
+classified = {
+  const sign = v => (v = Math.round(v * 10) / 10) >= th - 1e-9 ? 1 : v <= -th + 1e-9 ? -1 : 0;
+  const cls = new Array(n).fill("Neutral"), eps = [];
+  for (let i = 0, j; i < n; i = Math.max(j, i + 1)) {
+    const s = sign(vals[i]);
+    for (j = i; s !== 0 && j < n && sign(vals[j]) === s; j++);
+    if (s === 0) continue;
+    const ok = j - i >= minRun;
+    if (ok) eps.push({s, start: i});
+    cls.fill(ok ? (s > 0 ? "El Niño" : "La Niña") : (j === n ? "Run still open" : "Neutral"), i, j);
+  }
+  return {cls, eps};
+}
+elNino = classified.eps.filter(e => e.s > 0)
+gaps = d3.pairs(elNino, (a, b) => (b.start - a.start) / 12)
+share = lab => (100 * classified.cls.filter(c => c === lab).length / n).toFixed(1) + "%"
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div></div>`
+
+html`<div class="sim-readouts">
+  ${card("El Niño / La Niña episodes", elNino.length + " / " + (classified.eps.length - elNino.length), "#ef4444")}
+  ${card("Seasons in El Niño / La Niña", share("El Niño") + " / " + share("La Niña"), "#38bdf8")}
+  ${card("Years between El Niño starts", d3.median(gaps).toFixed(1) + " (range " + d3.min(gaps).toFixed(1) + "–" + d3.max(gaps).toFixed(1) + ")", "#10b981")}
+  ${card("Latest: " + seasonNames[(n - 1) % 12] + " " + (1950 + Math.floor((n - 1) / 12)), (vals[n - 1] >= 0 ? "+" : "−") + Math.abs(vals[n - 1]).toFixed(2) + " °C, " + classified.cls[n - 1], "#f59e0b")}
+</div>`
+
+Plot.plot({
+  width: Math.min(width, 640), height: 280, marginLeft: 40,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {label: "Year →", tickFormat: "d", ticks: 6},
+  y: {label: "↑ Index (°C)", grid: true},
+  color: {legend: true, domain: ["El Niño", "La Niña", "Neutral", "Run still open"],
+          range: ["#ef4444", "#38bdf8", "#64748b", "#f59e0b"]},
+  marks: [
+    Plot.ruleX(vals.map((v, i) => ({t: 1950 + i / 12, v, c: classified.cls[i]})),
+               {x: "t", y1: 0, y2: "v", stroke: "c", strokeWidth: 1.2}),
+    Plot.ruleY([th, -th], {stroke: "#cbd5e1", strokeDasharray: "4 4"})
+  ]
+})
+```
+
+Each bar is one three-month season, coloured by your rule; amber is a run not yet long enough to count.
+
+#### How far ahead can you trust it?
+
+```{ojs}
+//| echo: false
+viewof lead = Inputs.range([1, 12], {value: 6, step: 1, label: "Months ahead"})
+// Persistence: correlation between the index in one season and `lead` months later.
+memory = seasonNames.map((s, k) => {
+  const idx = d3.range(k, n - lead, 12), x = idx.map(i => vals[i]), y = idx.map(i => vals[i + lead]);
+  const mx = d3.mean(x), my = d3.mean(y);
+  return {s, r: d3.sum(x, (a, q) => (a - mx) * (y[q] - my)) /
+                Math.sqrt(d3.sum(x, a => (a - mx) ** 2) * d3.sum(y, b => (b - my) ** 2))};
+})
+html`<div class="sim-readouts">
+  ${["DJF", "MAM", "JJA"].map(s => card("Memory from " + s, memory.find(d => d.s === s).r.toFixed(2), "#10b981"))}
+</div>`
+Plot.plot({
+  width: Math.min(width, 640), height: 230, marginLeft: 40, marginBottom: 45,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: seasonNames, label: "Starting season", tickRotate: -45},
+  y: {domain: [-0.4, 1], label: "↑ Correlation " + lead + " months later", grid: true},
+  marks: [Plot.barY(memory, {x: "s", y: "r", fill: "#10b981"}), Plot.ruleY([0], {stroke: "#94a3b8"})]
+})
+```
+
+Bars show how well this season's value predicts the value some months later; the low bars from DJF are the spring barrier.
+:::
+
+At the defaults the RONI gives 25 El Niño and 22 La Niña episodes since 1950, with new El Niños starting a median 2.7 years apart (range 0.9 to 5.3); the ONI gives 25 and 21, partly because only the RONI finds a La Niña starting in 2024. In index values downloaded on 19 October 2026, the current warm run reads +1.69 °C for JAS 2026 and is still amber, one season short of a historical episode, although NOAA had already declared El Niño conditions in real time[^8]. Australia's Bureau of Meteorology describes the cycle as operating loosely over one to eight years[^15], so "we are due one" is not a forecast.
+
+How far ahead depends on the season. At 6 months ahead, the index in June–August correlates with its value six months later at 0.86; from December–February the correlation is −0.01, no memory at all; from March–May it is 0.40. This is the **spring predictability barrier**: the match between forecast and outcome falls sharply through the northern spring in models and observations alike, possibly because the east–west pressure difference is weakest then[^16]. The chart measures **persistence**, the forecast that the index stays put, which [Persistence and climatology baselines](persistence-and-climatology-baselines.qmd) explains as the yardstick to beat; [Why seasonal forecasting is possible at all](why-seasonal-forecasting-is-possible-at-all.qmd) covers where real model skill comes from.
+
+As of NOAA's 8 October 2026 discussion, the chance of a strong-to-very-strong El Niño through January–March 2027 was above 83%, and the chance that the October–December RONI would exceed +2.5 °C, stronger than any event since 1950, was 83%[^8]. The record in the widget peaks at +2.40 °C (DJF 1983).
+
+## Other fruit regions
+
+ENSO moves where the tropical Pacific's heavy rain falls, and that bends jet streams and storm tracks far away; these distant links are **teleconnections**. From more than 1,700 rain gauges, Ropelewski and Halpert found ENSO-linked rainfall regions in Australia, the Americas, India and Africa, and in almost every one the expected departure came in at least 80% of events[^17], which is not all of them. NOAA's phrase for US winters is "a matter of probability, not certainty"[^18].
+
+| Region | El Niño tends to bring | La Niña tends to bring |
+|---|---|---|
+| Northern coastal Peru | warm sea and warm winters; heavy rain in coastal events | cooler coastal sea |
+| Central Chile, 30–38°S | wetter winter (30–35°S) and late spring (35–38°S) | drier winter and late spring |
+| Eastern Australia | drier winter–spring; colder nights, more frost | wetter |
+| Southeastern US | more winter chill | less chill; warmer, drier winters |
+| US Pacific Northwest | roughly the reverse of La Niña | cooler, wetter winters |
+
+<small>Sources: Peru, USDA[^13] and Peng et al.[^12]; Chile[^19]; Australia[^15]; US, NOAA[^18] and Karrei et al.[^20] The La Niña cells for Peru and Australia are the opposite tendency, not separately sourced. Every cell is a tendency over many events.</small>
+
+::: {.callout-note collapse="true"}
+## Other fruit regions: Chile, Australia and the US
+
+**Chile.** Central Chile's wetter El Niño winters and late springs come with more frequent blocking highs over the far southeastern Pacific; La Niña tends to bring the opposite[^19].
+
+**Australia.** Nine of the ten driest winter–springs on record for eastern Australia were El Niño years, and fewer clouds make winter–spring nights colder than average, especially in the east, which raises frost risk. Strength is a poor guide: the very strong 1997–98 event did less to rainfall than the weak 2002–03 one[^15].
+
+**United States.** La Niña winters tend to be warmer and drier across the southern states and cooler and wetter in the Pacific Northwest, with El Niño roughly the reverse[^18]. Across Florida, Georgia, Alabama and South Carolina, El Niño winters from 1950 to 2024 generally added chill and La Niña winters removed it, on top of a long-term decline[^20].
+:::
+
+::: {.callout-tip}
+## What this means for you
+
+Our inference from the sources above, not published advice.
+
+- **Match the index to your coast.** Peru and Ecuador: Niño 1+2, IGP's ICEN and ENFEN's reports. Elsewhere: NOAA's RONI and your national weather service.
+- **Treat 2026 as a possible repeat of 2023 in northern Peru.** Off Peru, June–September Niño 1+2 averaged (2.63 + 3.21 + 3.30 + 2.82)/4 = +2.99 °C in 2023 and (2.83 + 3.56 + 4.08 + 4.69)/4 = +3.79 °C in 2026, higher in every month[^10]. This is a hypothesis, not a production forecast.
+- **After a warm autumn and winter, watch chill and flower-bud set.** In 2023 the damage ran through flowering between March and October[^13]. Count flower buds before committing volume forecasts, and read [Chill hours and dormancy](chill-hours-and-dormancy.qmd) for why warm winters upset bud break.
+- **Warn buyers and harvest planners early.** When the coastal index runs warm for several months, flag a lower or later crop as a risk well before harvest, since coastal events give little warning.
+- **Growers elsewhere: check your region's sign in the table**, then shift the odds from your [climatology](what-a-climatology-is.qmd) rather than replacing it.
+- **Weigh outlooks by issue month.** A March ENSO outlook is a hint; a July one is planning-grade.
+:::
+
+## Key takeaways
+
+- Check which index and run length built any "El Niño years" list; NOAA's official index changed in February 2026.
+- The five-season rule works only in hindsight. For this season's decisions use NOAA's real-time advisory.
+- Niño 3.4 can read neutral while the sea off Peru is 2 °C warm; farms on that coast need Niño 1+2 too.
+- Give a July ENSO outlook more weight than a March one from the same model.
+- A stronger event does not guarantee a stronger local effect.
+- In northern Peru the 2023 loss came through a warm autumn and winter that limited flowering, so the austral winter is the season to watch, not only the rains.
+
+## References
+
+[^1]: Timmermann, A. et al. El Niño–Southern Oscillation complexity. *Nature* **559**, 535–545 (2018). https://doi.org/10.1038/s41586-018-0252-6
+[^2]: Di Liberto, T. The Walker Circulation: ENSO's atmospheric buddy. NOAA Climate.gov ENSO blog (1 August 2014). https://www.climate.gov/news-features/blogs/enso/walker-circulation-ensos-atmospheric-buddy
+[^3]: Bjerknes, J. Atmospheric teleconnections from the equatorial Pacific. *Mon. Weather Rev.* **97**, 163–172 (1969). https://doi.org/10.1175/1520-0493(1969)097<0163:ATFTEP>2.3.CO;2
+[^4]: L'Heureux, M. The rise of El Niño and La Niña. NOAA Climate.gov ENSO blog (23 October 2020). https://www.climate.gov/news-features/blogs/enso/rise-el-ni%C3%B1o-and-la-ni%C3%B1a
+[^5]: Jin, F.-F. An equatorial ocean recharge paradigm for ENSO. Part I: Conceptual model. *J. Atmos. Sci.* **54**, 811–829 (1997). https://doi.org/10.1175/1520-0469(1997)054<0811:AEORPF>2.0.CO;2
+[^6]: NOAA Climate Prediction Center. Oceanic Niño Index (ONI): historical El Niño/La Niña episodes (1950–present), ERSSTv6. Accessed 19 October 2026. https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso/oni/v6/
+[^7]: National Weather Service. Public Information Statement 26-05: Implementing a Relative Oceanic Niño Index effective February 1, 2026 (13 January 2026). https://www.weather.gov/media/notification/pdf_2026/pns26-05_Relative_ONI.pdf ; index table: https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso/roni/
+[^8]: NOAA Climate Prediction Center. ENSO diagnostic discussion, 8 October 2026. https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/ensodisc.shtml
+[^9]: Instituto Geofísico del Perú. Informe técnico sobre el monitoreo y pronóstico de El Niño, 2021, No. 03 (2021). https://repositorio.igp.gob.pe/bitstream/handle/20.500.12816/4954/INFORME_TECNICO_EL_NINO_2021_03_INSTITUTO_GEOFISICO_DEL_PERU.pdf
+[^10]: NOAA Climate Prediction Center. Monthly OISST v2.1 Niño region indices (1991–2020 base period), sstoi.indices; region definitions at https://www.cpc.ncep.noaa.gov/data/indices/. Accessed 19 October 2026. https://www.cpc.ncep.noaa.gov/data/indices/sstoi.indices
+[^11]: Garreaud, R. D. A plausible atmospheric trigger for the 2017 coastal El Niño. *Int. J. Climatol.* **38** (Suppl. 1) (2018). https://doi.org/10.1002/joc.5426
+[^12]: Peng, Q., Xie, S.-P., Passalacqua, G. A., Miyamoto, A. & Deser, C. The 2023 extreme coastal El Niño: atmospheric and air-sea coupling mechanisms. *Sci. Adv.* **10**, eadk8646 (2024). https://doi.org/10.1126/sciadv.adk8646
+[^13]: Camacho, M. Peru: Blueberry Annual. USDA Foreign Agricultural Service GAIN report PE2024-0002 (27 February 2024). https://apps.fas.usda.gov/newgainapi/api/Report/DownloadReportByFileName?fileName=Blueberry%20Annual_Lima_Peru_PE2024-0002.pdf
+[^14]: Phillips, D. A., Williamson, J. G., Olmstead, J. W. & Lyrene, P. M. Reproductive growth and development of blueberry. *EDIS* **2020** (2) (2020). https://doi.org/10.32473/edis-hs220-2020
+[^15]: Bureau of Meteorology. What is El Niño and what might it mean for Australia? Accessed 19 October 2026. http://www.bom.gov.au/climate/updates/articles/a008-el-nino-and-australia.shtml
+[^16]: Webster, P. J. & Yang, S. Monsoon and ENSO: selectively interactive systems. *Q. J. R. Meteorol. Soc.* **118**, 877–926 (1992). https://doi.org/10.1002/qj.49711850705
+[^17]: Ropelewski, C. F. & Halpert, M. S. Global and regional scale precipitation patterns associated with the El Niño/Southern Oscillation. *Mon. Weather Rev.* **115**, 1606–1626 (1987). https://doi.org/10.1175/1520-0493(1987)115<1606:GARSPP>2.0.CO;2
+[^18]: Lindsey, R. How El Niño and La Niña affect the winter jet stream and U.S. climate. NOAA Climate.gov (18 September 2017). https://www.climate.gov/news-features/featured-images/how-el-ni%C3%B1o-and-la-ni%C3%B1a-affect-winter-jet-stream-and-us-climate
+[^19]: Montecinos, A. & Aceituno, P. Seasonality of the ENSO-related rainfall variability in central Chile and associated circulation anomalies. *J. Clim.* **16**, 281–296 (2003). https://doi.org/10.1175/1520-0442(2003)016<0281:SOTERR>2.0.CO;2
+[^20]: Karrei, M. A. Z., Fraisse, C. W., Her, Y. G. & Boyd, N. El Niño Southern Oscillation and chill accumulation variability in the southeastern United States. *Int. J. Climatol.* e70600 (2026). https://doi.org/10.1002/joc.70600
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/detrending/detrend_hk_temperature.html"><span>Previous</span>Decomposing Hong Kong temperature</a><a class="mf-up" href="/series/prediction/index.html"><span>Series</span>Weather, Climate and Prediction</a><a class="mf-next" href="/blogs/why-seasonal-forecasting-is-possible-at-all.html"><span>Next</span>Why seasonal forecasting is possible at all</a></div>
+<!-- CURRICULUM_FOOTER_END -->

@@ -108,6 +108,6 @@ The authors list the main limitations themselves. Manure management is excluded,
 [^2]: Fung, K. M., Val Martin, M. & Tai, A. P. K. Modeling the interinfluence of fertilizer-induced $\text{NH}_3$ emission, nitrogen deposition, and aerosol radiative effects using modified CESM2. *Biogeosciences* **19**, 1635–1655 (2022). https://doi.org/10.5194/bg-19-1635-2022
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/stomata-and-dry-deposition.html"><span>Previous</span>Stomata and dry deposition</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/intercropping-air-quality.html"><span>Next</span>Intercropping</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/leaf-area-index.html"><span>Previous</span>Leaf area index</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/n2o-the-forgotten-greenhouse-gas.html"><span>Next</span>N2O, the forgotten greenhouse gas</a></div>
 <!-- CURRICULUM_FOOTER_END -->
 

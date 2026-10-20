@@ -1,0 +1,222 @@
+---
+title: Heatwaves in a warming climate
+description: How heatwaves are defined, why a small rise in the average multiplies how often a hot threshold is crossed, what the IPCC and attribution studies find, and what that means for a heat-sensitive crop.
+date: 2026-10-19
+categories:
+- climate
+- meteorology
+- statistics
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/prediction/index.html">Weather, Climate and Prediction</a><span class="sep">·</span>Part 7 · Extremes</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Comfort with averages and histograms. Python for the notebooks.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+A heatwave is a run of unusually hot days, defined by an absolute threshold, such as 35 °C, or a relative one, such as three or more days above the local 90th percentile. Extremes sit in the tail of a distribution, so a small rise in the average multiplies how often a fixed threshold is crossed. In a synthetic summer with a 27 °C mean and a 3 °C spread, warming the mean by 1 °C makes days above 35 °C 2.6 times as common, and the rarer the threshold, the larger the multiplier. The IPCC finds hot extremes have become more frequent and more intense over most land since the 1950s. A hot day that came once a decade before industrialisation now comes 2.8 times as often, and would come 5.6 times as often at 2 °C of global warming. Blocking highs and drying soil let heat build over days. For a grower: count days above your crop's thresholds, and expect that count to rise much faster than the mean.
+:::
+
+## What counts as a heatwave
+
+There is no single definition; Perkins and Alexander note that those in use are inconsistent[^1]. Each makes three choices.
+
+**Which temperature.** Usually the daily maximum, $T_X$ (°C); sometimes the daily minimum, $T_N$ (°C), because hot nights deny recovery. Perkins and Alexander test both[^1].
+
+**Which threshold.** Three kinds:
+
+| Kind | Example | Suited to |
+|---|---|---|
+| Absolute | Days with $T_X$ above 35 °C | Damage with a physical threshold, such as fruit scald |
+| Relative (percentile) | $T_X$ above the local 90th percentile for that time of year | Comparing places; what local life is used to |
+| Annual maximum | The hottest day of the year, as a 1-in-10-year value | Rare-event statistics and projections |
+
+A percentile measures heat against what each place is used to, so one definition works everywhere. It is usually computed separately for each calendar day from a base period, often pooling a window of neighbouring days; that is common practice, not a detail I checked in Perkins and Alexander's paper. The base period changes the answer: a threshold fixed on 1961–1990 counts more heatwaves every decade as the climate warms, while one recomputed each decade keeps the share of days above it near 10%. The annual-maximum kind is how the IPCC states its headline numbers, in the language of [return periods](return-periods.qmd).
+
+**How many days.** Perkins and Alexander require three or more consecutive days above the threshold[^1]. Duration matters because heat builds from one day to the next, and fruit damage takes hours of exposure.
+
+## Why a small shift multiplies the extremes
+
+Suppose the daily maximum on a summer day is normally distributed with mean $\mu$ (°C) and standard deviation $\sigma$ (°C). The probability that a day exceeds a fixed threshold $T$ (°C) is
+
+$$p = Q\!\left(\frac{T - \mu}{\sigma}\right), \qquad z = \frac{T - \mu}{\sigma}$$
+
+where $Q(z)$ is the probability that a standard normal variable exceeds $z$, and $z$ (dimensionless) counts standard deviations above the mean. If the climate warms so that $\mu$ becomes $\mu + \Delta$, the probability becomes $p_1$, and the **probability ratio**
+
+$$\text{PR} = \frac{p_1}{p_0}$$
+
+says how many times as often the threshold is now crossed, with $p_0$ the old probability.
+
+The widget uses a synthetic summer, not site data: daily maxima with a 27 °C mean and 3 °C standard deviation over 92 days, June to August.
+
+::: {.sim-card}
+#### Shift the mean, change the spread, watch the tail
+
+```{ojs}
+//| echo: false
+viewof shift = Inputs.range([0, 4], {value: 1, step: 0.1, label: "Mean shift Δ (°C)"})
+viewof sdNew = Inputs.range([1.5, 6], {value: 3, step: 0.1, label: "Spread in the warmer climate (°C)"})
+viewof thr = Inputs.range([28, 42], {value: 35, step: 0.5, label: "Threshold T (°C)"})
+viewof logY = Inputs.toggle({label: "Log density scale (shows the tail)", value: true})
+
+MU0 = 27    // synthetic baseline mean summer daily maximum (°C); SD 3 °C; 92 days, June to August
+
+// erfc (Numerical Recipes erfcc), fractional error < 1.2e-7 even far into the tail.
+erfc = x => {
+  const z = Math.abs(x), t = 1 / (1 + 0.5 * z);
+  const r = t * Math.exp(-z * z - 1.26551223 + t * (1.00002368 + t * (0.37409196 + t * (0.09678418 +
+    t * (-0.18628806 + t * (0.27886807 + t * (-1.13520398 + t * (1.48851587 + t * (-0.82215223 + t * 0.17087277)))))))));
+  return x >= 0 ? r : 2 - r;
+}
+Q = z => 0.5 * erfc(z / Math.SQRT2)
+pdf = (x, m, s) => Math.exp(-0.5 * ((x - m) / s) ** 2) / (s * Math.sqrt(2 * Math.PI))
+
+p0 = Q((thr - MU0) / 3)
+p1 = Q((thr - MU0 - shift) / sdNew)
+pct = v => (100 * v).toPrecision(3) + "%"
+
+card = (label, value, colour) => html`<div class="sim-readout"><div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div></div>`
+
+html`<div class="sim-readouts">
+  ${card("Chance a day exceeds T, baseline", pct(p0), "#38bdf8")}
+  ${card("Chance a day exceeds T, warmer", pct(p1), "#ef4444")}
+  ${card("Probability ratio", (p1 / p0).toFixed(2) + "×", "#f59e0b")}
+  ${card("Expected days above T per summer", (92 * p0).toFixed(2) + " → " + (92 * p1).toFixed(2), "#10b981")}
+</div>`
+
+curves = d3.range(10, 50.01, 0.2).flatMap(x => [
+  {x, y: pdf(x, MU0, 3), c: "Baseline"},
+  {x, y: pdf(x, MU0 + shift, sdNew), c: "Warmer"}])
+
+Plot.plot({
+  height: 280, marginLeft: 55,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [10, 50], label: "Daily maximum temperature (°C) →", grid: true},
+  y: logY ? {type: "log", domain: [1e-5, 0.3], label: "↑ Probability density (per °C, log)", grid: true}
+            : {domain: [0, 0.3], label: "↑ Probability density (per °C)", grid: true},
+  color: {legend: true, domain: ["Baseline", "Warmer", "Threshold T"], range: ["#38bdf8", "#ef4444", "#f59e0b"]},
+  marks: [
+    Plot.areaY(curves.filter(d => d.x >= thr), {x: "x", y1: logY ? 1e-5 : 0, y2: "y", fill: "c", fillOpacity: 0.35, clip: true}),
+    Plot.line(curves, {x: "x", y: "y", stroke: "c", strokeWidth: 2.5, clip: true}),
+    Plot.ruleX([thr], {stroke: () => "Threshold T", strokeWidth: 2, strokeDasharray: "5 4"})
+  ]
+})
+```
+
+Synthetic distribution. Shading beyond T marks the two probabilities; on the log axis it is not to scale, so switch the log off to see how small they are. Try a 2 °C shift; thresholds of 32 and 38 °C; and no shift with a 3.5 °C spread.
+:::
+
+At the start, a 1 °C shift and a 35 °C threshold, the chance that a day exceeds 35 °C rises from 0.383% to 0.982%, a ratio of 2.56, or from 0.35 to 0.90 days a summer. A 1 °C shift is a third of a standard deviation; the hot days more than doubled. Three more readings:
+
+- **Bigger shifts compound.** At a 2 °C shift the ratio is 5.94, and at 3 °C it is 12.48.
+- **Rarer thresholds multiply more.** With the 1 °C shift, the ratio is 1.91 at 32 °C (4.40 to 8.39 days a summer) and 3.49 at 38 °C.
+- **Spread matters as much as the mean.** With no shift at all, widening the standard deviation from 3 to 3.5 °C raises the ratio at 35 °C to 2.91, more than the 1 °C shift did.
+
+The second point matches the IPCC's finding from climate models that projected percentage changes in frequency are larger for rarer events[^2].
+
+::: {.callout-note collapse="true"}
+## Why the multiplier grows with rarity
+
+For large $z$ the normal tail has a simple approximation, $Q(z) \approx \phi(z)/z$, where $\phi(z) = e^{-z^2/2}/\sqrt{2\pi}$ is the standard normal density. Write the shift in standard deviations as $\delta = \Delta/\sigma$ (dimensionless), so the threshold moves from $z$ to $z - \delta$ standard deviations above the mean. Then
+
+$$\text{PR} = \frac{Q(z - \delta)}{Q(z)} \approx \frac{z}{z - \delta}\, \exp\!\left( z\delta - \frac{\delta^2}{2} \right)$$
+
+The multiplier grows roughly as $e^{z\delta}$: rarity times shift. At the widget's start, $z = 8/3$ and $\delta = 1/3$: the approximation gives $2.63$ against the exact $2.56$. A wider $\sigma$ lowers $z$ for the same threshold, which is why the spread matters too.
+:::
+
+**What the toy leaves out.** Real summer maxima need not be normal. Their upper tail may be lighter than a normal's, or even bounded, as in the attribution fit below, and that changes the multipliers; [Heavy tails](heavy-tails.qmd) covers the opposite case. The spread may change too: if the soil-moisture feedback described next strengthens in a warmer climate, hot days could spread further (my inference, given as background). And hot days are autocorrelated, so the ratio for runs of three days differs from the per-day ratio; only the expected count of single days, $92p$, is unaffected.
+
+## How heatwaves build
+
+**A blocking high.** A block is a large, persistent high-pressure system that stalls the usual west-to-east procession of mid-latitude weather for days at a time. Under it the sky is clear, the wind is light, and the air sinks, warming as it is compressed. Counting weak blocks too, Pfahl and Wernli found more than 80% of six-hourly warm extremes associated with blocking in regions such as eastern Canada, Scandinavia and parts of Siberia[^3].
+
+**Drying soil.** At the ground, the sun's net energy goes mainly into two fluxes, both in W m⁻²: the latent heat flux $\lambda E$, carried off by evaporating water, and the sensible heat flux $H$, which heats the air directly. Their ratio, the Bowen ratio $\beta = H/\lambda E$ (dimensionless), rises as the soil dries, so the same sunshine heats the air more. This is the field-scale version of what [Heat and drought: the stomata close](heat-and-drought-stomata-close.qmd) describes for one leaf (the link between scales is my framing). In the European heatwaves of 2003 (France) and 2010 (Russia), Miralles and colleagues found that persistent pressure patterns set off land–air feedbacks[^4]. Heat supplied by day from advection and the drying land was kept overnight in an unusually deep air layer, kilometres thick, so it accumulated over several days and dried the soil further[^4].
+
+```{mermaid}
+flowchart LR
+    A["Blocking high<br/>stalls for days"] --> B["Clear skies,<br/>sinking air"]
+    B --> C["Hot afternoon"]
+    F["Dry spring:<br/>soil already dry"] -->|"little water to evaporate"| C
+    C --> D["Soil dries"]
+    D -->|"less energy to evaporation"| C
+    C --> E["Heat kept overnight<br/>in a deep air layer"]
+    E -->|"next day starts warmer"| C
+
+    class A indigo
+    class B ochre
+    class C rust
+    class D sage
+    class E plum
+    class F terracotta
+    classDef indigo fill:#1d4a62,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef plum fill:#48304a,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef rust fill:#a04b2d,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef ochre fill:#d69a2e,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+    classDef terracotta fill:#c97d62,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+    classDef sage fill:#95a87f,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+```
+
+Dry soil is both precondition and feedback, and both mechanisms carry memory from day to day, which is why duration matters.
+
+The June 2021 Pacific Northwest heatwave showed both. An omega block, named for the shape of its pressure pattern, sat over the region with strong sinking air beneath it[^5]. The attribution study's authors judge the circulation itself probably not exceptional, and say very dry antecedent conditions may have contributed through reduced latent cooling; in western Oregon, March to June brought only 20% to 40% of average precipitation[^5]. Portland, Oregon reached 46.7 °C, 5.0 °C above its previous record[^5].
+
+## What has changed, and how much is us
+
+**Observed.** The IPCC's Sixth Assessment finds it virtually certain (its highest likelihood term) that hot extremes including heatwaves have become more frequent and more intense across most land regions since the 1950s. It has high confidence that human-induced climate change is the main driver[^2].
+
+**Projected.** The IPCC's hot extreme is the daily maximum over land beaten on average once a decade, or once in 50 years, in 1850–1900, its stand-in for a climate without human influence; the present is about 1 °C of global warming[^2]:
+
+| Global warming | 1-in-10-year hot day: times per decade | 1-in-50-year hot day: times per 50 years | 1-in-10-year hot day: how much hotter |
+|---|---|---|---|
+| 1 °C (present) | 2.8 (1.8–3.2) | 4.8 (2.3–6.4) | +1.2 °C |
+| 1.5 °C | 4.1 (2.8–4.7) | 8.6 (4.3–10.7) | +1.9 °C |
+| 2 °C | 5.6 (3.8–6.0) | 13.9 (6.9–16.6) | +2.6 °C |
+| 4 °C | 9.4 (8.3–9.6) | 39.2 (27.0–41.4) | +5.1 °C |
+
+Brackets are the IPCC's likely ranges. Every extra 0.5 °C of global warming causes clearly discernible increases in hot extremes[^2].
+
+Two differences in scale separate this table from the widget. First, the IPCC counts annual maxima, not days. If days were independent, the chance that the year's hottest day exceeds a threshold would be $1 - (1 - p)^{92}$, close to $92p$ when $92p$ is small, so for rare thresholds the annual ratio is about the daily ratio; at the widget's start, where $92p_1 = 0.90$ is not small, it is 2.01 against 2.56. Second, the columns are global warming levels, and summer temperatures over continents rise faster than the global mean: in the Pacific Northwest, the hottest day of the year warmed about twice as fast as global mean temperature in the fit described below[^5]. So 1 °C of global warming is not a local $\Delta$ of 1 °C. The widget and the table agree in direction and pattern, the rarer event multiplied more at every level, not in magnitude.
+
+**Attributed.** Event attribution compares the probability of an event at least as extreme in today's climate, $p_1$, with that in a climate without human emissions, $p_0$, and reports $p_1/p_0$, the widget's ratio[^5]. But $p_0$ cannot be observed; it is estimated from climate models and the observed record.
+
+For the 2021 Pacific Northwest heatwave, Philip and colleagues defined the event as the year's highest daily maximum temperature over 45–52° N, 119–123° W, the area around Portland, Seattle and Vancouver[^5]. They put it at roughly 1-in-1000 years in today's climate. From the models, they found it at least 150 times rarer without human-induced climate change, and about 2 °C hotter than a 1-in-1000-year heatwave would have been in 1850–1900[^5].
+
+For the observations they fitted a generalised extreme value (GEV) distribution, the standard model for annual maxima, with its location shifting in proportion to global mean temperature. That gave a probability ratio of 390, reported as "390 (3.2 to ∞)"; the sentence names no confidence level, though the paper's other ranges are 95% intervals[^5]. The fitted shape parameter was negative, which gives the distribution an upper limit: fitted to the years before 2021, the limit was about 35.5 °C, far below the 39.7 °C observed in the regional index[^5]. If the event lies above the upper limit of the counterfactual climate's distribution, $p_0$ is zero and the ratio is infinite, which is why the range has no finite top (my explanation of the open bound). The widget is only an analogy here: the study fitted a bounded extreme-value tail, not a normal.
+
+### For a blueberry field
+
+A berry scalds at a temperature, not at a percentile of the local climate. In western Oregon, Yang and colleagues found that on hot, sunny days above 35 °C, sun-exposed northern highbush berries ran 7 to 11 °C warmer than the air[^6]. Damage typically appeared 1 to 3 days after an extreme heat event. Green berries held at 42 to 48 °C were damaged within 1.5 to 2 hours in 'Aurora' and 3 to 3.5 hours in 'Elliott'; blue berries tolerated more[^6]. The authors recommend cooling fields when the air exceeds 32 °C during green fruit stages and 35 °C during ripening[^6]. Those are absolute thresholds, the kind the widget's tail arithmetic applies to.
+
+The 2021 heatwave hit the same region. Portland's 46.7 °C air temperature alone was already inside the 42 to 48 °C range of berry temperatures at which Yang and colleagues damaged green berries in heating tests, and sun-exposed fruit runs hotter than the air on hot days, by 7 to 11 °C on the days over 35 °C they measured[^6]. The attribution study mentions agricultural impacts without detail[^5].
+
+::: {.callout-tip appearance="simple" icon=false}
+**What this means for you.** My inferences from the sources and the widget above, not tested on a farm.
+
+- Count days above your crop's absolute thresholds in your station record, season by season (32 and 35 °C for northern highbush in western Oregon[^6]).
+- Estimate how far into the tail each threshold sits at your site: $z$ = (threshold − mean summer daily maximum) / standard deviation. The larger $z$, the faster that count rises as summers warm.
+- Size cooling and irrigation for runs of days, not one afternoon, and scout for damage 1 to 3 days after the heat.
+- When a forecast shows a persistent high arriving over dry soil, irrigate shallow-rooted bushes before it, not during it.
+:::
+
+## Key takeaways
+
+- State the temperature, threshold, run length and base period with any heatwave count; counts under different rules are not comparable.
+- Use absolute thresholds for crop damage, percentiles for comparing places.
+- Judge a warming trend by its effect on the tail, not the mean: for a threshold $z$ standard deviations above the mean, a shift of $\delta$ standard deviations multiplies its frequency by roughly $e^{z\delta}$.
+- Read an attribution result as a probability ratio and quote its lower bound; for a record-breaking event, as in 2021, the upper end may be unbounded.
+
+## References
+
+[^1]: Perkins, S. E. & Alexander, L. V. On the measurement of heat waves. *J. Clim.* **26**, 4500–4517 (2013). https://doi.org/10.1175/JCLI-D-12-00383.1
+[^2]: IPCC. Summary for Policymakers. In *Climate Change 2021: The Physical Science Basis. Contribution of Working Group I to the Sixth Assessment Report of the Intergovernmental Panel on Climate Change* (eds Masson-Delmotte, V. et al.) 3–32 (Cambridge Univ. Press, 2021). https://doi.org/10.1017/9781009157896.001
+[^3]: Pfahl, S. & Wernli, H. Quantifying the relevance of atmospheric blocking for co-located temperature extremes in the Northern Hemisphere on (sub-)daily time scales. *Geophys. Res. Lett.* **39** (12) (2012). https://doi.org/10.1029/2012GL052261
+[^4]: Miralles, D. G., Teuling, A. J., van Heerwaarden, C. C. & Vilà-Guerau de Arellano, J. Mega-heatwave temperatures due to combined soil desiccation and atmospheric heat accumulation. *Nat. Geosci.* **7**, 345–349 (2014). https://doi.org/10.1038/ngeo2141
+[^5]: Philip, S. Y. et al. Rapid attribution analysis of the extraordinary heat wave on the Pacific coast of the US and Canada in June 2021. *Earth Syst. Dyn.* **13**, 1689–1713 (2022). https://doi.org/10.5194/esd-13-1689-2022
+[^6]: Yang, F.-H., Bryla, D. R. & Strik, B. C. Critical temperatures and heating times for fruit damage in northern highbush blueberry. *HortScience* **54**, 2231–2239 (2019). https://doi.org/10.21273/HORTSCI14427-19
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/return-periods.html"><span>Previous</span>Return periods</a><a class="mf-up" href="/series/prediction/index.html"><span>Series</span>Weather, Climate and Prediction</a></div>
+<!-- CURRICULUM_FOOTER_END -->

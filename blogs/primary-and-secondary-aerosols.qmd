@@ -1,0 +1,260 @@
+---
+title: Primary and secondary aerosols
+description: Some fine particles are emitted ready-made and others form in the air from gases, and farm ammonia is one of the gases that decides how much forms.
+date: 2026-10-19
+categories:
+- aerosols
+- air quality
+- atmospheric chemistry
+- agriculture
+- nitrogen
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/air-land-climate/index.html">Air, Land and Climate</a><span class="sep">·</span>Part 2 · Where aerosols come from</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">School chemistry. Parts 1 and 5 of Clouds and Aerosols help but are not required.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+$\text{PM}_{2.5}$ is the mass of airborne particles small enough to pass a $2.5\text{ µm}$ size cut. Some of it is **primary**: emitted already as particles, such as dust, soot, sea salt and smoke. Much of it is **secondary**: made in the air from gases. Sulfur dioxide and nitrogen oxides from burning fuel are oxidised to sulfuric and nitric acid, and ammonia, which comes mostly from farms, neutralises those acids into ammonium sulfate and ammonium nitrate particles. Organic vapours from trees and fuels add secondary organic aerosol. Because the acids need a base to become particles, cutting farm ammonia lowers $\text{PM}_{2.5}$ in places far from the farm. Published models find that it can be cheaper per unit of $\text{PM}_{2.5}$ than cutting the other gases further, most of all in cold weather. How much a cut buys depends on whether the air is short of ammonia or of acid. For a farm, the particles that matter most are probably the ones its ammonia forms downwind, not the dust you can see.
+:::
+
+## What PM2.5 is
+
+A farm puts particles into the air in two ways: the dust you can see behind a tractor, and the ammonia you cannot see, which turns into particles further downwind. Both end up in $\text{PM}_{2.5}$.
+
+$\text{PM}_{2.5}$ is how much particle mass a cubic metre of air holds, counting only particles with an **aerodynamic diameter** of $2.5\text{ µm}$ or less. Aerodynamic diameter is the diameter of a water-density sphere that falls through air at the same speed as the particle, so a fluffy soot chain and a dense dust grain of the same physical size can sit in different classes. The unit is micrograms per cubic metre, $\text{µg m}^{-3}$.
+
+Particles this small follow the air into the deep lungs instead of being caught in the nose and throat. A global model study put deaths from outdoor air pollution at $3.3$ million a year for 2010, mostly from $\text{PM}_{2.5}$[^1].
+
+Size also decides how far a particle travels. Coarse dust settles out within days, so it stays fairly close to the field. Fine particles hardly settle at all: they stay up for days and travel hundreds of kilometres before rain or slow uptake at the ground removes them. [Deposition: how nitrogen leaves the air](deposition-how-nitrogen-leaves-the-air.qmd) works out about six days for ammonium nitrate particles, against hours for the gases they form from. So farm ammonia leaves as an invisible gas and arrives far downwind as particles.
+
+::: {.callout-note collapse="true"}
+## Why small particles stay up: settling speeds
+
+Stokes' law gives the settling speed of a small sphere in still air:
+
+$$v_s = \frac{\rho_p \, g \, d^2}{18 \, \mu}$$
+
+where $v_s$ is the settling speed ($\text{m s}^{-1}$), $\rho_p$ the particle density ($1000\text{ kg m}^{-3}$ by the definition of aerodynamic diameter), $g = 9.81\text{ m s}^{-2}$ the acceleration due to gravity, $d$ the aerodynamic diameter (m), and $\mu = 1.81 \times 10^{-5}\text{ Pa s}$ the viscosity of air near $20\,^\circ\text{C}$. Speed grows with the square of diameter, so a fourfold step in size is a sixteenfold step in speed:
+
+| Diameter | Settling speed | Time to fall $1\text{ km}$ |
+|---:|---:|---:|
+| $0.5\text{ µm}$ | $2.7\text{ cm h}^{-1}$ | about $4$ years |
+| $2.5\text{ µm}$ | $68\text{ cm h}^{-1}$ | about $2$ months |
+| $10\text{ µm}$ | $11\text{ m h}^{-1}$ | about $4$ days |
+
+For $10\text{ µm}$: $1000 \times 9.81 \times (10^{-5})^2 / (18 \times 1.81 \times 10^{-5}) = 3.0 \times 10^{-3}\text{ m s}^{-1}$, and $1000 / 3.0 \times 10^{-3} = 3.3 \times 10^{5}\text{ s}$, about $4$ days. Still air, no slip correction; the correction speeds a $0.5\text{ µm}$ particle a little but does not change the order of magnitude. Secondary particles typically grow to $0.1$–$1\text{ µm}$, a range the deposition module shows is too large to diffuse quickly to a surface and too small to settle or hit a leaf.
+:::
+
+## Primary and secondary
+
+Particles enter the air by two routes, and the route decides what has to be controlled. **Primary** particles are emitted as particles: wind lifts dust, waves throw up salt spray, flames release soot and smoke. **Secondary** particles do not exist when the pollution leaves its source. They form in the air when gases react into products that are less volatile, meaning less inclined to stay as gas, and condense onto existing particles.
+
+| Component | Route | Main sources | Gas it forms from |
+|---|---|---|---|
+| Mineral dust | primary | wind on bare soil, tillage, unpaved roads | none |
+| Sea salt | primary | breaking waves | none |
+| Black carbon (soot) | primary | diesel engines, fires, stoves | none |
+| Primary organic aerosol | primary | smoke, cooking, exhaust | none |
+| Sulfate | secondary | coal and oil burning, ships, volcanoes | $\text{SO}_2$ |
+| Nitrate | secondary | traffic, power plants, soils | $\text{NO}_x$ |
+| Ammonium | secondary | livestock manure, fertiliser | $\text{NH}_3$ |
+| Secondary organic aerosol | secondary | trees, fuels, solvents | volatile organic compounds |
+
+The secondary share is large. In 37 field campaigns with aerosol mass spectrometers across the Northern Hemisphere, oxygenated organic aerosol, which the authors link mainly to secondary organic aerosol, made up on average $64\%$ of organic aerosol at urban sites, $83\%$ downwind of cities and $95\%$ at rural and remote sites[^2]. A later synthesis by an overlapping group of authors found oxygenated organic aerosol at concentrations comparable to sulfate throughout the Northern Hemisphere[^3]. Away from cities, most organic aerosol was made on the way, not emitted.
+
+The diagram shows what the table cannot: secondary particles need gases from different sectors to meet. Fuel supplies the acids, farms supply the base.
+
+```{mermaid}
+flowchart TD
+    P["Primary: dust, sea salt,<br/>soot, smoke"] --> PM["PM2.5"]
+    SO2["SO2 from fuel"] -->|"oxidised"| SA["Sulfuric acid"]
+    NOX["NOx from fuel"] -->|"oxidised"| NA["Nitric acid"]
+    NH3["NH3 from farms"] -->|"neutralises"| AS["Ammonium sulfate<br/>and nitrate"]
+    SA --> AS
+    NA --> AS
+    VOC["Organic vapours"] -->|"oxidised, condense"| SOA["Secondary organic aerosol"]
+    AS --> PM
+    SOA --> PM
+
+    class P umber
+    class NH3 olive
+    class SO2 rust
+    class NOX rust
+    class AS indigo
+    class SOA sage
+    class PM sienna
+    classDef indigo fill:#1d4a62,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef umber fill:#3b1a18,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef sienna fill:#6c2b27,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef rust fill:#a04b2d,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef olive fill:#5b6e34,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef sage fill:#95a87f,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+```
+
+Secondary organic aerosol works on the same principle as the inorganic salts below. Organic vapours from trees and fuels are oxidised, each oxidation step tends to make the molecule less volatile, and the least volatile products condense. A single organic aerosol sample therefore holds many compounds spread across a range of volatilities, some of which can evaporate again as air warms or dilutes. [Organic aerosols: health versus climate](organic-aerosols-health-climate.qmd) follows that chemistry through a global model and asks which organic sources matter for health and which for climate. The inorganic case is simpler and makes the logic easier to see.
+
+## How farm ammonia makes particles
+
+Sulfur dioxide and nitrogen oxides come mostly from burning fuel; ammonia comes mostly from farms ([Where ammonia comes from](where-ammonia-comes-from.qmd)). In sunlight the hydroxyl radical oxidises sulfur dioxide to sulfuric acid, and the same oxidation also runs inside cloud droplets. Nitrogen dioxide is oxidised to nitric acid by the same radical by day, and through dinitrogen pentoxide on wet particle surfaces at night. Ammonia, the atmosphere's main alkaline gas, then neutralises the acids.
+
+The two acids behave differently, and that difference decides where farm ammonia matters. Sulfuric acid has almost no tendency to evaporate. It takes ammonia first and keeps it:
+
+$$\text{H}_2\text{SO}_4 + 2\,\text{NH}_3 \;\rightarrow\; (\text{NH}_4)_2\text{SO}_4$$
+
+Each sulfate takes two ammonia molecules. What is left over, the **free ammonia**, can then pair with nitric acid. That reaction runs both ways:
+
+$$\text{NH}_3(\text{g}) + \text{HNO}_3(\text{g}) \;\rightleftharpoons\; \text{NH}_4\text{NO}_3(\text{s})$$
+
+Ammonium nitrate particles form only when there is enough of both gases together; otherwise they evaporate back into the gases. The threshold depends steeply on temperature: for dry particles it is about $220$ times lower at $5\,^\circ\text{C}$ than at $25\,^\circ\text{C}$[^4]. Warm air keeps ammonium nitrate as gas; cold air drives it into particles. Humid air pushes more into particles still, because the salt can dissolve in particle water[^4].
+
+::: {.callout-note collapse="true"}
+## The equilibrium, and how the widget solves it
+
+A solid ammonium nitrate particle is stable only when the product of the two gas partial pressures exceeds the dissociation constant $K_p$. For dry particles[^4]:
+
+$$\ln K_p = 118.87 - \frac{24084}{T} - 6.025 \ln T$$
+
+where $T$ is the air temperature in kelvin and $K_p$ is in $\text{nb}^2$ (nanobar squared). At sea-level pressure a gas at $1$ part per billion (ppb) exerts about $1\text{ nb}$, so $K_p$ can be read as a threshold in $\text{ppb}^2$. The equation gives $K_p = 43.1\text{ ppb}^2$ at $25\,^\circ\text{C}$ and $0.197\text{ ppb}^2$ at $5\,^\circ\text{C}$, a ratio of $219$.
+
+Write total ammonia $T_A$ (gas plus particle ammonium), total nitrate $T_N$ (nitric acid plus particle nitrate) and sulfate $T_S$, all in ppb. Sulfate takes ammonia first, so free ammonia is $F = \max(T_A - 2T_S, 0)$. If $F \, T_N \le K_p$, no ammonium nitrate forms. Otherwise an amount $x$ (ppb) condenses until the leftover gases sit exactly on the threshold:
+
+$$(F - x)(T_N - x) = K_p, \qquad x = \frac{(F + T_N) - \sqrt{(F + T_N)^2 - 4(F\,T_N - K_p)}}{2}$$
+
+Mass follows from the molar volume of air, $V_m = 0.08206\,T\text{ L mol}^{-1}$ at $1\text{ atm}$, with $T$ in kelvin: a component with molar mass $M$ ($\text{g mol}^{-1}$) at $c$ ppb weighs $c\,M/V_m\ \text{µg m}^{-3}$. The total counts sulfate ($96.06$), nitrate ($62.00$) and ammonium ($18.04$).
+
+Simplifications: dry particles only (humidity would form more nitrate); sulfate fully neutralised when ammonia allows, ignoring bisulfate; fixed gas totals with no emission, transport or deposition; no particle water, organics, sea salt or dust. Full thermodynamic models handle all of these. The regime label compares free ammonia with total nitrate.
+:::
+
+The widget below models a parcel of **regional air**, the mix that has blown over many farms, roads and towns, not the air over one farm. A single farm changes only the ammonia term, and only through how much nitrogen it loses as ammonia. The chart shows what happens to total inorganic $\text{PM}_{2.5}$ as you cut either ammonia or nitric acid from zero to all of it, with everything else held fixed.
+
+::: {.sim-card}
+#### Ammonium nitrate in a parcel of air (simplified)
+
+```{ojs}
+//| echo: false
+// Illustrative settings, not measurements.
+presets = new Map([
+  ["Cold, ammonia-rich winter air", {t: 5, a: 10, n: 4, s: 1}],
+  ["Cold air, short of ammonia", {t: 5, a: 5, n: 4, s: 1}],
+  ["Warm afternoon", {t: 25, a: 10, n: 4, s: 1}]
+])
+viewof preset = Inputs.radio(presets, {value: presets.get("Cold, ammonia-rich winter air"), label: "Start from (illustrative)"})
+viewof tempC = Inputs.range([-15, 30], {value: preset.t, step: 1, label: "Air temperature (°C)"})
+viewof totNH3 = Inputs.range([0, 20], {value: preset.a, step: 0.5, label: "Total ammonia (ppb)"})
+viewof totHNO3 = Inputs.range([0, 10], {value: preset.n, step: 0.5, label: "Total nitric acid (ppb)"})
+viewof totSO4 = Inputs.range([0, 5], {value: preset.s, step: 0.25, label: "Sulfate (ppb)"})
+
+// Dry ammonium nitrate dissociation constant, nb^2 (about ppb^2 at sea level).
+// Mozurkewich (1993), Eq. 16.
+Kp = c => { const T = 273.15 + c; return Math.exp(118.87 - 24084 / T - 6.025 * Math.log(T)); }
+
+// Sulfate takes 2 NH3 first; free ammonia and nitric acid then share Kp.
+// ponytail: dry, fully neutralised sulfate, no particle water; ISORROPIA-type models do the rest.
+parcel = (ta, tn, ts, c) => {
+  const vm = 0.082057 * (273.15 + c);
+  const bound = Math.min(ta, 2 * ts), free = ta - bound, k = Kp(c);
+  let x = 0;
+  if (free * tn > k) { const s = free + tn; x = (s - Math.sqrt(s * s - 4 * (free * tn - k))) / 2; }
+  return {
+    an: 80.04 * x / vm,
+    pm: (96.06 * ts + 62.00 * x + 18.04 * (bound + x)) / vm,
+    regime: free < tn ? "Ammonia-limited" : "Nitric-acid-limited"
+  };
+}
+
+base = parcel(totNH3, totHNO3, totSO4, tempC)
+cutNH3 = parcel(totNH3 * 0.7, totHNO3, totSO4, tempC)
+cutHNO3 = parcel(totNH3, totHNO3 * 0.7, totSO4, tempC)
+
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${card("Ammonium nitrate", base.an.toFixed(1) + " µg/m³", "#38bdf8")}
+  ${card("Total inorganic PM", base.pm.toFixed(1) + " µg/m³", "#cbd5e1")}
+  ${card("Regime", base.regime, "#f59e0b")}
+  ${card("Drop from 30% ammonia cut", (base.pm - cutNH3.pm).toFixed(1) + " µg/m³", "#10b981")}
+  ${card("Drop from 30% nitric acid cut", (base.pm - cutHNO3.pm).toFixed(1) + " µg/m³", "#ef4444")}
+</div>`
+
+cutCurve = d3.range(0, 100.1, 2).flatMap(p => [
+  {p, pm: parcel(totNH3 * (1 - p / 100), totHNO3, totSO4, tempC).pm, which: "Cut ammonia"},
+  {p, pm: parcel(totNH3, totHNO3 * (1 - p / 100), totSO4, tempC).pm, which: "Cut nitric acid"}
+])
+
+Plot.plot({
+  height: 320,
+  marginLeft: 50,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, 100], label: "Cut (% of total) →", grid: true},
+  y: {domain: [0, Math.max(5, base.pm * 1.1)], label: "↑ Inorganic PM (µg/m³)", grid: true},
+  color: {legend: true, domain: ["Cut ammonia", "Cut nitric acid"], range: ["#10b981", "#ef4444"]},
+  marks: [
+    Plot.line(cutCurve, {x: "p", y: "pm", stroke: "which", strokeWidth: 2.5}),
+    Plot.ruleX([30], {stroke: "#64748b", strokeDasharray: "4 4"})
+  ]
+})
+```
+
+The presets, defaults and slider ranges are illustrative, chosen to show the behaviour, not measured values for any region. A simplification for teaching: dry particles, fixed gas totals, no particle water or organics. Step through the three presets in order.
+:::
+
+**Cold, ammonia-rich winter air** ($5\,^\circ\text{C}$, $10$ ppb ammonia, $4$ ppb nitric acid, $1$ ppb sulfate). Sulfate takes $2$ ppb of ammonia and leaves $8$ ppb free, twice the nitric acid. Almost all the nitric acid condenses: $13.9\ \text{µg m}^{-3}$ of ammonium nitrate, $19.6\ \text{µg m}^{-3}$ of inorganic particles in all. The air is **nitric-acid-limited**. Cutting ammonia by $30\%$ removes only $0.4\ \text{µg m}^{-3}$, because the remaining ammonia is still more than the acid needs. Cutting nitric acid by $30\%$ removes $4.2\ \text{µg m}^{-3}$. The green line stays nearly flat until about $40\%$ of the ammonia is gone, the point where free ammonia ($0.6 \times 10 - 2 = 4$ ppb) equals the nitric acid, then falls steeply.
+
+**Cold air, short of ammonia** (ammonia lowered to $5$ ppb). Free ammonia ($3$ ppb) is now less than the nitric acid, the air is **ammonia-limited**, and a $30\%$ ammonia cut removes $4.9\ \text{µg m}^{-3}$ against $1.4$ for the same cut in nitric acid.
+
+**Warm afternoon** (back to $10$ ppb ammonia, air at $25\,^\circ\text{C}$). The product of free ammonia and nitric acid, $8 \times 4 = 32\text{ ppb}^2$, is below the threshold of $43$, no ammonium nitrate forms, and only the $5.4\ \text{µg m}^{-3}$ of ammonium sulfate remains. Neither cut changes anything.
+
+The toy leaves out humidity and transport, but three lessons carry over. The same ammonia cut can be worth almost nothing or a great deal, depending on which gas is short. The response is nonlinear, so a small cut can understate what a large one would do. And ammonium nitrate is a cold-season pollutant.
+
+The warm preset has a corollary for farms in warm climates, which is my inference from the toy's chemistry rather than a published result: in warm, dry seasons little of the ammonia becomes ammonium nitrate, so it matters less as local $\text{PM}_{2.5}$ and more as nitrogen deposited on soils and vegetation near and downwind of the farm ([Deposition: how nitrogen leaves the air](deposition-how-nitrogen-leaves-the-air.qmd)).
+
+## Why ammonia is a PM2.5 lever
+
+Controls on inorganic $\text{PM}_{2.5}$ have mostly targeted sulfur dioxide and nitrogen oxides. The published case for adding ammonia comes from atmospheric model studies, and it has three parts.
+
+- **Agriculture is a leading source.** The same global study behind the $3.3$ million deaths figure found agriculture the largest relative contributor to $\text{PM}_{2.5}$ in the eastern United States, Europe, Russia and East Asia[^1]. Another found that in many densely populated areas, aerosols formed from fertiliser and livestock gases outweigh all other human-made pollution combined[^5]. As sulfur dioxide controls succeeded, nitrogen's share of global $\text{PM}_{2.5}$ exposure rose from $30\%$ in 1990 to $39\%$ in 2013[^6].
+- **Ammonia is cheap to cut.** Globally, the marginal cost of abating ammonia is estimated at only $10\%$ of that for nitrogen oxides[^6]. In the eastern United States, a ton of ammonia removed in winter was worth at least $\$8{,}000$ in avoided sulfur dioxide and nitrogen oxide controls, more than many ammonia controls cost[^7]. [Intercropping](intercropping-air-quality.qmd) traces one such change in China, from fertiliser saved to ammonia, $\text{PM}_{2.5}$ and deaths.
+- **The health gain is large, and the response is nonlinear.** Halving agricultural emissions would prevent about $250{,}000$ deaths a year worldwide, cutting air-pollution deaths by between $30\%$ (North America) and $3\%$ (South Asia) depending on region[^8]. Over Europe and North America particle formation is not immediately limited by ammonia, yet systematic reductions still lower $\text{PM}_{2.5}$ substantially[^8]: the flat-then-steep green line in the widget.
+
+My reading, not a claim from these papers: this is a case for adding ammonia to the controls, not for dropping the others, since cutting nitrogen oxides also lowers ozone and nitrogen dioxide. The cost numbers carry the uncertainty the eastern United States study names itself: ammonia emission levels and control costs are poorly known[^7].
+
+::: {.callout-tip}
+## What this means for you
+
+The following are my inferences from the sources above and the linked modules, not results of a study of blueberry farms.
+
+- The particles a farm contributes are mostly invisible. Dust from roads and tillage is real but mostly coarse and settles within days. Ammonia leaves as an invisible gas and becomes fine particles downwind.
+- A blueberry soil at pH 4.5 to 5.5 holds ammonium almost entirely as the ion, which [Roots and why blueberries want acid soil](roots-and-why-blueberries-want-acid-soil.qmd) puts at $0.0018\%$ volatile at pH 4.5. Urea spread on the surface loses more, because it raises its own local pH as it breaks down ([Where ammonia comes from](where-ammonia-comes-from.qmd)); delivering it through the drip line or working it in keeps the acid-soil advantage.
+- Fertiliser type matters on the published default factors too: [Emission factors](emission-factors.qmd) gives the IPCC fractions of applied nitrogen lost as gas (ammonia plus nitrogen oxides) as $0.15$ for urea and $0.08$ for ammonium-based fertilisers such as ammonium sulfate. The sulfate in ammonium sulfate stays in the soil; it does not add to the sulfate term in the widget.
+- Timing is unresolved. Warm soil loses more ammonia; cool, damp air turns more of what is lost into particles. Which wins depends on a question I have no source to answer for your fields: in a given season, does the extra ammonia lost in warm weather outweigh the smaller share of it that becomes particles, given how much nitric acid the regional air holds?
+:::
+
+## Key takeaways
+
+- Ask "primary or secondary?" before asking "which source?". Controlling a secondary particle means controlling a gas, and often a gas from a different sector.
+- Ammonium nitrate is the swing component. Sulfate takes ammonia first; nitrate forms from what is left, and only when the air is cold or humid enough.
+- Before predicting what an ammonia cut will do, find out which regime the air is in. In ammonia-rich farm regions the first part of a cut buys little, and the later part buys a lot.
+- Judge ammonia controls by cold-season conditions, when they do most. My inference from the equilibrium: a warm-season campaign alone would understate their value.
+- Treat the published cost and mortality numbers as model estimates built on uncertain ammonia inventories, useful for direction and rough size.
+
+## References
+
+[^1]: Lelieveld, J., Evans, J. S., Fnais, M., Giannadaki, D. & Pozzer, A. The contribution of outdoor air pollution sources to premature mortality on a global scale. *Nature* **525**, 367–371 (2015). https://doi.org/10.1038/nature15371
+[^2]: Zhang, Q. et al. Ubiquity and dominance of oxygenated species in organic aerosols in anthropogenically-influenced Northern Hemisphere midlatitudes. *Geophys. Res. Lett.* **34** (2007). https://doi.org/10.1029/2007GL029979
+[^3]: Jimenez, J. L. et al. Evolution of organic aerosols in the atmosphere. *Science* **326**, 1525–1529 (2009). https://doi.org/10.1126/science.1180353
+[^4]: Mozurkewich, M. The dissociation constant of ammonium nitrate and its dependence on temperature, relative humidity and particle size. *Atmos. Environ. A* **27**, 261–270 (1993). https://doi.org/10.1016/0960-1686(93)90356-4
+[^5]: Bauer, S. E., Tsigaridis, K. & Miller, R. Significant atmospheric aerosol pollution caused by world food cultivation. *Geophys. Res. Lett.* **43**, 5394–5400 (2016). https://doi.org/10.1002/2016GL068354
+[^6]: Gu, B. et al. Abating ammonia is more cost-effective than nitrogen oxides for mitigating PM2.5 air pollution. *Science* **374**, 758–762 (2021). https://doi.org/10.1126/science.abf8623
+[^7]: Pinder, R. W., Adams, P. J. & Pandis, S. N. Ammonia emission controls as a cost-effective strategy for reducing atmospheric particulate matter in the eastern United States. *Environ. Sci. Technol.* **41**, 380–386 (2007). https://doi.org/10.1021/es060379a
+[^8]: Pozzer, A., Tsimpidi, A. P., Karydis, V. A., de Meij, A. & Lelieveld, J. Impact of agricultural emission reductions on fine-particulate matter and public health. *Atmos. Chem. Phys.* **17**, 12813–12826 (2017). https://doi.org/10.5194/acp-17-12813-2017
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/organic-aerosols-health-climate.html"><span>Next</span>Organic aerosols: health versus climate</a></div>
+<!-- CURRICULUM_FOOTER_END -->

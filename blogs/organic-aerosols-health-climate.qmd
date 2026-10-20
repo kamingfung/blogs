@@ -12,7 +12,7 @@ categories:
 ---
 
 <!-- CURRICULUM_HEADER_START -->
-<div class="mh"><p class="mh-crumb"><a href="/series/air-land-climate/index.html">Air, Land and Climate</a><span class="sep">·</span>Part 2 · Where aerosols come from</p><p class="mh-facts"><span class="lvl lvl-advanced">Advanced</span></p><p class="mh-assumes">Assumes <span class="unwritten" title="not written yet">Primary and secondary aerosols</span> and <span class="unwritten" title="not written yet">Exposure–response curves</span>.</p></div>
+<div class="mh"><p class="mh-crumb"><a href="/series/air-land-climate/index.html">Air, Land and Climate</a><span class="sep">·</span>Part 2 · Where aerosols come from</p><p class="mh-facts"><span class="lvl lvl-advanced">Advanced</span></p><p class="mh-assumes">Assumes <a href="/blogs/primary-and-secondary-aerosols.html">Primary and secondary aerosols</a> and <span class="unwritten" title="not written yet">Exposure–response curves</span>.</p></div>
 <!-- CURRICULUM_HEADER_END -->
 
 ::: {.callout-note appearance="simple" icon=false}
@@ -169,6 +169,6 @@ html`<div style="font-size: 0.9em; background: rgba(56, 189, 248, 0.1); border-l
 [^4]: Danabasoglu, G. et al. The Community Earth System Model Version 2 (CESM2). *J. Adv. Model. Earth Syst.* **12**, e2019MS001916 (2020). https://doi.org/10.1029/2019MS001916
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/nox-vocs-and-sunlight.html"><span>Next</span>NOx, VOCs and sunlight</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/primary-and-secondary-aerosols.html"><span>Previous</span>Primary and secondary aerosols</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/nox-vocs-and-sunlight.html"><span>Next</span>NOx, VOCs and sunlight</a></div>
 <!-- CURRICULUM_FOOTER_END -->
 

@@ -21,7 +21,7 @@ A hydrogen nucleus is a spinning charge with a magnetic moment. In a static fiel
 
 ## Spin, moment and precession
 
-Nuclear magnetic resonance (NMR) was first seen in 1938, in a beam of molecules flying through a vacuum[^1]. In 1946 two groups detected it independently in ordinary bulk matter, Purcell's in paraffin wax and Bloch's in water[^2][^3]. Medical MRI is the same effect, read out from the hydrogen in the body.
+Nuclear magnetic resonance (NMR) was first seen in 1938, in a beam of molecules flying through a vacuum[^1]. In 1946 two groups detected it independently in ordinary bulk matter, Purcell's in paraffin wax and Bloch's in water[^2]^,^[^3]. Medical MRI is the same effect, read out from the hydrogen in the body.
 
 A nucleus with spin carries angular momentum $\mathbf{I}$ and, because it is charged, a magnetic moment proportional to it:
 

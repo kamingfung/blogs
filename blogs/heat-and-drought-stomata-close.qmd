@@ -192,7 +192,7 @@ Green berries were the more vulnerable when clusters were heated deliberately. A
 
 ## Drought from the roots up
 
-Soil drought closes stomata by a second route. As the soil dries, leaf water potential falls, and stomata close to hold it up. A 2024 review of blueberry drought tolerance describes blueberries as **isohydric**, keeping leaf water potential roughly constant by closing stomata, which protects the xylem at the cost of photosynthesis[^8]. The signal involves the hormone abscisic acid (ABA). That review describes it as sent from the roots, while Buckley's review of the mechanism finds the clearest evidence for a response inside the leaf[^8][^9].
+Soil drought closes stomata by a second route. As the soil dries, leaf water potential falls, and stomata close to hold it up. A 2024 review of blueberry drought tolerance describes blueberries as **isohydric**, keeping leaf water potential roughly constant by closing stomata, which protects the xylem at the cost of photosynthesis[^8]. The signal involves the hormone abscisic acid (ABA). That review describes it as sent from the roots, while Buckley's review of the mechanism finds the clearest evidence for a response inside the leaf[^8]^,^[^9].
 
 Blueberries feel drought early because of their roots. Most grow less than 40 cm deep, and they have no root hairs, which the review states cuts their absorptive root surface by 90% compared with roots that have them[^8]. A shallow root system without root hairs draws on a small volume of soil, and that soil dries first. Northern and southern highbush are the most drought-susceptible cultivated types, and rabbiteye is considered more tolerant[^8].
 

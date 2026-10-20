@@ -1,0 +1,222 @@
+---
+title: Why seasonal forecasting is possible at all
+description: Day-to-day weather is unpredictable beyond about two weeks, but slowly changing oceans, soils and ice shift the odds of a whole season, which is what a tercile outlook reports.
+date: 2026-10-19
+categories:
+- meteorology
+- climate
+- forecasting
+- agriculture
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/prediction/index.html">Weather, Climate and Prediction</a><span class="sep">·</span>Part 6 · Seasonal forecasting</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Comfort with averages and histograms. Python for the notebooks.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Weather is chaotic: past about two weeks, today's measurements no longer say which day will be wet. A season can still be forecast, because part of its average is set by things that change slowly and can be measured or predicted months ahead: ocean surface temperatures (El Niño and La Niña above all), soil moisture, snow and sea ice. These do not fix the weather. They shift the odds. That is why a seasonal outlook is three probabilities, for below-, near- and above-normal, and not a number. The shift is often small next to the chaotic noise, so skill is modest overall, higher in the tropics than in mid-latitudes, and concentrated in seasons with strong forcing, such as a strong El Niño. In this module's synthetic ensemble, with the signal half the size of the noise, the forecast removes 23% of climatology's error in strong-forcing seasons and none in weak ones.
+
+Act on an outlook when the probability crosses your own cost–loss threshold, and only if its issuer shows it is reliable for your region.
+:::
+
+[Why can't we forecast rain six months out?](rainfall-predictability/why-cant-we-forecast-rain-six-months-out.ipynb) left a paradox: the atmosphere forgets its starting state in about two weeks, yet three-month outlooks are issued and some verify. In the terms of [Climate vs weather](climate-vs-weather/climate-vs-weather.ipynb), a seasonal forecast does not predict the draw; it predicts that this season's distribution has moved away from the [climatology](what-a-climatology-is.qmd).
+
+## Two kinds of predictability
+
+A daily forecast is an **initial-value** problem: measure the atmosphere now and run the physics forward. Chaos ends that after about two weeks. A seasonal forecast is mostly a **boundary-value** problem: how do the slowly changing surfaces under the atmosphere, mainly ocean, land and ice, push the statistics of the weather above them?
+
+The boundaries that matter change over months, not days, and that slowness is what makes them useful:
+
+- **Tropical ocean temperature.** Shukla showed that wind and rainfall in parts of the tropics are so strongly set by the sea-surface temperature below that they do not depend sensitively on the atmosphere's starting state, so they are predictable for as long as the ocean temperature is; when tropical Pacific changes are large, so are parts of the extratropics, especially the Pacific–North American sector[^1]. The largest such change, El Niño–Southern Oscillation, is the subject of [ENSO](enso.qmd).
+- **Soil moisture.** A wet or dry soil changes how much water and heat the land returns to the air, and soil anomalies last weeks to months (my summary, not a figure from these sources). The evidence for its effect on rainfall is largely model-based: a dozen modelling groups ran one controlled experiment to map where soil moisture affects Northern Hemisphere summer rainfall, a possible route to better seasonal rainfall forecasts[^3].
+- **Snow and sea ice.** Candidate sources rather than proven ones here: as standard background, both persist for weeks to months and change how much sunlight the surface reflects. Seasonal systems now start their models from observed ocean, sea-ice and land-surface states, not from the atmosphere alone[^4].
+
+How does warm water far away change a season's odds? As standard background: a tropical sea-surface anomaly shifts where deep convection and its rain sit, and the heat released aloft excites planetary-scale waves that carry the influence to higher latitudes. Shukla supports the first link[^1], and Palmer and Anderson argue that tropical forcing changes the statistics of the extratropics' chaotic regimes[^2]. In my summary: the forcing shifts the probabilities of circulation patterns, not any single trajectory, and chaos supplies the spread around that shifted distribution. That answers the paradox: the chaotic spread is still unpredictable after two weeks; the shift is not.
+
+## Signal, noise and why the answer is a probability
+
+The simplest model of a seasonal mean splits it into a part set by the boundaries and a part the atmosphere makes on its own. It is a sketch for intuition, not how forecast centres compute outlooks:
+
+$$x = a\,S + b\,\varepsilon, \qquad a^2 + b^2 = 1, \qquad r = a/b$$
+
+Here $x$ is this season's mean anomaly of, say, rainfall, in climatological standard deviations; $S$ is the boundary forcing, known in advance; $\varepsilon$ is the chaotic part, unknowable in advance; $a$ and $b$ are their weights; and $r$ is the **signal-to-noise ratio**. All are dimensionless. The tercile edges, which split seasons into equal thirds of below-, near- and above-normal, sit at $x = \pm 0.431$, the 2/3 quantile of a standard normal.
+
+Across seasons $S$ and $\varepsilon$ are independent standard normals (the widget draws $S$ from $N(0, 1)$), so $x$ has unit variance. Solving $r = a/b$ with $a^2 + b^2 = 1$: $b^2(1 + r^2) = 1$, so $b = 1/\sqrt{1 + r^2}$ and $a = r/\sqrt{1 + r^2}$.
+
+An ensemble forecast reruns the model with the same $S$ and different starting states, sampling $\varepsilon$; the fraction of members in each tercile is the forecast probability. In a large model ensemble, Kumar and Hoerling found the extratropical shift small and within the normal spread, so forecasts are inherently probabilistic[^5].
+
+**The ceiling on skill.** With a perfect model and infinite members, the best forecast is $aS$, whose correlation with the outcome is
+
+$$\rho_\text{max} = a = \frac{r}{\sqrt{1 + r^2}}$$
+
+so the predictable share of seasonal variance is $a^2 = r^2/(1 + r^2)$. At $r = 0.5$ that is $0.5/\sqrt{1.25} = 0.447$ and $0.25/1.25 = 20\%$; at $r = 1$, it is $0.707$ and $50\%$. No better model raises this ceiling; only a stronger boundary signal does. For extratropical anomalies forced from the tropical Pacific, Kumar, Barnston and Hoerling found that at ratios near 0.5 the 10–20 members then typical came close to the skill of an infinite ensemble[^6].
+
+The widget below runs this model on synthetic data. It scores the forecasts with the **ranked probability skill score** (RPSS), the three-category version of the Brier skill score in [Skill scores](skill-scores.qmd): 1 is perfect, 0 is no better than always issuing 33/33/33, and below 0 is worse.
+
+::: {.callout-note collapse="true"}
+## How the ranked probability score works
+
+For forecast probabilities $p_1, p_2, p_3$ (below, near, above), form the cumulative forecast $F_1 = p_1$, $F_2 = p_1 + p_2$, and the cumulative outcome $O_k = 1$ if the observed tercile is $k$ or lower, else 0. Then
+
+$$\text{RPS} = (F_1 - O_1)^2 + (F_2 - O_2)^2$$
+
+and $\text{RPSS} = 1 - \overline{\text{RPS}}/\overline{\text{RPS}}_\text{clim}$, with bars for averages over seasons and $(1/3, 1/3, 1/3)$ as the climatological forecast.
+:::
+
+::: {.sim-card}
+#### A synthetic seasonal ensemble
+
+```{ojs}
+//| echo: false
+viewof snr = Inputs.range([0, 2], {value: 0.5, step: 0.05, label: "Signal-to-noise ratio r"})
+viewof force = Inputs.range([-2, 2], {value: 1.5, step: 0.1, label: "This season's forcing S"})
+M = 20        // ensemble members
+N = 300       // synthetic past seasons used for scoring
+T = 0.43073   // tercile edge of a standard normal (its 2/3 quantile)
+// All draws are fixed by one seed, so every reader sees the same ensemble.
+draws = {
+  let s = 20261019;
+  // mulberry32: a small seeded generator.
+  const rand = () => { s = s + 0x6D2B79F5 | 0; let t = Math.imul(s ^ s >>> 15, 1 | s);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  const gauss = () => Math.sqrt(-2 * Math.log(1 - rand())) * Math.cos(2 * Math.PI * rand());
+  const season = d3.range(M).map(() => gauss());
+  const past = d3.range(N).map(() => {
+    const S = gauss(), eObs = gauss();
+    return {S, eObs, eMem: d3.range(M).map(() => gauss())};
+  });
+  return {season, past};
+}
+weights = r => ({a: r / Math.sqrt(1 + r * r), b: 1 / Math.sqrt(1 + r * r)})
+tercile = x => x < -T ? 0 : x > T ? 2 : 1
+probs = xs => { const c = [0, 0, 0]; xs.forEach(x => c[tercile(x)]++); return c.map(k => k / xs.length); }
+rps = (p, o) => (p[0] - (o === 0 ? 1 : 0)) ** 2 + (p[0] + p[1] - (o <= 1 ? 1 : 0)) ** 2
+// RPSS of the 20-member forecasts against 33/33/33, over the seasons that pass `keep`.
+rpss = (r, keep) => {
+  const {a, b} = weights(r); let f = 0, c = 0;
+  for (const h of draws.past) {
+    if (!keep(h.S)) continue;
+    const o = tercile(a * h.S + b * h.eObs);
+    f += rps(probs(h.eMem.map(e => a * h.S + b * e)), o);
+    c += rps([1 / 3, 1 / 3, 1 / 3], o);
+  }
+  return 1 - f / c;
+}
+sets = [["All seasons", () => true], ["Strong forcing, |S| > 1", S => Math.abs(S) > 1],
+        ["Weak forcing, |S| < 0.5", S => Math.abs(S) < 0.5]]
+curve = d3.range(41).flatMap(i => sets.map(([set, keep]) => ({r: i * 0.05, skill: rpss(i * 0.05, keep), set})))
+w = weights(snr)
+members = draws.season.map(z => w.a * force + w.b * z)
+p = probs(members)
+pct = v => Math.round(100 * v) + "%"
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+html`<div class="sim-readouts">
+  ${card("Below normal", pct(p[0]), "#f59e0b")}
+  ${card("Near normal", pct(p[1]), "#cbd5e1")}
+  ${card("Above normal", pct(p[2]), "#38bdf8")}
+  ${card("RPSS, all seasons", rpss(snr, sets[0][1]).toFixed(3), "#10b981")}
+  ${card("RPSS, strong forcing", rpss(snr, sets[1][1]).toFixed(3), "#10b981")}
+</div>`
+pdf = (x, m, s) => Math.exp(-0.5 * ((x - m) / s) ** 2) / (s * Math.sqrt(2 * Math.PI))
+xs = d3.range(-3.5, 3.501, 0.05)
+Plot.plot({
+  height: 260, marginLeft: 50,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [-3.5, 3.5], label: "Seasonal anomaly x (standard deviations) →"},
+  y: {label: "↑ Probability density", grid: true},
+  color: {legend: true, domain: ["Climatology", "This season's distribution", "Ensemble member"],
+          range: ["#64748b", "#38bdf8", "#f59e0b"]},
+  marks: [
+    Plot.ruleX([-T, T], {stroke: "#cbd5e1", strokeDasharray: "4 4"}),
+    Plot.line(xs, {x: d => d, y: d => pdf(d, 0, 1), stroke: () => "Climatology", strokeWidth: 2}),
+    Plot.line(xs, {x: d => d, y: d => pdf(d, w.a * force, w.b), stroke: () => "This season's distribution", strokeWidth: 2.5}),
+    Plot.ruleX(members, {x: d => d, y1: 0, y2: 0.06, stroke: () => "Ensemble member", strokeWidth: 2})
+  ]
+})
+Plot.plot({
+  height: 260, marginLeft: 50,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, 2], label: "Signal-to-noise ratio r →"},
+  y: {label: "↑ RPSS against climatology", grid: true},
+  color: {legend: true, domain: sets.map(d => d[0]), range: ["#10b981", "#38bdf8", "#f59e0b"]},
+  marks: [
+    Plot.ruleY([0], {stroke: "#64748b"}),
+    Plot.ruleX([snr], {stroke: "#cbd5e1", strokeDasharray: "4 4"}),
+    Plot.line(curve, {x: "r", y: "skill", stroke: "set", strokeWidth: 2})
+  ]
+})
+```
+
+Synthetic: one seeded ensemble of 20 members and 300 synthetic past seasons. Dashed lines in the top panel are the tercile edges.
+:::
+
+Start at $r = 0.5$ and $S = 1.5$, a strongly forced season. The members give 15% below, 20% near and 65% above normal. Over all 300 seasons the RPSS is only 0.077, but in the 93 with $|S| > 1$ it is 0.233, and in the 107 with $|S| < 0.5$ it is $-0.031$: the skill lives in the strongly forced seasons. At $r = 1$ the two rise to 0.283 and 0.600. The ceiling correlation there is 0.707, yet the all-season RPSS reads 0.283: RPSS scores the whole three-category probability, a stricter test than the correlation of the ensemble mean, and 20 members add sampling noise.
+
+Now set $S = 0$, or $r = 0$. The members split 35/20/45, a lean with no signal behind it: sampling noise in 20 members. At $r = 0$ the RPSS is $-0.048$, worse than issuing 33/33/33. That is a known property: RPSS is negatively biased for small ensembles, and Weigel, Liniger and Appenzeller derived a debiased version, RPSS~D~, that does not depend on ensemble size[^11]. Issued outlooks are not raw member counts either: the multimodel probabilities are recalibrated against how past forecasts verified, which Barnston and colleagues note should improve reliability[^7]. My rule of thumb: read an outlook within a few points of 33/33/33 as no information.
+
+## Where and when the odds shift
+
+The signal-to-noise ratio depends on place, season and variable.
+
+- **Tropics beat mid-latitudes.** Eleven years of the International Research Institute's global outlooks had skill that was modest on global average, varied strongly with season and location, and was higher in the tropics; useful skill largely matched known effects of tropical sea-surface temperature, ENSO among them[^7].
+- **Strong forcing beats neutral years.** My reading of these sources and the widget, not a sourced figure: in a neutral ENSO year the outlook sits near climatology.
+- **Temperature beats rainfall.** In the same verification, temperature skill was generally higher than precipitation skill, partly because the forecasts correctly favoured above-normal temperatures under the warming trend[^7]. A trend tilts the odds on its own, because terciles from a past reference period sit too low for the present (see [What a climatology is](what-a-climatology-is.qmd) and [Heatwaves in a warming climate](heatwaves-in-a-warming-climate.qmd)).
+- **Some targets barely work.** Rating the European Centre's seasonal forecasts region by region, Weisheimer and Palmer found summer rainfall over Northern Europe exceptionally poor[^8].
+
+The toy flatters reality in three ways. It hands the forecaster $S$ exactly, whereas real systems must forecast it, and as background, ENSO forecasts made through the northern spring are less reliable (the spring predictability barrier; see [ENSO](enso.qmd)), which lowers the ceiling. Real models carry biases, and their ensemble spread is not always the right size. And in the Atlantic sector, models' predictable signals appear too weak by a factor of two or more: their ensemble means correlate better with observations than with their own members, the "signal-to-noise paradox"[^12].
+
+A tercile probability is only as good as its **reliability**: seasons given 50% above normal should turn out above normal about half the time. Reliable probability forecasts are worth more than climatology to every user, whatever their cost–loss ratio[^9]. Look for the issuer's reliability diagram or skill map for your region ([Skill scores](skill-scores.qmd)).
+
+## Reading a tercile outlook, and when to act
+
+Read a tercile outlook against 33/33/33. Take a hypothetical rainfall outlook of 50% below, 30% near and 20% above normal. Below normal is $0.50/0.333 = 1.5$ times as likely as usual, above normal $0.20/0.333 = 0.6$ times, so still about one season in five. The outlook makes a dry season more likely; it does not say the season will be dry, how dry, or which weeks.
+
+**When to act: a cost–loss rule.** Suppose protecting costs $C$ whatever happens, and not protecting loses $L$ if the bad outcome, with probability $p$, happens. The expected cost is $C$ with protection and $pL$ without, so protection pays when
+
+$$p > C/L$$
+
+Take a hypothetical $C/L = 0.4$, in any currency. With climatology, $p = 0.333 < 0.4$: do not protect. With the outlook above, $p = 0.50 > 0.4$: protect, and the expected saving is $0.50L - 0.40L = 0.10L$ in such seasons. But if the issuer's 50% forecasts have verified only 40% of the time, the expected cost unprotected is $0.40L$, the same as protecting: no saving.
+
+**Crop planning.** Of the constraints Hansen and colleagues found limiting the benefit to smallholders in sub-Saharan Africa, capacity to respond is the practical test[^10]: a forecast is worth something only if a decision it can change is made before the season starts.
+
+::: {.callout-tip}
+## What this means for you
+
+My inferences from the sources above, untested in the field:
+
+- Use outlooks for decisions that are made before the season and can be scaled up or down: the share of area under a drought-tolerant variety, how much fertiliser to buy ahead, irrigation water allocation, how much to sell forward.
+- Lean, do not bet. Move a decision part of the way in the forecast direction, and more only in seasons with strong forcing and in regions where the issuer's verification shows skill.
+- Skip any outlook whose issuer publishes no verification for your region.
+:::
+
+## Key takeaways
+
+- The ceiling on seasonal skill is set by the signal-to-noise ratio, $\rho_\text{max} = r/\sqrt{1+r^2}$; a better model approaches it but cannot raise it.
+- Ask what is forcing this season before asking how skilful the system is on average; average skill hides strong-forcing seasons with useful skill among neutral ones with none.
+- Compare systems with different ensemble sizes on the debiased RPSS~D~, not raw RPSS.
+- Write down $C/L$ for each decision before the outlook arrives, and discount the outlook by the issuer's reliability.
+
+## References
+
+[^1]: Shukla, J. Predictability in the midst of chaos: a scientific basis for climate forecasting. *Science* **282**, 728–731 (1998). https://doi.org/10.1126/science.282.5389.728
+[^2]: Palmer, T. N. & Anderson, D. L. T. The prospects for seasonal forecasting—a review paper. *Q. J. R. Meteorol. Soc.* **120**, 755–793 (1994). https://doi.org/10.1002/qj.49712051802
+[^3]: Koster, R. D. et al. Regions of strong coupling between soil moisture and precipitation. *Science* **305**, 1138–1140 (2004). https://doi.org/10.1126/science.1100217
+[^4]: Doblas-Reyes, F. J., García-Serrano, J., Lienert, F., Biescas, A. P. & Rodrigues, L. R. L. Seasonal climate predictability and forecasting: status and prospects. *WIREs Clim. Change* **4**, 245–268 (2013). https://doi.org/10.1002/wcc.217
+[^5]: Kumar, A. & Hoerling, M. P. Prospects and limitations of seasonal atmospheric GCM predictions. *Bull. Am. Meteorol. Soc.* **76**, 335–345 (1995). https://doi.org/10.1175/1520-0477(1995)076<0335:PALOSA>2.0.CO;2
+[^6]: Kumar, A., Barnston, A. G. & Hoerling, M. P. Seasonal predictions, probabilistic verifications, and ensemble size. *J. Clim.* **14**, 1671–1676 (2001). https://doi.org/10.1175/1520-0442(2001)014<1671:SPPVAE>2.0.CO;2
+[^7]: Barnston, A. G. et al. Verification of the first 11 years of IRI's seasonal climate forecasts. *J. Appl. Meteorol. Climatol.* **49**, 493–520 (2010). https://doi.org/10.1175/2009JAMC2325.1
+[^8]: Weisheimer, A. & Palmer, T. N. On the reliability of seasonal climate forecasts. *J. R. Soc. Interface* **11**, 20131162 (2014). https://doi.org/10.1098/rsif.2013.1162
+[^9]: Murphy, A. H. The value of climatological, categorical and probabilistic forecasts in the cost-loss ratio situation. *Mon. Weather Rev.* **105**, 803–816 (1977). https://doi.org/10.1175/1520-0493(1977)105<0803:TVOCCA>2.0.CO;2
+[^10]: Hansen, J. W., Mason, S. J., Sun, L. & Tall, A. Review of seasonal climate forecasting for agriculture in sub-Saharan Africa. *Exp. Agric.* **47**, 205–240 (2011). https://doi.org/10.1017/S0014479710000876
+[^11]: Weigel, A. P., Liniger, M. A. & Appenzeller, C. The discrete Brier and ranked probability skill scores. *Mon. Weather Rev.* **135**, 118–124 (2007). https://doi.org/10.1175/MWR3280.1
+[^12]: Scaife, A. A. & Smith, D. A signal-to-noise paradox in climate science. *npj Clim. Atmos. Sci.* **1**, 28 (2018). https://doi.org/10.1038/s41612-018-0038-4
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/enso.html"><span>Previous</span>ENSO</a><a class="mf-up" href="/series/prediction/index.html"><span>Series</span>Weather, Climate and Prediction</a><a class="mf-next" href="/blogs/return-periods.html"><span>Next</span>Return periods</a></div>
+<!-- CURRICULUM_FOOTER_END -->

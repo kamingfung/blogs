@@ -286,3 +286,4 @@ My own suggestions, built on the sources above but not tested on your data:
 <!-- CURRICULUM_FOOTER_START -->
 <div class="mf"><a class="mf-prev" href="/blogs/normal-lognormal-poisson.html"><span>Previous</span>Normal, lognormal, Poisson</a><a class="mf-up" href="/series/statistics/index.html"><span>Series</span>Statistics</a><a class="mf-next" href="/blogs/controls-and-randomisation.html"><span>Next</span>Controls and randomisation</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+

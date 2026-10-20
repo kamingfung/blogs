@@ -237,3 +237,4 @@ My suggestions, drawn from the arguments above rather than from a cited study. B
 <!-- CURRICULUM_FOOTER_START -->
 <div class="mf"><a class="mf-prev" href="/blogs/heavy-tails.html"><span>Previous</span>Heavy tails</a><a class="mf-up" href="/series/statistics/index.html"><span>Series</span>Statistics</a><a class="mf-next" href="/blogs/power-and-how-many-samples.html"><span>Next</span>Power, and how many samples</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+
