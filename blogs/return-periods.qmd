@@ -1,0 +1,279 @@
+---
+title: Return periods
+description: What a "1-in-100-year" event means, the chance of meeting one within a given number of years, why a short record cannot pin down a rare level, and what a warming climate does to the label.
+date: 2026-10-19
+categories:
+- climate
+- statistics
+- agriculture
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/prediction/index.html">Weather, Climate and Prediction</a><span class="sep">·</span>Part 7 · Extremes</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Assumes <a href="/blogs/normal-lognormal-poisson.html">Normal, lognormal, Poisson</a>.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+A "1-in-100-year" event is one with a 1% chance of happening in any single year. It is not a schedule: two can come in consecutive years, and a century can pass without one. What matters for a decision is the chance of at least one event over the years you care about, $1 - (1 - p)^N$. For a 1-in-100 event that is 26% over 30 years and 63% over 100; for a 1-in-10 bloom frost it is 88% over a 20-year planting. Return levels are estimated from records that are usually shorter than the return period, and that is the weak point. The largest value in a 30-year record stands for roughly a 1-in-31-year event, and in 9 of 10 synthetic records it falls between 95 and 154 mm when the true 1-in-100 level is 129 mm. A warming climate makes it worse: the same rainfall total can drift from 1-in-100 to 1-in-52. Ask for the chance over your planning horizon, and for the record length behind it.
+:::
+
+
+## What "1 in 100 years" means
+
+A frost that damages bloom in 1 year in 10 will very probably hit a 20-year planting at least once: the chance is 87.8%, worked out below. That is the kind of answer a return period should be turned into.
+
+A return period is a way of writing down a yearly probability. A **1-in-$T$-year event** is one whose **annual exceedance probability** is
+
+$$p = \frac{1}{T}$$
+
+where $p$ (no units) is the chance that the event happens at least once in any given year, and $T$ (years) is the return period. A 1-in-100-year rainfall total has a 1% chance of being exceeded in each year. The value that goes with $T$, such as 129 mm of rain in a day, is called the **return level**.
+
+"1 in 100 years" sounds like "once per century, evenly spaced". It means the event happens in about 1% of years over a long run, at random; each year is a fresh draw. Return periods are usually defined on yearly maxima (or yearly minima for frost), so they count *years with* an event, not events.
+
+The useful question is "what is the chance of at least one event while I am exposed to it?" If years are independent and $p$ does not change, the chance of no event in $N$ years is $(1-p)^N$, so
+
+$$P(\text{at least one in } N \text{ years}) = 1 - (1 - p)^N$$
+
+where $N$ is the number of years of exposure, such as the life of a planting, a loan or a building. Some values:
+
+| Event | Horizon $N$ | Chance of at least one |
+|---|---|---|
+| 1 in 100 ($p = 0.01$) | 30 years | $1 - 0.99^{30} = 26.0\%$ |
+| 1 in 100 ($p = 0.01$) | 100 years | $1 - 0.99^{100} = 63.4\%$ |
+| 1 in 50 ($p = 0.02$) | 15 years | $1 - 0.98^{15} = 26.1\%$ |
+| 1 in 10 ($p = 0.1$) | 20 years | $1 - 0.9^{20} = 87.8\%$ |
+
+Waiting the full return period gives only a 63% chance of seeing the event. And an event that sounds rare per year becomes likely over a long horizon: the 1-in-10 bloom frost hits a 20-year planting on average twice ($N p = 20 \times 0.1 = 2$).
+
+The formula also runs backwards. To keep the chance of at least one exceedance over $N$ years below a risk $r$, the yearly chance must satisfy $p = 1 - (1 - r)^{1/N}$. For a 10% risk over 20 years, $p = 1 - 0.9^{1/20} = 0.00525$, a return period of $1/0.00525 = 190$ years. A structure meant to have only a 1-in-10 chance of being overtopped in its 20-year life has to be built for roughly a 1-in-190-year event, not a 1-in-20.
+
+Across 50 independent sites, at least one sees a 1-in-100 event in $1 - 0.99^{50} = 39.5\%$ of years (my inference: nearby sites are correlated, so the real figure is lower).
+
+## Waiting times and clusters
+
+Last year's event does not protect this year: each year is a fresh draw. And two in a row happens: two or more 1-in-100 events in a 30-year record has a 3.6% chance, so across a region with dozens of records some will show such a pair by bad luck alone.
+
+A cluster is therefore weak evidence that the return period was wrong, and on its own it cannot separate bad luck from a changed climate. The fourth section takes up the second possibility. The arithmetic behind these statements, which follows from the Poisson count in [Normal, lognormal, Poisson](normal-lognormal-poisson.qmd), is in the note below.
+
+::: {.callout-note collapse="true"}
+## Poisson counts, waiting times and clusters
+
+The number of event years $K$ in $N$ independent years is binomial, $P(K = k) = \binom{N}{k} p^k (1-p)^{N-k}$. When $p$ is small, this is close to a Poisson with mean $\lambda = Np$, so
+
+$$P(\text{at least one in } N \text{ years}) \approx 1 - e^{-N/T}$$
+
+where $T = 1/p$. At $N = T$ this gives $1 - e^{-1} = 63.2\%$, against the exact $63.4\%$ for $T = 100$. Two or more events is everything except zero or one: $1 - 0.99^{30} - 30 \times 0.01 \times 0.99^{29} = 3.6\%$ for a 1-in-100 event over 30 years.
+
+The chance of waiting more than $t$ years for the next event is the chance of none in $t$ years, $(1-p)^t$, close to $e^{-t/T}$. Three facts follow:
+
+- **The average wait is $T$, but the typical wait is shorter.** The median wait solves $(1-p)^t = 0.5$; for $T = 100$ it is $\ln 0.5 / \ln 0.99 = 69$ years.
+- **Long waits are common too.** The chance of waiting more than 100 years for a 1-in-100 event is $0.99^{100} = 36.6\%$.
+- **The clock does not reset.** Having waited 50 years without an event, the chance of waiting another 50 is what it was at the start. This "memoryless" property is the formal version of "last year's flood does not protect this year".
+
+Counting whole years, the wait is geometric, $P(\text{first event in year } t) = (1-p)^{t-1} p$, with mean $1/p = T$. Read and Vogel review how these results change once $p$ varies from year to year[^2].
+:::
+
+## Estimating a return level from a short record
+
+Rank your worst years; the worst of 30 is roughly a 1-in-31. That is the whole idea of an empirical return period, called a **plotting position**. With $n$ years of yearly maxima ranked from the largest ($i = 1$) to the smallest ($i = n$), the $i$-th largest gets an exceedance probability and return period of
+
+$$\hat p_i = \frac{i}{n + 1}, \qquad \hat T_i = \frac{n + 1}{i}$$
+
+where $n$ is the number of years in the record and $i$ the rank. The second largest of 30 plots at 15.5 years, and so on. This Weibull formula is one of several; Makkonen argues it is the only correct one for return periods[^1]. Reading a return level off these points, or interpolating between two of them, is the empirical estimate.
+
+That shows the limit of a short record at once. With 30 years, the points stop at about 1-in-31. A 1-in-100 level lies beyond the data and can only be reached by fitting a distribution and extrapolating it, the subject of a later module on extreme value theory. Even the points in range are noisy, because the top few depend on which rare years fell inside the window. And $0.99^{30} = 74\%$ of 30-year records never see a 1-in-100 event at all, a point [What a climatology is](what-a-climatology-is.qmd) makes for frost.
+
+The widget makes this concrete. Its top half computes the chance of at least one event for any $p$ and $N$. Its bottom half draws 1000 synthetic records of yearly maximum one-day rainfall (mm) from a known distribution, a Gumbel with location 60 mm and scale 15 mm, a standard shape for yearly maxima that I chose for illustration; it describes no real place. Because the truth is known, the 1-in-50 level is exactly 118.5 mm and the 1-in-100 level 129.0 mm. Each record gives its empirical 1-in-50 estimate by the plotting position, which needs at least 49 years; a shorter record shows its largest year instead.
+
+::: {.sim-card}
+#### Chance of at least one event
+
+```{ojs}
+//| echo: false
+viewof pPct = Inputs.range([0.2, 20], {value: 1, step: 0.1, label: "Annual chance p (%)"})
+viewof nYears = Inputs.range([1, 100], {value: 30, step: 1, label: "Years of exposure N"})
+
+pAnn = pPct / 100
+atLeastOne = (p, n) => 1 - (1 - p) ** n
+twoPlus = 1 - (1 - pAnn) ** nYears - nYears * pAnn * (1 - pAnn) ** (nYears - 1)
+
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${card("Return period 1/p", (1 / pAnn).toFixed(1) + " years", "#cbd5e1")}
+  ${card(`At least one in ${nYears} years`, (100 * atLeastOne(pAnn, nYears)).toFixed(1) + "%", "#38bdf8")}
+  ${card("Two or more", (100 * twoPlus).toFixed(1) + "%", "#f59e0b")}
+</div>`
+
+Plot.plot({
+  height: 240,
+  marginLeft: 50,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, 100], label: "years of exposure N →", grid: true},
+  y: {domain: [0, 1], label: "↑ chance of at least one event", grid: true, tickFormat: "%"},
+  marks: [
+    Plot.line(d3.range(0, 101).map(n => ({n, c: atLeastOne(pAnn, n)})), {x: "n", y: "c", stroke: "#38bdf8", strokeWidth: 2.5}),
+    Plot.dot([{n: nYears, c: atLeastOne(pAnn, nYears)}], {x: "n", y: "c", fill: "#f59e0b", r: 6})
+  ]
+})
+```
+
+#### How noisy is a 1-in-50 estimate?
+
+```{ojs}
+//| echo: false
+viewof recLen = Inputs.range([20, 200], {value: 30, step: 5, label: "Record length n (years)"})
+viewof recNo = Inputs.range([1, 1000], {value: 1, step: 1, label: "Which synthetic record"})
+
+// Synthetic yearly maxima, Gumbel(location MU, scale BETA) in mm. Seeded (mulberry32)
+// so every reader sees the same 1000 records; a shorter record uses the first n years.
+MU = 60
+BETA = 15
+level = T => MU - BETA * Math.log(-Math.log(1 - 1 / T))
+mulberry32 = a => () => {
+  a = (a + 0x6D2B79F5) | 0;
+  let t = Math.imul(a ^ (a >>> 15), 1 | a);
+  t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+}
+pool = {
+  const u = mulberry32(2026);
+  return Array.from({length: 1000}, () =>
+    Float64Array.from({length: 200}, () => MU - BETA * Math.log(-Math.log(u() || 1e-12))));
+}
+
+// Empirical 1-in-50 level: Weibull plotting position i/(n+1), interpolated between ranks.
+// Needs 0.98(n+1) <= n, i.e. n >= 49; otherwise NaN.
+est50 = s => {
+  const n = s.length, pos = 0.98 * (n + 1);
+  if (pos > n) return NaN;
+  const i = Math.floor(pos), f = pos - i;
+  return i >= n ? s[n - 1] : s[i - 1] + f * (s[i] - s[i - 1]);
+}
+
+sortedRecs = pool.map(r => Float64Array.from(r.subarray(0, recLen)).sort())
+reachable = recLen >= 49
+spreadVals = sortedRecs.map(s => reachable ? est50(s) : s[recLen - 1])
+lo90 = d3.quantile(spreadVals, 0.05)
+hi90 = d3.quantile(spreadVals, 0.95)
+true50 = level(50)
+noneAbove = sortedRecs.filter(s => s[recLen - 1] < true50).length / 1000
+mine = sortedRecs[recNo - 1]
+mineEst = est50(mine)
+// Plotting positions of this record: rank i from the top, T = (n + 1) / i.
+points = Array.from(mine, (v, k) => ({T: (recLen + 1) / (recLen - k), v}))
+
+html`<div class="sim-readouts">
+  ${card("True 1-in-50 level", true50.toFixed(1) + " mm", "#10b981")}
+  ${card(reachable ? "This record's 1-in-50 estimate" : "Largest year (record < 49 yr)",
+         (reachable ? mineEst : mine[recLen - 1]).toFixed(1) + " mm", "#38bdf8")}
+  ${card(reachable ? "Middle 90% of 1000 estimates" : "Middle 90% of 1000 largest years",
+         `${lo90.toFixed(0)}–${hi90.toFixed(0)} mm`, "#f59e0b")}
+  ${card("Records with no year above the true 1-in-50", (100 * noneAbove).toFixed(1) + "%", "#ef4444")}
+</div>`
+
+Plot.plot({
+  height: 280,
+  marginLeft: 50,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {type: "log", domain: [1, 500], label: "return period T, years (log scale) →", grid: true, tickFormat: "~g"},
+  y: {domain: [20, 200], label: "↑ yearly maximum one-day rain (mm)", grid: true},
+  color: {legend: true, domain: ["This record", "True return level", "True 1-in-50"], range: ["#38bdf8", "#10b981", "#64748b"]},
+  marks: [
+    Plot.ruleX([50], {stroke: () => "True 1-in-50", strokeDasharray: "6 4"}),
+    Plot.line(d3.range(0, 2.7, 0.02).map(e => ({T: 10 ** e, v: level(Math.max(10 ** e, 1.01))})),
+              {x: "T", y: "v", stroke: () => "True return level", strokeWidth: 2.5, clip: true}),
+    Plot.dot(points, {x: "T", y: "v", fill: () => "This record", r: 3.5, tip: true})
+  ]
+})
+```
+
+Each dot is one year in this record, ranked, and placed at its plotting position $(n+1)/i$.
+
+```{ojs}
+//| echo: false
+Plot.plot({
+  height: 220,
+  marginLeft: 50,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [60, 220], label: (reachable ? "1-in-50 estimate" : "largest year in the record") + " (mm) →", grid: true},
+  y: {label: "↑ records", grid: true},
+  marks: [
+    Plot.rectY(spreadVals, Plot.binX({y: "count"}, {x: d => Math.min(Math.max(d, 61), 219), fill: "#f59e0b", fillOpacity: 0.8, thresholds: d3.range(60, 222, 4)})),
+    Plot.ruleX([true50], {stroke: "#10b981", strokeWidth: 2.5})
+  ]
+})
+```
+
+Each bar counts synthetic records of the chosen length by their 1-in-50 guess (by their largest year when the record is under 49 years). The green line is the true value.
+
+Start with the top half at p = 1% and N = 30, then try p = 10% and N = 20. In the bottom half, start at 30 years, then try 50, 100 and 200, and step through a few records at each length.
+:::
+
+At $p = 1\%$ and $N = 30$ the top half reads 26.0%, with a 3.6% chance of two or more. At 10% and 20 years it reads 87.8%, and two or more bloom frosts become more likely than not, 60.8%.
+
+At 30 years, the bottom half cannot give a 1-in-50 estimate at all. The first record's largest year is 105.6 mm, which plots at 1-in-31. Across the 1000 records the largest year ranges from 95 to 154 mm in the middle 90%, a band that brackets both the true 1-in-50 (118.5 mm) and the true 1-in-100 (129.0 mm). In 54.6% of the 30-year records no year exceeds the true 1-in-50 level; the theory says $0.98^{30} = 54.5\%$.
+
+With more years the estimate exists and slowly tightens. The middle 90% of the 1000 estimates is 101–163 mm at 50 years, 106–144 mm at 100 years and 109–134 mm at 200 years. Even with four times the return period in hand, the band is still about 25 mm wide. Real yearly rainfall maxima are often heavier-tailed than a Gumbel, which makes the top values noisier still ([Heavy tails](heavy-tails.qmd)).
+
+The practical reading: a return level quoted from a few decades of data is an extrapolation from a fitted model, not a measurement. It deserves an uncertainty range, and the range for a rare level is wide.
+
+## When the climate moves
+
+If heavy rain shifts up 10 mm, the old 1-in-100 becomes about 1-in-52. Everything above assumed that $p$ stays the same from year to year; in a warming climate it does not, and the label "1 in 100" then belongs to a period, not to the event. In the synthetic Gumbel above, move the whole distribution of yearly maxima up, keeping its shape, and the old 1-in-100 level, 129.0 mm, becomes:
+
+| Shift of the distribution | New yearly chance of exceeding 129.0 mm | New return period |
+|---|---|---|
+| +5 mm | 1.39% | 72 years |
+| +10 mm | 1.94% | 52 years |
+| +15 mm | 2.69% | 37 years |
+
+A shift of two-thirds of the distribution's scale nearly doubles the yearly chance; run the other way, the new 1-in-100 level is simply 10 mm higher, 139.0 mm. Small shifts in the middle of a distribution make large relative changes in its tail, as [Heatwaves in a warming climate](heatwaves-in-a-warming-climate.qmd) shows for hot days.
+
+Inside a planning horizon the chance keeps changing. If the distribution rises by 0.5 mm a year, an illustrative rate, the chance of at least one exceedance of 129.0 mm over the next 20 years is 25.2%, against 18.2% if nothing changed. Read and Vogel recommend reporting this kind of number, the chance of no exceedance over the planning horizon, instead of an average return period, which loses its simple meaning once the climate moves[^2].
+
+::: {.callout-note collapse="true"}
+## The arithmetic behind the table and the 20-year figure
+
+The Gumbel's yearly exceedance probability for a level $x$ is $1 - \exp(-e^{-(x - \mu)/\beta})$, where $\mu$ is the location (60 mm, plus the shift) and $\beta = 15$ mm the scale; with $x = 129.0$ mm it gives the table. When $p$ changes from year to year, the at-least-one formula becomes a product:
+
+$$P(\text{at least one in } N \text{ years}) = 1 - \prod_{t=1}^{N} (1 - p_t)$$
+
+where $p_t$ is the yearly chance in year $t$. With $\mu$ rising 0.5 mm a year, $p_1 = 1.03\%$ and $p_{20} = 1.94\%$, and the product over 20 years gives 25.2%.
+:::
+
+Two cautions apply to growers. First, the direction of change depends on the hazard. For heat the shift is towards more frequent extremes. For frost, warming tends to make cold nights rarer, but it also moves bloom earlier, and the risk that matters is a frost after bloom. My inference: whether the bloom-frost return period at a site is rising or falling cannot be read from temperature trends alone; it needs bloom dates as well as frost dates. [What a climatology is](what-a-climatology-is.qmd) reports the lengthening US frost-free season and makes the bloom-date argument. Second, a record that spans a change mixes two climates; its plotting positions describe neither the start nor the end.
+
+::: {.callout-tip appearance="simple" icon=false}
+## What this means for you
+
+My own suggestions, drawn from the arithmetic above rather than tested on a farm:
+
+- **Convert every return period to your horizon.** Over a 15-to-20-year planting, a 1-in-10 bloom frost is close to certain (88% over 20 years) and a 1-in-50 hailstorm about one in four (26% over 15 years). Budget for them as expected, not as bad luck.
+- **Know what your own records can say.** A farm record of 15 to 25 years can estimate a 1-in-5 or 1-in-10 event, not a 1-in-50. For rarer events, use the nearest long-running weather station or a published regional analysis, and ask for the interval, not just the level; the widget's band shows why.
+- **Define the event as a yes or no per year.** For bloom frost, count the years with at least one frost in the bloom window: $p$ = years with it ÷ years of record. [What a climatology is](what-a-climatology-is.qmd) does exactly this.
+- **Match the tool to the decision.** Drainage or culvert sizing: choose the risk you accept over the structure's life and solve $p = 1 - (1 - r)^{1/N}$ (10% over 20 years means a 1-in-190 design). Hail nets or frost protection: compare the yearly cost with $p$ times the loss it prevents, using the same risk calculation to check the chance of a loss over the planting's life. Insurance: the chance of at least one claim over the horizon is what the premium buys down.
+- **Ask which years the record covers.** Under a trend, a return period from older decades describes a different climate. Prefer an estimate that allows for the trend, or at least compare the recent decade with the full record.
+:::
+
+## Key takeaways
+
+- Translate "1 in $T$" to a yearly chance $1/T$ and then to the chance over your exposure, $1 - (1-1/T)^N$; quote that number, not $T$, in a decision.
+- One event does not lower the chance of the next. Clusters of rare events happen often enough by chance that they are weak evidence of a changed return period.
+- An empirical return level is only defined up to about $n + 1$ years for an $n$-year record. Anything rarer is a model extrapolation and should come with a range.
+- Over a planning horizon, design for a return period several times the horizon: about 190 years for a 10% risk over 20 years.
+- In a changing climate, attach a period to every return period, and recompute the chance over your horizon with the yearly chance that applies in each year.
+
+## References
+
+[^1]: Makkonen, L. Plotting positions in extreme value analysis. *J. Appl. Meteorol. Climatol.* **45**, 334–340 (2006). https://doi.org/10.1175/JAM2349.1
+[^2]: Read, L. K. & Vogel, R. M. Reliability, return periods, and risk under nonstationarity. *Water Resour. Res.* **51**, 6381–6398 (2015). https://doi.org/10.1002/2015WR017089
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/why-seasonal-forecasting-is-possible-at-all.html"><span>Previous</span>Why seasonal forecasting is possible at all</a><a class="mf-up" href="/series/prediction/index.html"><span>Series</span>Weather, Climate and Prediction</a><a class="mf-next" href="/blogs/heatwaves-in-a-warming-climate.html"><span>Next</span>Heatwaves in a warming climate</a></div>
+<!-- CURRICULUM_FOOTER_END -->

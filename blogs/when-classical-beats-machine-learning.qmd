@@ -28,8 +28,8 @@ The evidence worth trusting comes from large, open comparisons on held-out data.
 | Competition | Data | What won |
 |---|---|---|
 | M3 series, 2018 study | 1045 monthly series, own past only | Statistical methods, at every horizon[^1] |
-| M4, 2018–2020 | 100,000 series, own past only | Combinations, and two methods mixing statistics and machine learning[^2][^3] |
-| M5, 2022 | 42,840 related Walmart sales series, with explanatory variables | Gradient-boosted trees[^4][^5][^6] |
+| M4, 2018–2020 | 100,000 series, own past only | Combinations, and two methods mixing statistics and machine learning[^2]^,^[^3] |
+| M5, 2022 | 42,840 related Walmart sales series, with explanatory variables | Gradient-boosted trees[^4]^,^[^5]^,^[^6] |
 
 "Own past only" follows the M5 design paper, which lists explanatory variables and grouped, correlated series among what M5 added to the earlier competitions[^4]. Read together, the winner moved with the data. That reading is this module's synthesis, not a conclusion any of the papers states.
 
@@ -58,7 +58,7 @@ The two families differ less in cleverness than in what information they can use
 | Few seasons per series, each series alone | Classical | M3 series: $81/12 = 6.75$ to $126/12 = 10.5$ seasons[^1] |
 | Seasonal calendar holds still | Classical | Seasonal ARIMA best in 10 of 10 regular histories ([ETS and ARIMA](ets-and-arima/ets_and_arima.ipynb)) |
 | Many related series, short histories | Global ML | One-season farms: local $1.02$, global $0.80$ ([Many series](many-series/forecasting_many_series.ipynb)) |
-| Covariates known at the origin | ML | M5 added explanatory variables; boosted trees led[^4][^6] |
+| Covariates known at the origin | ML | M5 added explanatory variables; boosted trees led[^4]^,^[^6] |
 | Nonlinear effects, interactions | ML | A caveat the M3 authors raise themselves[^1] |
 | Season timing moves | ML, or an input that moves with the season | Gradient boosting best in 7 of 10 shifting histories ([ETS and ARIMA](ets-and-arima/ets_and_arima.ipynb)) |
 | Intervals and a model a planner can read | Classical, coverage checked | Likelihood intervals, two readable coefficients ([ETS and ARIMA](ets-and-arima/ets_and_arima.ipynb)) |
@@ -162,7 +162,7 @@ If the classical model wins widely, a gradient-boosted model needs an input the 
 ::: {.callout-tip appearance="simple" icon=false}
 ## What this means for you
 
-For one weekly series with a stable calendar and no covariates, start with a seasonal ARIMA and seasonal naive; the M3 and M4 results and the synthetic backtest point that way[^1][^2]. For many farms, varieties or customers, or inputs known at the origin, start with a global gradient-boosted model[^5][^6]. In between, where most produce forecasts sit, backtest both and, first, their equal-weight average, per horizon and group of series. These last two are inference, not tested results.
+For one weekly series with a stable calendar and no covariates, start with a seasonal ARIMA and seasonal naive; the M3 and M4 results and the synthetic backtest point that way[^1]^,^[^2]. For many farms, varieties or customers, or inputs known at the origin, start with a global gradient-boosted model[^5]^,^[^6]. In between, where most produce forecasts sit, backtest both and, first, their equal-weight average, per horizon and group of series. These last two are inference, not tested results.
 :::
 
 ## Key takeaways

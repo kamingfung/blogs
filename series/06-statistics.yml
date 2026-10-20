@@ -67,6 +67,7 @@ parts:
       - id: statistics/reading-residuals
         title: "Reading residuals"
         level: intermediate
+        path: blogs/reading-residuals/reading_residuals.ipynb
   - title: "Uncertainty"
     modules:
       - id: statistics/confidence-intervals

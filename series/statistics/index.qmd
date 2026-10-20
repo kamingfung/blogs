@@ -6,7 +6,7 @@ description: "The statistics the other series lean on, kept short and separate s
 <dl class="syl-meta">
 <div><dt>Level</dt><dd>Introductory to intermediate</dd></div>
 <div><dt>Parts</dt><dd>8</dd></div>
-<div><dt>Modules</dt><dd>14 of 19 written</dd></div>
+<div><dt>Modules</dt><dd>15 of 19 written</dd></div>
 <div class="wide"><dt>Assumes</dt><dd>School maths. Python or R for the notebooks.</dd></div>
 </dl>
 
@@ -38,7 +38,7 @@ description: "The statistics the other series lean on, kept short and separate s
 <ul class="syl">
 <li class="w"><a href="/blogs/least-squares.html">Least squares</a><span class="m">Introductory</span></li>
 <li class="w"><a href="/blogs/trend-significance/is_the_trend_significant.html">Is the trend significant?</a><span class="m">Intermediate</span></li>
-<li class="g">Reading residuals<span class="m">Intermediate · not written</span></li>
+<li class="w"><a href="/blogs/reading-residuals/reading_residuals.html">Reading residuals</a><span class="m">Intermediate</span></li>
 </ul>
 
 ## Part 5 · Uncertainty

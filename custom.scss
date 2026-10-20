@@ -119,3 +119,15 @@ main.content table {
   font-weight: 700;
   margin-top: 2px;
 }
+
+// Long DOIs/URLs in references must wrap on phones instead of widening the page.
+.footnotes, #refs {
+  overflow-wrap: anywhere;
+}
+
+// Wide display equations scroll in place on phones rather than widening the page.
+mjx-container[display="true"] {
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+}

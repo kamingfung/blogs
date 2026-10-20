@@ -1,0 +1,249 @@
+---
+title: N2O, the forgotten greenhouse gas
+description: Why nitrous oxide matters for climate and the ozone layer, how soil microbes make it from fertiliser nitrogen, and why the last kilogram of nitrogen applied emits more than the first.
+date: 2026-10-19
+categories:
+- nitrogen
+- climate
+- soil science
+- agriculture
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/air-land-climate/index.html">Air, Land and Climate</a><span class="sep">·</span>Part 6 · Fertiliser and the atmosphere</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">School chemistry. Parts 1 and 5 of Clouds and Aerosols help but are not required.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Nitrous oxide ($\text{N}_2\text{O}$) is a small share of the air but a large problem. Each kilogram warms about 273 times as much as a kilogram of $\text{CO}_2$ over 100 years, it lasts about 109 years, and it is now the largest ozone-depleting emission, because the Montreal Protocol does not cover it. Most of the human share comes from fertilised soil, where microbes make it as a by-product of two processes: nitrification, which turns ammonium into nitrate, and denitrification, which turns nitrate back into nitrogen gas. Wet, warm soil with plenty of nitrate and carbon emits the most. Emissions also rise faster than the nitrogen rate: once a crop has what it needs, extra nitrogen feeds the microbes instead, so each further kilogram emits more than the one before. For blueberries, acid soil makes denitrification release more $\text{N}_2\text{O}$ and less harmless $\text{N}_2$, and the wet zone under a drip line may add risk. Practical line: the nitrogen your plants cannot use is the nitrogen that emits the most.
+:::
+
+## Why a trace gas matters
+
+For a farm, $\text{N}_2\text{O}$ matters because fertiliser nitrogen is its main human source, and a little of it does a lot of damage. A kilogram of $\text{N}_2\text{O}$ warms about 273 times as much as a kilogram of $\text{CO}_2$ over 100 years, and an added pulse takes about 109 years to decay[^1].
+
+Field studies report the nitrogen in the gas, written $\text{N}_2\text{O-N}$. The rule to remember: **1 kg of $\text{N}_2\text{O-N}$ is about 429 kg of $\text{CO}_2$-equivalent** (derivation below).
+
+::: {.callout-note collapse="true"}
+## The physics in numbers
+
+Per ppb (part per billion) added to today's air, $\text{N}_2\text{O}$ traps far more heat than $\text{CO}_2$: its radiative efficiency is $2.8 \times 10^{-3}\text{ W m}^{-2}\text{ ppb}^{-1}$ against $1.33 \times 10^{-5}$ for $\text{CO}_2$[^1], about 210 times larger. The perturbation lifetime, the time for an added pulse to decay to $1/e$ of its size, is $109 \pm 10$ years, and the global warming potential over 100 years (GWP-100, warming per kilogram emitted relative to $\text{CO}_2$) is $273 \pm 130$[^1].
+
+The concentration rose from 270 ppb in 1750 to 332 ppb in 2019[^1], an increase of $(332.1 - 270.1)/270.1 = 23\%$. The effective radiative forcing from that rise is $0.21\text{ W m}^{-2}$, against $2.16$ for $\text{CO}_2$, $0.54$ for methane and $0.41$ for the halogenated gases together[^1]. That makes $\text{N}_2\text{O}$ the third-largest single gas, with $0.21/(2.16 + 0.54 + 0.41 + 0.21) = 6\%$ of the forcing from all well-mixed greenhouse gases.
+
+**Converting to $\text{CO}_2$-equivalent.** One mole of $\text{N}_2\text{O}$ weighs 44 g and holds 28 g of nitrogen, so
+
+$$m_{\text{CO}_2\text{e}} = m_{\text{N}_2\text{O-N}} \times \frac{44}{28} \times 273$$
+
+where $m_{\text{N}_2\text{O-N}}$ is the nitrogen mass emitted (kg) and $m_{\text{CO}_2\text{e}}$ the $\text{CO}_2$-equivalent mass (kg): $1 \times 1.571 \times 273 = 429$. Older papers use the earlier GWP of 298, which gives 468; check which one a number was built on before comparing.
+:::
+
+$\text{N}_2\text{O}$ also thins the ozone layer. Weighting each gas's emissions by its ozone-depletion potential, Ravishankara and colleagues found that $\text{N}_2\text{O}$ is already the single most important ozone-depleting emission, will stay so through this century, and is not controlled by the Montreal Protocol[^3].
+
+::: {.callout-note collapse="true"}
+## Ozone chemistry
+
+$\text{N}_2\text{O}$ is relatively inert in the lower atmosphere, so it survives to the stratosphere. There, most of it is broken up by sunlight, but a fraction reacts with electronically excited oxygen atoms, $\text{O}(^1\text{D})$:
+
+$$\text{N}_2\text{O} + \text{O}(^1\text{D}) \rightarrow 2\,\text{NO}$$
+
+That reaction is the main source of nitrogen oxides in the lower and middle stratosphere; about 10% of the $\text{N}_2\text{O}$ that arrives ends up as $\text{NO}_x$[^2]. The $\text{NO}$ then destroys ozone in a catalytic cycle of the same form chlorine follows, in which one radical typically removes $10^3$ to $10^5$ ozone molecules before it is converted to a less reactive form[^2]:
+
+$$\text{NO} + \text{O}_3 \rightarrow \text{NO}_2 + \text{O}_2, \qquad \text{NO}_2 + \text{O} \rightarrow \text{NO} + \text{O}_2$$
+
+The net effect is $\text{O}_3 + \text{O} \rightarrow 2\,\text{O}_2$, with $\text{NO}$ returned intact. This is the sense in which the gas was forgotten: while chlorine dominated ozone research in the 1980s and 1990s, the effects of $\text{N}_2\text{O}$ received less attention[^2].
+:::
+
+Human-caused emissions grew by 30% over four decades to $7.3\text{ Tg N yr}^{-1}$ ($1\text{ Tg} = 10^{12}\text{ g}$), out of a global total of $17.0$[^4], and are dominated by nitrogen added to cropland[^4]. Where that nitrogen comes from is traced in [Fixed nitrogen](fixed-nitrogen.qmd).
+
+## Where soil N2O comes from
+
+Soil $\text{N}_2\text{O}$ is a leak from two microbial processes that move nitrogen between ammonium and nitrogen gas; together they supply about 70% of global emissions[^5].
+
+```{mermaid}
+flowchart LR
+    NH4["Ammonium (NH4+)"] -->|"nitrification, needs O2"| NO2["Nitrite (NO2-)"]
+    NO2 -->|"nitrification"| NO3["Nitrate (NO3-)"]
+    NH4 -.->|"leak"| N2O["N2O"]
+    NO3 -->|"denitrification, low O2, needs carbon"| NO["NO"]
+    NO --> N2O
+    N2O -->|"N2O reductase"| N2["N2"]
+
+    class NH4,NO2,NO3 ochre
+    class NO,N2O rust
+    class N2 indigo
+    classDef indigo fill:#1d4a62,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef rust fill:#a04b2d,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef ochre fill:#d69a2e,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+```
+
+**Nitrification** is the oxidation of ammonium to nitrate by microbes that need oxygen, and it lets a little $\text{N}_2\text{O}$ escape on the way[^5]. **Denitrification** runs the other way: when oxygen runs out, many bacteria and some fungi breathe nitrate instead, reducing it step by step to $\text{N}_2$ and using organic carbon as fuel[^5]. $\text{N}_2\text{O}$ escapes when the last step, carried out by the enzyme $\text{N}_2\text{O}$ reductase, lags behind the steps before it.
+
+The controls follow from that chemistry:
+
+| Control | What it does | Direction |
+|---|---|---|
+| Water-filled pore space (WFPS) | Sets how much oxygen reaches microbes | Emissions peak around 70–80% WFPS; many soils peak wetter[^5] |
+| Temperature | Speeds every step; respiration uses up oxygen | Denitrification responds more steeply than soil $\text{CO}_2$[^5] |
+| Nitrate and ammonium | Substrate for both processes | More mineral N, more $\text{N}_2\text{O}$[^5] |
+| Available carbon | Fuel for denitrifiers; respiration consumes oxygen | More carbon, more denitrification[^5]<sup>,</sup>[^8] |
+| Soil pH | Acidity hampers $\text{N}_2\text{O}$ reductase | Low pH raises the $\text{N}_2\text{O}$ share of denitrification[^6]<sup>,</sup>[^7] |
+
+Water-filled pore space is the share of the soil's pore volume holding water, so 100% is saturated. It matters most because it controls oxygen; emissions peak when 70–80% of the pore space is full of water, and in many soils even wetter[^5]. Because the controls switch quickly, a year's emission is dominated by **hot spots** and **hot moments**: waterlogged patches, rewetting after drought, a thaw[^5].
+
+::: {.callout-note collapse="true"}
+## More on the controls
+
+**Moisture.** Above the optimum, denitrification runs to completion and the main product becomes $\text{N}_2$. But a screening of 51 European soils found that most had their optimum wetter than 80% WFPS, so upland soils rarely get wet enough to pass it[^5].
+
+**Temperature** acts on enzymes directly and through respiration, which uses up oxygen and creates anaerobic microsites. In one study cited by Butterbach-Bahl and colleagues, moisture and temperature together explained up to 95% of the temporal variation in field fluxes[^5]. Freeze–thaw pulses can make a significant or even dominant part of a year's budget[^5].
+
+**pH.** In soils held at pH 4 to 8 by 20 or more years of liming, the ratio of $\text{N}_2\text{O}$ to $\text{N}_2$ from denitrification rose as pH fell. The cause was after the genes were read: the making and assembly of $\text{N}_2\text{O}$ reductase is more sensitive to acidity than that of the other enzymes in the chain[^6]. Bakken and colleagues found the same pattern across cultured strains and soil communities[^7].
+
+**Pathways.** Nitrification leaks $\text{N}_2\text{O}$ partly through the breakdown of its intermediate hydroxylamine and partly when nitrifiers short of oxygen reduce their own nitrite; several smaller pathways, some purely chemical, also exist[^5].
+:::
+
+## Why emissions bend upward
+
+Inventories mostly treat $\text{N}_2\text{O}$ as a fixed fraction of the nitrogen applied. The IPCC default **emission factor** (EF) is 1%: for every 100 kg of nitrogen applied, 1 kg of $\text{N}_2\text{O-N}$ beyond what unfertilised soil would emit[^8]. The 2019 Refinement keeps 1% as the aggregate default and splits it for inventories that know their climate: 1.6% for synthetic nitrogen in wet climates and 0.5% in dry ones, as [Emission factors](emission-factors.qmd) explains. Either way, emissions are a straight line through the origin.
+
+The field evidence says the line curves. In a meta-analysis of 78 studies that measured $\text{N}_2\text{O}$ at three or more nitrogen rates, the emission factor rose with the rate in 67% of site-years[^8]. For all crops except nitrogen-fixing ones the authors fitted
+
+$$E(N) = (6.58 + 0.0181\,N)\,N$$
+
+where $N$ is the fertiliser rate ($\text{kg N ha}^{-1}$) and $E$ is the fertiliser-induced emission ($\text{g N}_2\text{O-N ha}^{-1}$), the emission above an unfertilised control[^8]. The emission factor is therefore $0.658\% + 0.00181\%\,N$, which passes 1% at $N = (10 - 6.58)/0.0181 = 189\text{ kg N ha}^{-1}$.
+
+Their explanation is competition. Until the crop's demand is met, roots take most of the mineral nitrogen; beyond it, the surplus sits in the soil for nitrifiers and denitrifiers, so each added kilogram feeds more $\text{N}_2\text{O}$ than the last[^8].
+
+::: {.callout-note collapse="true"}
+## The studies behind the curve
+
+Shcherbak, Millar and Robertson used 78 studies (233 site-years), each with at least three nitrogen rates including zero[^8]. Emission factors rose more steeply where fertiliser went on once a year than where it was split, though that difference was not statistically significant, and less steeply for controlled-release urea[^8]. A third of site-years showed no rise or a fall, so site-level curves differ widely; use the fit for its shape, not for one farm's number.
+
+Their crop groups are grain crops, rice, grasses and nitrogen-fixing crops; no fruit crop is among them[^8]. The main text does not give the range of rates in the data; the authors' uncertainty comparison spans 0 to 300 kg N per hectare[^8], the range the widget uses.
+
+Van Groenigen and colleagues framed the same idea around **nitrogen surplus**, the nitrogen applied minus what the crop takes up: across 19 studies of non-leguminous annual crops, emissions per unit of crop nitrogen uptake stayed low while the surplus was zero or below and tripled at a surplus of $90\text{ kg N ha}^{-1}$[^9].
+:::
+
+The widget compares the straight 1% line with the fitted curve. The shaded band marks 63 to 93 kg N per hectare a year, the lowest rates in an Oregon fertigation trial on young 'Bluecrop' plants, which gave the greatest yield ([Precision fertilisation](precision-fertilisation.qmd) summarises it). The curve itself comes from mostly arable crops; the blueberry curve has not been measured. Start at a rate of 200 with a cut of 50, then move the rate to 100 with the same cut, and compare the two savings.
+
+::: {.sim-card}
+#### Cutting nitrogen under a linear and a curved response
+
+```{ojs}
+//| echo: false
+viewof nRate = Inputs.range([0, 300], {value: 200, step: 10, label: "Fertiliser rate (kg N/ha/yr)"})
+viewof nCut = Inputs.range([0, 100], {value: 50, step: 10, label: "Cut the rate by (kg N/ha)"})
+
+// Fertiliser-induced N2O in g N2O-N per ha; n in kg N per ha.
+linE = n => 10 * n                    // fixed 1% emission factor
+nlE = n => (6.58 + 0.0181 * n) * n    // Shcherbak et al. 2014, all crops except N fixers
+co2e = g => g / 1000 * 44 / 28 * 273  // kg CO2e per ha, GWP-100 = 273
+
+nLow = Math.max(0, nRate - nCut)
+saveLin = co2e(linE(nRate) - linE(nLow))
+saveNl = co2e(nlE(nRate) - nlE(nLow))
+
+n2oCard = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${n2oCard("Curve emission (kg N₂O-N/ha)", (nlE(nRate) / 1000).toFixed(2), "#f59e0b")}
+  ${n2oCard("Average EF (%)", nRate > 0 ? (nlE(nRate) / nRate / 10).toFixed(2) : "–", "#f59e0b")}
+  ${n2oCard("EF of the last kg (%)", ((6.58 + 0.0362 * nRate) / 10).toFixed(2), "#f59e0b")}
+  ${n2oCard("Cut saves, 1% line (kg CO₂e/ha)", saveLin.toFixed(0), "#38bdf8")}
+  ${n2oCard("Cut saves, curve (kg CO₂e/ha)", saveNl.toFixed(0), "#f59e0b")}
+</div>`
+
+Plot.plot({
+  height: 300,
+  marginLeft: 50,
+  // Plot paints its own white ground otherwise, which the dark card fights.
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, 300], label: "Fertiliser rate (kg N/ha) →", grid: true},
+  y: {domain: [0, 4], label: "↑ N₂O above control (kg N₂O-N/ha)", grid: true},
+  color: {legend: true, domain: ["1% line", "Curve", "Cut", "Oregon lowest rates"],
+          range: ["#38bdf8", "#f59e0b", "#ef4444", "#10b981"]},
+  marks: [
+    Plot.rectX([{x1: 63, x2: 93}], {x1: "x1", x2: "x2", y1: 0, y2: 4,
+               fill: () => "Oregon lowest rates", fillOpacity: 0.15}),
+    Plot.line(d3.range(0, 301, 5).map(n => ({n, e: linE(n) / 1000})),
+              {x: "n", y: "e", stroke: () => "1% line", strokeWidth: 2, strokeDasharray: "6 4"}),
+    Plot.line(d3.range(0, 301, 5).map(n => ({n, e: nlE(n) / 1000})),
+              {x: "n", y: "e", stroke: () => "Curve", strokeWidth: 3}),
+    Plot.link([{x1: nLow, x2: nRate, y1: nlE(nLow) / 1000, y2: nlE(nRate) / 1000}],
+              {x1: "x1", x2: "x2", y1: "y1", y2: "y2", stroke: () => "Cut", strokeWidth: 4}),
+    Plot.dot([{n: nLow}, {n: nRate}], {x: "n", y: d => nlE(d.n) / 1000,
+              fill: () => "Cut", stroke: "#0f172a", strokeWidth: 1.5, r: 5})
+  ]
+})
+```
+
+The red segment is the emission the cut removes on the curve. Its height grows with the starting rate.
+:::
+
+At 200 kg N per hectare with a 50 kg cut, the curve gives $2.04\text{ kg N}_2\text{O-N ha}^{-1}$, an average emission factor of 1.02%, close to the 1% default. The difference is at the margin: the last kilogram emits at 1.38%. The cut therefore saves $277\text{ kg CO}_2\text{e ha}^{-1}$ on the curve against 215 on the line. At 100 kg with the same cut, the curve saves only 199, less than the line. The same 50 kg is worth less than the inventory assumes on a lean field and more on a heavy one, which is Shcherbak and colleagues' own conclusion[^8].
+
+**For scale.** The one blueberry field measured for a full year had a net balance of about $840\text{ g CO}_2\text{e m}^{-2}$, or $8.4\text{ t ha}^{-1}$ (described in the next section)[^10]. Most of that, $6.3\text{ t}$, was $\text{CO}_2$ lost by the field before counting the carbon added in sawdust and removed in fruit; its own $\text{N}_2\text{O}$ was $1.8\text{ t CO}_2\text{e ha}^{-1}$ at the older GWP of 298, or $1.7$ at 273[^10]. Against that field, the 277 kg saving at 200 kg N would be about 3% of the whole balance and $277/1665 = 17\%$ of its $\text{N}_2\text{O}$, and the gap between the two models, about 60 kg ($277 - 215 = 62$), is under 1% of the balance. *Inference:* this sets a modelled grain-crop saving against one measured field, so read it as an order of magnitude only.
+
+::: {.callout-note collapse="true"}
+## Average and marginal emission factors
+
+The average emission factor is total emission over total nitrogen, $\text{EF} = E(N)/N$; with $E$ in grams and $N$ in kilograms, dividing by 1000 and multiplying by 100 gives $(6.58 + 0.0181\,N)/10$ percent. The marginal factor is the emission from one more kilogram, the derivative:
+
+$$\frac{dE}{dN} = 6.58 + 2 \times 0.0181\,N = 6.58 + 0.0362\,N \quad (\text{g N}_2\text{O-N per kg N})$$
+
+At $N = 200$: average $(6.58 + 3.62)/10 = 1.02\%$, marginal $(6.58 + 7.24)/10 = 1.38\%$. A cut from 200 to 150 saves $E(200) - E(150) = 2040 - 1394 = 646\text{ g N}_2\text{O-N}$, or $0.646 \times 429 = 277\text{ kg CO}_2\text{e}$. On the 1% line it is $500\text{ g}$, or $214.5\text{ kg CO}_2\text{e}$, shown rounded as 215.
+:::
+
+## What it means for fertigated blueberries
+
+Measured $\text{N}_2\text{O}$ from blueberry fields is scarce, and the curve above contains none. Below, my inferences are labelled.
+
+**The fields do emit.** Pow and colleagues measured a conventionally managed highbush blueberry field in British Columbia's Lower Fraser Valley for a year by eddy covariance, which samples the whole field continuously rather than a few chambers[^10]. The field emitted $0.61 \pm 0.03\text{ g N}_2\text{O m}^{-2}\text{ yr}^{-1}$, which is $0.61 \times 28/44 \times 10 = 3.9\text{ kg N}_2\text{O-N ha}^{-1}\text{ yr}^{-1}$ (the factor 10 converts $\text{g m}^{-2}$ to $\text{kg ha}^{-1}$). They report it as $182\text{ g CO}_2\text{e m}^{-2}$ at a GWP of 298; at 273 it is $0.61 \times 273 = 167$. Fertilisation and inter-row mowing both changed gas exchange, and soil temperature and moisture were important controls[^10]. One field, one year, background included: a magnitude, not an emission factor.
+
+**Ammonium does not stay ammonium.** Blueberry is fed ammonium because it prefers it and because nitrification is slowed in acid soil, as [Nitrogen as ammonium, not nitrate](nitrogen-as-ammonium-not-nitrate.qmd) explains. Slowed is not stopped. In a three-year drip-fertigation trial with 60 and 120 kg N per hectare, nitrate-N in the soil profile reached 42.6 mg per kg in summer, with high nitrate beneath the sawdust mulch, and the authors suggest that ammonium held in the mulch was nitrified once the nitrification inhibitor wore off[^11]. Both processes in the diagram have substrate in a fertigated bed.
+
+**Acid soil tilts the last step.** Blueberries are grown at pH 4.5 to 5.5, the range given in that module, well below the pH 7 under which Shcherbak and colleagues found higher and more steeply rising emission factors[^8]. At that acidity, the enzyme that turns $\text{N}_2\text{O}$ into $\text{N}_2$ works poorly[^6]<sup>,</sup>[^7], so a larger share of whatever is denitrified should leave as $\text{N}_2\text{O}$. *Inference:* this is the mechanism most specific to blueberries, and I found no field study that measures its size in a blueberry bed.
+
+**The wet bulb under a drip line.** *Inference:* drip fertigation puts water and nitrogen into the same small soil volume, which then has both high water-filled pore space and the bed's highest mineral nitrogen, the hot-spot combination in the table; sawdust mulch adds carbon there too. Against that, many small doses keep the surplus at any moment low, which the meta-analysis associates with flatter curves[^8]. I found no blueberry measurement of which effect wins.
+
+::: {.callout-tip}
+## What this means for you
+
+All of these are my inferences from the sources above, untested for $\text{N}_2\text{O}$ in blueberries.
+
+- **Find the over-supplied blocks.** A block whose leaf nitrogen is at or above the standard range while yields have stopped responding to recent increases is probably past the top of its response curve ([Precision fertilisation](precision-fertilisation.qmd) gives the leaf ranges). Confirm it with a strip trial: a reduced rate on a few rows, yields compared at harvest.
+- **Trim there first.** Near the flat top of a yield curve a modest cut should cost little fruit, while on the emission curve those last kilograms are the ones that emit most.
+- **Do not over-water after a dose.** Pushing the wetted zone toward saturation while nitrate is high creates the hot moment the table describes.
+- **Do not let pH drift below the target range.** The more acid the soil, the larger the $\text{N}_2\text{O}$ share of whatever is denitrified.
+:::
+
+## Key takeaways
+
+- Convert before comparing: field studies report $\text{N}_2\text{O-N}$, so multiply by 429 for $\text{CO}_2$-equivalent, and check whether a source used the older GWP of 298.
+- Judge a nitrogen cut by the marginal emission factor, not the average: the same 50 kg saves more on a heavily fertilised block than on a lean one.
+- Do not read a few chamber readings as an annual total; hot moments after rain, irrigation or thaw can dominate the year.
+- Curves from grain crops give the shape of the risk, not a blueberry number. Setting one needs $\text{N}_2\text{O}$ measured at several nitrogen rates on acid blueberry soil.
+
+## References
+
+[^1]: Forster, P. et al. in *Climate Change 2021: The Physical Science Basis. Contribution of Working Group I to the Sixth Assessment Report of the Intergovernmental Panel on Climate Change* (eds Masson-Delmotte, V. et al.) 923–1054 (Cambridge Univ. Press, 2021). https://doi.org/10.1017/9781009157896.009
+[^2]: Portmann, R. W., Daniel, J. S. & Ravishankara, A. R. Stratospheric ozone depletion due to nitrous oxide: influences of other gases. *Phil. Trans. R. Soc. B* **367**, 1256–1264 (2012). https://doi.org/10.1098/rstb.2011.0377
+[^3]: Ravishankara, A. R., Daniel, J. S. & Portmann, R. W. Nitrous oxide (N~2~O): the dominant ozone-depleting substance emitted in the 21st century. *Science* **326**, 123–125 (2009). https://doi.org/10.1126/science.1176985
+[^4]: Tian, H. et al. A comprehensive quantification of global nitrous oxide sources and sinks. *Nature* **586**, 248–256 (2020). https://doi.org/10.1038/s41586-020-2780-0
+[^5]: Butterbach-Bahl, K., Baggs, E. M., Dannenmann, M., Kiese, R. & Zechmeister-Boltenstern, S. Nitrous oxide emissions from soils: how well do we understand the processes and their controls? *Phil. Trans. R. Soc. B* **368**, 20130122 (2013). https://doi.org/10.1098/rstb.2013.0122
+[^6]: Liu, B., Mørkved, P. T., Frostegård, Å. & Bakken, L. R. Denitrification gene pools, transcription and kinetics of NO, N~2~O and N~2~ production as affected by soil pH. *FEMS Microbiol. Ecol.* **72**, 407–417 (2010). https://doi.org/10.1111/j.1574-6941.2010.00856.x
+[^7]: Bakken, L. R., Bergaust, L., Liu, B. & Frostegård, Å. Regulation of denitrification at the cellular level: a clue to the understanding of N~2~O emissions from soils. *Phil. Trans. R. Soc. B* **367**, 1226–1234 (2012). https://doi.org/10.1098/rstb.2011.0321
+[^8]: Shcherbak, I., Millar, N. & Robertson, G. P. Global metaanalysis of the nonlinear response of soil nitrous oxide (N~2~O) emissions to fertilizer nitrogen. *Proc. Natl Acad. Sci. USA* **111**, 9199–9204 (2014). https://doi.org/10.1073/pnas.1322434111
+[^9]: van Groenigen, J. W., Velthof, G. L., Oenema, O., van Groenigen, K. J. & van Kessel, C. Towards an agronomic assessment of N~2~O emissions: a case study for arable crops. *Eur. J. Soil Sci.* **61**, 903–913 (2010). https://doi.org/10.1111/j.1365-2389.2009.01217.x
+[^10]: Pow, P. K. C. et al. Greenhouse gas exchange over a conventionally managed highbush blueberry field in the Lower Fraser Valley in British Columbia, Canada. *Agric. For. Meteorol.* **295**, 108152 (2020). https://doi.org/10.1016/j.agrformet.2020.108152
+[^11]: Messiga, A. J., Nyamaizi, S., Yu, S. & Dorais, M. Blueberry yield and soil mineral nitrogen response to nitrogen fertilizer and nitrification inhibitors under drip-fertigation systems. *Agronomy* **11**, 2144 (2021). https://doi.org/10.3390/agronomy11112144
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/cesm2-fertilizer-climate-feedback.html"><span>Previous</span>Fertiliser ammonia in CESM2</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/emission-factors.html"><span>Next</span>Emission factors</a></div>
+<!-- CURRICULUM_FOOTER_END -->

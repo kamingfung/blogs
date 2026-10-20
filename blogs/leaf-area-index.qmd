@@ -1,0 +1,240 @@
+---
+title: Leaf area index
+description: What leaf area index measures, how a canopy intercepts light, why canopy fluxes level off as leaf area grows, and how LAI is measured on the ground, from satellites and in land models.
+date: 2026-10-19
+categories:
+- plant biology
+- horticulture
+- climate modeling
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/air-land-climate/index.html">Air, Land and Climate</a><span class="sep">·</span>Part 5 · Ammonia, forests and ozone</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">School chemistry. Parts 1 and 5 of Clouds and Aerosols help but are not required.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Leaf area index (LAI) is the one-sided leaf area above each square metre of ground, so it has units of $\text{m}^2\,\text{m}^{-2}$. Light falls roughly exponentially as it passes down through those leaves, at a rate set by an extinction coefficient that depends on leaf angle and sun angle. As a result the top leaves catch most of the light, sunlit leaf area levels off, and canopy photosynthesis, transpiration and deposition grow far less than in proportion to LAI. LAI is measured by harvesting leaves, by optical instruments that work back from the sky seen through gaps, or from satellite reflectance. The indirect methods assume leaves are scattered at random. Hedgerow crops such as blueberries are not, so their readings can be well off and need checking against harvested plots. Land models use LAI to split each canopy into sunlit and shaded leaves. In practice, before you use an LAI value, ask how it was measured and whether it counts the alleys between rows.
+:::
+
+Growing blueberries? The field summary is in [What this means for you](#for-growers), at the end of the last section.
+
+## What LAI measures
+
+**One number for a field of rows and alleys.** A blueberry block is dense bushes separated by open alleys. Inside a row, leaves stack several layers deep; in the alley there are none. Leaf area index averages the two over the whole ground area, so a block of wide alleys and packed rows can have the same LAI as an even, closed canopy and still catch far less light.
+
+**LAI is a ratio of areas.** It is the total one-sided area of leaf tissue per unit ground area[^1]. A square metre of ground under $3\text{ m}^2$ of leaves, counting one side of each, has $\text{LAI} = 3$. Both areas are in square metres, so LAI has no units, though it is often written $\text{m}^2\,\text{m}^{-2}$. It is why [Stomata and dry deposition](stomata-and-dry-deposition.qmd) multiplied a per-leaf stomatal conductance by LAI to get a canopy one. For needles and curled leaves, "one side" is defined as half the total surface area[^2].
+
+Two variants matter in practice. Satellite products report green LAI, living leaves only[^3]. Light and optical instruments see stems, branches and dead leaves as well, the plant area index, and CLM5 accordingly runs its radiation scheme over leaf plus stem area index, $L + S$[^4].
+
+**The direct measurement is a harvest.** In their 1953 study of light in plant stands, Monsi and Saeki cut all the plants in $50 \times 50\text{ cm}$ plots in horizontal layers, usually 10 cm thick, separated leaves from the rest and measured each layer's leaf area[^5]. The usual shortcut is to weigh all the dried leaves and measure area only on a subsample:
+
+$$\text{LAI} = M_\text{leaf} \times \text{SLA}$$
+
+where $M_\text{leaf}$ is the dry leaf mass per ground area ($\text{g m}^{-2}$) and $\text{SLA}$ the specific leaf area of the subsample ($\text{m}^2\,\text{g}^{-1}$). Harvests are the reference other methods are checked against[^1], but they destroy the plot and give one number for one patch on one date.
+
+## How a canopy catches light
+
+**Light falls exponentially with leaf area.** Treat the canopy as layers of small leaves scattered at random. Each thin layer intercepts the same fraction of the light reaching it, so the light remaining below cumulative leaf area $L$ is
+
+$$\frac{I(L)}{I_0} = e^{-kL}$$
+
+where $I_0$ is the photosynthetically active radiation above the canopy ($\text{µmol m}^{-2}\,\text{s}^{-1}$), $I(L)$ what remains below leaf area $L$ ($\text{m}^2\,\text{m}^{-2}$), and $k$ the dimensionless extinction coefficient. This is the Beer–Lambert law, with leaf area in place of concentration times path length. Monsi and Saeki found it held in the stands they measured, with $k$ nearly constant within one community[^5]. The fraction intercepted is $1 - e^{-kL}$.
+
+**The extinction coefficient is leaf angle and sun angle.** For direct sun at zenith angle $\theta$,
+
+$$k = \frac{G(\theta)}{\cos\theta}$$
+
+where $G(\theta)$ is the average shadow a unit of leaf area casts on a plane facing the sun. Dividing by $\cos\theta$ moves that shadow onto the ground: a low sun stretches it. For leaves at random angles, $G = 0.5$ at every sun angle, so with the sun at 30° from overhead, $k = 0.5/\cos 30° = 0.5/0.866 = 0.58$. CLM5 computes $G$ from a leaf-angle index for each plant type (callout below), which gives:
+
+| Leaves (CLM5 type) | $k$, sun overhead | $k$, sun at 30° | $k$, sun at 60° |
+|:--|:--|:--|:--|
+| Fairly upright (crops) | 0.32 | 0.44 | 1.06 |
+| Random angles | 0.50 | 0.58 | 1.00 |
+| Temperate deciduous shrubs | 0.63 | 0.68 | 0.96 |
+
+Upright leaves let the midday sun deep into the canopy; flatter leaves catch it near the top at every hour. Measured values fit: Monsi and Saeki found $k$ of about 0.3 to 0.5 in grass-type stands and 0.7 to 1 in broad-leaved ones[^5], and Kukal and Irmak, measuring under well-managed row crops in the US High Plains, found 0.36 in winter wheat to 0.48 in sorghum and soybean[^6].
+
+**Which row is a blueberry bush?** I found no published leaf-angle or $k$ value for blueberry. My inference: the shrub row is the closest, because blueberry leaves are broad and deciduous and a blueberry field would fall under that plant type in CLM5. Treat $k \approx 0.6$ under a high sun as a starting guess, not a measurement.
+
+::: {.callout-note collapse="true"}
+## How CLM5 gets $G$ from leaf angle
+
+CLM5 uses a leaf-angle index $\chi_L$: $+1$ for horizontal leaves, 0 for random angles and $-1$ for vertical leaves. Then $G = \phi_1 + \phi_2\cos\theta$, with $\phi_1 = 0.5 - 0.633\chi_L - 0.33\chi_L^2$ and $\phi_2 = 0.877(1 - 2\phi_1)$[^4]. The table uses CLM5's values: $\chi_L = -0.5$ for most crops, 0 for random, and 0.25 for temperate deciduous shrubs. The technical note states the formula for $-0.4 \le \chi_L \le 0.6$, so the crop row extrapolates slightly.
+:::
+
+**Sunlit and shaded leaves.** A leaf at cumulative depth $x$ is in direct sun with probability $e^{-kx}$, the chance that the beam has found a gap through everything above it. Adding this up gives the sunlit leaf area, the expression CLM5 uses[^7]:
+
+$$L_\text{sun} = \int_0^L e^{-kx}\,dx = \frac{1 - e^{-kL}}{k}$$
+
+and the shaded leaf area is $L_\text{sha} = L - L_\text{sun}$.
+
+As $L$ grows, $L_\text{sun}$ approaches $1/k$ and stops. For random leaves under an overhead sun, $k = 0.5$, so a canopy never has more than two units of sunlit leaf area however dense it is; every extra leaf is, on average, a shaded one. Start the widget at its defaults, then raise LAI, then change $k$.
+
+::: {.sim-card}
+#### Light interception and sunlit leaf area
+
+```{ojs}
+//| echo: false
+viewof kExt = Inputs.range([0.3, 1.2], {value: 0.5, step: 0.01, label: "Extinction coefficient k (≈0.4 upright leaves, 0.5 random, ≈1 flat)"})
+viewof laiSel = Inputs.range([0.5, 8], {value: 3, step: 0.1, label: "Leaf area index (m² leaf per m² ground)"})
+viewof omega = Inputs.range([0.3, 1], {value: 1, step: 0.05, label: "Clumping Ω (1 = leaves spread evenly; 0.45 = hedgerow example)"})
+
+// Direct beam, no scattering. Interception includes clumping; sunlit/shaded
+// split assumes random leaves, as CLM5 does.
+fInt = L => 1 - Math.exp(-kExt * omega * L)
+lSun = L => (1 - Math.exp(-kExt * L)) / kExt
+curve = d3.range(0, 8.001, 0.05).map(L => ({L, f: 100 * fInt(L), sun: lSun(L), sha: L - lSun(L)}))
+gain = 100 * (fInt(laiSel + 1) - fInt(laiSel))
+share = 100 * lSun(laiSel) / laiSel
+
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${card("Direct sun intercepted", (100 * fInt(laiSel)).toFixed(1) + "%", "#38bdf8")}
+  ${card("Added by one more unit of LAI", gain.toFixed(1) + " points", "#38bdf8")}
+  ${card("Sunlit leaf area (max 1/k = " + (1 / kExt).toFixed(2) + ")", lSun(laiSel).toFixed(2), "#f59e0b")}
+  ${card("Shaded leaf area", (laiSel - lSun(laiSel)).toFixed(2), "#10b981")}
+  ${card("Share of leaves in sun", share.toFixed(0) + "%", "#f59e0b")}
+  ${card("What an optical meter would read", (omega * laiSel).toFixed(1), "#ef4444")}
+</div>
+<p style="margin: 0 0 10px; color: #cbd5e1;">So what: one more unit of leaf area here would catch ${gain.toFixed(1)} more points of direct sun, and ${(100 - share).toFixed(0)}% of the leaves are in shade.</p>`
+
+Plot.plot({
+  height: 240,
+  marginLeft: 50,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, 8], label: "Leaf area index →", grid: true},
+  y: {domain: [0, 100], label: "↑ Direct sun intercepted (%)", grid: true},
+  color: {legend: true, domain: ["Your k and Ω", "k = 0.5, random leaves", "Your LAI"],
+          range: ["#38bdf8", "#64748b", "#ef4444"]},
+  marks: [
+    Plot.line(d3.range(0, 8.001, 0.05).map(L => ({L, f: 100 * (1 - Math.exp(-0.5 * L))})),
+              {x: "L", y: "f", stroke: () => "k = 0.5, random leaves", strokeDasharray: "6 4"}),
+    Plot.line(curve, {x: "L", y: "f", stroke: () => "Your k and Ω", strokeWidth: 2.5}),
+    Plot.dot([{L: laiSel, f: 100 * fInt(laiSel)}], {x: "L", y: "f", fill: () => "Your LAI", stroke: "#0f172a", r: 6})
+  ]
+})
+
+Plot.plot({
+  height: 240,
+  marginLeft: 50,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, 8], label: "Leaf area index →", grid: true},
+  y: {domain: [0, 8], label: "↑ Leaf area (m² m⁻²)", grid: true},
+  color: {legend: true, domain: ["Sunlit", "Shaded", "Limit 1/k"],
+          range: ["#f59e0b", "#10b981", "#64748b"]},
+  marks: [
+    Plot.ruleY([1 / kExt], {stroke: () => "Limit 1/k", strokeDasharray: "6 4"}),
+    Plot.line(curve, {x: "L", y: "sun", stroke: () => "Sunlit", strokeWidth: 2.5}),
+    Plot.line(curve, {x: "L", y: "sha", stroke: () => "Shaded", strokeWidth: 2.5}),
+    Plot.ruleX([laiSel], {stroke: "#ef4444", strokeDasharray: "2 3"})
+  ]
+})
+```
+
+Direct sun only, ignoring scattered and diffuse light. Clumping changes interception and the meter reading; the sunlit and shaded split assumes evenly spread leaves, as CLM5 does. All settings are illustrative.
+:::
+
+At the defaults, $k = 0.5$ and $\text{LAI} = 3$, the canopy intercepts 77.7% of the direct sun. Sunlit leaf area is 1.55 and shaded 1.45, so 52% of the leaves are in sun, and one more unit of LAI would add 8.8 percentage points. Move LAI to 6: interception reaches 95.0%, the next unit adds only 2.0 points, and sunlit leaf area has crept only to 1.90 while shaded leaf area has nearly tripled, to 4.10. At $\text{LAI} = 1$ the next unit would have added 23.9 points. Set $k = 1$, flat leaves, at $\text{LAI} = 3$: interception is 95.0%, which random leaves reach only at twice the leaf area.
+
+**Blueberry canopies behave this way.** Across 28 southern highbush genotypes, Roni and colleagues found that the upper canopy intercepted most of the incoming light, while leaves in the lower canopy were at times below the light level that saturates photosynthesis. Canopy volume, height, LAI, density and width all had major effects on intercepted light. The genotypes fell into four architecture groups, and the traits were moderately to highly heritable[^8]. I found no comparable study for northern highbush or rabbiteye types. The geometry above applies to any hedgerow, but leaf angle and row shape differ by type, so $k$ and the share of shaded leaves will too.
+
+## Why canopy fluxes level off
+
+**Past an LAI of about 3 to 4, with $k$ near 0.5, extra leaves catch little extra light, so they add little photosynthesis.** With $k = 0.5$, going from LAI 3 to 4 adds 8.8 points of interception; from 6 to 7, 2.0 points. The same saturation runs through water use and deposition, so scaling one leaf's rate by LAI overestimates the canopy.
+
+**Photosynthesis.** A leaf's photosynthesis rises with light and then saturates, as in [Photosynthesis, in one leaf](photosynthesis-in-one-leaf.qmd). Sunlit leaves sit near saturation and partly waste their extra light; shaded leaves are light-limited. Monsi and Saeki computed whole-stand production from single-leaf light curves, LAI and $k$, and found an optimum leaf area for a given light level, with a small $k$ favouring production in strong light[^5]. De Pury and Farquhar showed that summing leaf capacity over LAI, the "big-leaf" approach, overestimates canopy photosynthesis, and that treating sunlit and shaded leaves as two separate big leaves is as accurate as a many-layer model[^9].
+
+**What shade does to blueberry fruit.** Direct evidence is for whole bushes, not interior leaves. Under shade nets over 'Elliott' in Michigan, Lobos and colleagues found that fruit soluble solids rose linearly with the fraction of light let through, ripening was delayed in shade, and yield levelled off once bushes received 50% of full light[^10]. In a protected-cultivation trial in Korea on five-year-old 'Misty', pruning did not change total yield, but pruned bushes gave more large fruit early in the harvest, and unmarketable fruit fell from 57% of the harvest unpruned to 26% with winter pruning[^11]. That study did not measure light. That opening up a dense bush helps through light reaching the inner and lower canopy is my inference.
+
+**Transpiration.** CLM5 solves photosynthesis and stomatal conductance separately for sunlit and shaded leaves[^12], and weights each by its leaf area when it adds up the canopy's water loss (callout). Shaded leaves have less light and more closed stomata, so most of the conductance comes from the sunlit leaf area, which levels off. Two further limits are my inference: transpiration needs energy, and a canopy already absorbing nearly all the sunlight cannot absorb more; and the direct sun reaching the soil, $e^{-kL}$, falls from 22.3% at LAI 3 to 5.0% at LAI 6 for $k = 0.5$, so soil evaporation falls as transpiration rises.
+
+::: {.callout-note collapse="true"}
+## The canopy conductance in CLM5
+
+The canopy's conductance to water vapour from dry leaves is proportional to[^13]
+
+$$L_\text{sun}\,\frac{1}{r_b + r_s^\text{sun}} + L_\text{sha}\,\frac{1}{r_b + r_s^\text{sha}}$$
+
+where $r_b$ is the leaf boundary-layer resistance and $r_s^\text{sun}$, $r_s^\text{sha}$ the sunlit and shaded stomatal resistances ($\text{s m}^{-1}$). The full expression (eq. 2.5.113) also multiplies by the dry fraction of leaves and divides by total leaf area.
+:::
+
+**Deposition.** The stomatal part of deposition uses the same conductance, then meets the cap set by turbulence above the canopy. In [Stomata and dry deposition](stomata-and-dry-deposition.qmd), tripling the stomatal leaf layers raised the ozone deposition velocity by only 62%.
+
+## Measuring LAI, and what models do with it
+
+**Optical instruments work back from the gaps.** The gap fraction $P(\theta)$ is the fraction of a view at zenith angle $\theta$ that reaches open sky; for random leaves it is $e^{-G(\theta)L/\cos\theta}$. Plant canopy analysers such as the LI-COR LAI-2000 work from gap fraction alone[^14]; hemispherical (fisheye) photographs and ceptometers, bars of light sensors laid under the canopy, do the same[^15]. Cheaper options exist: smartphone apps that photograph the sky through the canopy, and ordinary cameras pointed up or down. In vineyards, the PocketLAI app agreed well with harvested LAI between 0.13 and 1.41 ($R^2 = 0.94$, relative root-mean-square error 17%), but much less well once a dense vine at LAI 2.84, left without summer pruning, was included (43%), because dense canopies saturate the reading[^16].
+
+::: {.callout-note collapse="true"}
+## Why gap fractions at several angles give LAI without knowing leaf angle
+
+Take logarithms: $-\ln P(\theta)\cos\theta = G(\theta)\,L$. Integrating over the hemisphere,
+
+$$\begin{aligned} 2\int_0^{\pi/2} -\ln P(\theta)\,\cos\theta\,\sin\theta\,d\theta &= 2L\int_0^{\pi/2} G(\theta)\sin\theta\,d\theta \\ &= L, \end{aligned}$$
+
+because, for any distribution of leaf angles, a flat leaf's shadow averaged over the hemisphere is half its area: $\int_0^{\pi/2} G(\theta)\sin\theta\,d\theta = 1/2$. Check it for random leaves ($G = 0.5$: $0.5 \times 1$) and horizontal leaves ($G = \cos\theta$: $\int \cos\theta\sin\theta\,d\theta = 0.5$). Multi-angle instruments therefore need no leaf-angle measurement, provided leaves are randomly placed. If they are not, the result is the effective LAI.
+:::
+
+**Clumping biases the readings.** Bunched leaves overlap, leaving bigger gaps than the same leaf area spread at random. A common way to write this is $P = e^{-k\Omega L}$, with a clumping index $\Omega \le 1$; an instrument that assumes randomness reports the effective LAI, $\Omega L$, which is low. Stems and branches push the other way, because instruments count them as leaves. Bréda found that optical methods mostly underestimated LAI when compared with harvests, especially in forests, with clumping and woody material the main causes[^1]. Processing matters too: in the vineyard study, hemispherical photographs tracked LAI closely ($R^2 = 0.94$) but read consistently high, with a relative root-mean-square error of 99%, and needed a vineyard-specific correction[^16]. Chen and Cihlar's TRAC instrument corrects for clumping from the sizes of the gaps[^14].
+
+**Hedgerows are an extreme case.** A deliberately simple illustration: rows cover 40% of the ground width with $\text{LAI} = 5$ inside them, so the field LAI is $0.4 \times 5 = 2$. With the sun overhead and $k = 0.5$, the rows intercept $0.4 \times (1 - e^{-0.5 \times 5}) = 37\%$ of the beam, ignoring light caught by the row sides. A random canopy of $\text{LAI} = 2$ would intercept $1 - e^{-1} = 63\%$. In the widget, set LAI to 2 and $\Omega$ to 0.45: interception falls to 36.2%, close to the hedgerow's, and the meter reads 0.9 instead of 2. I found no validation of optical LAI for blueberry hedgerows. In vineyards, López-Lozano and colleagues found that near the zenith and along the rows the gap fraction depends mainly on row geometry, not LAI; views far from the zenith and across the rows were more sensitive to LAI, and adding canopy height and row width relative to row spacing cut the error[^15].
+
+**Satellites infer LAI from reflectance.** Leaves absorb red light and scatter near-infrared, so a denser canopy looks darker in red and brighter in near-infrared. MODIS matches observed red (648 nm) and near-infrared (858 nm) reflectance against a table computed from a 3D radiative transfer model for each biome type, falling back on the vegetation index NDVI when that fails. In dense canopies the reflectances saturate and the retrievals are flagged as unreliable[^3]. The standard product is an 8-day composite on 500 m pixels[^3], each $0.5 \times 0.5 = 0.25\text{ km}^2$, or 25 ha, averaging rows, alleys, roads and neighbouring land. Fang and colleagues' review calls for more validation, especially in underrepresented regions and seasons, and for higher-resolution products[^17].
+
+**In land models, LAI decides how many leaves are sunlit.** CLM5 either reads monthly, MODIS-derived LAI or grows it from the carbon its plants fix, then uses it to split each canopy into sunlit and shaded leaves for photosynthesis, transpiration and the stomatal sink for deposition. A biased LAI therefore biases carbon, water and deposition fluxes together, though less than in proportion where LAI is already high.
+
+::: {.callout-note collapse="true"}
+## How CLM5 uses LAI
+
+With biogeochemistry switched off, LAI is prescribed per plant functional type from monthly values derived from MODIS and interpolated linearly to each day; stem area index is derived from those values, and snow burial reduces both to their exposed parts[^4]. With biogeochemistry on, LAI is prognostic, as [The land model CLM](the-land-model-clm.qmd) describes. LAI and SAI set $L_\text{sun}$ and $L_\text{sha}$ through $k = G/\cos\theta$ with a fixed $\chi_L$ for each plant type, and photosynthesis and stomata are solved for each class[^7]<sup>,</sup>[^12]. The CLM5.0 albedo chapter defines no clumping term[^4], so a blueberry field would be treated as an evenly mixed shrub canopy rather than rows (my reading). The EMEP chemistry model likewise multiplies leaf conductance by LAI, as described in [Stomata and dry deposition](stomata-and-dry-deposition.qmd).
+:::
+
+[]{#for-growers}
+
+::: {.callout-tip}
+## What this means for you
+
+My suggestions, not tested on blueberries.
+
+- Measure across the full row spacing, alleys included, and favour views across the rows and away from the zenith[^15].
+- Calibrate any optical instrument or phone app against a few harvested plots before comparing blocks or seasons; in vineyards, a phone app lost accuracy in dense canopy and fisheye photographs read consistently high[^16].
+- Treat an optical or satellite value as effective LAI unless you know it was corrected for clumping, and check what else a 500 m satellite pixel covers before reading it as your crop.
+- If you are judging whether a bush is too dense, light in the lower canopy is the more direct measure than LAI; shade-net trials tie light to soluble solids and ripening time[^10].
+:::
+
+## Key takeaways
+
+- Write down which LAI you have: green or total, true or effective, with or without stems, and over what ground area.
+- Interception saturates fast: past about LAI 3 to 4, extra leaf mostly adds shade, so compare blocks on light intercepted rather than on LAI alone.
+- Sunlit leaf area cannot exceed $1/k$; fluxes that run mainly through sunlit leaves level off with it.
+- Clumping, stems and processing bias optical readings in either direction; only a harvested calibration tells you which way for your rows.
+
+## References
+
+[^1]: Bréda, N. J. J. Ground-based measurements of leaf area index: a review of methods, instruments and current controversies. *J. Exp. Bot.* **54**, 2403–2417 (2003). https://doi.org/10.1093/jxb/erg263
+[^2]: Chen, J. M. & Black, T. A. Defining leaf area index for non-flat leaves. *Plant Cell Environ.* **15**, 421–429 (1992). https://doi.org/10.1111/j.1365-3040.1992.tb00992.x
+[^3]: Myneni, R., Knyazikhin, Y. & Park, T. MODIS/Terra Leaf Area Index/FPAR 8-Day L4 Global 500m SIN Grid V061 (NASA Land Processes DAAC, 2021), with its *MODIS Collection 6.1 LAI/FPAR Product User's Guide*. https://doi.org/10.5067/MODIS/MOD15A2H.061
+[^4]: CTSM development team. Ecosystem composition and structure (section 2.2) and Surface albedos (section 2.3) of the CLM5.0 Technical Note (ctsm release-clm5.0 documentation, NCAR; accessed 19 October 2026). https://escomp.github.io/CTSM/release-clm5.0/tech_note/Surface_Albedos/CLM50_Tech_Note_Surface_Albedos.html
+[^5]: Monsi, M. & Saeki, T. On the factor light in plant communities and its importance for matter production. *Ann. Bot.* **95**, 549–567 (2005); English translation of the 1953 original. https://doi.org/10.1093/aob/mci052
+[^6]: Kukal, M. S. & Irmak, S. Light interactions, use and efficiency in row crop canopies under optimal growth conditions. *Agric. For. Meteorol.* **284**, 107887 (2020). https://doi.org/10.1016/j.agrformet.2019.107887
+[^7]: CTSM development team. Radiative fluxes (section 2.4) of the CLM5.0 Technical Note (accessed 19 October 2026). https://escomp.github.io/CTSM/release-clm5.0/tech_note/Radiative_Fluxes/CLM50_Tech_Note_Radiative_Fluxes.html
+[^8]: Roni, M. Z. K., Muñoz, P. & Nunez, G. H. Canopy architecture and its effect on light interception in southern highbush blueberry. *Sci. Hortic.* **366**, 115081 (2026). https://doi.org/10.1016/j.scienta.2026.115081
+[^9]: de Pury, D. G. G. & Farquhar, G. D. Simple scaling of photosynthesis from leaves to canopies without the errors of big-leaf models. *Plant Cell Environ.* **20**, 537–557 (1997). https://doi.org/10.1111/j.1365-3040.1997.00094.x
+[^10]: Lobos, G. A. et al. Productivity and fruit quality of *Vaccinium corymbosum* cv. Elliott under photo-selective shading nets. *Sci. Hortic.* **153**, 143–149 (2013). https://doi.org/10.1016/j.scienta.2013.02.012
+[^11]: Kang, D. I., Shin, M. H., Kim, H. L. & Kim, J. G. Effects of winter and summer pruning on yield and fruit quality in southern highbush blueberry 'Misty'. *Prot. Hortic. Plant Fact.* **25**, 328–333 (2016). https://doi.org/10.12791/ksbec.2016.25.4.328
+[^12]: CTSM development team. Stomatal resistance and photosynthesis (section 2.9) of the CLM5.0 Technical Note (accessed 19 October 2026). https://escomp.github.io/CTSM/release-clm5.0/tech_note/Photosynthesis/CLM50_Tech_Note_Photosynthesis.html
+[^13]: CTSM development team. Momentum, sensible heat, and latent heat fluxes (section 2.5, eq. 2.5.113) of the CLM5.0 Technical Note (accessed 19 October 2026). https://escomp.github.io/CTSM/release-clm5.0/tech_note/Fluxes/CLM50_Tech_Note_Fluxes.html
+[^14]: Chen, J. M. & Cihlar, J. Plant canopy gap-size analysis theory for improving optical measurements of leaf-area index. *Appl. Opt.* **34**, 6211 (1995). https://doi.org/10.1364/AO.34.006211
+[^15]: López-Lozano, R. et al. Optimal geometric configuration and algorithms for LAI indirect estimates under row canopies: the case of vineyards. *Agric. For. Meteorol.* **149**, 1307–1316 (2009). https://doi.org/10.1016/j.agrformet.2009.03.001
+[^16]: Orlando, F. et al. Estimating leaf area index (LAI) in vineyards using the PocketLAI smart-app. *Sensors* **16**, 2004 (2016). https://doi.org/10.3390/s16122004
+[^17]: Fang, H., Baret, F., Plummer, S. & Schaepman-Strub, G. An overview of global leaf area index (LAI): methods, products, validation, and applications. *Rev. Geophys.* **57**, 739–799 (2019). https://doi.org/10.1029/2018RG000608
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/stomata-and-dry-deposition.html"><span>Previous</span>Stomata and dry deposition</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/cesm2-fertilizer-climate-feedback.html"><span>Next</span>Fertiliser ammonia in CESM2</a></div>
+<!-- CURRICULUM_FOOTER_END -->
