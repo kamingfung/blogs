@@ -1,0 +1,253 @@
+---
+title: Confidence intervals
+description: What a 95% confidence interval claims and what it does not, how to build one from an estimate and its standard error, and how to report intervals instead of significance stars.
+date: 2026-10-19
+categories:
+- statistics
+- data science
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/statistics/index.html">Statistics</a><span class="sep">·</span>Part 5 · Uncertainty</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">School maths. Python or R for the notebooks.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Report an estimate with its confidence interval, and read every value inside the interval before acting. A 95% interval comes from a procedure that captures the true value in 95% of repeated samples. The 95% describes the procedure: any one interval either contains the truth or does not, and the data cannot say which. For a mean, the interval is the estimate plus or minus a multiplier times its standard error, with the multiplier from the t distribution; with 5 observations it is 2.78, and using 1.96 instead covers the truth only 88% of the time. To compare two groups, compute the interval for their difference, because two intervals can overlap while the difference is clearly non-zero. An interval excludes zero exactly when the matching p-value is below 0.05, and also shows how large the effect could be. Write "3.6 cm (95% CI 0.2 to 7.0)", not a star.
+:::
+
+A p-value asks whether one value, usually zero, is surprising; a confidence interval says how big the effect is and how precisely it is known, in the units of the data. This module builds one for a mean and for a difference, using the standard error from [Variance and standard error](variance-and-standard-error.qmd), and ties both back to [What a p-value is not](p-values/what_a_p_value_is_not.ipynb).
+
+## What 95% refers to
+
+A confidence interval is a claim about a method, so run the method many times on a population whose truth we know.
+
+Take a synthetic population with true mean $\mu = 50$ and standard deviation $\sigma = 10$, in arbitrary units. Draw $n$ observations, compute their mean $\bar{x}$ and standard deviation $s$, and report
+
+$$\bar{x} \pm t^{*} \, \frac{s}{\sqrt{n}}$$
+
+where $s/\sqrt{n}$ is the standard error of the mean (same units as the data) and $t^{*}$ is a multiplier, explained in the next section, that sets the confidence level. Each fresh sample gives a different interval. The **coverage** of the procedure is the share of those intervals that contain $\mu$; a 95% confidence interval is a procedure whose coverage is 95%.
+
+In the widget each horizontal line is one sample's interval, and red ones miss the true mean. Start at the defaults, then lower the confidence level and watch the same samples' intervals shrink.
+
+::: {.sim-card}
+#### A hundred samples, a hundred intervals
+
+```{ojs}
+//| echo: false
+viewof ciN = Inputs.range([2, 50], {value: 10, step: 1, label: "Observations per sample n"})
+viewof ciLevel = Inputs.range([50, 99], {value: 95, step: 1, label: "Confidence level (%)"})
+viewof ciMult = Inputs.radio(["t", "1.96-style z"], {value: "t", label: "Multiplier"})
+
+MU = 50       // synthetic population mean
+SIGMA = 10    // and standard deviation
+REPS = 10000  // samples behind the coverage readout
+SHOWN = 100   // the first 100 are drawn
+
+// P(|T| < x), T ~ t with integer df (Abramowitz & Stegun 26.7.3-4).
+tAbs = (x, df) => {
+  const th = Math.atan(x / Math.sqrt(df)), c = Math.cos(th), s = Math.sin(th);
+  let term = 1, sum = 1;
+  for (let k = df % 2 ? 3 : 2; k <= df - 2; k += 2) { term *= c * c * (k - 1) / k; sum += term; }
+  if (df % 2 === 0) return s * sum;
+  return df === 1 ? 2 * th / Math.PI : 2 / Math.PI * (th + s * c * sum);
+}
+// P(|Z| < x), standard normal, via the A&S 7.1.26 erf (error < 2e-7).
+zAbs = x => {
+  const u = x / Math.SQRT2, t = 1 / (1 + 0.3275911 * u);
+  return 1 - t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 +
+         t * (-1.453152027 + t * 1.061405429)))) * Math.exp(-u * u);
+}
+// Multiplier m with P(|X| < m) = level, by bisection.
+quantile = (f, level) => {
+  let lo = 0, hi = 1000;
+  for (let i = 0; i < 80; i++) { const m = (lo + hi) / 2; f(m) < level ? lo = m : hi = m; }
+  return (lo + hi) / 2;
+}
+
+// Seeded: a given n always draws the same samples; level and multiplier only rescale them.
+ciDraws = {
+  const draw = d3.randomNormal.source(d3.randomLcg(2026))(MU, SIGMA);
+  return d3.range(REPS).map(() => {
+    const xs = Float64Array.from({length: ciN}, draw);
+    return {m: d3.mean(xs), h: d3.deviation(xs) / Math.sqrt(ciN)};
+  });
+}
+mult = ciMult === "t" ? quantile(x => tAbs(x, ciN - 1), ciLevel / 100) : quantile(zAbs, ciLevel / 100)
+covers = d => Math.abs(d.m - MU) <= mult * d.h
+shown = ciDraws.slice(0, SHOWN).map((d, i) =>
+  ({k: i + 1, m: d.m, lo: d.m - mult * d.h, hi: d.m + mult * d.h, hit: covers(d)}))
+
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${card("Multiplier", (ciMult === "t" ? "t* = " : "z* = ") + mult.toFixed(3), "#cbd5e1")}
+  ${card("Shown intervals covering 50", d3.sum(shown, d => d.hit) + " of " + SHOWN, "#38bdf8")}
+  ${card("Coverage, 10,000 samples", (100 * d3.mean(ciDraws, covers)).toFixed(1) + "%", "#10b981")}
+  ${card("Average half-width", (mult * d3.mean(ciDraws, d => d.h)).toFixed(2), "#f59e0b")}
+</div>`
+
+Plot.plot({
+  height: 480,
+  marginLeft: 50,
+  // Plot paints its own white ground otherwise, which the dark card fights.
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [25, 75], label: "Interval for the mean →", grid: true},
+  y: {domain: [0.5, SHOWN + 0.5], label: "↑ Sample", ticks: [1, 25, 50, 75, 100]},
+  color: {legend: true, domain: ["Covers μ", "Misses μ"], range: ["#38bdf8", "#ef4444"]},
+  marks: [
+    Plot.ruleX([MU], {stroke: "#10b981", strokeWidth: 2, strokeDasharray: "6 4"}),
+    Plot.link(shown, {x1: "lo", x2: "hi", y1: "k", y2: "k", clip: true,
+                      strokeWidth: d => d.hit ? 1.5 : 2.5, stroke: d => d.hit ? "Covers μ" : "Misses μ"}),
+    Plot.dot(shown, {x: "m", y: "k", r: 1.8, fill: d => d.hit ? "Covers μ" : "Misses μ"})
+  ]
+})
+```
+
+Synthetic data: samples from a normal population with mean 50 (dashed) and standard deviation 10. Coverage is counted over 10,000 samples; the first 100 are drawn.
+:::
+
+At the defaults, $n = 10$ and 95% with the t multiplier, 94 of the 100 drawn intervals contain 50, and 94.9% of all 10,000 do. Set the level to 80%: the samples stay the same, the average half-width falls from 6.96 to 4.26, 81 of the 100 cover, and coverage over 10,000 samples is 80.8%. Neither hits its target exactly, because 10,000 samples are themselves a sample. A lower level buys a shorter interval with more misses; a larger $n$ buys a shorter one at the same coverage.
+
+### What it does not claim
+
+The tempting reading is "there is a 95% probability that the true mean lies in *this* interval." Look at any single row of the widget. Its endpoints are fixed numbers and so is $\mu$, so it either contains 50 or it does not; the 95% belonged to the procedure before the sample was drawn. A real analysis is one row with the dashed line hidden, and nothing in that row says whether it is red. What you have is a method with a known error rate, applied once.
+
+Greenland and colleagues list the "95% probability for this interval" reading as a common misinterpretation; an interval that does carry that probability, the Bayesian credible interval, needs an extra assumption, a prior[^1]. In one survey, psychology researchers endorsed false statements about confidence intervals about as often as untrained students did[^2].
+
+## Estimate ± t × standard error
+
+The standard error says how much the estimate would vary between samples; the multiplier says how many standard errors to step out to reach the chosen coverage. If $\sigma$ were known, the multiplier would be 1.96 for 95%, because 95% of a normal distribution lies within 1.96 standard deviations of its centre. But the standard error uses the sample's $s$, and with few points $s$ is often below $\sigma$, so the standard error is underestimated. The t multiplier widens the interval to compensate. It comes from **Student's t distribution** with $n - 1$ degrees of freedom, the number of independent deviations left once the mean has been estimated from the same data; the fewer there are, the heavier its tails and the larger the multiplier.
+
+The table gives the 95% multiplier and the coverage you would actually get using 1.96 with an estimated standard error, for normal data, both computed from the t distribution (`scipy.stats.t`).
+
+| $n$ | $t^{*}$ for 95% | Coverage if 1.96 is used |
+|---:|---:|---:|
+| 2 | 12.71 | 70.0% |
+| 3 | 4.30 | 81.1% |
+| 5 | 2.78 | 87.8% |
+| 10 | 2.26 | 91.8% |
+| 30 | 2.05 | 94.0% |
+| 100 | 1.98 | 94.7% |
+
+In the widget, set $n = 5$ and switch to "1.96-style z": coverage over 10,000 samples drops to 87.4%, close to the table's 87.8%; switch back to t and it returns to 95.0%. At $n = 50$ the multipliers are 2.010 and 1.960, and the z version still covers 94.4%.
+
+::: {.callout-note collapse="true"}
+## Where the t multiplier comes from
+
+If the observations are independent draws from a normal distribution with mean $\mu$, the standardised mean $T = (\bar{x} - \mu)/(s/\sqrt{n})$ follows a t distribution with $n - 1$ degrees of freedom, whatever $\mu$ and $\sigma$ are. Choose $t^{*}$ so that $\Pr(-t^{*} < T < t^{*}) = 0.95$ and rearrange to put $\mu$ in the middle:
+
+$$\Pr\!\left(\bar{x} - t^{*}\frac{s}{\sqrt{n}} < \mu < \bar{x} + t^{*}\frac{s}{\sqrt{n}}\right) = 0.95$$
+
+The random quantities are $\bar{x}$ and $s$; $\mu$ is fixed. That is why the 95% describes the procedure: once a sample is drawn, the endpoints are numbers and no probability is left in the statement.
+:::
+
+The example used from here on is synthetic: $n = 12$ plants with mean height $\bar{x} = 20.0$ cm and standard deviation $s = 4.0$ cm. The standard error is $4.0/\sqrt{12} = 1.155$ cm. With 11 degrees of freedom $t^{*} = 2.201$, the half-width is $2.201 \times 1.155 = 2.54$ cm, and the 95% interval runs from $17.46$ to $22.54$ cm.
+
+The interval assumes independent, roughly normal observations. Moderate skew matters less as $n$ grows, because the sample mean becomes close to normal. Dependence matters at any $n$: ten readings of one plant carry less information than ten plants. Base the interval on the number of independent units, or use a method that models the grouping; [Variance and standard error](variance-and-standard-error.qmd) shows how to count the effective sample size.
+
+### Other quantities, and the next value
+
+A median, a proportion or a model's RMSE also has an interval, but its standard error is harder to write down. Resampling the data, the bootstrap, estimates it directly, and a later module in this series covers it.
+
+A confidence interval for the mean says where the *average* is. An interval for one new value, such as next week's reading, must also include the scatter of single values, so it is wider and does not shrink to nothing as $n$ grows. For normal data it is $\bar{x} \pm t^{*} s\sqrt{1 + 1/n}$. For the plants, that gives $20.0 \pm 2.201 \times 4.0 \times 1.041 = 20.0 \pm 9.16$, so 10.8 to 29.2 cm, against 17.5 to 22.5 cm for the mean. For forecasts, [Quantile regression](quantile-regression/quantile_regression.ipynb) and [Conformal prediction](conformal-prediction/conformal_prediction.ipynb) build such prediction intervals without assuming normal errors.
+
+## Intervals for a difference
+
+Most comparisons are about a difference, treated against control or version B against version A, and the interval should be built for the difference itself. For two independent groups, the standard error of the difference combines the two standard errors in quadrature, as shown in [Variance and standard error](variance-and-standard-error.qmd):
+
+$$\text{SE}_{\text{diff}} = \sqrt{\text{SE}_A^2 + \text{SE}_B^2}$$
+
+where $\text{SE}_A$ and $\text{SE}_B$ are the groups' standard errors of the mean. The interval is $(\bar{x}_B - \bar{x}_A) \pm t^{*}\,\text{SE}_{\text{diff}}$, with degrees of freedom from the two-sample t-test; for Welch's version with equal sizes and standard deviations that is $2n - 2$. [The t-test and when not to use it](t-test/the_t_test.ipynb) covers the choice.
+
+Add a second synthetic group: $n = 12$, mean $23.6$ cm, $s = 4.0$ cm. Its interval is $23.6 \pm 2.54$, from $21.06$ to $26.14$ cm, so the two intervals overlap from $21.06$ to $22.54$. The difference is $3.6$ cm with $\text{SE}_{\text{diff}} = \sqrt{1.155^2 + 1.155^2} = 1.633$ cm. With 22 degrees of freedom $t^{*} = 2.074$, the half-width is $2.074 \times 1.633 = 3.39$ cm, and the interval for the difference runs from $0.21$ to $6.99$ cm. It excludes zero, and the two-sample t-test gives $p = 0.038$. Copy this to get both intervals; the data are rescaled to match the example's summary exactly:
+
+```python
+import numpy as np
+from scipy import stats  # confidence_interval() needs SciPy 1.11 or later
+
+def mean_ci(x, level=0.95):
+    """Mean of x and its t-based confidence interval (lower, upper)."""
+    x = np.asarray(x, dtype=float)
+    se = x.std(ddof=1) / np.sqrt(len(x))
+    lo, hi = stats.t.interval(level, len(x) - 1, loc=x.mean(), scale=se)
+    return x.mean(), lo, hi
+
+# Synthetic plants, rescaled to the example's exact means and SDs (cm).
+rng = np.random.default_rng(1)
+z = rng.normal(size=(2, 12))
+z = (z - z.mean(axis=1, keepdims=True)) / z.std(axis=1, ddof=1, keepdims=True)
+a, b = 20.0 + 4.0 * z[0], 23.6 + 4.0 * z[1]
+
+print("A: %.2f (%.2f to %.2f)" % mean_ci(a))
+# A: 20.00 (17.46 to 22.54)
+res = stats.ttest_ind(b, a, equal_var=False)  # Welch, difference b - a
+ci = res.confidence_interval(0.95)
+print(f"B - A: {b.mean() - a.mean():.2f} cm, 95% CI {ci.low:.2f} to {ci.high:.2f}, "
+      f"df = {res.df:.1f}, p = {res.pvalue:.3f}")
+# B - A: 3.60 cm, 95% CI 0.21 to 6.99, df = 22.0, p = 0.038
+```
+
+The overlap misleads because standard errors combine in quadrature, while eyeballing overlap adds the half-widths in full. For the two intervals to separate, the means must be $2.54 + 2.54 = 5.08$ cm apart; for the difference's interval to exclude zero they need only be $3.39$ cm apart, because $\sqrt{a^2 + b^2} < a + b$. So do not compare intervals by eye; compute the interval for the difference.
+
+::: {.callout-note collapse="true"}
+## How much overlap is compatible with p < 0.05
+
+Take two independent estimates with the same standard error $\text{SE}$ and large samples, so the multiplier is 1.96. Their 95% intervals just touch when the estimates are $2 \times 1.96 = 3.92$ standard errors apart. The difference has standard error $\sqrt{2}\,\text{SE}$, so its test statistic is $3.92/\sqrt{2} = 2.77$ and its two-sided p-value $0.0056$, about a ninth of 0.05. The difference reaches $p = 0.05$ at a gap of $1.96\sqrt{2} = 2.77$ standard errors, so the intervals can overlap by $3.92 - 2.77 = 1.15$ standard errors, 59% of one half-width, and the difference is still significant.
+:::
+
+Greenland and colleagues give the two safe rules for independent estimates[^1]. If the two 95% intervals do not overlap, the difference has $p < 0.05$. If one interval contains the other's point estimate, $p > 0.05$. In between, only the interval for the difference can tell you. Two related traps:
+
+- **"Significant in one group, not in the other."** Gelman and Stern's example has two studies with estimates of 25 ± 10 and 10 ± 10 (estimate ± standard error). The first is significant at the 1% level and the second not at all, yet their difference is 15 with a standard error of $\sqrt{10^2 + 10^2} = 14$, nowhere near significant[^3]. To compare two effects, estimate their difference.
+- **Paired data.** When the same units are measured twice, build the interval from the within-unit differences. Two separate intervals ignore the pairing and can be far wider than the interval for the change.
+
+## Intervals, p-values, and reporting
+
+A confidence interval and a p-value come from the same calculation. Test every hypothesised value of the effect, not only zero: the values whose two-sided test gives $p > 0.05$ make up the 95% interval[^1]. So the interval excludes zero exactly when the test of zero gives $p < 0.05$, as long as both use the same standard error, degrees of freedom and assumptions.
+
+In the plant example the interval, $0.21$ to $6.99$ cm, excludes zero and $p = 0.038$. A difference of 5 cm lies inside it, and testing that value gives $t = (3.6 - 5)/1.633 = -0.86$ with $p = 0.40$. The same data are compatible with an effect near zero and with one larger than the estimate.
+
+That is what the interval adds: a p-value tests one value, while the interval shows every value the data are reasonably compatible with, in the outcome's units, and its width shows precision. Greenland and colleagues compare two intervals for a difference in means, 5 to 40 and −5 to 10; the second includes zero but is half as wide, so it is the more precise[^1]. Amrhein, Greenland and McShane describe a study reported as finding "no association" although its interval ran from a 3% decrease to a 48% increase in risk[^5].
+
+Gardner and Altman argued in 1986 that investigators usually want the size of a difference rather than whether it is significant, and that intervals should accompany the main findings in the text and the abstract[^4]. Amrhein and colleagues suggest calling them compatibility intervals and discussing the point estimate and both limits, never treating the null as "shown" because it lies inside[^5]. Two ways of reporting the plant result:
+
+- "Treatment B increased height (p < 0.05)\*."
+- "Plants under treatment B were 3.6 cm taller on average (95% CI 0.2 to 7.0 cm; Welch two-sample t-test, 12 plants per group)."
+
+The second gives the size, the precision, and the range of effects, from almost nothing to about 7 cm, that the data cannot rule out.
+
+The interval also supports a decision that the star cannot. Suppose 1 cm is the smallest gain worth acting on. The interval, 0.2 to 7.0 cm, includes values below 1 cm as well as gains seven times larger, so the data fit both a trivial and a large effect. This module's reading: treatment B is promising but not yet established at that threshold, and more plants are needed before acting on it. The p-value of 0.038 alone would have read as a yes.
+
+::: {.callout-tip}
+## What this means for you
+
+These rules are my own inference from the sources above[^1][^5].
+
+- Report the estimate, the interval, the level, the method and $n$, in the outcome's units.
+- Fix the smallest effect worth acting on before looking, and compare the interval with that threshold, not only with zero.
+- Treat the interval as a floor on uncertainty: it covers sampling noise under the stated assumptions, not bias or analysis choices.
+:::
+
+## Key takeaways
+
+- With fewer than about 30 independent units, use the t multiplier; 1.96 gives intervals that are too short.
+- Count independent units (plants, plots, customers), not rows, before computing any standard error.
+- In figures and tables comparing groups, show the interval for the difference, not only each group's interval.
+- For a forecast of one new value, use a prediction interval; a confidence interval for the mean is far too narrow for that job.
+
+## References
+
+[^1]: Greenland, S. et al. Statistical tests, P values, confidence intervals, and power: a guide to misinterpretations. *Eur. J. Epidemiol.* **31**, 337–350 (2016). https://doi.org/10.1007/s10654-016-0149-3
+[^2]: Hoekstra, R., Morey, R. D., Rouder, J. N. & Wagenmakers, E.-J. Robust misinterpretation of confidence intervals. *Psychon. Bull. Rev.* **21**, 1157–1164 (2014). https://doi.org/10.3758/s13423-013-0572-3
+[^3]: Gelman, A. & Stern, H. The difference between "significant" and "not significant" is not itself statistically significant. *Am. Stat.* **60**, 328–331 (2006). https://doi.org/10.1198/000313006X152649
+[^4]: Gardner, M. J. & Altman, D. G. Confidence intervals rather than P values: estimation rather than hypothesis testing. *Br. Med. J.* **292**, 746–750 (1986). https://doi.org/10.1136/bmj.292.6522.746
+[^5]: Amrhein, V., Greenland, S. & McShane, B. Scientists rise up against statistical significance. *Nature* **567**, 305–307 (2019). https://doi.org/10.1038/d41586-019-00857-9
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/least-squares.html"><span>Previous</span>Least squares</a><a class="mf-up" href="/series/statistics/index.html"><span>Series</span>Statistics</a><a class="mf-next" href="/blogs/p-values/what_a_p_value_is_not.html"><span>Next</span>What a p-value is not</a></div>
+<!-- CURRICULUM_FOOTER_END -->

@@ -1,0 +1,327 @@
+---
+title: Normal, lognormal, Poisson
+description: Three distributions and the processes that produce them, sums, products and rare counts, and how to tell which one a data set came from.
+date: 2026-10-19
+categories:
+- statistics
+- data science
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/statistics/index.html">Statistics</a><span class="sep">·</span>Part 6 · Distributions</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">School maths. Python or R for the notebooks.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Three distributions describe a large share of real data, and each comes from a process you can often name. Add up many small, independent effects, such as the separate sources of error in a measurement, and the total is close to normal whatever the effects look like alone: that is the central limit theorem. Multiply many small effects, as growth, dilution and breakage do, and the logarithm of the result is a sum, so the result is lognormal: positive, skewed to the right, with a spread that grows in proportion to its level and a mean above its median. Count rare events that happen independently at a steady rate, such as defects or arrivals, and the counts are Poisson, with a variance equal to the mean. To tell them apart in data, look at the shape, at how the spread changes with the mean across groups, and at a Q–Q plot before and after a log. Before choosing a model, ask whether the effects add, multiply or arrive one at a time.
+:::
+
+## Sums of small effects: the normal
+
+A total is roughly normal if it adds up many small, independent effects. This is the **central limit theorem**, and it holds whatever the individual effects look like: a measurement error that collects small disturbances from the instrument, the operator and the sample tends towards the same bell shape as a season's volume summed over many fields and days. The total's mean is the sum of the effects' means, and its variance the sum of their variances.
+
+Three conditions have to hold. The effects must be roughly independent, no single one may dominate, and each must have a finite variance. A quantity driven by one big factor takes that factor's shape; effects that move together, such as readings on a drifting instrument, add up to more spread than the sum of their variances; and effects with infinite variance never settle into a normal at all, the subject of a later module on heavy tails.
+
+::: {.callout-note collapse="true"}
+## The sum and the normal density
+
+Write the total as
+
+$$S_n = X_1 + X_2 + \dots + X_n$$
+
+where each $X_i$ is one independent effect, in the units of the quantity, with mean $\mu_i$ and variance $\sigma_i^2$. Means and variances of independent effects add, so $S_n$ has mean $\sum \mu_i$ and variance $\sum \sigma_i^2$ exactly, for any $n$. The theorem adds the part that is not obvious: as $n$ grows, the *shape* of $S_n$ approaches the normal density
+
+$$f(x) = \frac{1}{\sigma\sqrt{2\pi}} \exp\!\left(-\frac{(x - \mu)^2}{2\sigma^2}\right)$$
+
+where $\mu = \sum \mu_i$ is the mean and $\sigma = \sqrt{\sum \sigma_i^2}$ the standard deviation, both in the units of $x$.
+:::
+
+::: {.callout-note collapse="true"}
+## How many effects are enough
+
+A rough rule, from the derivation below: for symmetric effects, about a dozen is enough for the total to look normal; for strongly skewed effects it takes many more, around a hundred.
+
+The skewness of a distribution measures its lopsidedness and the excess kurtosis the weight of its tails relative to a normal; both are zero for a normal. For a sum of $n$ independent effects with the same distribution, the cumulants (the mean, the variance, and higher-order analogues) add, so the $r$-th cumulant of $S_n$ is $n\kappa_r$, where $\kappa_r$ is that of one effect. Skewness is $\kappa_3/\kappa_2^{3/2}$ and excess kurtosis $\kappa_4/\kappa_2^2$, which gives
+
+$$\gamma_1(S_n) = \frac{\gamma_1}{\sqrt{n}}, \qquad \gamma_2(S_n) = \frac{\gamma_2}{n}$$
+
+where $\gamma_1$ and $\gamma_2$ are the skewness and excess kurtosis of one effect. A uniform effect is symmetric ($\gamma_1 = 0$) with excess kurtosis $\gamma_2 = -1.2$, so a sum of 12 of them has excess kurtosis $-1.2/12 = -0.1$, already close to normal. To bring a skewness of 2 down to 0.2 takes $n = (2/0.2)^2 = 100$.
+:::
+
+## Products of small effects: the lognormal
+
+The lognormal distribution is what you get when the small effects multiply instead of add. Growth is the usual source: a fruit, a cell colony or a particle grows by a random percentage in each period. Limpert, Stahel and Abbt collect examples from many sciences, from element concentrations in the Earth's crust to aerosol sizes, and call the lognormal the "multiplicative normal" distribution for this reason[^1].
+
+Write the quantity as a product of $n$ positive factors,
+
+$$Y = F_1 \times F_2 \times \dots \times F_n$$
+
+where each $F_i$ is a dimensionless random factor near 1, for example $1.05$ for a 5% gain. The log turns the product into a sum,
+
+$$\ln Y = \ln F_1 + \ln F_2 + \dots + \ln F_n$$
+
+and the central limit theorem applies to the sum: $\ln Y$ is close to normal, with some mean $\mu$ and standard deviation $\sigma$. That is the definition of a lognormal $Y$. Three properties follow:
+
+$$\operatorname{median}(Y) = e^{\mu}, \qquad \operatorname{E}[Y] = e^{\mu + \sigma^2/2}$$
+
+$$\frac{\operatorname{SD}(Y)}{\operatorname{E}[Y]} = \sqrt{e^{\sigma^2} - 1}$$
+
+where $\mu$ and $\sigma$ are the mean and standard deviation of $\ln Y$, and $\operatorname{SD}(Y)/\operatorname{E}[Y]$ is the coefficient of variation. The mean exceeds the median by the factor $e^{\sigma^2/2}$, and since the coefficient of variation does not depend on $\mu$, doubling the typical size doubles the spread. A lognormal quantity is naturally summarised as a median times-or-divided-by a **multiplicative standard deviation** $s^* = e^{\sigma}$: about 68% of values lie within $e^{\mu} \times/ s^*$[^1].
+
+The practical consequence: if you model log(volume), exponentiating the prediction gives the **median** volume. Multiply it by $e^{\sigma^2/2}$, with $\sigma$ the residual standard deviation on the log scale, to get the expected volume, which is the one that adds up across fields and weeks. [Log and Box–Cox transforms](log-and-boxcox-transforms.qmd) works through this correction, and Duan's smearing estimate for residuals that are not normal.
+
+The widget builds a quantity from $n$ random factors, each drawn uniformly between $1 - s$ and $1 + s$, and either adds or multiplies them. It draws 4000 such quantities from a fixed seed, so every reader sees the same synthetic sample. The grey curve is the normal with the histogram's mean and standard deviation; on the Q–Q plot below it, a normal sample lies on the diagonal.
+
+::: {.sim-card}
+#### Add or multiply many small factors
+
+```{ojs}
+//| echo: false
+viewof mode = Inputs.radio(["Added", "Multiplied"], {value: "Added", label: "Combine the factors by"})
+viewof nFac = Inputs.range([1, 50], {value: 1, step: 1, label: "Number of factors n"})
+viewof spread = Inputs.range([0.05, 0.9], {value: 0.3, step: 0.05, label: "Spread s (each factor on 1 ± s)"})
+viewof logView = Inputs.toggle({label: "Plot the log of the quantity", value: false})
+
+// Seeded generator (mulberry32) so every reader sees the same synthetic sample.
+mulberry32 = a => () => {
+  a = (a + 0x6D2B79F5) | 0;
+  let t = Math.imul(a ^ (a >>> 15), 1 | a);
+  t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+}
+
+// 4000 quantities, each built from nFac factors drawn uniformly on [1 - s, 1 + s].
+draws = {
+  const u = mulberry32(7), add = mode === "Added";
+  return Array.from({length: 4000}, () => {
+    let v = add ? 0 : 1;
+    for (let i = 0; i < nFac; i++) {
+      const f = 1 - spread + 2 * spread * u();
+      v = add ? v + f : v * f;
+    }
+    return v;
+  });
+}
+
+shown = logView ? draws.map(Math.log) : draws
+sorted = Float64Array.from(shown).sort()
+m = d3.mean(shown)
+sd = d3.deviation(shown)
+moment = (a, k) => d3.mean(a, v => (v - m) ** k)
+skew = moment(shown, 3) / moment(shown, 2) ** 1.5
+
+// Normal quantile from Winitzki's inverse-erf approximation (error ~0.2%, enough for a plot).
+zq = p => {
+  const x = 2 * p - 1, l = Math.log(1 - x * x), t = 2 / (Math.PI * 0.147) + l / 2;
+  return Math.sign(x) * Math.SQRT2 * Math.sqrt(Math.sqrt(t * t - l / 0.147) - t);
+}
+qq = d3.range(1, 100).map(k => ({z: zq(k / 100), q: (d3.quantileSorted(sorted, k / 100) - m) / sd}))
+
+// 40 equal bins, and the matched normal scaled to counts per bin.
+lo = sorted[0]
+binW = (sorted[sorted.length - 1] - lo) / 40
+curve = d3.range(0, 40.01, 0.25).map(i => {
+  const x = lo + i * binW;
+  return {x, y: 4000 * binW * Math.exp(-0.5 * ((x - m) / sd) ** 2) / (sd * Math.sqrt(2 * Math.PI))};
+})
+
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${card(logView ? "Mean of log" : "Mean", m.toFixed(3), "#f59e0b")}
+  ${card(logView ? "Median of log" : "Median", d3.quantileSorted(sorted, 0.5).toFixed(3), "#10b981")}
+  ${card(logView ? "SD of log" : "Standard deviation", sd.toFixed(3), "#cbd5e1")}
+  ${card("Skewness", skew.toFixed(2), "#38bdf8")}
+</div>`
+
+Plot.plot({
+  height: 280,
+  marginLeft: 50,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {label: (logView ? "log of quantity" : "quantity") + " →", grid: true},
+  y: {label: "↑ count", grid: true},
+  color: {legend: true, domain: ["Sample", "Matched normal"], range: ["#38bdf8", "#64748b"]},
+  marks: [
+    Plot.rectY(shown, Plot.binX({y: "count"}, {x: d => d, fill: () => "Sample", fillOpacity: 0.8,
+      thresholds: d3.range(41).map(i => lo + i * binW)})),
+    Plot.line(curve, {x: "x", y: "y", stroke: () => "Matched normal", strokeWidth: 2.5})
+  ]
+})
+
+Plot.plot({
+  height: 260,
+  marginLeft: 50,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {label: "normal quantile →", grid: true},
+  y: {label: "↑ sample quantile (standardised)", grid: true},
+  marks: [
+    Plot.line([[-2.4, -2.4], [2.4, 2.4]], {stroke: "#64748b", strokeWidth: 2, strokeDasharray: "6 4"}),
+    Plot.dot(qq, {x: "z", y: "q", fill: "#38bdf8", r: 3, tip: true})
+  ]
+})
+```
+
+Start at one factor, where both modes give a flat histogram. Raise n with the factors added; then switch to multiplied, and then plot the log.
+:::
+
+Added, twelve factors with $s = 0.3$ already look normal: the skewness reads −0.03 and the Q–Q points sit on the diagonal.
+
+Multiplied, the same twelve factors give a right-skewed quantity whose Q–Q plot bends upward, with the median (0.821) below the mean (0.979). Plot the log and the points return to the diagonal. The ratio of mean to median, $0.979/0.821 = 1.19$, is close to the lognormal's $e^{\sigma^2/2} = e^{0.615^2/2} = 1.21$, where 0.615 is the standard deviation of the logs.
+
+## Rare events: the Poisson
+
+The Poisson distribution is what you get when you count events that happen independently of one another, one at a time, at a steady average rate: defects on a sheet of glass, customers arriving in a minute, orders from one customer in a week. It has a single parameter, the expected count, and its probabilities are
+
+$$P(N = k) = \frac{\lambda^k e^{-\lambda}}{k!}, \qquad k = 0, 1, 2, \dots$$
+
+where $N$ is the count in one unit of observation (a sheet, a minute, a week), $\lambda > 0$ is its expected value in events per unit, and $k!$ is the factorial of $k$. A Poisson is a binomial with many tiny chances: split the unit into many small pieces, each with a small, independent chance of holding an event, and the count tends to this formula. Its mean and its variance are both $\lambda$. That equality is the Poisson's fingerprint: a unit that averages 4 defects has a standard deviation of $\sqrt{4} = 2$, one that averages 100 has $\sqrt{100} = 10$. In [Zeros and Tweedie](zeros-and-tweedie/zeros_and_tweedie.ipynb) the number of orders a customer places in a week is Poisson, and the order sizes are added on top.
+
+For large $\lambda$ the Poisson becomes bell-shaped, by the central limit theorem again, since a count over one unit is the sum of counts over smaller sub-units.
+
+The widget draws synthetic counts for 2000 units at a chosen rate, again from a fixed seed. Bars are observed proportions, dots the Poisson probabilities. The switch lets the rate vary between units, as it does between customers or production lines, drawing each unit's rate from a gamma distribution with mean $\lambda$ and shape 2.
+
+::: {.sim-card}
+#### Counting rare events
+
+```{ojs}
+//| echo: false
+viewof rate = Inputs.range([0.5, 30], {value: 4, step: 0.5, label: "Rate λ (events per unit)"})
+viewof varyRate = Inputs.toggle({label: "Let the rate vary between units (gamma, shape 2)", value: false})
+
+// 2000 counts. Knuth's method: multiply uniforms until the product drops below e^(-rate).
+counts = {
+  const u = mulberry32(15);
+  return Array.from({length: 2000}, () => {
+    // Gamma with shape 2 and mean `rate`: the mean of two exponentials, times the rate.
+    const lam = varyRate ? rate * (-Math.log(1 - u()) - Math.log(1 - u())) / 2 : rate;
+    const floor = Math.exp(-lam);
+    let k = 0, p = u();
+    while (p > floor) { k++; p *= u(); }
+    return k;
+  });
+}
+
+cMean = d3.mean(counts)
+cVar = d3.variance(counts)
+kMax = d3.max(counts)
+observed = d3.range(kMax + 1).map(k => ({k, p: counts.filter(c => c === k).length / 2000}))
+// Poisson probabilities by the recursion P(k) = P(k - 1) * rate / k.
+pmf = d3.range(kMax + 1).reduce((acc, k) =>
+  acc.concat({k, p: k === 0 ? Math.exp(-rate) : acc[k - 1].p * rate / k}), [])
+
+html`<div class="sim-readouts">
+  ${card("Sample mean", cMean.toFixed(2), "#f59e0b")}
+  ${card("Sample variance", cVar.toFixed(2), "#38bdf8")}
+  ${card("Variance ÷ mean", (cVar / cMean).toFixed(2), "#10b981")}
+</div>`
+
+Plot.plot({
+  height: 280,
+  marginLeft: 50,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {label: "count per unit →", grid: true},
+  y: {label: "↑ proportion of units", grid: true, nice: true},
+  color: {legend: true, domain: ["Observed", "Poisson, same rate"], range: ["#38bdf8", "#f59e0b"]},
+  marks: [
+    Plot.rectY(observed, {x1: d => d.k - 0.4, x2: d => d.k + 0.4, y: "p", fill: () => "Observed", fillOpacity: 0.8}),
+    Plot.dot(pmf, {x: "k", y: "p", fill: () => "Poisson, same rate", r: 3.5})
+  ]
+})
+```
+
+Try a rate of 4, then 25. Then switch on the varying rate at 4.
+:::
+
+At a rate of 4, and again at 25, the variance-to-mean ratio reads 0.99. With 2000 draws that ratio varies by a few hundredths from one sample to the next, with a standard error of about $\sqrt{2/1999} = 0.03$, so readings near 1, not exactly 1, are what a Poisson gives. Switch on the varying rate at 4 and the variance triples to 12.00 while the mean stays near 4, as the formula below predicts, $4 + 4^2/2 = 12$. There are also far more zeros than the Poisson dots allow.
+
+**Overdispersion and the negative binomial.** Real counts often vary more than a Poisson allows, which is called overdispersion. Lindén and Mäntyniemi note that ecological counts typically do, through sampling, aggregation or environmental variability[^2]. A common cause, and the one the switch simulates, is a rate that differs between units. If each unit's rate is drawn from a gamma distribution with mean $\mu$ and shape $k$, the counts follow a **negative binomial** distribution with
+
+$$\operatorname{Var}(N) = \mu + \frac{\mu^2}{k}$$
+
+where $\mu$ is the mean count and $k > 0$ a dimensionless shape: the Poisson's own noise plus the spread of the rates, which vanishes as $k \to \infty$. The usual alternative, quasi-Poisson, scales the Poisson variance by a constant, $\operatorname{Var}(N) = \phi\mu$; Ver Hoef and Boveng show that choosing between the two can change estimated covariate effects markedly[^3].
+
+## Telling them apart in data
+
+Ask first whether the effects in your problem add, multiply or arrive as discrete events. The data then give three checks.
+
+**Shape.** A normal is symmetric and can be negative. A lognormal is positive and right-skewed, mean above median. A Poisson takes whole numbers and, at small rates, piles up at zero.
+
+**The mean–variance relation.** Split the data into groups that should share a distribution apart from their level, such as batches, sites or weeks, and plot each group's variance against its mean on log–log axes. The slope $b$ in
+
+$$\operatorname{Var} \propto \text{mean}^{\,b}$$
+
+separates the three: $b = 0$ for a normal with constant spread, $b = 1$ for Poisson counts, $b = 2$ for a lognormal, whose standard deviation is proportional to its mean. Negative binomial counts slide from 1 towards 2 as the mean grows. The same slope chooses the transform that steadies the spread in [Log and Box–Cox transforms](log-and-boxcox-transforms.qmd), where $b = 2\alpha$: the log for $b = 2$, the square root for $b = 1$.
+
+**The Q–Q plot.** A quantile–quantile plot puts the sorted data against a normal sample's quantiles; a straight line means normal. A lognormal sample bends upward on the raw scale and straightens after a log, as in the first widget.
+
+| Distribution | Process | Shape | Variance vs mean |
+|---|---|---|---|
+| Normal | Many small effects added | Symmetric, any sign | Unrelated ($b = 0$) |
+| Lognormal | Many small effects multiplied | Positive, right-skewed | $\propto \text{mean}^2$ ($b = 2$) |
+| Poisson | Rare independent events counted | Whole numbers | Equal ($b = 1$) |
+| Negative binomial | Poisson with a varying rate | Whole numbers, long tail | $\mu + \mu^2/k$ |
+
+For the data a fruit business holds, these are my starting guesses to check, not findings:
+
+| Quantity | Likely shape | Check |
+|---|---|---|
+| A season's total volume, summed over many fields and days | Close to normal, if no field or week dominates | Q–Q plot of totals across regions or years |
+| Individual berry weights, prices, field yields | Can be right-skewed, lognormal-like, especially pooled across fields | Q–Q plot before and after a log |
+| Defects, returns or complaints per batch or week | Poisson-like, often overdispersed | Variance ÷ mean across batches |
+
+The checks take a few lines in Python. The data here are synthetic; replace them with yours.
+
+```python
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from scipy import stats
+
+rng = np.random.default_rng(0)
+y = rng.lognormal(mean=0, sigma=0.6, size=500)      # synthetic positive measurements
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 3.5))
+stats.probplot(y, dist="norm", plot=ax1)            # bends upward: not normal
+stats.probplot(np.log(y), dist="norm", plot=ax2)    # straight: lognormal
+
+# Synthetic counts: 20 batches of 50 units, each batch with its own Poisson rate.
+df = pd.DataFrame({"batch": np.repeat(np.arange(20), 50)})
+df["count"] = rng.poisson(np.repeat(rng.uniform(1, 30, size=20), 50))
+g = df.groupby("batch")["count"].agg(["mean", "var"])
+print(round((g["var"] / g["mean"]).median(), 2))    # near 1: Poisson; well above 1: overdispersed
+slope = np.polyfit(np.log(g["mean"]), np.log(g["var"]), 1)[0]
+print(round(slope, 2))                              # about 0 normal, 1 Poisson, 2 lognormal
+```
+
+On these synthetic batches it prints a median ratio of 0.97 and a slope of 1.08, as Poisson counts should.
+
+::: {.callout-tip appearance="simple" icon=false}
+## What this means for you
+
+My own suggestions; I checked that each named function runs, not how it performs on your data:
+
+- **Lognormal-looking residuals.** Model log(y) and correct back with $e^{\sigma^2/2}$ or smearing, or keep $y$ and fit a Poisson, gamma or Tweedie loss, which aims at the mean directly. scikit-learn offers `PoissonRegressor`, `GammaRegressor`, `TweedieRegressor` and `HistGradientBoostingRegressor` with `loss="poisson"` or `"gamma"`; LightGBM offers `objective="poisson"`, `"gamma"` and `"tweedie"`. [Zeros and Tweedie](zeros-and-tweedie/zeros_and_tweedie.ipynb) compares them on intermittent demand.
+- **Overdispersed counts.** Use negative binomial regression (`negativebinomial` in `statsmodels.formula.api`, which also estimates the overdispersion) or quasi-Poisson (a Poisson GLM fitted with `scale="X2"`, which widens its standard errors).
+- **Normality checks.** Check residuals, not raw data: a mixture of groups at different levels looks skewed even when each group is normal.
+:::
+
+## Key takeaways
+
+- A total over many fields, customers or days can be close to normal even when each part is skewed, so check the distribution at the level you will model.
+- Summarise a lognormal quantity as median $\times/$ $s^*$ rather than mean ± SD. Exponentiating a mean of logs returns the median, a factor $e^{\sigma^2/2}$ below the mean.
+- Group the data and fit the slope of log variance on log mean. A slope near 0, 1 or 2 points to a normal, a Poisson or a lognormal, and also tells you which transform steadies the spread.
+- Compute variance ÷ mean before trusting a Poisson model's standard errors. With a few thousand units, expect a few hundredths of noise around 1; a ratio well above 1 usually means the rate varies between units.
+
+## References
+
+[^1]: Limpert, E., Stahel, W. A. & Abbt, M. Log-normal distributions across the sciences: keys and clues. *BioScience* **51**, 341–352 (2001). https://doi.org/10.1641/0006-3568(2001)051[0341:LNDATS]2.0.CO;2
+[^2]: Lindén, A. & Mäntyniemi, S. Using the negative binomial distribution to model overdispersion in ecological count data. *Ecology* **92**, 1414–1421 (2011). https://doi.org/10.1890/10-1831.1
+[^3]: Ver Hoef, J. M. & Boveng, P. L. Quasi-Poisson vs. negative binomial regression: how should we model overdispersed count data? *Ecology* **88**, 2766–2772 (2007). https://doi.org/10.1890/07-0043.1
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/p-values/what_a_p_value_is_not.html"><span>Previous</span>What a p-value is not</a><a class="mf-up" href="/series/statistics/index.html"><span>Series</span>Statistics</a><a class="mf-next" href="/blogs/power-and-how-many-samples.html"><span>Next</span>Power, and how many samples</a></div>
+<!-- CURRICULUM_FOOTER_END -->

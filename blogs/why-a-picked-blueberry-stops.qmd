@@ -186,3 +186,4 @@ This matters when reading storage trials. In a two-year Georgia trial, rabbiteye
 <!-- CURRICULUM_FOOTER_START -->
 <div class="mf"><a class="mf-prev" href="/blogs/sugar-acid-and-what-ripe-measures.html"><span>Previous</span>Sugar, acid, and what &quot;ripe&quot; measures</a><a class="mf-up" href="/series/plants/index.html"><span>Series</span>Plant biology, one blueberry at a time</a><a class="mf-next" href="/blogs/the-bloom.html"><span>Next</span>The bloom: the wax coat and what it protects</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+

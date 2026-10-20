@@ -1,0 +1,275 @@
+---
+title: Power, and how many samples
+description: What statistical power is, how effect size, noise, sample size and the significance threshold trade off, how to size a two-group trial, and why underpowered trials exaggerate the effects they find.
+date: 2026-10-19
+categories:
+- statistics
+- data science
+- agriculture
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/statistics/index.html">Statistics</a><span class="sep">·</span>Part 8 · Experimental design</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">School maths. Python or R for the notebooks.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Power is the chance that a trial detects a real effect of a size you name in advance. It depends on four things, and fixing any three fixes the fourth: the size of the effect, the noise between units, the number of units per group, and the significance threshold. For two groups compared on a mean, the units needed per group are roughly $2(z_{1-\alpha/2} + z_{1-\beta})^2\sigma^2/\delta^2$, which at the usual 5% threshold and 80% power is about $16\sigma^2/\delta^2$. Halve the effect you want to detect and you need four times the units. Low power does more than miss effects: the results from an underpowered trial that do reach significance overstate the true effect, often by a factor of two or more. When plants share a plot, the plot is the unit, and adding plants per plot quickly stops helping. When the design is too awkward for a formula, simulate it. In practice: size the trial for the smallest effect worth acting on, before any data arrive.
+:::
+
+## What power is
+
+With 10 bushes per group, a bush-to-bush standard deviation of 1.2 kg and a true gain of 0.6 kg per bush, a trial reaches significance only about 1 time in 5. That figure, 20.1% from the widget below, is the trial's power: a property of the planned design, not of any result.
+
+Write the true difference in means between treated and control groups as $\delta$, in the outcome's units (here kg of fruit per bush). The trial estimates it with the difference of sample means, $\hat{\delta} = \bar{y}_T - \bar{y}_C$, and calls it significant when the p-value falls below a threshold $\alpha$ fixed beforehand ([What a p-value is not](p-values/what_a_p_value_is_not.ipynb) covers what that promises). Two errors are possible:
+
+- A **false positive** (type I error): no real effect, but the test is significant. Its rate is $\alpha$.
+- A **false negative** (type II error): a real effect of size $\delta$, but the test is not significant. Its rate is written $\beta$.
+
+**Power** is $1 - \beta$. At the common target of 80%, one trial in five of a treatment that really works comes back "no significant difference".
+
+Four quantities set power, and fixing any three determines the fourth.
+
+| Quantity | Symbol | Power goes up when it |
+|---|---|---|
+| True effect | $\delta$ | is larger |
+| Noise between units | $\sigma$ | is smaller |
+| Units per group | $n$ | is larger |
+| Significance threshold | $\alpha$ | is larger (looser) |
+
+Here $\sigma$ is the standard deviation of the outcome between units within a group, in the same units as $\delta$. The first two enter only as the ratio $d = \delta/\sigma$, the **standardised effect size**: a 0.6 kg gain among bushes that vary by 1.2 kg is the same planning problem as a 6 g gain among fruit that vary by 12 g.
+
+All four meet in the **standard error** of the estimated difference. With $n$ independent units per group,
+
+$$\text{SE} = \sigma\sqrt{\frac{2}{n}}$$
+
+where the 2 counts the two groups ([Variance and standard error](variance-and-standard-error.qmd) derives it). Power depends on how far $\delta$ stands clear of this error, $\delta/\text{SE}$, and how far clear $\alpha$ demands.
+
+## How many samples
+
+The sample-size formula is the power calculation run backwards: name the effect, the noise, the threshold and the power you want, and solve for $n$. For a two-sided test on a difference in means, the units needed in each group are
+
+$$n \approx \frac{2\left(z_{1-\alpha/2} + z_{1-\beta}\right)^2 \sigma^2}{\delta^2}$$
+
+where $z_q$ is the value a standard normal variable falls below with probability $q$: $z_{0.975} = 1.960$ for $\alpha = 0.05$, and $z_{1-\beta} = 0.842$ for 80% power or $1.282$ for 90%. This is the formula to use; the power formula it comes from is in the note below.
+
+::: {.callout-note collapse="true"}
+## Where the formula comes from
+
+Treat $\hat{\delta}$ as normal around the true $\delta > 0$ with spread $\text{SE}$. A two-sided test rejects when $|\hat{\delta}| > z_{1-\alpha/2}\text{SE}$, so power is the probability of landing beyond either cut-off:
+
+$$1 - \beta = \Phi\!\left(\frac{\delta}{\text{SE}} - z_{1-\alpha/2}\right) + \Phi\!\left(-\frac{\delta}{\text{SE}} - z_{1-\alpha/2}\right)$$
+
+where $\Phi$ is the standard normal cumulative distribution function. The second term, a significant result in the wrong direction, is tiny unless power is very low. Dropping it and setting the first term to $1 - \beta$ gives $\delta/\text{SE} = z_{1-\alpha/2} + z_{1-\beta}$. Substituting $\text{SE} = \sigma\sqrt{2/n}$ and squaring gives $n\delta^2/(2\sigma^2) = (z_{1-\alpha/2} + z_{1-\beta})^2$, which rearranges to the formula. The widget below uses both terms.
+
+The formula treats $\sigma$ as known; a t-test estimates it and needs slightly more units. At $\alpha = 0.05$ and 80% power, the exact t-test (noncentral t distribution) needs one more unit per group than the formula for every $d$ from 0.25 to 1 (63 against 64 at $d = 0.5$), and two more at $d = 1.5$ (7 against 9).
+:::
+
+**A worked example (synthetic numbers).** A field trial compares a biostimulant with untreated bushes. Suppose earlier seasons suggest a bush-to-bush standard deviation of $\sigma = 1.2$ kg, and a gain below $\delta = 0.6$ kg per bush would not pay for the product. Both numbers are invented for illustration. At $\alpha = 0.05$ and 80% power:
+
+- $(z_{0.975} + z_{0.80})^2 = (1.960 + 0.842)^2 = 7.849$
+- $\sigma^2/\delta^2 = 1.44/0.36 = 4$
+- $n \approx 2 \times 7.849 \times 4 = 62.8$, so **63 bushes per group**, 126 in all.
+
+`statsmodels` solves the exact t-test version, a useful check on the hand formula. Here $d = 0.6/1.2 = 0.5$:
+
+```python
+from statsmodels.stats.power import TTestIndPower
+TTestIndPower().solve_power(effect_size=0.5, alpha=0.05, power=0.8)  # 63.77, so 64 per group
+```
+
+Follow-up questions, all at $\sigma = 1.2$ kg:
+
+- **A smaller effect.** To detect $\delta = 0.3$ kg, $n \approx 2 \times 7.849 \times 16 = 251.2$, so 252 per group. Halving $\delta$ quadruples $n$.
+- **More power.** For 90% power at $\delta = 0.6$, $(1.960 + 1.282)^2 = 10.51$ and $n \approx 84.1$, so 85 per group.
+- **A stricter threshold.** At $\alpha = 0.01$, $z_{0.995} = 2.576$ and $n \approx 93.4$, so 94 per group. Keep 63 per group and power falls to 59%.
+- **Less noise.** Adjusting for pre-season yield that correlates with harvest yield at $r = 0.6$ (assumed) leaves residual variance $\sigma^2(1 - r^2) = 0.64\sigma^2$, so $n = 62.8 \times 0.64 = 40.2$, or 41 per group.
+
+At $\alpha = 0.05$ and 80% power, $2 \times 7.849 = 15.7$, so a rule worth memorising is $n \approx 16\,\sigma^2/\delta^2 = 16/d^2$ per group.
+
+The formula stretches further than bush yields. Group means of skewed or count outcomes are usually close to normal at tens of units per group, so the formula still applies unless the skew is heavy (then simulate); for a proportion such as a defect rate, $\sigma^2 \approx \bar{p}(1 - \bar{p})$, where $\bar{p}$ is the average rate across the two groups. A paired comparison, such as the difference in forecast error between two models at each of $n$ forecast origins, loses the factor 2: $n \approx 7.85\,\sigma_d^2/\delta^2$ pairs, where $\sigma_d$ is the standard deviation of the per-origin differences. Neighbouring origins are correlated, though, which acts like the clustering below, so size a model comparison by simulation; [Backtest design](backtest-design/backtest_design.ipynb) sets up the origins.
+
+## Why small trials exaggerate
+
+Low power also distorts the trials that succeed. Only trials whose estimate happened to overshoot clear the significance bar, so significant estimates are too large on average: the **winner's curse**.
+
+The **exaggeration ratio** puts a number on it: among the trials that reach significance, the estimate is on average this many times the true effect. Formally it is the average of $|\hat{\delta}|/\delta$ over significant trials. A significant estimate can also have the **wrong sign**, pointing the opposite way to the true effect. Gelman and Carlin call these type M (magnitude) and type S (sign) errors, and propose computing both alongside power when a study is designed[^1]. Button and colleagues found typical power in neuroscience to be low, with overestimated effects among the consequences[^2].
+
+The widget computes both from the same normal model, without simulation: it averages $|\hat{\delta}|$ over the significant tails of $N(\delta, \text{SE}^2)$ with the truncated-normal mean, treating $\sigma$ as known.
+
+The widget starts at the worked example with only 10 bushes per group. Read the power and the exaggeration, then drag "Bushes per group" to 30 and then to 63.
+
+::: {.sim-card}
+#### Power and exaggeration in a two-group trial
+
+```{ojs}
+//| echo: false
+viewof delta = Inputs.range([0.05, 2], {value: 0.6, step: 0.05, label: "True effect δ (kg per bush)"})
+viewof sigma = Inputs.range([0.2, 3], {value: 1.2, step: 0.1, label: "Bush-to-bush SD σ (kg)"})
+viewof n = Inputs.range([2, 200], {value: 10, step: 1, label: "Bushes per group n"})
+viewof alpha = Inputs.range([0.005, 0.2], {value: 0.05, step: 0.005, label: "Significance level α"})
+
+// Standard normal density, CDF (Abramowitz & Stegun 7.1.26, error below 1.5e-7)
+// and quantile (bisection on the CDF).
+phi = z => Math.exp(-z * z / 2) / Math.sqrt(2 * Math.PI)
+Phi = z => {
+  const t = 1 / (1 + 0.3275911 * Math.abs(z) / Math.SQRT2);
+  const poly = t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 + t * (-1.453152027 + t * 1.061405429))));
+  const erf = 1 - poly * Math.exp(-z * z / 2);
+  return z >= 0 ? 0.5 * (1 + erf) : 0.5 * (1 - erf);
+}
+zq = p => {
+  let lo = -10, hi = 10;
+  for (let i = 0; i < 100; i++) { const mid = (lo + hi) / 2; if (Phi(mid) < p) lo = mid; else hi = mid; }
+  return (lo + hi) / 2;
+}
+
+// Normal model: estimate ~ N(delta, se^2); significant when |estimate| > crit.
+design = {
+  const se = sigma * Math.sqrt(2 / n), z = zq(1 - alpha / 2), crit = z * se;
+  const up = 1 - Phi((crit - delta) / se), down = Phi((-crit - delta) / se);
+  const power = up + down;
+  // Sum of |estimate| over both significant tails (truncated-normal means).
+  const absSum = delta * up + se * phi((crit - delta) / se) - delta * down + se * phi((-crit - delta) / se);
+  const nNeed = Math.ceil(2 * (z + zq(0.8)) ** 2 * sigma ** 2 / delta ** 2);
+  return {se, crit, power, exag: absSum / power / delta, typeS: down / power, nNeed};
+}
+
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${card("Power", (100 * design.power).toFixed(1) + "%", "#10b981")}
+  ${card("Average exaggeration when significant", design.exag.toFixed(2) + "×", "#f59e0b")}
+  ${card("Wrong sign when significant", (100 * design.typeS).toFixed(2) + "%", "#ef4444")}
+  ${card("n per group for 80% power", design.nNeed, "#38bdf8")}
+</div>`
+
+curve = {
+  const lo = Math.min(-design.crit, delta - 4 * design.se) - 0.5 * design.se;
+  const hi = Math.max(design.crit, delta + 4 * design.se) + 0.5 * design.se;
+  return d3.range(401).map(i => {
+    const x = lo + (hi - lo) * i / 400;
+    return {x, y: phi((x - delta) / design.se) / design.se, sig: Math.abs(x) > design.crit};
+  });
+}
+
+Plot.plot({
+  height: 320,
+  marginLeft: 55,
+  // Plot paints its own white ground otherwise, which the dark card fights.
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {label: "Estimated difference (kg per bush) →", grid: true},
+  y: {label: "↑ Density", grid: true},
+  color: {legend: true,
+          domain: ["Not significant", "Significant", "True effect", "Average significant estimate"],
+          range: ["#64748b", "#10b981", "#cbd5e1", "#f59e0b"]},
+  marks: [
+    Plot.areaY(curve, {x: "x", y: d => d.sig ? NaN : d.y, fill: () => "Not significant", fillOpacity: 0.5}),
+    Plot.areaY(curve, {x: "x", y: d => d.x > design.crit ? d.y : NaN, fill: () => "Significant", fillOpacity: 0.7}),
+    Plot.areaY(curve, {x: "x", y: d => d.x < -design.crit ? d.y : NaN, fill: () => "Significant", fillOpacity: 0.7}),
+    Plot.line(curve, {x: "x", y: "y", stroke: "#cbd5e1", strokeWidth: 1.5}),
+    Plot.ruleX([delta], {stroke: () => "True effect", strokeWidth: 2, strokeDasharray: "6 4"}),
+    Plot.ruleX([design.exag * delta], {stroke: () => "Average significant estimate", strokeWidth: 2.5}),
+    Plot.ruleY([0])
+  ]
+})
+```
+
+The curve is the spread of estimates across many repeats of the same trial; green estimates reach significance. The dashed line is the true effect. The amber line, "Average significant estimate", is where the significant results land on average: the true effect times the exaggeration ratio.
+:::
+
+| Bushes per group | Power | Exaggeration | Average significant estimate |
+|---:|---:|---:|---:|
+| 10 | 20.1% | 2.25× | 1.35 kg |
+| 30 | 49.1% | 1.42× | 0.85 kg |
+| 63 | 80.1% | 1.12× | 0.67 kg |
+
+At 10 per group the significance cut-off sits at 1.05 kg, so no estimate below that can come out significant at all: a trial this size can only "find" a 0.6 kg effect by overstating it. Wrong signs are rare here (0.52% of significant results at 10 per group) but grow as power falls towards $\alpha$. Drag the true effect to 0.1 kg at 10 per group: power is 5.4%, significant estimates average 12.6 times the truth, and 29.5% have the wrong sign.
+
+Two actions follow. When planning, size for a plausible effect, the one you would expect from comparable trials, not the one you hope for; a low-powered design is not a cheap gamble, because its successes are biased. When reading, treat a significant result from a small trial as likely an overestimate. [What a p-value is not](p-values/what_a_p_value_is_not.ipynb) reaches the same conclusion by simulation.
+
+## Clustered designs and simulation
+
+The formula assumes independent units. Field and packhouse trials rarely have them: bushes share a plot, fruit a clamshell, clamshells a pallet. Your "plot" may equally be a farm, a store or a week, whatever the treatment was assigned to as a block. Units in one cluster resemble each other, so each adds less information.
+
+The **design effect** measures the loss. If treatment is applied to whole plots of $m$ bushes, and bushes in the same plot have intracluster correlation $\rho$ (the share of the total variance that lies between plots), then
+
+$$D = 1 + (m - 1)\rho$$
+
+where $D$ is the factor by which the variance of a treatment mean grows relative to $m$ independent bushes; [Variance and standard error](variance-and-standard-error.qmd) derives it. To keep the same power, multiply the independent-unit sample size by $D$. With $\sigma = 1.2$ kg now the total bush-to-bush standard deviation, plots of $m = 10$ bushes and an assumed $\rho = 0.3$:
+
+- $D = 1 + 9 \times 0.3 = 3.7$
+- bushes per group $= 62.8 \times 3.7 = 232.3$, so $232.3/10 = 23.2$ plots, rounded up to **24 plots per group**.
+
+More bushes per plot buy little. Plots needed per group are $nD/m$, which tends to $n\rho = 62.8 \times 0.3 = 18.8$ as $m$ grows: at least 19 plots however many bushes each holds. With 20 bushes per plot it is 22 plots (440 bushes); with 40, 20 plots (800 bushes).
+
+**Getting $\sigma$ and $\rho$ from past data.** Last season's records, one row per bush with its plot, give both. The SD of plot means is the $\sigma$ for sizing directly in plots; the one-way ANOVA estimate of $\rho$ lets you change plot size. It assumes equal plot sizes; `statsmodels` `MixedLM` does not.
+
+```python
+# df: one row per bush, columns "plot" and "yield_kg"
+g = df.groupby("plot")["yield_kg"]
+m = g.size().mean()                                # bushes per plot
+sigma = df["yield_kg"].std()                       # total bush-to-bush SD
+sd_plot_means = g.mean().std()                     # SD between plot means
+msw, msb = g.var().mean(), m * sd_plot_means**2    # within- and between-plot mean squares
+rho = (msb - msw) / (msb + (m - 1) * msw)          # one-way ANOVA estimate of rho
+print(f"sigma={sigma:.2f} kg, plot-mean SD={sd_plot_means:.2f} kg, rho={rho:.2f}")
+# sigma=1.11 kg, plot-mean SD=0.66 kg, rho=0.27
+```
+
+That output is from one synthetic season of 40 plots of 10 bushes, generated with $\sigma = 1.2$ kg and $\rho = 0.3$ (seed 7); `MixedLM` also gives $\rho = 0.27$. Sizing in plots from these estimates gives $15.7 \times 0.656^2/0.36 = 18.8$ (0.656 is the plot-mean SD before rounding), so 19 plots per group, where the true values call for 24. One season's estimates are themselves noisy, so my suggestion (an inference, not a cited rule) is to plan with the larger values from several seasons, or round up generously.
+
+**When the formulas run out** (unequal groups, repeated harvests, missing plots, a fitted model), simulate: generate data the way you expect the trial to, run the planned analysis, and count how often it is significant. The snippet below checks the 24-plot design, with plot effects of variance $\rho\sigma^2$ and bush effects of variance $(1-\rho)\sigma^2$, analysed two ways: by plot means, and by treating every bush as independent.
+
+```python
+import numpy as np
+from scipy import stats
+
+def simulate_power(delta, sigma, rho, plots, plants, reps=4000, alpha=0.05, seed=1):
+    """Share of simulated trials with p < alpha, two arms of `plots` plots each."""
+    rng = np.random.default_rng(seed)
+    sd_plot, sd_plant = sigma * np.sqrt(rho), sigma * np.sqrt(1 - rho)
+    hits_plot = hits_naive = 0
+    for _ in range(reps):
+        arms = []
+        for shift in (0.0, delta):
+            plot_effect = rng.normal(0, sd_plot, (plots, 1))
+            arms.append(shift + plot_effect + rng.normal(0, sd_plant, (plots, plants)))
+        a, b = arms
+        hits_plot += stats.ttest_ind(a.mean(1), b.mean(1)).pvalue < alpha    # plot means: the unit randomised
+        hits_naive += stats.ttest_ind(a.ravel(), b.ravel()).pvalue < alpha  # every bush treated as independent
+    return float(hits_plot / reps), float(hits_naive / reps)  # (plot means, every bush)
+
+print(simulate_power(0.6, 1.2, rho=0.3, plots=24, plants=10))  # (0.7935, 0.96775): real 0.6 kg effect
+print(simulate_power(0.0, 1.2, rho=0.3, plots=24, plants=10))  # (0.052, 0.3085): no effect at all
+```
+
+On this synthetic data (seed 1, 4,000 trials each), the t-test on plot means is significant in 79.4% of trials with a real 0.6 kg effect, close to the design effect's 80%. Treating every bush as independent looks more powerful, at 96.8%, but with no effect at all it is significant in 30.9% of trials instead of 5%. Its extra "power" is mostly false positives. Whatever the test, [the t-test](t-test/the_t_test.ipynb) included, analyse the unit that was randomised. Check a simulation first on a case the formula covers, as here, before trusting it on one the formula does not.
+
+::: {.callout-tip}
+## What this means for you
+
+My suggestions, from the arithmetic above rather than a cited study. Fix $\delta$ as the smallest effect that would change a decision, such as the gain that pays for the treatment, and check it is plausible against comparable trials. Take $\sigma$ and $\rho$ from past trials on the same crop and site. Do not size from one small pilot's estimate: if the pilot is why you are running the trial, it was probably picked for being large. Gelman and Carlin likewise call choosing plausible effect sizes from external information the hardest part of a design calculation[^1].
+:::
+
+## Key takeaways
+
+- Write the power calculation down before the trial starts. Power computed afterwards from the observed effect adds nothing: it is a function of $\hat{\delta}/\text{SE}$, the same quantity the p-value comes from.
+- Add to the formula's $n$ for expected losses, such as dead bushes or missing plots, as well as the extra unit or so per group the t-test needs.
+- Buying down the noise is often cheaper than buying units. Blocking, a pre-treatment covariate and more precise measurement all shrink $\sigma^2$, and $n$ shrinks with it.
+- Report the estimate with its interval, not only whether it was significant.
+- In clustered trials, count clusters, and analyse plot means or fit a mixed model that represents the clusters.
+
+## References
+
+[^1]: Gelman, A. & Carlin, J. Beyond power calculations: assessing type S (sign) and type M (magnitude) errors. *Perspect. Psychol. Sci.* **9**, 641–651 (2014). https://doi.org/10.1177/1745691614551642
+[^2]: Button, K. S. et al. Power failure: why small sample size undermines the reliability of neuroscience. *Nat. Rev. Neurosci.* **14**, 365–376 (2013). https://doi.org/10.1038/nrn3475
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/normal-lognormal-poisson.html"><span>Previous</span>Normal, lognormal, Poisson</a><a class="mf-up" href="/series/statistics/index.html"><span>Series</span>Statistics</a></div>
+<!-- CURRICULUM_FOOTER_END -->

@@ -1,0 +1,223 @@
+---
+title: Variance and standard error
+description: How the spread of the data differs from the spread of a mean, why the standard error falls as one over the square root of the sample size, and how clustered samples shrink the effective sample size.
+date: 2026-10-19
+categories:
+- statistics
+- data science
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/statistics/index.html">Statistics</a><span class="sep">·</span>Part 1 · Describing data</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">School maths. Python or R for the notebooks.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+The standard deviation measures how far single measurements scatter around their mean. The standard error measures something else: how far the mean itself would move if you repeated the whole sample. For $n$ independent measurements with standard deviation $\sigma$, the standard error of the mean is $\sigma/\sqrt{n}$. Collecting more data leaves the standard deviation where it is and shrinks the standard error, but slowly: four times the data halves it, and a hundred times the data gains one decimal place. That formula assumes every measurement is independent. Berries picked from the same bush, or weekly readings from one season, resemble each other, so they carry less information than their count suggests. The design effect, $1 + (m-1)\rho$ for clusters of size $m$ with correlation $\rho$, says how much less. Differences between two means have their own standard error, which adds variances, not standard errors. In practice: before quoting $s/\sqrt{n}$, ask what $n$ really counts.
+:::
+
+## Spread of the data: variance and standard deviation
+
+Variance is the average squared distance of the measurements from their mean, and it is the quantity the rest of this page is built on. For measurements $x_1, \dots, x_n$ with sample mean $\bar{x} = \frac{1}{n}\sum x_i$, the **sample variance** is
+
+$$s^2 = \frac{1}{n-1} \sum_{i=1}^{n} (x_i - \bar{x})^2$$
+
+where $s^2$ has the squared units of the data (g² for weights in grams). The **standard deviation** $s = \sqrt{s^2}$ is back in the units of the data, which is why it is the number people quote. It estimates the population's true standard deviation $\sigma$, and measuring more berries makes that estimate more precise without making $\sigma$ smaller: berries vary as much as they vary.
+
+The divisor is $n - 1$ rather than $n$ because the deviations are measured from $\bar{x}$, which was fitted to the same data and so sits slightly too close to them. Watch the library defaults: `numpy.std` and `numpy.var` divide by $n$ unless you pass `ddof=1`, while `pandas.Series.std` and Python's `statistics.stdev` divide by $n - 1$.
+
+::: {.callout-note collapse="true"}
+## Why divide by n − 1, with a worked example
+
+Adding and subtracting the true mean $\mu$ inside each square gives
+
+$$\sum_{i=1}^{n} (x_i - \bar{x})^2 = \sum_{i=1}^{n} (x_i - \mu)^2 - n(\bar{x} - \mu)^2$$
+
+For independent measurements the first sum has expected value $n\sigma^2$, and the second term has expected value $n \cdot \sigma^2/n = \sigma^2$ (the variance of the mean, derived in the next section). The expected sum of squares is $(n-1)\sigma^2$, so dividing by $n - 1$ makes $s^2$ correct on average. Dividing by $n$ underestimates $\sigma^2$ by the factor $(n-1)/n$: $0.5$ for $n = 2$, $0.8$ for $n = 5$, $0.9667$ for $n = 30$. The correction makes $s^2$ unbiased, but $s$ is still slightly low on average, because the square root of an average is not the average of the square roots.
+
+A small synthetic example: five berries weighing $1.6, 2.1, 1.8, 2.5, 2.0$ g. The mean is $10.0/5 = 2.0$ g. The deviations are $-0.4, 0.1, -0.2, 0.5, 0$, their squares are $0.16, 0.01, 0.04, 0.25, 0$, and the squares sum to $0.46$ g². Dividing by $n - 1 = 4$ gives $s^2 = 0.115$ g² and $s = 0.339$ g; dividing by $n = 5$ gives $0.092$ g² and $0.303$ g. The $n - 1$ version of $s$ is 12% larger ($\sqrt{5/4} = 1.118$). For $n$ in the hundreds the difference is negligible.
+:::
+
+## Spread of the mean: the standard error
+
+The standard error answers a different question: if you took a fresh sample of the same size, how far would its mean typically land from the first? It is the standard deviation of the mean across repeated samples, not of the data.
+
+For $n$ independent measurements, each with variance $\sigma^2$, the variance of their mean is $\sigma^2/n$, so
+
+$$\mathrm{SE}(\bar{x}) = \frac{\sigma}{\sqrt{n}} \approx \frac{s}{\sqrt{n}}$$
+
+where $\mathrm{SE}$ has the units of the data, and the right-hand form replaces the unknown $\sigma$ by its estimate $s$.
+
+::: {.callout-note collapse="true"}
+## Where σ²/n comes from
+
+Two rules do all the work. The variance of a sum of independent quantities is the sum of their variances, and scaling a quantity by a constant $c$ scales its variance by $c^2$. The mean is the sum divided by $n$:
+
+$$\mathrm{Var}(\bar{x}) = \frac{1}{n^2}\,\mathrm{Var}\!\left(\sum_{i=1}^{n} x_i\right) = \frac{1}{n^2} \cdot n\sigma^2 = \frac{\sigma^2}{n}$$
+
+Independence enters in the first rule; correlated measurements add covariance terms, the subject of the next section.
+:::
+
+The square root is the reason precision is expensive. Take berries with $\sigma = 0.5$ g. With $n = 25$ the standard error is $0.5/\sqrt{25} = 0.1$ g; with $n = 100$ it is $0.5/\sqrt{100} = 0.05$ g. Quadrupling the sample halves the error, because $\sqrt{4} = 2$. Reaching $0.005$ g, one more decimal place, takes $n = 10\,000$, a hundred times as many berries as $0.05$ g did.
+
+This is why figures need to say which spread they show. Error bars drawn with $s$ show how variable the berries are and stay the same width however many you weigh; error bars drawn with $s/\sqrt{n}$ show how well the mean is known and narrow as the sample grows.
+
+## When samples are not independent
+
+The $\sigma/\sqrt{n}$ formula counts every measurement as fresh information. Berries from the same bush share its soil, age and water, so if one is heavy its neighbours probably are too, and each extra berry from a bush already sampled adds less than a berry from a new bush.
+
+The simplest case has the sample made of $k$ clusters (bushes), each contributing $m$ measurements (berries), so $n = km$, with every pair of measurements in the same cluster sharing correlation $\rho$ and measurements in different clusters independent. Then the variance of the mean is inflated by the **design effect**:
+
+$$\mathrm{DEFF} = 1 + (m - 1)\rho, \qquad \mathrm{SE}(\bar{x}) = \frac{\sigma}{\sqrt{n}}\sqrt{\mathrm{DEFF}} = \frac{\sigma}{\sqrt{n_{\text{eff}}}}, \qquad n_{\text{eff}} = \frac{n}{\mathrm{DEFF}}$$
+
+where $\rho$, the **intracluster correlation**, is the fraction of the total variance $\sigma^2$ that lies between clusters rather than within them (dimensionless, from 0 to 1), and $n_{\text{eff}}$ is the **effective sample size**: the number of independent measurements that would give the same standard error. Clustered study designs are planned with this effective sample size rather than the raw count[^1].
+
+Repeated measurements over time lose information the same way. If each week's reading correlates with the previous week's by $\phi = 0.5$, and with readings further back by $\phi^2, \phi^3, \dots$, then 52 weekly readings carry about as much information about the season's mean as $52/3 \approx 17$ independent ones (derivation in the callout).
+
+::: {.callout-note collapse="true"}
+## Deriving the design effect
+
+Within one cluster of $m$ measurements, the variance of their sum is the sum of the $m$ variances plus the $m(m-1)$ covariances between distinct pairs, each $\rho\sigma^2$:
+
+$$\mathrm{Var}\!\left(\sum_{j=1}^{m} x_j\right) = m\sigma^2 + m(m-1)\rho\sigma^2 = m\sigma^2\,[1 + (m-1)\rho]$$
+
+The $k$ clusters are independent, so their sums add: the total has variance $km\sigma^2[1 + (m-1)\rho] = n\sigma^2\,\mathrm{DEFF}$. Dividing by $n^2$ gives $\mathrm{Var}(\bar{x}) = \sigma^2\,\mathrm{DEFF}/n$.
+
+Serial correlation works the same way with a different covariance pattern. For a first-order autoregressive series (correlation $\phi^h$ between readings $h$ weeks apart), the variance factor for a long series is approximately $(1 + \phi)/(1 - \phi)$, from summing $1 + 2(\phi + \phi^2 + \dots)$. With $\phi = 0.5$ that factor is $3$, so 52 readings count as $52/3 = 17.3$. The exact finite-series factor for $n = 52$ is $2.923$, giving $17.8$.
+:::
+
+The widget draws 2000 repeated samples from a fixed synthetic population: berries average $\mu = 2.0$ g with total standard deviation $\sigma = 0.5$ g, a fraction $\rho$ of it between bushes. Each sample takes $m$ berries from each of $n/m$ bushes. The histogram shows the 2000 sample means; the dashed curve is the $\sigma/\sqrt{n}$ prediction and the solid one the design-effect prediction. Start with $\rho = 0$ and move the sample size from 100 to 400; then raise $\rho$.
+
+::: {.sim-card}
+#### The spread of sample means
+
+```{ojs}
+//| echo: false
+viewof nTot = Inputs.range([20, 400], {value: 100, step: 20, label: "Berries in the sample, n"})
+viewof perBush = Inputs.select([1, 2, 5, 10, 20], {value: 5, label: "Berries per bush, m"})
+viewof rho = Inputs.range([0, 0.9], {value: 0, step: 0.05, label: "Within-bush correlation ρ"})
+
+// Fixed synthetic population: mean 2.0 g, total SD 0.5 g, a share rho between bushes.
+MU = 2.0
+SIGMA = 0.5
+
+// Seeded generator (mulberry32) so every setting always gives the same draws.
+mulberry32 = a => () => {
+  a = a + 0x6D2B79F5 | 0;
+  let t = Math.imul(a ^ a >>> 15, 1 | a);
+  t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+  return ((t ^ t >>> 14) >>> 0) / 4294967296;
+}
+
+means = {
+  const rand = mulberry32(42);
+  const norm = () => Math.sqrt(-2 * Math.log(1 - rand())) * Math.cos(2 * Math.PI * rand());
+  const k = nTot / perBush, sb = SIGMA * Math.sqrt(rho), sw = SIGMA * Math.sqrt(1 - rho);
+  return Array.from({length: 2000}, () => {
+    let total = 0;
+    for (let i = 0; i < k; i++) {
+      const bush = sb * norm();
+      for (let j = 0; j < perBush; j++) total += MU + bush + sw * norm();
+    }
+    return total / nTot;
+  });
+}
+
+naive = SIGMA / Math.sqrt(nTot)
+deff = 1 + (perBush - 1) * rho
+predicted = naive * Math.sqrt(deff)
+
+card = (label, value, colour) => html`<div class="sim-readout"><div class="sim-readout-label">${label}</div><div class="sim-readout-value" style="color:${colour}">${value}</div></div>`
+
+html`<div class="sim-readouts">
+  ${card("σ/√n, if independent", naive.toFixed(4) + " g", "#38bdf8")}
+  ${card("Design effect", deff.toFixed(2), "#f59e0b")}
+  ${card("Effective n", (nTot / deff).toFixed(1), "#f59e0b")}
+  ${card("σ√(DEFF/n)", predicted.toFixed(4) + " g", "#10b981")}
+  ${card("SD of 2000 sample means", d3.deviation(means).toFixed(4) + " g", "#cbd5e1")}
+</div>`
+
+BIN = 0.025
+curve = sd => d3.range(1, 3.0001, 0.005).map(x =>
+  ({x, y: 2000 * BIN * Math.exp(-0.5 * ((x - MU) / sd) ** 2) / (sd * Math.sqrt(2 * Math.PI))}))
+
+Plot.plot({
+  height: 320,
+  marginLeft: 55,
+  // Plot paints its own white ground otherwise, which the dark card fights.
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [1, 3], label: "Sample mean (g) →"},
+  y: {label: "↑ Samples", grid: true},
+  color: {legend: true, domain: ["Sample means", "σ/√n", "σ√(DEFF/n)"],
+          range: ["#64748b", "#38bdf8", "#10b981"]},
+  marks: [
+    Plot.rectY(means, Plot.binX({y: "count"}, {x: d => d, fill: () => "Sample means",
+                                               thresholds: d3.range(1, 3.0001, BIN)})),
+    Plot.line(curve(naive), {x: "x", y: "y", stroke: () => "σ/√n", strokeWidth: 2, strokeDasharray: "6 4"}),
+    Plot.line(curve(predicted), {x: "x", y: "y", stroke: () => "σ√(DEFF/n)", strokeWidth: 2.5}),
+    Plot.ruleY([0])
+  ]
+})
+```
+
+With ρ = 0 the two curves coincide whatever m is. Then set ρ = 0.3 and compare n = 400 with m = 20 against m = 5.
+:::
+
+At $\rho = 0$ the simulation matches $\sigma/\sqrt{n}$: the means spread by $0.0494$ g against $0.05$ g at $n = 100$, and by $0.0249$ g against $0.025$ g at $n = 400$. At $\rho = 0.3$ with $n = 100$ and $m = 5$ (20 bushes), the design effect is $1 + 4 \times 0.3 = 2.2$, the effective sample size is $100/2.2 = 45.5$, and the predicted standard error is $0.0742$ g (simulated $0.0727$ g), so the naive $0.05$ g is a third too small. Quadrupling to 400 berries now depends on how they are collected. Twenty berries from each of the same 20 bushes gives a design effect of $6.7$ and $0.0647$ g (simulated $0.0655$ g): four times the work for 13% less error. Five berries from each of 80 bushes gives $0.0371$ g (simulated $0.0360$ g), the halving the independent formula promised. The reason is in the formula: as $m$ grows with $k$ fixed, $\mathrm{Var}(\bar{x}) = \sigma^2[1 + (m-1)\rho]/(km)$ approaches $\rho\sigma^2/k$, and no number of berries from 20 bushes averages out how those bushes differ from the rest.
+
+### Estimating ρ
+
+The design effect needs $\rho$, and $\rho$ has to come from data: it varies by trait, crop and how the clusters are defined, so there is no standard value to borrow. For a dataframe with one row per berry, a `weight` column and a `bush_id` column, the one-way analysis-of-variance estimator compares the spread of bush means with the spread within bushes:
+
+```python
+g = df.groupby("bush_id")["weight"]
+m = g.size().mean()                       # berries per bush (equal sizes assumed)
+msb = m * g.mean().var()                  # between-bush mean square
+msw = g.var().mean()                      # within-bush mean square
+rho_hat = (msb - msw) / (msb + (m - 1) * msw)
+deff = 1 + (m - 1) * rho_hat
+```
+
+On synthetic data with a true $\rho = 0.3$ and 400 bushes of 5 berries, this returned $0.268$, matching the variance components from `statsmodels` `MixedLM`, which handles unequal numbers of berries per bush. The estimate of $\rho$ is itself noisy, and more clusters pin it down better.
+
+### Model scores on grouped rows
+
+The same arithmetic applies to evaluating a model. Suppose a yield model is scored on 2000 validation rows that come from 40 farms, 50 rows each, and its squared errors are correlated within a farm at $\rho = 0.2$, because a farm the model handles badly is handled badly in every row. The design effect is $1 + 49 \times 0.2 = 10.8$, the 2000 rows count as about $2000/10.8 = 185$, and the standard error of the mean squared error is $\sqrt{10.8} = 3.3$ times what a row-level calculation reports. The numbers are illustrative; the direction is general, because software that computes $s/\sqrt{n}$ over rows does not know which rows share a farm.
+
+What to do instead, and this is our own recommendation rather than something tested here: split the data by group, so that whole farms or weeks fall in one fold, as `GroupKFold` does in [Cross-validation](cross-validation/cross_validation.ipynb); and to get an uncertainty for the score, resample whole groups rather than rows (a cluster bootstrap: draw farms with replacement, recompute the score each time, and take the spread of those scores).
+
+## The standard error of a difference
+
+Most questions compare two means, such as two cultivars. For two independent means, variances add:
+
+$$\mathrm{SE}(\bar{x}_1 - \bar{x}_2) = \sqrt{\mathrm{SE}_1^2 + \mathrm{SE}_2^2}$$
+
+where $\mathrm{SE}_1$ and $\mathrm{SE}_2$ are the standard errors of the two means, each computed as above, with design effects if the samples are clustered. If each cultivar's mean has a standard error of $0.05$ g, the difference has $\sqrt{0.05^2 + 0.05^2} = 0.0707$ g, not the $0.10$ g you get by adding the standard errors.
+
+When the two measurements are paired, such as the same bushes before and after a treatment, compute each pair's difference first and take the standard error of those differences, $s_d/\sqrt{n}$, where $s_d$ is the standard deviation of the $n$ differences. That handles the correlation automatically: it equals $\sqrt{\mathrm{SE}_1^2 + \mathrm{SE}_2^2 - 2r\,\mathrm{SE}_1\mathrm{SE}_2}$, with $r$ the correlation between the paired measurements. With both standard errors at $0.05$ g and $r = 0.6$, that is $\sqrt{0.005 - 0.003} = 0.0447$ g, well below the unpaired $0.0707$ g, because pairing removes the shared bush-to-bush variation.
+
+A standard error is a typical distance, not a range. Turning it into a statement such as "the true mean lies between these two values, with this much confidence" is the job of [confidence intervals](confidence-intervals.qmd).
+
+::: {.callout-tip}
+## What this means for you
+
+Report which spread an error bar shows: $s$ for the variability of the data, $s/\sqrt{n}$ for the precision of the mean. Before dividing by $\sqrt{n}$, count the independent units (bushes, fields, customers, seasons), not the rows. If the units are clustered, estimate $\rho$ and plan with the effective sample size rather than the row count. Our own inference from the widget: when bushes are cheap to add, add bushes.
+:::
+
+## Key takeaways
+
+- Use `ddof=1` in NumPy when estimating a population standard deviation from a sample.
+- An error bar that does not narrow as you add data is a standard deviation, not a standard error. Label which one a figure shows.
+- To halve a standard error, budget four times the independent units, not four times the rows.
+- With clustered data, spend extra effort on more clusters rather than more measurements per cluster. Once $(m-1)\rho$ is well above 1, extra measurements in the same cluster buy little.
+- For a difference of independent means, add the squared standard errors. For paired data, take the differences first.
+
+## References
+
+[^1]: Killip, S., Mahfoud, Z. & Pearce, K. What is an intracluster correlation coefficient? Crucial concepts for primary care researchers. *Ann. Fam. Med.* **2**, 204–208 (2004). https://doi.org/10.1370/afm.141
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-up" href="/series/statistics/index.html"><span>Series</span>Statistics</a><a class="mf-next" href="/blogs/ks_test/ks_test.html"><span>Next</span>The Kolmogorov–Smirnov test</a></div>
+<!-- CURRICULUM_FOOTER_END -->

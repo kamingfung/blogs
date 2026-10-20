@@ -233,3 +233,4 @@ This is how the low-chill genes of southern highbush arrived. A wild *V. darrowi
 <!-- CURRICULUM_FOOTER_START -->
 <div class="mf"><a class="mf-prev" href="/blogs/what-breeders-select-for.html"><span>Previous</span>What breeders select for</a><a class="mf-up" href="/series/plants/index.html"><span>Series</span>Plant biology, one blueberry at a time</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+
