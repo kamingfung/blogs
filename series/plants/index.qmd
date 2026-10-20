@@ -6,7 +6,7 @@ description: "How a plant works, followed through a single crop: what a blueberr
 <dl class="syl-meta">
 <div><dt>Level</dt><dd>Introductory to intermediate</dd></div>
 <div><dt>Parts</dt><dd>6</dd></div>
-<div><dt>Modules</dt><dd>15 of 19 written</dd></div>
+<div><dt>Modules</dt><dd>19 of 19 written</dd></div>
 <div class="wide"><dt>Assumes</dt><dd>School biology. The forecasting series models this crop&#x27;s data; this series explains where the data comes from.</dd></div>
 </dl>
 
@@ -37,10 +37,10 @@ description: "How a plant works, followed through a single crop: what a blueberr
 ## Part 4 · Ripening
 
 <ul class="syl">
-<li class="g">Why blueberries are blue: anthocyanins<span class="m">Introductory · not written</span></li>
+<li class="w"><a href="/blogs/why-blueberries-are-blue.html">Why blueberries are blue: anthocyanins</a><span class="m">Introductory</span></li>
 <li class="w"><a href="/blogs/sugar-acid-and-what-ripe-measures.html">Sugar, acid, and what &quot;ripe&quot; measures</a><span class="m">Introductory</span></li>
-<li class="g">Non-climacteric: why a picked blueberry stops<span class="m">Intermediate · not written</span></li>
-<li class="g">The bloom: the wax coat and what it protects<span class="m">Introductory · not written</span></li>
+<li class="w"><a href="/blogs/why-a-picked-blueberry-stops.html">Why a picked blueberry stops ripening</a><span class="m">Intermediate</span></li>
+<li class="w"><a href="/blogs/the-bloom.html">The bloom: the wax coat and what it protects</a><span class="m">Introductory</span></li>
 </ul>
 
 ## Part 5 · Seasons and stress
@@ -56,5 +56,5 @@ description: "How a plant works, followed through a single crop: what a blueberr
 <ul class="syl">
 <li class="w"><a href="/blogs/highbush-lowbush-rabbiteye.html">Highbush, lowbush, rabbiteye</a><span class="m">Introductory</span></li>
 <li class="w"><a href="/blogs/what-breeders-select-for.html">What breeders select for</a><span class="m">Intermediate</span></li>
-<li class="g">Ploidy, and why blueberries are odd<span class="m">Intermediate · not written</span></li>
+<li class="w"><a href="/blogs/ploidy-and-why-blueberries-are-odd.html">Ploidy, and why blueberries are odd</a><span class="m">Intermediate</span></li>
 </ul>

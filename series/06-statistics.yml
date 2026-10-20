@@ -46,6 +46,7 @@ parts:
       - id: statistics/cross-validation
         title: "Cross-validation"
         level: intermediate
+        path: blogs/cross-validation/cross_validation.ipynb
   - title: "Regression"
     modules:
       - id: statistics/least-squares

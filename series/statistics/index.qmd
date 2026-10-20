@@ -6,7 +6,7 @@ description: "The statistics the other series lean on, kept short and separate s
 <dl class="syl-meta">
 <div><dt>Level</dt><dd>Introductory to intermediate</dd></div>
 <div><dt>Parts</dt><dd>8</dd></div>
-<div><dt>Modules</dt><dd>3 of 19 written</dd></div>
+<div><dt>Modules</dt><dd>4 of 19 written</dd></div>
 <div class="wide"><dt>Assumes</dt><dd>School maths. Python or R for the notebooks.</dd></div>
 </dl>
 
@@ -30,7 +30,7 @@ description: "The statistics the other series lean on, kept short and separate s
 
 <ul class="syl">
 <li class="g">Bootstrapping<span class="m">Intermediate · not written</span></li>
-<li class="g">Cross-validation<span class="m">Intermediate · not written</span></li>
+<li class="w"><a href="/blogs/cross-validation/cross_validation.html">Cross-validation</a><span class="m">Intermediate</span></li>
 </ul>
 
 ## Part 4 · Regression

@@ -6,7 +6,7 @@ description: "Air pollution, the nitrogen cycle, farming, and how land and atmos
 <dl class="syl-meta">
 <div><dt>Level</dt><dd>Introductory to advanced</dd></div>
 <div><dt>Parts</dt><dd>14</dd></div>
-<div><dt>Modules</dt><dd>12 of 39 written</dd></div>
+<div><dt>Modules</dt><dd>13 of 39 written</dd></div>
 <div class="wide"><dt>Assumes</dt><dd>School chemistry. Parts 1 and 5 of Clouds and Aerosols help but are not required.</dd></div>
 </dl>
 
@@ -79,7 +79,7 @@ description: "Air pollution, the nitrogen cycle, farming, and how land and atmos
 <ul class="syl">
 <li class="w"><a href="/blogs/agriculture-climate-challenges.html">Agriculture under climate extremes</a><span class="m">Introductory</span></li>
 <li class="w"><a href="/blogs/how-ozone-damages-crops.html">How ozone damages crops</a><span class="m">Intermediate</span></li>
-<li class="g">Heat stress on crops<span class="m">Intermediate · not written</span></li>
+<li class="w"><a href="/blogs/heat-stress-on-crops.html">Heat stress on crops</a><span class="m">Intermediate</span></li>
 </ul>
 
 ## Part 10 · Earth system models

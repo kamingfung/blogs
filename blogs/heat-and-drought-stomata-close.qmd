@@ -229,3 +229,4 @@ These berry thresholds come from northern highbush in western Oregon. Drier clim
 <!-- CURRICULUM_FOOTER_START -->
 <div class="mf"><a class="mf-prev" href="/blogs/frost-and-the-night-the-crop-is-lost.html"><span>Previous</span>Frost, and the night the crop is lost</a><a class="mf-up" href="/series/plants/index.html"><span>Series</span>Plant biology, one blueberry at a time</a><a class="mf-next" href="/blogs/highbush-lowbush-rabbiteye.html"><span>Next</span>Highbush, lowbush, rabbiteye</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+

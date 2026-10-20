@@ -1,0 +1,235 @@
+---
+title: Ploidy, and why blueberries are odd
+description: Highbush blueberry carries four copies of every chromosome, which changes the ratios a breeder sees among seedlings, the way a genotype has to be measured, and which species can be crossed into it.
+date: 2026-10-14
+categories:
+- plant biology
+- genetics
+- horticulture
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/plants/index.html">Plant biology, one blueberry at a time</a><span class="sep">·</span>Part 6 · Breeding</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Assumes <a href="/blogs/highbush-lowbush-rabbiteye.html">Highbush, lowbush, rabbiteye</a>.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Ploidy is the number of chromosome sets in a cell. Blueberries count in sets of 12: wild diploid species have two sets, highbush and lowbush four, rabbiteye six. So a highbush gene has four copies, and each pollen grain or egg carries two of them, picked at random. That changes the seedling ratios a breeder sees. A bush with one dominant copy out of four, crossed to a bush with none, passes the trait to half its seedlings, as a diploid would; a bush with two copies passes it to five seedlings in six. Crosses between ploidy levels mostly fail in the seed. Southern highbush got its low-chill genes past that barrier through a wild diploid, Fla 4B, whose pollen or eggs sometimes carry two sets instead of one. In practice: plant rabbiteye with rabbiteye, and genotype highbush with tools built for four copies.
+:::
+
+## Counting chromosome sets
+
+A blueberry cell keeps its genes on chromosomes, and *Vaccinium* species share a **base number** of 12 chromosomes per set[^1]. Ploidy is the number of those sets in a body cell. [Highbush, lowbush, rabbiteye](highbush-lowbush-rabbiteye.qmd) gave the counts; here they are with the notation breeders use:
+
+| Plants | Sets | Chromosomes |
+|---|---:|---:|
+| Wild diploids, such as *V. darrowii* | 2 | $2 \times 12 = 24$ |
+| Highbush and lowbush | 4 | $4 \times 12 = 48$ |
+| Rabbiteye | 6 | $6 \times 12 = 72$ |
+
+Breeders write highbush as $2n = 4x = 48$, where $2n$ is the chromosome count in a body cell and $x$ is the base number, 12. An egg or pollen grain, a **gamete**, carries half: two sets.
+
+Highbush has four similar copies of each chromosome and is inherited as if they were interchangeable: each gamete takes two of the four at random, which is called **tetrasomic inheritance**. Breeding programmes model highbush this way, as an **autotetraploid**[^2], and so does this module.
+
+::: {.callout-note collapse="true"}
+## Autopolyploid or allopolyploid?
+
+An **autopolyploid** has extra chromosome sets from one ancestral species, so any two copies can pair when gametes form. An **allopolyploid** has sets from different species, and is inherited like two diploids side by side.
+
+Inheritance puts highbush on the autopolyploid side: Krebs and Hancock followed four enzyme marker genes through highbush crosses and found seedling ratios that matched tetrasomic inheritance[^3]. The genome complicates the history. In the 2019 assembly of 'Draper', matching genes on the four copies are about 96.3% similar, and Colle and colleagues argue that highbush arose from two distinct parents, either two closely related species or two well-separated populations of one species[^4]. My reading, not the authors': both can hold, if the two ancestors were similar enough that their chromosomes now segregate as one pool.
+:::
+
+## Four copies of every gene
+
+The trait in this section is a stand-in for any trait set by one gene with a dominant allele $A$ and a recessive allele $a$. In a diploid, crossing $Aa$ with $aa$ (a **test cross**) gives seedlings 1:1 with and without the trait; crossing two $Aa$ plants gives the 3:1 ratio of school genetics.
+
+A tetraploid can carry 0 to 4 copies of $A$, and each count has a name:
+
+| Copies of $A$ | Name | Genotype |
+|---:|---|---|
+| 0 | Nulliplex | $aaaa$ |
+| 1 | Simplex | $Aaaa$ |
+| 2 | Duplex | $AAaa$ |
+| 3 | Triplex | $AAAa$ |
+| 4 | Quadruplex | $AAAA$ |
+
+Each gamete gets two of the four copies at random. In a test cross with a nulliplex partner:
+
+- **Simplex**: half the gametes carry $A$, so 1:1, as in a diploid.
+- **Duplex**: one gamete in six has no $A$, so 5:1.
+- **Triplex** or **quadruplex**: every gamete has an $A$, so every seedling shows the trait.
+
+::: {.callout-note collapse="true"}
+## Where 5:1 comes from
+
+Label the duplex parent's four copies $A_1, A_2, a_3, a_4$. A gamete takes two of them, and there are $\binom{4}{2} = 6$ ways to choose two from four, all equally likely under random chromosome segregation:
+
+$A_1A_2$, $A_1a_3$, $A_1a_4$, $A_2a_3$, $A_2a_4$, $a_3a_4$.
+
+One pair is $AA$, four are $Aa$ and one is $aa$, so the gametes come in the proportions 1/6, 4/6, 1/6. The nulliplex partner contributes only $aa$ gametes, so a seedling lacks $A$ only if the duplex parent sent $aa$: probability 1/6. The other 5/6 show the trait, which is the 5:1 ratio.
+
+In general, a parent with $k$ copies of $A$ out of four makes a gamete with $j$ copies with probability
+
+$$P(j \mid k) = \frac{\binom{k}{j}\binom{4-k}{2-j}}{\binom{4}{2}}$$
+
+where $k$ is the parent's dosage (0 to 4), $j$ is the gamete's dosage (0 to 2), and $\binom{a}{b}$ counts the ways to choose $b$ items from $a$ (zero when $b > a$). Crossing two duplex parents, a seedling is $aaaa$ only if both send $aa$: $1/6 \times 1/6 = 1/36$, a 35:1 ratio.
+
+The formula assumes no **double reduction**, in which two copies descended from one chromosome end up in the same gamete; it would make $AA$ and $aa$ gametes slightly commoner. Krebs and Hancock found no seedlings that required it.
+:::
+
+Recessive alleles hide better too. Two diploid carriers ($Aa \times Aa$) show the recessive trait in one seedling in four; two duplex tetraploids, in one in 36. A recessive defect can persist in a tetraploid breeding population with few seedlings ever showing it.
+
+Most traits growers care about are not single genes: a 2022 review of *Vaccinium* breeding describes yield and most traditional fruit-quality traits as polygenic, controlled by many genes and strongly affected by the environment[^5]. So these ratios do not predict a cultivar's yield or firmness; they show how each of those genes is shuffled in a tetraploid family. This module's inference, not a sourced finding: with five possible doses at every gene instead of three, tetrasomic inheritance is one reason highbush seedling families vary as much as they do.
+
+The widget enumerates all 6 gametes from each parent and the $6 \times 6 = 36$ equally likely seedlings. Parent 2 starts as nulliplex, a test cross.
+
+::: {.sim-card}
+#### Gametes and seedlings from a tetraploid cross
+
+```{ojs}
+//| echo: false
+genotypes = ["Nulliplex aaaa", "Simplex Aaaa", "Duplex AAaa", "Triplex AAAa", "Quadruplex AAAA"]
+viewof p1 = Inputs.radio(genotypes, {value: "Duplex AAaa", label: "Parent 1"})
+viewof p2 = Inputs.radio(genotypes, {value: "Nulliplex aaaa", label: "Parent 2"})
+
+// A parent with k copies of A: four chromosomes, 1 = A, 0 = a.
+chromosomes = k => [0, 1, 2, 3].map(i => i < k ? 1 : 0)
+
+// Random chromosome segregation, no double reduction: a gamete is any 2 of the 4
+// copies, all 6 pairs equally likely. Returns the A count of each of the 6 gametes.
+gametes = k => {
+  const c = chromosomes(k), out = [];
+  for (let i = 0; i < 4; i++)
+    for (let j = i + 1; j < 4; j++) out.push(c[i] + c[j]);
+  return out;
+}
+
+g1 = gametes(genotypes.indexOf(p1))
+g2 = gametes(genotypes.indexOf(p2))
+
+// Every pairing of a gamete from each parent: 6 x 6 = 36 equally likely seedlings.
+seedlings = g1.flatMap(a => g2.map(b => a + b))
+dosage = [0, 1, 2, 3, 4].map(d => ({
+  d, n: seedlings.filter(s => s === d).length,
+  shows: d > 0 ? "Shows the dominant trait" : "Does not show it"
+}))
+
+gcd = (a, b) => { while (b) [a, b] = [b, a % b]; return a; }
+frac = (n, total) => n === 0 ? "0" : n === total ? "1" : `${n / gcd(n, total)}/${total / gcd(n, total)}`
+nDom = seedlings.filter(s => s > 0).length
+nRec = 36 - nDom
+ratio = nRec === 0 ? "all show it" : nDom === 0 ? "none show it"
+      : `${nDom / gcd(nDom, nRec)} : ${nRec / gcd(nDom, nRec)}`
+
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${card("Parent 1 gametes with 2 / 1 / 0 copies of A", [2, 1, 0].map(j => frac(g1.filter(x => x === j).length, 6)).join(" / "), "#38bdf8")}
+  ${card("Seedlings showing the trait", frac(nDom, 36), "#10b981")}
+  ${card("Shows : does not", ratio, "#f59e0b")}
+</div>`
+
+Plot.plot({
+  height: 300,
+  marginLeft: 55,
+  // Plot paints its own white ground otherwise, which the dark card fights.
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {label: "Copies of A in the seedling (dosage) →", domain: [0, 1, 2, 3, 4]},
+  y: {label: "↑ Seedlings (%)", domain: [0, 100], grid: true},
+  color: {legend: true, domain: ["Shows the dominant trait", "Does not show it"], range: ["#10b981", "#64748b"]},
+  marks: [
+    Plot.barY(dosage, {x: "d", y: d => 100 * d.n / 36, fill: "shows"}),
+    Plot.text(dosage.filter(d => d.n > 0), {x: "d", y: d => 100 * d.n / 36, text: d => frac(d.n, 36), dy: -8, fill: "#cbd5e1"}),
+    Plot.ruleY([0])
+  ]
+})
+```
+
+Exact enumeration of one gene with complete dominance, assuming random chromosome segregation and no double reduction. Not data from any cross.
+:::
+
+At the opening setting, duplex × nulliplex, the gametes and the seedlings carry 2, 1 and 0 copies of $A$ in the proportions 1/6, 2/3 and 1/6, so 5/6 show the trait, 5:1. Set both parents to duplex and the share without the trait drops to 1/36. Set both to simplex and the 3:1 ratio of a diploid cross returns.
+
+## Dosage
+
+The chart also shows why a highbush genotype is a count: seedlings from one cross can carry one, two or three copies of an allele, and if each copy adds a little to a trait, they differ. The number of copies is the allele's **dosage**, and genotyping and genomic selection, described in [What breeders select for](what-breeders-select-for.qmd), have to estimate it from DNA reads. Dosage calls in highbush are fuzzier than genotype calls in a diploid, so if you buy genotyping for highbush, ask the provider how it calls dosage.
+
+::: {.callout-note collapse="true"}
+## Dosage in the data
+
+De Bem Oliveira and colleagues, cited above, compared marker codings for genomic prediction in a breeding population of 1,847 highbush plants:
+
+| Genotype | Diploid-style code | Tetraploid code |
+|---|---:|---:|
+| $aaaa$ | 0 | 0 |
+| $Aaaa$ | 1 | 1 |
+| $AAaa$ | 1 | 2 |
+| $AAAa$ | 1 | 3 |
+| $AAAA$ | 2 | 4 |
+
+The diploid-style code discards the difference between one copy and three; the tetraploid code keeps it, if dosage can be measured. Sequencing estimates dosage from the share of reads carrying each allele, near 1/4 for simplex, 1/2 for duplex and 3/4 for triplex, and with few reads the classes overlap: if each of 10 reads picks one of the four copies at random, a simplex plant shows 5 or more $A$ reads, the duplex average, with probability 0.078 (binomial distribution). The *Vaccinium* review cited above says read depth from genotyping by sequencing varies so much that dosage is very hard to estimate, and reports a fruit-trait study in which calling dosage found 15 associated markers for five traits against 7 for two traits under a diploid model. De Bem Oliveira and colleagues found that using each plant's read ratio directly, a number between 0 and 1 with no call, predicted as well as the best models and avoided misclassified genotypes.
+:::
+
+## Crossing between ploidy levels
+
+Most crosses between plants of different ploidy fail in the seed. A highbush egg (two sets) fertilised by a diploid's ordinary pollen (one set) would make a triploid embryo, and across flowering plants such crosses mostly give nonviable offspring, a barrier called the **triploid block**, caused by failure of the endosperm, the tissue that feeds the embryo[^6]. Khalid and colleagues' review of *Vaccinium* hybridisation names a strong triploid block as the first obstacle to crossing highbush with diploid *V. darrowii*. Triploids that do form are poor parents: Vorsa and Ballington recovered no plants from 4,021 crosses of triploid highbush with diploids[^7].
+
+The way around the block is an **unreduced gamete**, a pollen grain or egg that skips the halving step and carries the parent's full chromosome number. A diploid's unreduced pollen carries two sets, like a highbush plant's ordinary pollen, so it can fertilise a highbush egg and give a tetraploid seed. Such pollen is common in wild blueberries: in a screen of seven diploid species, 13.5% of plants on average produced it, and 18.4% of *V. darrowii* plants[^8].
+
+```{mermaid}
+flowchart LR
+    A["Highbush egg<br/>2 sets"] --> C["Triploid seed<br/>3 sets"]
+    B["V. darrowii pollen<br/>1 set, the usual kind"] --> C
+    C -->|"triploid block"| X["Seed usually fails"]
+    A --> E["Tetraploid seedling<br/>4 sets"]
+    D["V. darrowii pollen<br/>2 sets, unreduced"] --> E
+    E -->|"crossed back to highbush"| F["Southern highbush"]
+
+    class A,E indigo
+    class B,D olive
+    class C,X rust
+    class F ochre
+    classDef indigo fill:#1d4a62,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef rust fill:#a04b2d,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef olive fill:#5b6e34,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef ochre fill:#d69a2e,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+```
+
+This is how the low-chill genes of southern highbush arrived. A wild *V. darrowii* selection, Fla 4B, made unreduced gametes at a high rate; Khalid and colleagues report 31 tetraploid hybrids from 1,600 pollinated flowers, $31/1600 \approx 1.9\%$ of flowers. A hybrid of this kind, US 75 ('Bluecrop' × Fla 4B)[^9], received its diploid genome through an unreduced gamete and had been shown to inherit tetrasomically. Qu, Hancock and Whallon found its pollen highly viable and concluded that blueberry polyploids may exchange genes freely with diploid neighbours this way[^10]. Lobos and Hancock list Fla 4B in the pedigrees of 'Biloxi', 'Emerald', 'Legacy' and 'Star'.
+
+**What this means for you.**
+
+- **Growers.** Florida's extension guide says rabbiteye needs pollen from a second rabbiteye cultivar that blooms at the same time[^11]. Ploidy may add a reason the guide does not give: highbush pollen carries two sets and a rabbiteye egg three, so the seed would have five. That is the module's inference, not a source's, and not an absolute block, since breeders have raised five-set highbush × rabbiteye hybrids such as 'Pearl River'[^9]; it suggests only that such seed is a less reliable route to fruit set than like-with-like pollination.
+- **Breeders.** In a test cross expect 1:1 from a simplex parent and 5:1 from a duplex one, not the diploid ratios, and expect recessive traits to surface rarely.
+- **Data scientists.** Code highbush markers as dosage from 0 to 4, or as a continuous read ratio, not as diploid genotypes.
+
+## Key takeaways
+
+- Ploidy is the number of 12-chromosome sets: two in wild diploids, four in highbush and lowbush, six in rabbiteye.
+- Highbush is inherited tetrasomically: each gamete takes two of four copies at random, and breeding models treat it as an autotetraploid.
+- In a test cross, a simplex parent gives 1:1 and a duplex parent 5:1; two duplex parents give a recessive seedling once in 36. These ratios explain how families segregate; they do not predict a many-gene trait such as yield.
+- A highbush genotype is a dosage from 0 to 4, and genotyping has to estimate it.
+- Crosses across ploidy levels mostly fail in the seed. Unreduced gametes carried *V. darrowii*'s low-chill genes into highbush.
+
+## References
+
+[^1]: Khalid, A. M., Benevenuto, J., Lyrene, P. M. & Munoz, P. R. Interspecific hybridization history of *Vaccinium* berry crops and potential in wild relatives. *Hortic. Res.* **12**, uhaf246 (2025). https://doi.org/10.1093/hr/uhaf246
+[^2]: de Bem Oliveira, I. et al. Genomic prediction of autotetraploids; influence of relationship matrices, allele dosage, and continuous genotyping calls in phenotype prediction. *G3* **9**, 1189–1198 (2019). https://doi.org/10.1534/g3.119.400059
+[^3]: Krebs, S. L. & Hancock, J. F. Tetrasomic inheritance of isoenzyme markers in the highbush blueberry, *Vaccinium corymbosum* L. *Heredity* **63**, 11–18 (1989). https://doi.org/10.1038/hdy.1989.70
+[^4]: Colle, M. et al. Haplotype-phased genome and evolution of phytonutrient pathways of tetraploid blueberry. *GigaScience* **8**, giz012 (2019). https://doi.org/10.1093/gigascience/giz012
+[^5]: Edger, P. P. et al. There and back again; historical perspective and future directions for *Vaccinium* breeding and research studies. *Hortic. Res.* **9**, uhac083 (2022). https://doi.org/10.1093/hr/uhac083
+[^6]: Köhler, C., Mittelsten Scheid, O. & Erilova, A. The impact of the triploid block on the origin and evolution of polyploid plants. *Trends Genet.* **26**, 142–148 (2010). https://doi.org/10.1016/j.tig.2009.12.006
+[^7]: Vorsa, N. & Ballington, J. R. Fertility of triploid highbush blueberry. *J. Am. Soc. Hortic. Sci.* **116**, 336–341 (1991). https://doi.org/10.21273/JASHS.116.2.336
+[^8]: Ortiz, R., Vorsa, N., Bruederle, L. P. & Laverty, T. Occurrence of unreduced pollen in diploid blueberry species, *Vaccinium* sect. *Cyanococcus*. *Theor. Appl. Genet.* **85**, 55–60 (1992). https://doi.org/10.1007/BF00223844
+[^9]: Lobos, G. A. & Hancock, J. F. Breeding blueberries for a changing global environment: a review. *Front. Plant Sci.* **6**, 782 (2015). https://doi.org/10.3389/fpls.2015.00782
+[^10]: Qu, L., Hancock, J. F. & Whallon, J. H. Evolution in an autopolyploid group displaying predominantly bivalent pairing at meiosis: genomic similarity of diploid *Vaccinium darrowi* and autotetraploid *V. corymbosum* (Ericaceae). *Am. J. Bot.* **85**, 698–703 (1998). https://doi.org/10.2307/2446540
+[^11]: Williamson, J. G. & Phillips, D. A. *Blueberry Gardener's Guide*. CIR1192/MG359 (UF/IFAS Extension, accessed 14 October 2026). https://ask.ifas.ufl.edu/publication/MG359
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/what-breeders-select-for.html"><span>Previous</span>What breeders select for</a><a class="mf-up" href="/series/plants/index.html"><span>Series</span>Plant biology, one blueberry at a time</a></div>
+<!-- CURRICULUM_FOOTER_END -->
