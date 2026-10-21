@@ -1,0 +1,200 @@
+---
+title: Bias correction
+description: Why weather, seasonal and climate model output cannot be fed raw into a farm model, and what each common correction fixes and breaks.
+date: 2026-10-20
+categories:
+- climate
+- forecasting
+- statistics
+- agriculture
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/prediction/index.html">Weather, Climate and Prediction</a><span class="sep">·</span>Part 10 · From global to local</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Comfort with averages and histograms. Python for the notebooks.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Weather forecasts, seasonal outlooks and climate projections are a model's version of the weather, and models get local statistics wrong in systematic ways: too warm or cold on average, too little day-to-day spread, too many drizzly days. Fed raw into a chill-hour or degree-day model, those errors land where it is most sensitive, at a threshold. Bias correction adjusts model output against observations from a period both cover. A mean shift fixes the average, variance scaling also fixes the spread, and quantile mapping matches the whole distribution. But quantile mapping can also change the model's warming: in this module's synthetic example it turns 2.0 °C into 2.7 °C and makes the projected rise in hot days two-thirds larger. Trend-preserving variants keep the model's own change, which is not the same as making it right. No correction fixes wrong timing, wrong spatial patterns, or a bias that changes over time.
+
+Correct against your own station, and check that the model's change survived.
+:::
+
+A farm model is calibrated on observed weather; to ask about next season or the 2050s you feed it model output, which is not the station's weather. Every correction below compares two [climatologies](what-a-climatology-is.qmd), and the outlooks of [Why seasonal forecasting is possible at all](why-seasonal-forecasting-is-possible-at-all.qmd) need one too.
+
+## Why model output cannot be used raw
+
+Part of a model's error is systematic, repeating in the same direction day after day. Impact models often need driving data statistically similar to the observations they were calibrated with[^1], and raw output is not: climate models are biased, and coarser than users want[^2].
+
+Three kinds of bias matter most for a farm model:
+
+- **Mean**: too warm or too cold, too wet or too dry, for this place and month.
+- **Spread**: day-to-day variance too small or too large, so the hot afternoons and cold snaps are wrong even when the mean is right.
+- **Wet-day frequency**: most regional models overestimate the number of wet days, the "drizzle effect", and underestimate heavy precipitation[^7].
+
+Where they come from, in my own summary: a grid cell tens to hundreds of kilometres wide averages over hills, valleys and coasts, which smooths local extremes and shrinks day-to-day spread, and processes smaller than a cell must be parameterised, with the convection scheme a key source of precipitation errors[^7]. On top of that, a few decades of overlap sample natural variability only partly, so part of any measured bias is sampling noise.
+
+A threshold count magnifies all of this. If the average summer maximum sits a few degrees below 35 °C, days above 35 °C come only from the warm tail, so a model with too little spread produces too few, and one also too cool, fewer still.
+
+## Corrections, from simplest to fullest
+
+Each correction is a rule fitted on a **calibration period** covered by both model and observations, then applied to the period you care about. Most methods treat each grid point and variable separately, often each calendar month too[^3], as the widget does. Below, $x$ is a model value (°C), $\hat x$ its correction, $\mu$ and $\sigma$ a calendar month's mean and standard deviation over the calibration period (subscript $o$ observed, $m$ modelled), $F_m(x)$ the share of model calibration days at or below $x$, and $F_o^{-1}$ turns a share back into an observed value.
+
+- **Mean shift**: $\hat x = x + (\mu_o - \mu_m)$. Keeps the model's trend but does not correct variability[^1].
+- **Delta change**: $\hat x_\text{obs} = x_\text{obs} + \Delta\mu_m$, where $x_\text{obs}$ is an observed day and $\Delta\mu_m$ the model's change in that month's mean from the calibration period to the period of interest. The weather is observed; the model supplies only the shift. It is informative only for a future period: over calibration, $\Delta\mu_m = 0$ and it returns the observations by construction.
+- **Variance scaling**: $\hat x = \bar x_p + (\mu_o - \mu_m) + (x - \bar x_p)\,\sigma_o/\sigma_m$, where $\bar x_p$ is the model's mean for that calendar month in the period being corrected, calibration or future. It shifts the mean and stretches anomalies about the period's own mean, so it fixes mean and spread but not shape.
+- **Quantile mapping (QM)**: $\hat x = F_o^{-1}\big(F_m(x)\big)$. The model's 90th percentile becomes the observed 90th percentile, so the whole distribution is fixed, skewed tails included.
+- **Quantile delta mapping (QDM)**: find the value's percentile $\tau = F_{m'}(x)$ in the model's distribution $F_{m'}$ for the period being corrected, then $\hat x = F_o^{-1}(\tau) + \big(x - F_m^{-1}(\tau)\big)$. The second term is the model's own change at that percentile: how much warmer its $\tau$-th percentile is in this period than in calibration. Cannon, Sobie and Murdock presented it for precipitation, preserving relative changes in each quantile[^4]; the widget uses the additive form for temperature.
+- **For precipitation, not in the widget**: multiplicative scaling, $\hat x = x\,\mu_o/\mu_m$, keeps the relative change[^1]; the drizzle effect is often handled by setting model values below a threshold to zero[^7].
+
+The widget's site is synthetic: 30 years of daily maximum temperature, from 10 °C in mid-January to 32 °C in mid-July, with persistent weather and a warm tail a little longer than the cold one. Its "model" is built 1.5 °C too cool, with a symmetric spread of 2.5 °C against the observed 3.5 °C; its "future" is a second 30-year run warmed by 2 °C. The cold count stands in for the cold tail, not for chill: a day counts only if its warmest hour stays below 7.2 °C, a much stricter test than chill hours, which count every hour between 0 and 7.2 °C ([Chill hours and dormancy](chill-hours-and-dormancy.qmd)). Start on the calibration period, hot days first.
+
+::: {.sim-card}
+#### Correct one synthetic model
+
+```{ojs}
+//| echo: false
+viewof method = Inputs.radio(["Raw model", "Mean shift", "Delta change (future only)", "Variance scaling", "Quantile mapping", "Quantile delta mapping"], {value: "Raw model", label: "Correction"})
+viewof period = Inputs.radio(["Calibration, 1991–2020", "Future, 30 years on"], {value: "Calibration, 1991–2020", label: "Period"})
+viewof test = Inputs.radio(["Hot: max above 35 °C", "Cold: max below 7.2 °C"], {value: "Hot: max above 35 °C", label: "Count days"})
+
+// Synthetic, not measured: 30 years of daily maximum (°C), seasonal cycle 10–32 °C,
+// day-to-day persistence 0.7; skew > 0 stretches the warm tail. Fixed seeds.
+gen = (seed, {bias, sd, skew, warm}) => {
+  const z = d3.randomNormal.source(d3.randomLcg(seed))();
+  let e = 0;
+  return d3.range(30 * 365).map(i => {
+    const doy = i % 365;
+    e = 0.7 * e + Math.sqrt(0.51) * z();
+    return {m: Math.min(11, Math.floor(doy / 30.42)),
+            t: 21 - 11 * Math.cos(2 * Math.PI * (doy - 15) / 365) + bias + warm + sd * (e + skew * (e * e - 1))};
+  });
+}
+obs = gen(1, {bias: 0, sd: 3.5, skew: 0.1, warm: 0})
+hist = gen(2, {bias: -1.5, sd: 2.5, skew: 0, warm: 0})
+fut = gen(3, {bias: -1.5, sd: 2.5, skew: 0, warm: 2})
+
+stats = rows => d3.range(12).map(m => {
+  const v = rows.filter(d => d.m === m).map(d => d.t).sort(d3.ascending);
+  return {v, mean: d3.mean(v), sd: d3.deviation(v)};
+})
+O = stats(obs)
+H = stats(hist)
+// Empirical CDF, interpolated between sorted values. ponytail: clamps beyond the calibration range.
+cdf = (s, x) => {
+  const v = s.v, i = d3.bisect(v, x), n = v.length;
+  const f = i > 0 && i < n ? (x - v[i - 1]) / (v[i] - v[i - 1]) : 0.5;
+  return Math.min(1, Math.max(0, (i - 0.5 + f) / n));
+}
+Q = (s, p) => d3.quantileSorted(s.v, p)
+
+correct = (rows, how) => {
+  const X = stats(rows);
+  if (how.startsWith("Delta")) return obs.map(({m, t}) => ({m, t: t + X[m].mean - H[m].mean}));
+  return rows.map(({m, t}) => {
+    const o = O[m], h = H[m], x = X[m];
+    return {m, t: how === "Mean shift" ? t + o.mean - h.mean
+      : how === "Variance scaling" ? x.mean + o.mean - h.mean + (t - x.mean) * o.sd / h.sd
+      : how === "Quantile mapping" ? Q(o, cdf(h, t))
+      : how === "Quantile delta mapping" ? Q(o, cdf(x, t)) + t - Q(h, cdf(x, t))
+      : t};
+  });
+}
+
+hot = test.startsWith("Hot")
+perYear = rows => d3.sum(rows, d => hot ? d.t > 35 : d.t < 7.2) / 30
+raw = period.startsWith("Future") ? fut : hist
+shown = correct(raw, method)
+season = hot ? [5, 6, 7] : [11, 0, 1]
+fmt = v => { const r = Math.round(v * 10) / 10; return (r < 0 ? "−" : r > 0 ? "+" : "") + Math.abs(r).toFixed(1) + " °C"; }
+card = (label, value, colour) => html`<div class="sim-readout"><div class="sim-readout-label">${label}</div><div class="sim-readout-value" style="color:${colour}">${value}</div></div>`
+
+html`<div class="sim-readouts">
+  ${card("Observed, 1991–2020", perYear(obs).toFixed(1) + " days/yr", "#cbd5e1")}
+  ${card("Shown series", perYear(shown).toFixed(1) + " days/yr", "#38bdf8")}
+  ${card("Mean, shown minus observed", fmt(d3.mean(shown, d => d.t) - d3.mean(obs, d => d.t)), "#f59e0b")}
+  ${card("Model's own warming", fmt(d3.mean(raw, d => d.t) - d3.mean(hist, d => d.t)), "#10b981")}
+</div>`
+
+Plot.plot({
+  height: 300, marginLeft: 50,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {label: `Daily maximum, ${hot ? "June–August" : "December–February"} (°C) →`, grid: true},
+  y: {label: "↑ Days per 1 °C bin, 30 seasons", grid: true},
+  color: {legend: true, domain: ["Observed, 1991–2020", "Shown series"], range: ["#64748b", "#38bdf8"]},
+  marks: [
+    Plot.areaY(obs.filter(d => season.includes(d.m)), Plot.binX({y: "count"}, {x: "t", interval: 1, fill: () => "Observed, 1991–2020", fillOpacity: 0.5, curve: "step"})),
+    Plot.lineY(shown.filter(d => season.includes(d.m)), Plot.binX({y: "count"}, {x: "t", interval: 1, stroke: () => "Shown series", strokeWidth: 2, curve: "step"})),
+    Plot.ruleX([hot ? 35 : 7.2], {stroke: "#ef4444", strokeWidth: 1.5, strokeDasharray: "4 3"})
+  ]
+})
+```
+
+The grey area is the synthetic observed record, the blue line the series the buttons choose, the red line the threshold being counted. On the calibration period, delta change simply shows the observations.
+:::
+
+On the calibration period with hot days, the observations give 12.8 days a year above 35 °C and the raw model 1.5. **Mean shift** puts the mean right (0.0 °C) and still gives only 5.5: the narrow spread keeps the model out of the warm tail. **Variance scaling** gives 12.3 and **quantile mapping** 12.7. For cold days: observed 12.8 a year, raw 17.8, mean shift 8.0, variance scaling 13.7, quantile mapping 12.7. Variance scaling misses on both because the observed warm tail is longer than the cold one, a difference in shape only quantile mapping corrects. Quantile delta mapping matches it to within 0.1 day; the two part ways only once the model's climate moves.
+
+## What correction cannot fix
+
+A correction fitted on the past repairs only errors that look the same where you apply it. Four limits follow.
+
+**It can change the model's warming.** Switch to the future period with hot days. The model warms by 2.0 °C, and every method keeps that except quantile mapping, which turns it into 2.7 °C. Its hot-day count is 41.0 a year, against 29.8 with quantile delta mapping: a rise of $41.0 - 12.8 = 28.2$ days instead of $29.8 - 12.8 = 17.0$, two-thirds larger. Delta change gives 28.3, close to quantile delta mapping only because the toy's future is the model warmed uniformly with no change in spread, the delta method's own assumption. Real warming can change the variance, and then no method is right by construction.
+
+::: {.callout-note collapse="true"}
+## Why quantile mapping stretches the warming
+
+For two roughly normal distributions, the quantile-mapping transfer function is close to a straight line, $\hat x \approx \mu_o + (\sigma_o/\sigma_m)(x - \mu_m)$, with slope $\sigma_o/\sigma_m$. A model day 2 °C warmer is corrected to one $2\,\sigma_o/\sigma_m$ warmer. The toy's built-in ratio is $3.5/2.5 = 1.4$; the monthly ratios actually drawn run from 1.19 to 1.51, averaging 1.30. So 2.0 °C should become roughly $2.0 \times 1.3 = 2.6$ to $2.0 \times 1.4 = 2.8$ °C; the widget reads 2.7 °C. Variance scaling and quantile delta mapping avoid this by working within each period's own distribution.
+:::
+
+In CMIP5 daily precipitation projections over Canada, quantile mapping often inflated trends in extremes: by the 2080s some locations showed changes in 20-year return values above +500%, against at most about +240% with detrended quantile mapping, +140% with quantile delta mapping, and never more than +120% in the raw models[^4]. ISI-MIP chose a trend-preserving correction to keep its warming signal consistent with global temperatures[^1]. Preserving the trend keeps the model's own; Maraun's review concludes that current methods cannot plausibly correct climate change trends[^2].
+
+**It cannot fix timing or pattern.** Every method maps one value at a time and never moves a day, so a heatwave in the wrong week or dry spells too short stay that way. Using quantile mapping to bridge the gap from a coarse grid to a station is worse: it misrepresents spatial and temporal structure, over-corrects drizzle for area means, overestimates area-mean extremes and affects trends[^5]. That gap is the job of [Downscaling](downscaling.qmd). Matching the distribution in a held-out period does not show a correction works[^2].
+
+**It assumes the bias stays the same.** Ehret and colleagues argue that a rule fitted on the calibration period is likely not generally valid in a changed climate[^3]; one reason is that a monthly distribution mixes weather types whose frequencies may change[^7]. For statistical downscaling, Maraun and colleagues describe a test: build the method on the coldest (or driest) years and validate it on the warmest (or wettest)[^7]. Applying the same split to a bias correction is my suggestion. The toy's bias is stationary by construction.
+
+**It needs a long overlap.** Values beyond the calibration range require extrapolating the transfer function, which can push them past physical limits[^3]; the widget simply clamps them. My inference: 15 years give about $15 \times 30 = 450$ days per calendar month, so the warmest 1% rests on 4 or 5 days; with that little overlap, quantile mapping's tails are noise, and a mean shift or variance scaling, which estimate only a mean and a spread, is safer.
+
+Forecast bias also changes with lead time, so seasonal forecasts are corrected against the system's own hindcasts, lead time by lead time; Crochemore and colleagues did this for ECMWF System 4 precipitation over 1981–2010, in bands of 1–30, 31–60 and 61–90 days[^6]. In 16 French catchments, linear scaling mainly improved sharpness and accuracy, and daily distribution mapping mainly improved reliability.
+
+## Feeding corrected temperature into chill and degree-day models
+
+Chill hours, degree days and heat-stress days sum a threshold function, so they respond to the tails and shape of the distribution: the widget's mean shift gets the mean right and still leaves the hot-day count at 5.5 against 12.8. My inference: the nearer a threshold sits to the tail, the more spread and shape matter; for a degree-day base near the middle of the distribution, a mean correction does most of the work.
+
+The widget's cold-day count is not a chill count: a mild winter can fail its test every day and still bank [chill hours](chill-hours-and-dormancy.qmd) most nights. Chill models need hourly temperatures and corrections are usually daily, so corrected minima and maxima must be turned into hours, a step with its own error. Correcting them separately can even leave a minimum above the maximum, a symptom of the altered relations between variables that Ehret and colleagues describe[^3].
+
+::: {.callout-tip}
+## What this means for you
+
+My inferences from the sources above, untested on a farm:
+
+- Correct against the station record your farm model was calibrated on, using every overlapping year, month by month.
+- For a projection, prefer a trend-preserving method (quantile delta mapping or delta change), and report the raw model's change beside the corrected one.
+- With several models, correct each one separately against the same observations, and keep the spread of their corrected changes as the uncertainty.
+- For a forecast, correct against the system's own hindcasts at the same lead time and month, or use the issuer's calibrated product.
+- Count threshold days on the corrected daily series, and check that corrected minima stay below maxima before making hourly temperatures.
+:::
+
+## Key takeaways
+
+- Correct the distribution, not just the mean, before counting threshold days.
+- Quantile mapping can stretch a model's warming by about the ratio of observed to modelled spread; trend-preserving variants keep the model's change without making it right.
+- Correction never moves a day: timing, spell length and spatial pattern stay the model's.
+- Tails need decades of overlap; with a short one, use the simpler methods.
+- Beyond the calibration fit, check the change, the extremes and a cold-versus-warm split.
+
+## References
+
+[^1]: Hempel, S., Frieler, K., Warszawski, L., Schewe, J. & Piontek, F. A trend-preserving bias correction – the ISI-MIP approach. *Earth Syst. Dyn.* **4**, 219–236 (2013). https://doi.org/10.5194/esd-4-219-2013
+[^2]: Maraun, D. Bias correcting climate change simulations – a critical review. *Curr. Clim. Change Rep.* **2**, 211–220 (2016). https://doi.org/10.1007/s40641-016-0050-x
+[^3]: Ehret, U., Zehe, E., Wulfmeyer, V., Warrach-Sagi, K. & Liebert, J. HESS Opinions "Should we apply bias correction to global and regional climate model data?" *Hydrol. Earth Syst. Sci.* **16**, 3391–3404 (2012). https://doi.org/10.5194/hess-16-3391-2012
+[^4]: Cannon, A. J., Sobie, S. R. & Murdock, T. Q. Bias correction of GCM precipitation by quantile mapping: how well do methods preserve changes in quantiles and extremes? *J. Clim.* **28**, 6938–6959 (2015). https://doi.org/10.1175/JCLI-D-14-00754.1
+[^5]: Maraun, D. Bias correction, quantile mapping, and downscaling: revisiting the inflation issue. *J. Clim.* **26**, 2137–2143 (2013). https://doi.org/10.1175/JCLI-D-12-00821.1
+[^6]: Crochemore, L., Ramos, M.-H. & Pappenberger, F. Bias correcting precipitation forecasts to improve the skill of seasonal streamflow forecasts. *Hydrol. Earth Syst. Sci.* **20**, 3601–3618 (2016). https://doi.org/10.5194/hess-20-3601-2016
+[^7]: Maraun, D. et al. Precipitation downscaling under climate change: recent developments to bridge the gap between dynamical models and the end user. *Rev. Geophys.* **48**, RG3003 (2010). https://doi.org/10.1029/2009RG000314
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/downscaling.html"><span>Previous</span>Downscaling</a><a class="mf-up" href="/series/prediction/index.html"><span>Series</span>Weather, Climate and Prediction</a></div>
+<!-- CURRICULUM_FOOTER_END -->

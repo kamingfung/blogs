@@ -284,6 +284,6 @@ My own suggestions, built on the sources above but not tested on your data:
 [^3]: Huber, P. J. Robust estimation of a location parameter. *Ann. Math. Statist.* **35**, 73–101 (1964). https://doi.org/10.1214/aoms/1177703732
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/normal-lognormal-poisson.html"><span>Previous</span>Normal, lognormal, Poisson</a><a class="mf-up" href="/series/statistics/index.html"><span>Series</span>Statistics</a><a class="mf-next" href="/blogs/controls-and-randomisation.html"><span>Next</span>Controls and randomisation</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/normal-lognormal-poisson.html"><span>Previous</span>Normal, lognormal, Poisson</a><a class="mf-up" href="/series/statistics/index.html"><span>Series</span>Statistics</a><a class="mf-next" href="/blogs/bayes-rule.html"><span>Next</span>Bayes&#x27; rule</a></div>
 <!-- CURRICULUM_FOOTER_END -->
 

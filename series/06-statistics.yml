@@ -13,9 +13,11 @@ parts:
       - id: statistics/histograms-quantiles-and-qq-plots
         title: "Histograms, quantiles and QQ plots"
         level: introductory
+        path: blogs/histograms-quantiles-and-qq-plots.md
       - id: statistics/mean-median-and-when-they-disagree
         title: "Mean, median, and when they disagree"
         level: introductory
+        path: blogs/mean-median-and-when-they-disagree.md
       - id: statistics/variance-and-standard-error
         title: "Variance and standard error"
         level: introductory
@@ -93,9 +95,11 @@ parts:
       - id: statistics/bayes-rule
         title: "Bayes' rule"
         level: introductory
+        path: blogs/bayes-rule.md
       - id: statistics/priors-in-practice
         title: "Priors in practice"
         level: intermediate
+        path: blogs/priors-in-practice/priors_in_practice.ipynb
         requires:
           - statistics/bayes-rule
   - title: "Experimental design"

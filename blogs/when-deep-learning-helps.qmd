@@ -1,0 +1,199 @@
+---
+title: When deep learning helps
+description: What forecasting competitions and benchmark studies found about neural forecasters, the data conditions behind their wins, what they cost, and a checklist for a produce forecasting team.
+date: 2026-10-20
+categories:
+- forecasting
+- time series
+- machine learning
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/forecasting/index.html">Forecasting with Machine Learning</a><span class="sep">·</span>Part 13 · Deep learning</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Python and pandas. Basic statistics. No prior forecasting.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+For a panel of tens to a few hundred related series, such as farms or varieties with a few seasons each, a global gradient-boosted model is the bar to beat. Neural networks have won mainly with very many related series, long histories or rich inputs, and even then not always. A global network won a Kaggle competition on 145,000 daily web-traffic series, and a pure network later beat the M4 winner. On smaller data, and in M5 with its explanatory variables, tree models led. Much of what gets credited to deep learning comes from fitting one global model across many series, which a global tree model already does. The rest is expensive: in one study tuning took most of a network's hours, where ETS needed under a minute. Afterwards you should be able to say whether your data resemble the cases networks won, and how to test one fairly against your trees.
+
+Before building a network, check that a global tree model is already in your backtest.
+:::
+
+## What the evidence shows
+
+The evidence comes in two kinds: open competitions, scored on data nobody saw in advance, and later benchmark studies. Read together, they say networks win on large, homogeneous collections of series and lose ground as the data get smaller or the covariates matter more. That reading is this module's synthesis, not a conclusion any one paper states.
+
+| Comparison | Data | How neural methods did |
+|---|---|---|
+| M4 (results 2018) | 100,000 series, own past only[^1] | Six pure machine-learning entries, none beating the combination benchmark; the winner a hybrid of exponential smoothing and a recurrent network[^2]^,^[^3] |
+| N-BEATS (2020), on M4 afterwards | Same series | A pure network, 3% more accurate than the M4 winner[^4] |
+| Kaggle Wikipedia traffic (2017) | 145,000 daily series, 32 months | Global recurrent networks won and took six of the top eight places[^5] |
+| Kaggle Recruit restaurants (2018) | 821 daily series, 15 months | The winner averaged trees and simple networks; recurrent and convolutional networks placed about 2% behind[^5] |
+| M5 (results 2022) | 42,840 Walmart series with explanatory variables[^6]^,^[^14] | Tree models did better than deep learning[^7] |
+
+Three findings stand out. **The M4 winner was a hybrid.** Smyl's entry mixed exponential smoothing with long short-term memory (LSTM) networks, a kind of recurrent network that reads a series step by step[^3]. The six pure machine-learning entries did poorly: none beat the combination benchmark, and only one beat Naive2, a seasonally adjusted naive forecast[^2].
+
+**A pure network later beat it, at scale.** N-BEATS, a deep stack of fully connected layers with no time-series components, scored 3% better than the M4 winner on the M4 data[^4]. It is a global model, one network per forecast horizon trained across all the series of a subset, 48,000 of them in M4's monthly subset, and an ensemble of 180 networks.
+
+**When covariates and hierarchy arrived, trees led.** M5 asked for forecasts of 42,840 hierarchical Walmart sales series, 30,490 of them at the lowest level, and, unlike earlier M competitions, supplied explanatory variables[^6]^,^[^14]. Januschowski and colleagues call the prevalence of gradient-boosted trees among the top entries potentially the most eye-catching result: trees did better than other solutions, deep learning in particular, and the winners of both tracks relied heavily on them[^7].
+
+::: {.callout-note collapse="true"}
+## Three details that shape the checklist
+
+**The Wikipedia winner gave its networks the yearly lag.** Bojer and Meldgaard reviewed six Kaggle forecasting competitions (I read the arXiv preprint). Recurrent networks struggle with long-range patterns, so the Wikipedia winner fed in page views from a quarter, half a year and a year earlier rather than leaving the network to find the annual cycle. Because network forecasts vary from run to run, it also averaged three random starts and many checkpoints[^5]. Steps 3 and 5 of the checklist follow from this.
+
+**Where data were 100 times smaller, networks fell behind.** The Recruit restaurant data were smaller than the Wikipedia and Favorita grocery data by more than a factor of 100. There the winner averaged LightGBM, XGBoost and feedforward networks, networks mainly added diversity to ensembles, and recurrent and convolutional networks placed 21st, 23rd and 25th, about 2% behind. The authors suggest data size as a possible reason[^5].
+
+**Seasonality and tuning.** Hewamalage, Bergmeir and Bandara trained global recurrent networks on six benchmark collections, from 72 monthly series to 48,000 (I read the accepted manuscript). Networks learned seasonality directly only when all series shared one seasonal pattern and covered the same span; otherwise a deseasonalisation step was needed. Most of their compute went on hyperparameter tuning, as the cost section shows[^8].
+:::
+
+## The conditions behind the wins
+
+Four conditions recur where networks won: many related series, long histories, informative covariates, and seasonal patterns that are complex but shared. Each has a caveat that matters for a produce team, and the first matters most.
+
+**Many related series, fitted globally.** A **local** model fits one function per series; a **global** model fits one function to all series stacked together, as in [Forecasting many series at once](many-series/forecasting_many_series.ipynb). Every neural winner above was global; DeepAR, for example, trains one recurrent network on a large number of related series[^12]. But globality is not depth. Montero-Manso and Hyndman show that adding series does not make a global model more complex, whereas each new series adds another local model, and that plain global linear models fitted by least squares have an "unreasonable effectiveness" on benchmark data[^13]. Over 300 synthetic farms in the many-series module, a scaled global gradient-boosted model scored $0.74$ of seasonal naive's mean absolute error, 26% lower, against $0.81$, 19% lower, for local models. My inference is that a team already running a global tree model has taken the first and largest step that the neural results credit to deep learning.
+
+**Scale.** The competition wins for networks came at a scale few produce teams reach. A produce panel of, say, 300 farm × variety series is $145{,}000 / 300 \approx 480$, roughly 500, times smaller than the Wikipedia competition. Where data were 100 times smaller than the big Kaggle sets, networks fell behind trees[^5]. Recurrent networks have beaten ETS and auto.arima on as few as 72 monthly series, but those were local benchmarks, not a global tree model[^8]. As a rough band, which is my judgment and not a tested threshold:
+
+| Related series, a few seasons each | Network worth testing? |
+|---|---|
+| Under about 100 | Rarely; spend the time on features and pooling |
+| A few hundred to a few thousand | Only for a specific need (step 4), with modest hopes |
+| Tens of thousands, or long daily histories | A real chance; test it |
+
+**Long histories.** Hewamalage and colleagues suggest that networks underperformed in the past partly because individual series are too short, and a series whose behaviour has changed may hold little relevant data even when long[^8]. That is their explanation, not a tested result. For weekly produce, count seasons, not weeks, as [When classical beats machine learning](when-classical-beats-machine-learning.qmd) argues: six seasons is 312 rows that show the annual shape only six times.
+
+**Covariates.** External information, such as promotions, holidays and reservations, led to significant gains in the Kaggle competitions[^5]. It does not by itself favour networks: in M5, with explanatory variables supplied[^14], trees led[^7]. Architectures built for covariates, such as the Temporal Fusion Transformer, are the subject of [N-BEATS and TFT](n-beats-and-tft/n_beats_and_tft.ipynb). The as-of rule of [Leakage](leakage/leakage.ipynb) applies to both families: only inputs known at the forecast origin.
+
+**Complex seasonality, if it is shared.** Networks are sometimes presented as the answer to complicated seasons. The evidence is narrower. Recurrent networks learned seasonality directly only when all series shared one pattern[^8], the Wikipedia winner was handed the yearly lag[^5], and on hourly electricity and traffic benchmarks simple linear and tree models matched or beat published deep models[^10]^,^[^11]. A weekly harvest with one annual season whose timing shifts is, in my reading, not a case where networks have shown an advantage.
+
+## What a neural model costs
+
+Even where a network wins, it costs more to build, run and keep, and the margin has to pay for that.
+
+**Compute, mostly for tuning.** Hewamalage and colleagues timed their best recurrent networks against ETS and auto.arima on 25 CPU cores[^8]:
+
+| Dataset | Network, total | ETS | auto.arima |
+|---|---|---|---|
+| NN5, 111 daily series | 51,490.7 s (14.3 h) | 53.3 s | 1067.7 s |
+| CIF 2016, horizon 12 | 3749.5 s (1.0 h) | 41.6 s | 85.1 s |
+| M3, micro series | 2523.0 s (42 min) | 73.0 s | 849.8 s |
+
+On NN5 the network took $51{,}490.7/53.3 \approx 970$ times as long as ETS. Hyperparameter tuning was $37{,}660.2/51{,}490.7 = 73\%$ of that time. Once tuned, training the final model can be cheap: on the M3 micro series it took 565.6 s against 849.8 s for auto.arima.
+
+**Ensembles to tame randomness.** A network's forecast depends on its random starting weights. N-BEATS used 180 networks, each taking 30 minutes to 2 hours of GPU training on the full M4 dataset, so $180 \times 0.5 = 90$ to $180 \times 2 = 360$ GPU-hours in all[^4]. A single network with one seed is not a fair entry in a backtest.
+
+**Maintenance.** This is my inference, not a measured result. Three things break on retrain: a new seed can move the forecast by more than the margin the network won by; hyperparameters tuned last season can stop being best once the mix of farms changes; and an upgrade of the deep-learning framework can change results or break saved models. Each retrain in [Retraining and drift](retraining-and-drift/retraining_and_drift.ipynb) and each investigation in [Monitoring a forecast](monitoring/monitoring_a_forecast.ipynb) costs more than it does for trees, which also have explanation tools such as [SHAP](forecast/3_shap_explainability.ipynb) that planners may already know.
+
+## A checklist for a produce team
+
+What follows is this module's inference from the evidence above, not a rule from the literature. It decides whether a neural model earns a place in the backtest, and how to score it fairly once it does.
+
+```{mermaid}
+flowchart TD
+    A["Weekly forecasts for<br/>many farms or products"] --> B{"Global trees and<br/>seasonal naive<br/>in the backtest?"}
+    B -->|"no"| C["Build those first"]
+    B -->|"yes"| D{"Many long,<br/>similar series?"}
+    D -->|"no"| E["Stay with trees:<br/>features and pooling"]
+    D -->|"yes"| F{"A need trees<br/>meet badly?"}
+    F -->|"no"| E
+    F -->|"yes"| G["Global network,<br/>several seeds"]
+    G --> H{"Worst seed wins<br/>by enough?"}
+    H -->|"yes"| I["Ship it, or ensemble<br/>it with the trees"]
+    H -->|"no"| E
+    class A,B,D,F,H indigo
+    class C,E sage
+    class G,I ochre
+    classDef indigo fill:#1d4a62,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef ochre fill:#d69a2e,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+    classDef sage fill:#95a87f,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+```
+
+**Figure 1 | When a neural forecaster earns a place in the backtest.** Most produce panels exit at the second question. Step 4 says what counts as a need trees meet badly, steps 5 and 6 what counts as winning by enough.
+
+1. **Have the comparison in place.** A global gradient-boosted model with each series scaled, as in [Forecasting many series at once](many-series/forecasting_many_series.ipynb), and seasonal naive as in [Baselines first](baselines-first.qmd). Without them, a network's win measures nothing.
+2. **Count series and seasons**, with the snippet below, and place the panel in the band above.
+3. **Check that the seasons share a shape, and hand over the season.** Divide each series by its level and plot a few seasons together. If farms or varieties peak at different times, deseasonalise first[^8]. Either way, give the network the same-week-last-season value and any timing input the trees get, as the Wikipedia winner gave its networks the yearly lag[^5].
+4. **Name what the network would add.** Two produce examples, both my inference: probabilistic sample paths for the next several weeks that stay consistent with one another, so cold-chain capacity can be planned on the total, as DeepAR was built to produce[^12]; or a new variety with almost no history, where a pretrained model may carry more than a cold-start placeholder (see [Time series foundation models](time-series-foundation-models.qmd)). If the answer is only "maybe more accuracy", try features and pooling first.
+5. **Score it fairly.** Same rolling-origin backtest as in [Backtest design](backtest-design/backtest_design.ipynb), same horizons, same series, at least three seeds, judged by the worst seed. A sketch follows the list.
+6. **Price the margin.** Set the training and tuning time, and who maintains the stack, against the error reduction in tonnes per week at the horizons planning uses. Score the average of trees and network too, since combinations filled most of M4's top places[^2].
+
+For step 2, with one row per series and week and the harvest in column `y`:
+
+```python
+import numpy as np
+import pandas as pd
+
+def panel_inventory(df: pd.DataFrame, m: int = 52) -> pd.Series:
+    """df in long format: one row per series and week, columns 'series' and 'y'."""
+    weeks = df.groupby("series")["y"].count()
+    return pd.Series({
+        "series": weeks.size,
+        "rows": int(weeks.sum()),
+        "median seasons per series": weeks.median() / m,
+        "series under 2 seasons": int((weeks < 2 * m).sum()),
+        "share of zero weeks": (df["y"] == 0).mean(),
+    })
+
+# check on a synthetic panel: 30 series of one to five seasons
+rng = np.random.default_rng(0)
+df = pd.concat([pd.DataFrame({"series": i, "y": rng.poisson(3, 52 * k)})
+                for i, k in enumerate(rng.integers(1, 6, 30))], ignore_index=True)
+print(panel_inventory(df))
+```
+
+The synthetic check prints 30 series, 4992 rows, a median of 3.5 seasons per series and 6 series under two seasons.
+
+For step 5, a sketch in Darts, where `series` is your list of aligned, level-scaled weekly `TimeSeries`, one per farm × variety. It is checked only to run on a toy panel with Darts 0.46.1, not scored here; [N-BEATS and TFT](n-beats-and-tft/n_beats_and_tft.ipynb) runs a full version. `apply_globally=True` makes each refit one model across all series, and `retrain=13` refits every 13 origins:
+
+```python
+import numpy as np
+from darts.metrics import mae
+from darts.models import NBEATSModel, SKLearnModel
+from sklearn.ensemble import HistGradientBoostingRegressor
+
+kw = dict(series=series, start=0.8, forecast_horizon=4, retrain=13, apply_globally=True)
+trees = SKLearnModel(model=HistGradientBoostingRegressor(), lags=52, output_chunk_length=4).historical_forecasts(**kw)
+nets = [NBEATSModel(input_chunk_length=52, output_chunk_length=4, n_epochs=50, random_state=s).historical_forecasts(**kw)
+        for s in (0, 1, 2)]
+score = lambda f: mae(series, f, series_reduction=np.mean)
+net_mean = [sum(fs) / 3 for fs in zip(*nets)]
+print(score(trees), max(score(f) for f in nets), score([(a + b) / 2 for a, b in zip(trees, net_mean)]))
+```
+
+It prints the trees' error, the worst seed's, and that of the average of trees and the three-seed network. Keep the network only if the worst seed or the average beats the trees by more than the cost of step 6.
+
+::: {.callout-tip appearance="simple" icon=false}
+## What this means for you
+
+If your panel has tens or hundreds of farms, varieties or customers with a few seasons each, the evidence points to a global gradient-boosted model with good features, not a network: trees led in M5 and on the smallest Kaggle data[^5]^,^[^7], and pooling, not depth, gives much of the gain[^13]. Consider a network when you have thousands of related series with a shared seasonal shape and a specific need trees meet badly, then test it with several seeds against the trees and their average. Those last two recommendations are inference, not tested results.
+:::
+
+## Key takeaways
+
+- Ask whether a neural result came from a global model before crediting it to depth; a global linear or tree model is the fair comparison.
+- Give a network the inputs your trees already get, such as same-week-last-season values or deseasonalised targets, so the comparison tests the architecture, not the features.
+- Judge a network by its worst seed on the same backtest as the trees, and budget most of its compute for tuning.
+- Retune a shipped network when the panel's mix of farms or varieties changes, not only when its error drifts.
+- Keep the tree model running beside any network you ship, for monitoring and for the ensemble.
+
+## References
+
+[^1]: Makridakis, S., Spiliotis, E. & Assimakopoulos, V. The M4 Competition: 100,000 time series and 61 forecasting methods. *Int. J. Forecast.* **36**, 54–74 (2020). https://doi.org/10.1016/j.ijforecast.2019.04.014
+[^2]: Makridakis, S., Spiliotis, E. & Assimakopoulos, V. The M4 Competition: results, findings, conclusion and way forward. *Int. J. Forecast.* **34**, 802–808 (2018). https://doi.org/10.1016/j.ijforecast.2018.06.001
+[^3]: Smyl, S. A hybrid method of exponential smoothing and recurrent neural networks for time series forecasting. *Int. J. Forecast.* **36**, 75–85 (2020). https://doi.org/10.1016/j.ijforecast.2019.03.017
+[^4]: Oreshkin, B. N., Carpov, D., Chapados, N. & Bengio, Y. N-BEATS: neural basis expansion analysis for interpretable time series forecasting. In *International Conference on Learning Representations* (2020). https://doi.org/10.48550/arXiv.1905.10437
+[^5]: Bojer, C. S. & Meldgaard, J. P. Kaggle forecasting competitions: an overlooked learning opportunity. *Int. J. Forecast.* **37**, 587–603 (2021). https://doi.org/10.1016/j.ijforecast.2020.07.007
+[^6]: Makridakis, S., Spiliotis, E. & Assimakopoulos, V. M5 accuracy competition: results, findings, and conclusions. *Int. J. Forecast.* **38**, 1346–1364 (2022). https://doi.org/10.1016/j.ijforecast.2021.11.013
+[^7]: Januschowski, T. et al. Forecasting with trees. *Int. J. Forecast.* **38**, 1473–1481 (2022). https://doi.org/10.1016/j.ijforecast.2021.10.004
+[^8]: Hewamalage, H., Bergmeir, C. & Bandara, K. Recurrent neural networks for time series forecasting: current status and future directions. *Int. J. Forecast.* **37**, 388–427 (2021). https://doi.org/10.1016/j.ijforecast.2020.06.008
+[^10]: Zeng, A., Chen, M., Zhang, L. & Xu, Q. Are Transformers effective for time series forecasting? *Proc. AAAI Conf. Artif. Intell.* **37**, 11121–11128 (2023). https://doi.org/10.1609/aaai.v37i9.26317
+[^11]: Elsayed, S., Thyssens, D., Rashed, A., Jomaa, H. S. & Schmidt-Thieme, L. Do we really need deep learning models for time series forecasting? Preprint at https://doi.org/10.48550/arXiv.2101.02118 (2021).
+[^12]: Salinas, D., Flunkert, V., Gasthaus, J. & Januschowski, T. DeepAR: probabilistic forecasting with autoregressive recurrent networks. *Int. J. Forecast.* **36**, 1181–1191 (2020). https://doi.org/10.1016/j.ijforecast.2019.07.001
+[^13]: Montero-Manso, P. & Hyndman, R. J. Principles and algorithms for forecasting groups of time series: locality and globality. *Int. J. Forecast.* **37**, 1632–1653 (2021). https://doi.org/10.1016/j.ijforecast.2021.03.004
+[^14]: Makridakis, S., Spiliotis, E. & Assimakopoulos, V. The M5 competition: background, organization, and implementation. *Int. J. Forecast.* **38**, 1325–1336 (2022). https://doi.org/10.1016/j.ijforecast.2021.07.007
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/when-classical-beats-machine-learning.html"><span>Previous</span>When classical beats machine learning</a><a class="mf-up" href="/series/forecasting/index.html"><span>Series</span>Forecasting with Machine Learning</a><a class="mf-next" href="/blogs/n-beats-and-tft/n_beats_and_tft.html"><span>Next</span>N-BEATS and TFT</a></div>
+<!-- CURRICULUM_FOOTER_END -->

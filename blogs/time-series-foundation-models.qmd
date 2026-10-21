@@ -1,0 +1,238 @@
+---
+title: Time series foundation models
+description: What pretrained forecasting models such as Chronos, TimesFM, Moirai and Lag-Llama do, what their benchmarks do and do not show, and how a produce team can test one zero-shot on its own backtest.
+date: 2026-10-20
+categories:
+- forecasting
+- time series
+- machine learning
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/forecasting/index.html">Forecasting with Machine Learning</a><span class="sep">·</span>Part 14 · Foundation models</p><p class="mh-facts"><span class="lvl lvl-advanced">Advanced</span></p><p class="mh-assumes">Python and pandas. Basic statistics. No prior forecasting.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+A time series foundation model is a network pretrained on many unrelated series. It forecasts a new series without being fitted to it. This is called zero-shot forecasting. In their own papers, Chronos, TimesFM, Moirai and Lag-Llama each match or beat models trained on the test data. Four caveats temper that. Some test sets overlapped the pretraining data. Most horizons were short, often with one test window per series. Point and probabilistic scores ranked models differently. And with baselines tuned properly, a separate benchmark put an ordinary trained network, PatchTST, first overall. So treat a foundation model as one more candidate, not a replacement. Run it zero-shot on your own backtest origins, at the horizon your decisions use. Compare it season by season with seasonal naive and your current model. Then check covariates, zeros, cost, and where your data goes. Afterwards you should be able to read a foundation-model benchmark critically and run that trial.
+
+Switch only if the gain holds across most seasons.
+:::
+
+## What a foundation model changes
+
+A foundation model does away with fitting, not with evaluation. Every model in the earlier modules was fitted to your history: a seasonal ARIMA per series, or a gradient-boosted model pooled over your farms. A foundation model is trained once, by someone else, on a corpus of public and synthetic series. At forecast time you pass it a **context**, the recent history up to the origin, and it returns a forecast for the next $h$ steps. Nothing is fitted to your data.
+
+The authors' case rests on transfer. A model that has seen seasons, trends and noise across thousands of domains might forecast a new series well with no training. Chronos's authors argue it could greatly simplify forecasting pipelines[^1]. Moirai's authors call this **universal forecasting**: one pretrained model for many forecasting tasks[^2].
+
+Three things stay exactly as they were:
+
+- **The forecast is still scored on a backtest.** Seasons, not weeks, are the sample, as in [Backtest design](backtest-design/backtest_design.ipynb).
+- **The as-of rule still holds.** The context passed at each origin must stop at the origin, as in [Leakage](leakage/leakage.ipynb).
+- **The baselines still set the floor.** Seasonal naive from [Baselines first](baselines-first.qmd) is the reference that most of the papers below use too.
+
+What changes is where the risk sits: with nothing tuned, you cannot overfit your backtest, but you cannot see what the model was trained on either. [When deep learning helps](when-deep-learning-helps.qmd) and [N-BEATS and TFT](n-beats-and-tft/n_beats_and_tft.ipynb) cover networks trained on your own data; this module covers networks trained on someone else's.
+
+## Four families and how they read a series
+
+The families differ in how history becomes input and whether the output is one number per week or a distribution. The table follows each family's first paper; later versions have changed some choices.
+
+| Model | Input | Output | Covariates |
+|---|---|---|---|
+| Chronos | Scaled values, binned into 4094 tokens | Sample paths | None |
+| TimesFM | Patches of 32 values | Point | None |
+| Moirai | Patches of 16 or 32 (weekly) | Mixture | As variates |
+| Lag-Llama | Lagged values and date features | Student's t | None |
+
+**Chronos** treats forecasting as language modelling. It divides each series by the mean absolute value of its context, then assigns each scaled value to one of $4094$ equal-width bins between $-15$ and $+15$. Language models of 20M to 710M parameters are trained on these tokens. To forecast, Chronos samples tokens step by step and maps them back to values; many sample paths form a distribution[^1].
+
+**TimesFM** cuts the context into non-overlapping patches of 32 values. A decoder-only transformer, one that looks only at earlier patches, predicts the next 128 values at once, and longer horizons repeat that step. The main model has 200M parameters. The paper trains on squared error, so it gives point forecasts only[^3].
+
+**Moirai** also uses patches, but sizes them by frequency: 16 or 32 for weekly and daily data. It treats a multivariate series as one long sequence, which lets known covariates enter as extra variates. Its output is a mixture, a weighted blend of four distribution shapes, including a negative binomial for counts and a log-normal for right-skewed data. Sizes run from 14M to 311M parameters, trained on LOTSA, an open archive the authors released[^2].
+
+**Lag-Llama** builds one token per time step from the series' values at fixed lags plus date features such as week of year. Its decoder-only transformer outputs a Student's t distribution, a bell curve with heavier tails, for the next step[^4]. The context must be at least as long as the longest lag.
+
+The choice matters for two decisions. If you set stock from a quantile and score it with [pinball loss](pinball-loss-and-quantiles.qmd), Chronos, Moirai and Lag-Llama give distributions you can read quantiles from; TimesFM, as published, gives only a point forecast[^3]. If your current model wins through inputs such as degree-days, only Moirai's architecture, among these four papers, takes covariates[^2].
+
+::: {.callout-note collapse="true"}
+## Context length and the Chronos tokeniser on a produce series
+
+**The takeaway:** a very short harvest season can push the peak outside the range the original Chronos can output. Check it in one line on your own series, where `y` is the weekly history you would pass as context:
+
+```python
+peak_ratio = y.max() / y.abs().mean()  # near or above 15: the peak may be clipped
+```
+
+**Why 15.** Chronos's bins cover $[-15s, +15s]$, where $s$ is the mean absolute value of the context[^1]. The authors flag sparse series, where $s$ is small relative to the peaks, as a case where values fall outside that range[^1]. My reading, untested on any model, is that a peak above $15s$ is then forecast at no more than $15s$.
+
+For a synthetic weekly harvest shaped as a bell with standard deviation $\sigma$ weeks in a 52-week year, near zero otherwise, the ratio depends only on $\sigma$:
+
+| Season spread $\sigma$ (weeks) | Weeks above 5% of peak | Peak / $s$ |
+|---|---|---|
+| 1 | 5 | 20.7 |
+| 2 | 9 | 10.4 |
+| 4 | 19 | 5.2 |
+| 8 | 39 | 2.6 |
+
+<small>Computed with numpy on the synthetic curve $\exp(-\tfrac12((w-26)/\sigma)^2)$, $w = 0, \dots, 51$.</small>
+
+Peak$/s \approx 52/(\sigma\sqrt{2\pi})$ passes 15 once $\sigma < 1.38$ weeks. At $\sigma = 1$, $15/20.7 = 72\%$ of the true peak is the most that could be forecast. Precision is not the issue: neighbouring bins are $30s/4093$ apart, under $0.3\%$ of the peak in every row. This applies to the tokeniser the 2024 paper describes; later Chronos versions may differ.
+
+**Context length, counted in seasons.** Chronos was trained on contexts of 512 steps, $512/52 = 9.8$ seasons of weekly data[^1]. TimesFM used at most 256 steps for weekly series, $256/52 = 4.9$ seasons[^3]. A weekly produce series rarely has more, so in practice the context is your whole history.
+:::
+
+## What the benchmarks show, and what they do not
+
+Each paper reports zero-shot accuracy close to, or better than, models trained on the test data, under conditions worth reading first.
+
+| Model | Test data | Score | Claim |
+|---|---|---|---|
+| Chronos[^1] | 27 datasets unseen in training | Quantile loss, MASE | On a par with the best trained deep models |
+| TimesFM[^3] | 18 Monash datasets, 8 Darts series | MAE relative to naive | Top on Monash, within error of N-BEATS |
+| Moirai[^2] | 6 datasets kept out of training | CRPS, interval score | Best or second, except Walmart and Istanbul Traffic |
+| Lag-Llama[^4] | 7 unseen datasets | CRPS rank | Mid-table zero-shot; best after fine-tuning |
+
+::: {.callout-note collapse="true"}
+## The results in more detail
+
+**Chronos.** Of 42 datasets, 15 were in its training data and 27 were not (Benchmark II). On Benchmark II its probabilistic scores took 2nd to 4th place. Fine-tuned on each dataset, a small Chronos came first[^1].
+
+**TimesFM.** On the Darts series it was within significance of the best models, including a seasonal ARIMA[^3].
+
+**Moirai.** Walmart, where it missed the top two, was the only sales dataset among the six[^2].
+
+**Lag-Llama.** Its zero-shot average rank was $6.714$ out of 15 entries: 13 supervised baselines plus Lag-Llama zero-shot and fine-tuned. Fine-tuned, it ranked best on average, at $2.786$[^4].
+:::
+
+Read the results through four caveats.
+
+**1. Leakage between pretraining and test data.** A model scored on data it has already seen is not zero-shot. The Chronos authors note that many Benchmark II datasets were in Moirai's pretraining corpus, which may have favoured it there. Strict prevention would need every test set to start after the last pretraining observation; they judged the risk minimal rather than ruling it out[^1]. GIFT-Eval found partial overlap between its test sets and the pretraining data of TimesFM, Chronos and Moirai, so its authors retrained Moirai on a leakage-free corpus. Leakage usually improved scores, more so at longer horizons, which they read as memorisation[^5]. fev-bench asks submitters to declare overlap, and notes that subtler leakage may still go undetected[^6].
+
+**2. Short horizons and few origins.** Chronos was trained to predict 64 steps ahead, and each test series was scored once, on its final $H$ observations[^1]; GIFT-Eval puts Chronos's prediction lengths at 6 to 56. On GIFT-Eval's medium and long horizons TimesFM and Chronos lost accuracy markedly, which its authors put down to errors accumulating step by step[^5]. Moirai's weekly Walmart test made 8-week forecasts over 32 weeks[^2]. That is $32/8 = 4$ windows, less than one season. By the standard of [Backtest design](backtest-design/backtest_design.ipynb), none of these tests says how a model behaves across seasons.
+
+**3. Point and probabilistic scores disagree.** Chronos is scored with weighted quantile loss, a probabilistic score, and with MASE on its median forecast. In one of its ablations, enlarging the vocabulary improved MASE but made the quantile loss worse[^1]. GIFT-Eval ranks models by CRPS and scores point forecasts with MAPE[^5]. A leader on one score need not lead on the other, and MAPE is undefined in zero-harvest weeks ([Which metric](which-metric.qmd)). Pick your decision's score first: pinball loss if stock is set from a quantile, absolute error if you plan to the median.
+
+**4. How strong the baselines were, and who ran the test.** A zero-shot model looks better against weak baselines, and the baselines varied:
+
+- Chronos compared against seasonal naive, AutoETS, AutoARIMA and an ensemble of statistical models. Any model that failed or timed out on a dataset was given seasonal naive's score[^1].
+- TimesFM's authors note that ARIMA needed manual tuning of its seasonality to do well on the Darts series[^3].
+- GIFT-Eval ran 15 hyperparameter trials for each deep-learning model on each of its 97 configurations. Over the whole benchmark, a tuned PatchTST had the best average scores, with Moirai Large second. Foundation models led from daily to yearly frequencies and at short horizons[^5].
+
+In fev-bench's 2025 results, by contrast, every pretrained model beat the best statistical and task-specific models[^6]. Each paper was written by a model's own team, and both benchmarks share authors with models they rank[^5]^,^[^6]. Aggregation differs too: geometric means of scores relative to seasonal naive[^1] or naive[^3], average ranks[^5], or win rates and skill scores with bootstrapped intervals[^6]. In my view that is reason enough to treat benchmarks as a shortlist and let your own backtest decide.
+
+## A zero-shot trial on your own backtest
+
+Testing a foundation model is cheap, because there is nothing to fit: score it as one more forecaster on the backtest you already run. The recipe below is this module's suggestion, not a procedure from the papers. Nothing here has been run on a pretrained model.
+
+```{mermaid}
+flowchart TD
+    A["Your backtest:<br/>origins, horizon, seasons"] --> B["Check overlap:<br/>could the corpus hold your data?"]
+    B --> C["Cut each context<br/>at the origin"]
+    C --> D["Zero-shot forecast,<br/>nothing fitted"]
+    C --> E["Seasonal naive and<br/>current model"]
+    D & E --> F["Score decision weeks:<br/>absolute error, pinball loss"]
+    F --> G{"Ahead in most seasons,<br/>by more than the spread?"}
+    G -->|"yes"| H["Check covariates, cost<br/>and governance; shadow-run"]
+    G -->|"no"| I["Keep current model;<br/>try the average of both"]
+    class A,B,C indigo
+    class D,E ochre
+    class F,G olive
+    class H sage
+    class I rust
+    classDef indigo fill:#1d4a62,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef rust fill:#a04b2d,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef olive fill:#5b6e34,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef ochre fill:#d69a2e,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+    classDef sage fill:#95a87f,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+```
+
+**Figure 1 | A zero-shot trial.** The foundation model is scored on the same origins, horizon and score as the models it might replace.
+
+**Same origins, same score.** Give every model the same origins and target weeks, score the decision horizon in the weeks that matter, and compare per season with the paired test of [Backtest design](backtest-design/backtest_design.ipynb). Report skill against seasonal naive with the reference and number of seasons, as [Skill scores](skill-scores.qmd) advises. Copy this harness; each forecaster takes the context as a `pd.Series` and returns the next `h` weeks:
+
+```python
+import numpy as np
+import pandas as pd
+
+def zero_shot_errors(y, origins, h, forecasters):
+    """Absolute error h weeks ahead for each forecaster, each given only y up to the origin."""
+    rows = []
+    for t in origins:  # integer positions of origin weeks
+        context = y.iloc[: t + 1]  # nothing after the origin
+        err = {name: abs(y.iloc[t + h] - f(context, h)[h - 1]) for name, f in forecasters.items()}
+        rows.append({"origin": y.index[t], **err})
+    return pd.DataFrame(rows)
+
+def seasonal_naive(context, h, m=52):
+    c = context.to_numpy()
+    return c[len(c) - m + np.arange(h)]  # same weeks last season, h <= m
+```
+
+It assumes `y` has a weekly `DatetimeIndex`, and is checked only to run, with seasonal naive and naive as stand-ins, on synthetic data. Add your current model, and the equal-weight average of it and the zero-shot forecast, for the reasons in [When classical beats machine learning](when-classical-beats-machine-learning.qmd).
+
+**What a trial looks like.** Here is a wrapper for one open-weights model, Chronos-2, written from the [`chronos-forecasting` README](https://github.com/amazon-science/chronos-forecasting). It is not run here, and Chronos-2 is a newer model than the 2024 Chronos above. Check the current API before using it:
+
+```python
+from chronos import Chronos2Pipeline  # pip install chronos-forecasting
+
+pipeline = Chronos2Pipeline.from_pretrained("amazon/chronos-2", device_map="cuda")  # as in the README
+def chronos2(context, h):
+    df = pd.DataFrame({"id": "farm", "timestamp": context.index, "target": context.to_numpy()})
+    pred = pipeline.predict_df(df, prediction_length=h, quantile_levels=[0.1, 0.5, 0.9],
+                               id_column="id", timestamp_column="timestamp", target="target")
+    return pred["0.5"].to_numpy()  # median; the README names quantile columns "0.1", "0.9"
+
+errors = zero_shot_errors(y, origins, 4, {"seasonal_naive": seasonal_naive, "chronos2": chronos2})
+errors["season"] = errors.origin.dt.year  # or your own season label
+compare_by_season(errors.seasonal_naive, errors.chronos2, errors.season)  # from Backtest design
+```
+
+The README's example also passes known future covariates through a `future_df` argument. Runtime and GPU memory depend on the model size and on the number of forecasts, which is series times origins. No paper here states figures for a weekly produce backtest, so time a few hundred forecasts on your own hardware first.
+
+**What counts as a win.** My inference, following [Backtest design](backtest-design/backtest_design.ipynb): switch only if the zero-shot model is ahead in most seasons and its mean gap is larger than the season-to-season spread of that gap. Ten seasons detect only large gaps there. Anything less is a tie, and a tie favours the model you already run.
+
+**Check zeros.** Off-season weeks and intermittent series need their own check. Chronos's scaling keeps zeros as zeros, and its authors name sparse series as a failure case[^1]. Moirai's mixture includes a negative binomial for counts[^2]. Beyond that, none of the four papers, as I read them, reports results for intermittent or zero-heavy series. Score those separately, against the methods of [Zeros and Tweedie](zeros-and-tweedie/zeros_and_tweedie.ipynb).
+
+**Check for overlap.** A private harvest series is unlikely to be in a public corpus; public inputs such as market prices may be. Search a published corpus such as LOTSA[^2]; a private one, as part of TimesFM's is[^3], cannot be searched. My suggestion: score at least one season after the model's release, which no pretraining corpus can contain.
+
+**Check covariates.** The versions of Chronos, TimesFM and Lag-Llama in these papers forecast from the series' own past (and, for Lag-Llama, the date) alone[^1]^,^[^3]^,^[^4]. If your current model wins through degree-days or orders to date, a univariate model cannot match it there. The TimesFM authors suggest regressing the zero-shot residuals on covariates[^3]. Newer models add covariates: Chronos-2, for one, reports large gains on tasks that have them[^7]. Whichever you test, the covariates must pass the as-of rule of [Leakage](leakage/leakage.ipynb).
+
+**Check governance.** These questions are this module's advice, not findings from the papers:
+
+- **Where does the data go?** Open weights run on your own machines keep your volumes in-house. A hosted API sends them to a vendor.
+- **What does the licence allow?** Read the licence of the weights, and of the pretraining data, before commercial use.
+- **Is the version pinned?** Fix the model version so the backtest and production use the same one. A silently updated model invalidates the backtest.
+
+**Fine-tuning changes the trial.** Chronos and Lag-Llama both improved markedly when fine-tuned[^1]^,^[^4], but a fine-tuned model is a trained model with hyperparameters. It needs the nested tuning of [Backtest design](backtest-design/backtest_design.ipynb) and a policy from [Retraining and drift](retraining-and-drift/retraining_and_drift.ipynb).
+
+::: {.callout-tip appearance="simple" icon=false}
+## What this means for you
+
+The evidence supports trying a foundation model as a candidate, not skipping your backtest. Zero-shot models did best at short horizons and daily-to-yearly frequencies[^5], which covers weekly produce forecasts a few weeks ahead. They did worse at long horizons, leakage flattered them where it was present[^5], and the versions in the original papers ignored covariates[^1]^,^[^3]^,^[^4]. These are my inferences from the papers, not tested on produce data:
+
+- A zero-shot model is most likely to help on series with little history and no useful covariates. It is least likely to help on series where your current model wins through inputs known at the origin.
+- In between, score the average of the two before choosing either one.
+:::
+
+## Key takeaways
+
+- Treat a foundation model as one more forecaster in your existing backtest. Give it the same origins, horizon, score and season-level comparison as every other model.
+- Before reading a benchmark, ask four things: whether the test data could have been in pretraining, how many origins and seasons were scored, which score ranked the models, and how hard the baselines were tuned.
+- Count the context in seasons, and check `peak_ratio` on short-season crops. Score zero-heavy series separately.
+- Score at least one season that falls after the model's release, so that no pretraining corpus can contain it.
+- Pin the model version, and record where the data is sent, before any forecast reaches a planner.
+
+## References
+
+[^1]: Ansari, A. F. et al. Chronos: learning the language of time series. Preprint at https://doi.org/10.48550/arXiv.2403.07815 (2024).
+[^2]: Woo, G. et al. Unified training of universal time series forecasting transformers. Preprint at https://doi.org/10.48550/arXiv.2402.02592 (2024).
+[^3]: Das, A., Kong, W., Sen, R. & Zhou, Y. A decoder-only foundation model for time-series forecasting. Preprint at https://doi.org/10.48550/arXiv.2310.10688 (2023).
+[^4]: Rasul, K. et al. Lag-Llama: towards foundation models for probabilistic time series forecasting. Preprint at https://doi.org/10.48550/arXiv.2310.08278 (2023).
+[^5]: Aksu, T. et al. GIFT-Eval: a benchmark for general time series forecasting model evaluation. Preprint at https://doi.org/10.48550/arXiv.2410.10393 (2024).
+[^6]: Shchur, O. et al. fev-bench: a realistic benchmark for time series forecasting. Preprint at https://doi.org/10.48550/arXiv.2509.26468 (2025).
+[^7]: Ansari, A. F. et al. Chronos-2: from univariate to universal forecasting. Preprint at https://doi.org/10.48550/arXiv.2510.15821 (2025).
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/n-beats-and-tft/n_beats_and_tft.html"><span>Previous</span>N-BEATS and TFT</a><a class="mf-up" href="/series/forecasting/index.html"><span>Series</span>Forecasting with Machine Learning</a><a class="mf-next" href="/blogs/retraining-and-drift/retraining_and_drift.html"><span>Next</span>Retraining and drift</a></div>
+<!-- CURRICULUM_FOOTER_END -->

@@ -182,14 +182,17 @@ parts:
       - id: forecasting/when-deep-learning-helps
         title: "When deep learning helps"
         level: intermediate
+        path: blogs/when-deep-learning-helps.md
       - id: forecasting/n-beats-and-tft
         title: "N-BEATS and TFT"
         level: advanced
+        path: blogs/n-beats-and-tft/n_beats_and_tft.ipynb
   - title: "Foundation models"
     modules:
       - id: forecasting/time-series-foundation-models
         title: "Time series foundation models"
         level: advanced
+        path: blogs/time-series-foundation-models.md
   - title: "In production"
     modules:
       - id: forecasting/retraining-and-drift

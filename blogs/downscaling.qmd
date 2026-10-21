@@ -1,0 +1,208 @@
+---
+title: Downscaling
+description: Why a global climate model's grid cell cannot tell a valley farm about its frost or heat, and how regional models and statistical methods bring projections down to the scale of a field.
+date: 2026-10-20
+categories:
+- climate
+- climate modeling
+- statistics
+- agriculture
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/prediction/index.html">Weather, Climate and Prediction</a><span class="sep">·</span>Part 10 · From global to local</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Comfort with averages and histograms. Python for the notebooks.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+A global climate model reports one value for a grid cell typically 100 to 200 km across. That value is an area average, and a farm is not average: a valley floor is warmer than the cell on a hot afternoon, and on a clear, calm night cold air drains into it. Downscaling brings coarse projections down to the scale that matters. Dynamical downscaling runs a finer regional model inside the global one; it adds value mainly in complex terrain, at coasts and for short extremes, but it is costly and inherits the global model's errors. Statistical downscaling learns a link between large-scale weather and local observations; it is cheap, but assumes the link still holds in a changed climate. Neither can see a frost pocket that no input describes.
+
+Before using a downscaled projection, ask what resolution and which method made it.
+:::
+
+## What one grid cell cannot see
+
+A global climate model gives one number per grid cell: the right answer to a question a grower never asks, the average over the whole cell. Global models typically run at 100 to 200 km and give no reliable information below about 200 km[^1]. (Land inside a cell is split by type, not position: [The land model: CLM](the-land-model-clm.qmd).)
+
+Two things make a valley farm differ from its cell, in opposite directions.
+
+- **Elevation.** Near-surface air is usually cooler higher up, so a valley floor below the cell's mean elevation is usually warmer than the cell by day. The rate of cooling with height is the **lapse rate**, $\Gamma$, in °C per km. Gridded data are often adjusted with a constant 6.5 °C per km, but in the Cascade Mountains Minder and colleagues measured annual means of 3.9 to 5.2 °C per km on the windward side, smallest (2.5 to 3.5) for late-summer minima and largest (6.5 to 7.5) for spring maxima[^10]. The widget uses 6.5 as the conventional value; at night it is the weakest part of the sketch.
+- **Cold-air pooling.** On a clear night the ground loses more long-wave radiation to the sky than it receives, the air in contact with it cools, and a stable layer forms that the weak winds cannot mix away. On slopes this denser air drains downhill and collects in the hollow, as [Frost, and the night the crop is lost](frost-and-the-night-the-crop-is-lost.qmd) describes. Wind stirs it out, and cloud or moist air slows the cooling, which is why pools belong to clear, calm, dry nights. A valley floor that was warmest at 3 p.m. can be the coldest place at 5 a.m.
+
+The widget is a synthetic 100 km transect through one coarse cell, with a plateau, a hill and a narrow valley; the terrain, lapse rate and pool are my choices, not any real place. The fine profile averages to the coarse-cell value, so the coarse model is perfect on its own terms. That is a simplification: a real cell's nightly minimum is not the mean of point minima, which occur at different times, and the model's temperature belongs to its own smoothed terrain height. Start on the night setting with the defaults, then set the pool strength to 0, then put it back to 6 and lower $\Gamma$ to 3, then switch to the afternoon.
+
+::: {.sim-card}
+#### One coarse cell, one valley (illustrative)
+
+```{ojs}
+//| echo: false
+viewof mode = Inputs.radio(["Clear, calm night", "Hot afternoon"], {value: "Clear, calm night", label: "Situation"})
+viewof tNight = Inputs.range([-4, 8], {value: 2, step: 0.5, label: "Night: coarse-cell minimum (°C)"})
+viewof tDay = Inputs.range([25, 40], {value: 33, step: 0.5, label: "Afternoon: coarse-cell maximum (°C)"})
+viewof lapse = Inputs.range([-2, 10], {value: 6.5, step: 0.5, label: "Lapse rate Γ (°C per km; below 0 = inversion)"})
+viewof pool = Inputs.range([0, 10], {value: 6, step: 0.5, label: "Night: cold-air pool strength at the floor (°C)"})
+viewof poolDepth = Inputs.range([20, 300], {value: 100, step: 10, label: "Night: pool depth above the floor (m)"})
+
+// Synthetic terrain: 700 m plateau, a 300 m hill at 20 km, a narrow valley at 60 km. Fine grid 0.25 km.
+dx = 0.25
+xs = d3.range(0, 100 + dx / 2, dx)
+elev = xs.map(x => 700 - 550 * Math.exp(-(((x - 60) / 5) ** 2)) + 300 * Math.exp(-(((x - 20) / 10) ** 2)))
+zMin = d3.min(elev)
+zMean = d3.mean(elev)
+night = mode === "Clear, calm night"
+tCell = night ? tNight : tDay
+thr = night ? 0 : 35
+
+// Lapse term minus pool deficit, shifted so the transect averages to the cell value.
+offset = elev.map(z => -lapse / 1000 * (z - zMean)
+  - (night ? pool * Math.max(0, 1 - (z - zMin) / poolDepth) : 0))
+meanOff = d3.mean(offset)
+fine = xs.map((x, i) => ({x, t: tCell + offset[i] - meanOff, z: elev[i]}))
+floor = fine[d3.minIndex(elev)]
+// Break-even pool: Γ × (mean elevation − floor) / (1 − mean pool shape).
+poolShape = d3.mean(elev, z => Math.max(0, 1 - (z - zMin) / poolDepth))
+breakEven = lapse / 1000 * (zMean - zMin) / (1 - poolShape)
+hit = fine.filter(d => night ? d.t <= thr : d.t >= thr).length * dx
+
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+sgn = v => (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(1)
+num = v => (v < 0 ? "−" : "") + Math.abs(v).toFixed(1)
+
+html`<div class="sim-readouts">
+  ${card("Coarse cell says", num(tCell) + " °C", "#f59e0b")}
+  ${card("Valley floor (fine profile)", num(floor.t) + " °C", "#38bdf8")}
+  ${card("Floor minus cell", sgn(floor.t - tCell) + " °C", "#38bdf8")}
+  ${card(night ? "Transect at or below 0 °C" : "Transect at or above 35 °C", hit.toFixed(2) + " km", "#ef4444")}
+  ${night ? card("Pool needed for floor = cell", num(breakEven) + " °C", "#10b981") : ""}
+</div>`
+
+Plot.plot({
+  height: 300, marginLeft: 50,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, 100], label: "Distance along transect (km) →", grid: true},
+  y: {label: "↑ Temperature (°C)", grid: true},
+  color: {legend: true, domain: ["Fine profile", "Coarse cell", "Threshold"],
+          range: ["#38bdf8", "#f59e0b", "#ef4444"]},
+  marks: [
+    Plot.ruleY([thr], {stroke: () => "Threshold", strokeDasharray: "4 4"}),
+    Plot.ruleY([tCell], {stroke: () => "Coarse cell", strokeWidth: 3}),
+    Plot.line(fine, {x: "x", y: "t", stroke: () => "Fine profile", strokeWidth: 2.5})
+  ]
+})
+
+Plot.plot({
+  height: 130, marginLeft: 50,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, 100], label: null, grid: true},
+  y: {domain: [0, 1100], label: "↑ Elevation (m)", grid: true},
+  marks: [
+    Plot.areaY(fine, {x: "x", y: "z", fill: "#64748b", fillOpacity: 0.6}),
+    Plot.ruleY([zMean], {stroke: "#f59e0b", strokeDasharray: "6 4"})
+  ]
+})
+```
+
+Synthetic terrain and parameters, chosen for illustration. Dashed line on the lower panel: the cell's mean elevation. The afternoon setting has no pool and uses the same Γ.
+:::
+
+At the defaults (cell minimum 2.0 °C, $\Gamma$ = 6.5 °C per km, a 6 °C pool 100 m deep) the coarse cell says 2.0 °C and the valley floor reads −0.2 °C: a frost the cell cannot show, on a night when the cell's average is exactly right. Set the pool strength to 0 and the floor reads 5.6 °C instead, 3.6 °C warmer than the cell, because it sits 554 m below the cell's mean elevation of 704 m and $554 \times 6.5 / 1000 = 3.6$ °C. Elevation alone would have the valley farm escape frost; pooling reverses the sign, but only because the chosen pool (6 °C) is stronger than the green readout, 3.7 °C: about $\Gamma$ times the 554 m height difference, slightly more because the pool also lowers the cell average. With the pool back at 6 °C, lower $\Gamma$ to 3 °C per km, nearer the Cascade minima above, and the break-even falls to 1.7 °C and the floor to −2.2 °C. In the afternoon, with a cell maximum of 33.0 °C, the floor reads 36.6 °C, past a 35 °C threshold the cell never reaches.
+
+The frost pocket in the widget is 0.75 km wide, under 1% of the transect: the places that matter most are small, and an average gives them almost no weight.
+
+How strong and deep can a real pool be? In Peter Sinks, a 1 km wide sinkhole in Utah, Clements and colleagues measured on clear, dry September nights a potential-temperature inversion of 22 K in 100 m, a net long-wave loss of 90 W m⁻² at the floor near sunset, and a buildup that depended on the flow above the basin[^11]. A closed sinkhole is extreme, but it shows why a pool in a hollow can be deeper than the 9 to 60 m flat-ground inversions in the frost module: slope drainage fills the basin from below, so the terrain sets the depth as well as the night. The widget's 100 m default is illustrative, not a measured value for any valley.
+
+## Dynamical downscaling: a finer model inside the coarse one
+
+Dynamical downscaling runs more physics at higher resolution over a smaller area. A **regional climate model** (RCM) contains the same representations of atmospheric dynamics and physics as a global model but covers only a region, at 50 km or finer; it is driven at the edges of its domain by winds, temperature and humidity from the global model, and at the surface by its sea surface temperatures[^1]. In the usual one-way nesting nothing feeds back from the regional model to the global one[^1]. By 2019 regional models had reached centennial simulation lengths and resolutions of a few kilometres, coordinated across groups through CORDEX, the World Climate Research Programme's initiative to run many regional models over many regions[^1]^,^[^2].
+
+What it costs. Their finer grid needs a time step of 5 min or less, against about 30 min for a global model[^1]. A rough scaling, my arithmetic: for a fixed area, a grid four times finer (100 km to 25 km) has $4^2 = 16$ times as many columns, and with a time step about four times shorter it takes $16 \times 4 = 64$ times as much computing, before any extra vertical levels.
+
+What it adds. "Added value" asks whether the finer model is closer to reality than its driving global model. Rummukainen's review[^3]:
+
+- Regional models run at 2 to 10 times the resolution of global ones; some now reach 1 to 5 km.
+- They add value where the land is varied (mountains, land–sea contrasts) and for short, sharp extremes; little for time-averaged fields over smooth terrain.
+- In projections there are no observations to check against, so added value is most credible where there is a clear physical reason for it.
+
+Two limits matter for a farm. A regional cell is itself an average: for precipitation extremes a 25 to 50 km model informs scales of about 100 km[^1]. And it inherits the global model's errors at its boundaries[^1]; Giorgi lists added value and projection uncertainty among the field's open issues[^2]. A 25 km model would split the widget's transect into four cells and still average the valley with the plateau. Seeing it would take a grid of a few hundred metres, and none of the reviews I read report climate runs that fine: runs at 5 km or less are very expensive and limited to short periods or small domains, such as a 2.2 km Alpine run[^1]. By the scaling above, going from 25 km to 250 m costs $100^2 \times 100 = 10^6$ times as much. Most of these reviews focus on precipitation, not temperature.
+
+## Statistical downscaling: learn the link from observations
+
+Statistical downscaling replaces extra physics with a learned relationship, cheap enough for every model and scenario. The most basic version is what the widget does with $\Gamma$: shift the cell's value by a lapse rate times the height difference. My placement in the taxonomy below: with a prescribed $\Gamma$ it is a one-parameter correction of model output, and with $\Gamma$ fitted to stations it is a one-predictor perfect-prognosis regression. Maraun and colleagues group the methods into three families[^1]; Maraun and Widmann's book covers them, with their assumptions, skill and limitations[^7].
+
+**Perfect prognosis (PP).** The name says the climate model's large-scale predictors are treated as if they were perfect. The link is fitted entirely on observations: local station data against observed large-scale fields, usually from a **reanalysis**, a best estimate of the global weather state built by combining observations with a weather model's forecasts[^1]. The fitted link is then fed predictors from a climate model:
+
+$$Y(t) = f\big(X_1(t), X_2(t), \dots\big) + \eta(t)$$
+
+where $Y$ is the local predictand (say, a valley station's daily minimum, °C), $X_1, X_2, \dots$ are large-scale predictors at time $t$ (such as the cell's temperature, humidity and wind), $f$ is the fitted link (a regression or a weather-type classification), and $\eta$ is local variability the predictors do not explain[^1]. Modelling $\eta$, rather than dropping it, lets the method reproduce variability and extremes[^1]. My inference: for the frost pocket the predictors should include the ingredients of a radiation night (light wind, clear sky, dry air), not only temperature.
+
+**Model output statistics (MOS).** Fit the relationship between *simulated* variables and local observations instead, so that the statistics also correct the model's errors. The idea comes from weather forecasting[^5]; in climate work it is valid only for the model it was calibrated with[^1].
+
+**Weather generators** produce long synthetic daily series with a station's statistics, shifted by a climate model's change factors or conditioned on large-scale weather[^1]; conventional ones often under-represent year-to-year variability[^6].
+
+The price of cheapness is two assumptions for PP: the predictors must be well simulated by the climate model, and the link must be stationary, stable over time; predictors that carry the warming signal are needed[^1]. Stationarity can be tested, not proven: calibrate on the coldest or driest years and validate on the warmest or wettest[^1]. An early comparison found weather-pattern methods reproduced present-day daily precipitation but captured only part of its simulated change in variability[^4].
+
+::: {.callout-note collapse="true"}
+## How bias correction fits in
+
+**Bias correction** adjusts a model's output so that its statistics, often its whole distribution through **quantile mapping** (adjusting the model's cumulative distribution over a calibration period to match the observed one[^1]), match observations over a reference period. It is a form of MOS[^1], covered in [Bias correction](bias-correction.qmd), and is often used as if it also downscaled. Maraun and colleagues show the limits[^8]: it has a limited ability to correct and downscale variability, can produce implausible change signals, cannot overcome major model errors, and a typical cross-validation cannot detect its misuse.
+
+Stationarity bites harder here: a long-period distribution mixes different weather situations, and if their frequencies change, the correction may no longer apply[^1]. My inference: a mapping from a cell's minima to a valley station's learns that the station is colder on average, but if clear, calm nights become more or less common, it will misstate how often the pocket freezes.
+:::
+
+## Using a downscaled projection for an orchard or berry farm
+
+Questions to ask of any downscaled projection before a planting, variety or frost-protection decision (my inferences, not tested procedures):
+
+1. **What resolution?** A 12 km product is a 12 km average; a block in a hollow, on a slope or near a coast differs from it.
+2. **Which method?** Dynamical: which global model drove it, with which known errors? Statistical: which predictors, tested on years unlike the calibration years?
+3. **Bias-corrected to what?** A product corrected to a gridded data set inherits its resolution, not your site.
+4. **Does it carry the variable you need?** Frost risk at bloom depends on nightly minima on specific nights, not monthly means. Ask whether daily minima and their variability were evaluated.
+5. **Use the change, not the level.** Apply the projected change to a climatology from your own or a nearby station, as in [What a climatology is](what-a-climatology-is.qmd); this assumes the local difference stays fixed, so say so.
+6. **Look at more than one projection.** Several global models and methods give a range, but agreement is not proof of reliability, because errors can be shared[^1].
+7. **Measure the pocket.** A season or two of a flower-height logger on the coldest block, compared with the nearest long station, gives the local correction no projection contains.
+
+::: {.callout-tip}
+## What this means for you
+
+My inferences, not tested on a real farm:
+
+- Read a grid-cell projection as the air mass over your region, not your block, and ask whether the method could have seen cold-air pooling at all.
+- Your own night-temperature record is the link between any projection and the crop.
+:::
+
+## Key takeaways
+
+- An elevation correction alone can get the sign of a valley's night-time difference wrong; pooling can outweigh it.
+- Expect added value from a regional model in mountains, at coasts and for short extremes, and little for smooth-terrain averages.
+- Do not mistake bias correction for downscaling: matching a cell's distribution to a station's does not add the physics that makes the station different.
+
+## References
+
+[^1]: Maraun, D. et al. Precipitation downscaling under climate change: recent developments to bridge the gap between dynamical models and the end user. *Rev. Geophys.* **48**, RG3003 (2010). https://doi.org/10.1029/2009RG000314
+
+[^2]: Giorgi, F. Thirty years of regional climate modeling: where are we and where are we going next? *J. Geophys. Res. Atmos.* **124**, 5696–5723 (2019). https://doi.org/10.1029/2018JD030094
+
+[^3]: Rummukainen, M. Added value in regional climate modeling. *WIREs Clim. Change* **7**, 145–159 (2016). https://doi.org/10.1002/wcc.378
+
+[^4]: Wilby, R. L. & Wigley, T. M. L. Downscaling general circulation model output: a review of methods and limitations. *Prog. Phys. Geogr.* **21**, 530–548 (1997). https://doi.org/10.1177/030913339702100403
+
+[^5]: Glahn, H. R. & Lowry, D. A. The use of model output statistics (MOS) in objective weather forecasting. *J. Appl. Meteorol.* **11**, 1203–1211 (1972). https://doi.org/10.1175/1520-0450(1972)011%3C1203:TUOMOS%3E2.0.CO;2
+
+[^6]: Wilks, D. S. & Wilby, R. L. The weather generation game: a review of stochastic weather models. *Prog. Phys. Geogr.* **23**, 329–357 (1999). https://doi.org/10.1177/030913339902300302
+
+[^7]: Maraun, D. & Widmann, M. *Statistical Downscaling and Bias Correction for Climate Research* (Cambridge University Press, 2018). https://doi.org/10.1017/9781107588783
+
+[^8]: Maraun, D. et al. Towards process-informed bias correction of climate change simulations. *Nat. Clim. Change* **7**, 764–773 (2017). https://doi.org/10.1038/nclimate3418
+
+[^10]: Minder, J. R., Mote, P. W. & Lundquist, J. D. Surface temperature lapse rates over complex terrain: lessons from the Cascade Mountains. *J. Geophys. Res. Atmos.* **115**, D14122 (2010). https://doi.org/10.1029/2009JD013493
+
+[^11]: Clements, C. B., Whiteman, C. D. & Horel, J. D. Cold-air-pool structure and evolution in a mountain basin: Peter Sinks, Utah. *J. Appl. Meteorol.* **42**, 752–768 (2003). https://doi.org/10.1175/1520-0450(2003)042%3C0752:CSAEIA%3E2.0.CO;2
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/heatwaves-in-a-warming-climate.html"><span>Previous</span>Heatwaves in a warming climate</a><a class="mf-up" href="/series/prediction/index.html"><span>Series</span>Weather, Climate and Prediction</a><a class="mf-next" href="/blogs/bias-correction.html"><span>Next</span>Bias correction</a></div>
+<!-- CURRICULUM_FOOTER_END -->

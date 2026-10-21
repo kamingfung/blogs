@@ -218,5 +218,6 @@ The 2021 heatwave hit the same region. Portland's 46.7 °C air temperature alone
 [^6]: Yang, F.-H., Bryla, D. R. & Strik, B. C. Critical temperatures and heating times for fruit damage in northern highbush blueberry. *HortScience* **54**, 2231–2239 (2019). https://doi.org/10.21273/HORTSCI14427-19
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/return-periods.html"><span>Previous</span>Return periods</a><a class="mf-up" href="/series/prediction/index.html"><span>Series</span>Weather, Climate and Prediction</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/extreme-value-theory/extreme_value_theory.html"><span>Previous</span>Extreme value theory</a><a class="mf-up" href="/series/prediction/index.html"><span>Series</span>Weather, Climate and Prediction</a><a class="mf-next" href="/blogs/downscaling.html"><span>Next</span>Downscaling</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+
