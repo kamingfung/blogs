@@ -1,0 +1,209 @@
+---
+title: Reading a climate projection
+description: How to read a projection plot or map without being misled, from the baseline and the shaded spread to the three sources of uncertainty, robustness hatching and warming levels.
+date: 2026-10-21
+categories:
+- climate
+- climate modeling
+- statistics
+- agriculture
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/prediction/index.html">Weather, Climate and Prediction</a><span class="sep">·</span>Part 11 · Climate scenarios</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Comfort with averages and histograms. Python for the notebooks.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+A climate projection is a change from a stated baseline period, given by many models under one or more scenarios, and each model run is one possible sequence of weather. Read four things before the number: what the change is measured from, whether the line is one run or an average, what the shading spans, and whether it is labelled by year or by global warming level. Uncertainty comes from three sources, and their shares change with lead time. Over the next two decades, natural year-to-year and decade-to-decade swings and differences between models dominate; the choice of emissions scenario takes over later in the century. In this module's synthetic toy, for the decade 2035–2044, the shares are 48% natural variability, 46% models and 7% scenario. On IPCC maps, hatching marks places where models do not agree well enough to call the change robust.
+
+For a 15–20-year planting decision, plan for the spread, not the average line.
+:::
+
+Whether it is a chart from your national climate service or a map in an IPCC report, a projection shows how much warmer or wetter a future period may be than a past one, according to a set of climate models. The models and scenarios behind it are introduced in [CMIP and the SSPs](cmip-and-the-ssps.qmd).
+
+## What the line and the shading are
+
+Every projection plot answers "how much warmer than *when*?", and the answer is in the axis label or caption, not in the line.
+
+**The baseline.** A projection is an [anomaly](anomalies/anomalies.ipynb): a future period's average minus a baseline period's average. Two charts with different baselines give different numbers for the same future, so check the baseline before comparing them.
+
+::: {.callout-note collapse="true"}
+## Converting between the two IPCC baselines
+
+The IPCC's sixth assessment (AR6) uses 1850–1900 as its stand-in for pre-industrial conditions and the baseline for global warming levels, and 1995–2014 for many model projections[^4]. It says changes relative to 1995–2014 can be found approximately by subtracting 0.85 °C, its best estimate of observed global warming between the two[^3]. So 2 °C of global warming above 1850–1900 is about $2.0 - 0.85 = 1.15$ °C above 1995–2014. That offset is for the global mean; a region's own offset differs, so do not apply 0.85 to a local map (my inference). A baseline also has its own noise: a 20-year average is a sample, as [What a climatology is](what-a-climatology-is.qmd) shows.
+:::
+
+**One run, or an average.** Each model run starts from slightly different conditions and so produces its own sequence of warm and cool years, as chaos guarantees ([Why can't we forecast rain six months out?](rainfall-predictability/why-cant-we-forecast-rain-six-months-out.ipynb)). A single run is one possible weather history, not the model's forecast of 2037. Running one model 40 times, Deser and colleagues estimated that this variability explains at least half of the spread between models in projected 2005–2060 trends, in an earlier model generation (CMIP3)[^2]. Two models that disagree may simply have drawn different weather.
+
+**The thick line and the band.** A thick line is usually the multi-model mean, which averages most of that weather away; Hawkins and Sutton warn that it should not be assumed to be the best prediction, or even an unbiased one[^1]. The band is the spread across models, sometimes across runs too; check whether it is the full range or a percentile range (AR6's "very likely range" is a 90% interval[^4]). Spread measures disagreement between models, not a measured error.
+
+## Three sources of uncertainty, and how their shares move
+
+The band has three causes, and which one dominates at your planning horizon tells you what is worth worrying about:
+
+- **Internal variability**: natural swings of the climate that happen without any change in greenhouse gases, and can reverse a long-term trend for a decade or so[^1].
+- **Model uncertainty**: different models, given the same inputs, simulate different changes.
+- **Scenario uncertainty**: future emissions are unknown.
+
+Hawkins and Sutton found that for the next few decades the spread in regional temperature projections comes mostly from internal variability and model differences, and that the scenario becomes the largest source only late in the century, over much of the globe[^1]. Internal variability matters more the smaller the region and the shorter the averaging period[^1]. Their percentages are in the collapsed note after the widget.
+
+The widget is a synthetic toy that reproduces their pattern qualitatively, not their numbers. It has 10 "models" × 3 "scenarios" × 5 runs of a regional annual temperature. The top chart shows each source's **share of the variance**: of the total spread across all 150 runs (measured as variance, the square of the standard deviation), the fraction each source causes; the three add to 100%. Start at the default decade, 2035–2044. Drag the decade to 2015 and to 2090. Then set the year-to-year swing σ to 0.2 °C and to 1.0 °C. As an illustration only (the toy is fitted to nothing), 0.2 °C stands for the annual mean of a large region and 1.0 °C for a single site.
+
+::: {.sim-card}
+#### Where the spread comes from (synthetic toy)
+
+```{ojs}
+//| echo: false
+viewof start = Inputs.range([2015, 2090], {value: 2035, step: 5, label: "Decade starting in"})
+viewof sigma = Inputs.range([0.1, 1.2], {value: 0.5, step: 0.1, label: "Year-to-year swing, bigger for smaller regions (σ, °C)"})
+viewof kSD = Inputs.range([0, 0.5], {value: 0.3, step: 0.05, label: "How much models disagree (κ)"})
+
+// Synthetic, not CMIP output: 10 models x 3 scenarios x 5 runs of a regional
+// annual temperature, 1995-2100. Fixed seeds, so every reader sees the same runs.
+gauss = seed => { let s = seed;
+  const rand = () => { s = s + 0x6D2B79F5 | 0; let t = Math.imul(s ^ s >>> 15, 1 | s);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  return () => Math.sqrt(-2 * Math.log(1 - rand())) * Math.cos(2 * Math.PI * rand()); }
+YEARS = d3.range(1995, 2101)
+NM = 10
+NR = 5
+SCEN = [-0.0002, 0.00005, 0.0003]   // curvature after 2020, °C per year², low / middle / high
+G = SCEN.map(b => YEARS.map(y => 0.03 * (y - 2005) + b * Math.max(0, y - 2020) ** 2))
+zModel = { const g = gauss(1); return d3.range(NM).map(() => g()); }
+k = zModel.map(z => 1 + kSD * z)
+// Unit-variance AR(1) weather noise, phi = 0.5; run (m, s, r) is row (m * 3 + s) * NR + r.
+noise = { const g = gauss(2026); return d3.range(NM * 3 * NR).map(() => { let e = g();
+  return YEARS.map((y, i) => i === 0 ? e : (e = 0.5 * e + Math.sqrt(0.75) * g())); }); }
+win = (a, y0, y1) => d3.mean(a.slice(y0 - 1995, y1 - 1994))
+change = (a, y0) => win(a, y0, y0 + 9) - win(a, 1995, 2014)
+
+part = y0 => {
+  const f = G.map(g => k.map(km => km * change(g, y0)));   // forced change [scenario][model]
+  const n = noise.map(r => change(r, y0));
+  const I = sigma ** 2 * d3.mean(d3.range(NM * 3), j => d3.variance(n.slice(j * NR, j * NR + NR)));
+  const M = d3.mean(f, fs => d3.variance(fs));
+  const S = d3.variance(f, fs => d3.mean(fs));
+  const runs = d3.range(NM * 3 * NR).map(i => f[Math.floor(i / NR) % 3][Math.floor(i / NR / 3)] + sigma * n[i]);
+  return {I, M, S, T: I + M + S, f, n, runs};
+}
+SRC = ["Internal variability", "Model", "Scenario"]
+curve = d3.range(2015, 2091).flatMap(y0 => { const p = part(y0);
+  return [p.I, p.M, p.S].map((v, j) => ({mid: y0 + 4.5, source: SRC[j], share: 100 * v / p.T})); })
+now = part(start)
+one = d3.range(NR).map(r => now.f[1][0] + sigma * now.n[NR + r])   // model 1, middle scenario
+pc = v => (100 * v / now.T).toFixed(0) + "%"
+card = (label, value, colour) => html`<div class="sim-readout"><div class="sim-readout-label">${label}</div><div class="sim-readout-value" style="color:${colour}">${value}</div></div>`
+html`<div class="sim-readouts">
+  ${card("Internal variability share", pc(now.I), "#f59e0b")}
+  ${card("Model share", pc(now.M), "#38bdf8")}
+  ${card("Scenario share", pc(now.S), "#10b981")}
+  ${card(`${start}–${start + 9}: middle 90% of 150 runs`, d3.quantile(now.runs, 0.05).toFixed(1) + " to " + d3.quantile(now.runs, 0.95).toFixed(1) + " °C", "#cbd5e1")}
+  ${card("One model's five runs differ by", (d3.max(one) - d3.min(one)).toFixed(2) + " °C", "#cbd5e1")}
+</div>`
+Plot.plot({height: 260, marginLeft: 50, style: {background: "transparent", color: "#cbd5e1"},
+  x: {label: "Decade centre →", domain: [2019.5, 2094.5], tickFormat: "d"}, y: {label: "↑ Share of variance (%)", domain: [0, 100], grid: true},
+  color: {legend: true, domain: SRC, range: ["#f59e0b", "#38bdf8", "#10b981"]},
+  marks: [Plot.areaY(curve, {x: "mid", y: "share", fill: "source", order: SRC, fillOpacity: 0.85}),
+          Plot.ruleX([start + 4.5], {stroke: "#ffffff", strokeWidth: 2})]})
+runLine = (m, r) => { const raw = YEARS.map((y, i) => k[m] * G[1][i] + sigma * noise[(m * 3 + 1) * NR + r][i]);
+  const b = d3.mean(raw.slice(0, 20)); return raw.map((t, i) => ({year: YEARS[i], t: t - b, id: `${m}-${r}`})); }
+LINES = ["Other models, one run each", "Model 1, five runs", "Multi-model mean"]
+Plot.plot({height: 260, marginLeft: 50, style: {background: "transparent", color: "#cbd5e1"},
+  x: {label: "Year →", tickFormat: "d"}, y: {label: "↑ Change from 1995–2014 (°C)", grid: true},
+  color: {legend: true, domain: LINES, range: ["#64748b", "#38bdf8", "#ffffff"]},
+  marks: [Plot.rect([{x1: start, x2: start + 10}], {x1: "x1", x2: "x2", fill: "#f59e0b", fillOpacity: 0.15}),
+    Plot.line(d3.range(1, NM).flatMap(m => runLine(m, 0)), {x: "year", y: "t", z: "id", stroke: () => LINES[0], strokeOpacity: 0.6}),
+    Plot.line(d3.range(NR).flatMap(r => runLine(0, r)), {x: "year", y: "t", z: "id", stroke: () => LINES[1], strokeWidth: 1.2}),
+    Plot.line(YEARS.map((y, i) => ({year: y, t: d3.mean(k, km => km * (G[1][i] - d3.mean(G[1].slice(0, 20))))})),
+      {x: "year", y: "t", stroke: () => LINES[2], strokeWidth: 2.5, strokeDasharray: "6 4"})]})
+```
+
+Top: share of the spread from each source, by decade; the white line marks the chosen decade. Bottom: the middle scenario only, with the chosen decade shaded. Synthetic toy, seeds 1 and 2026; parameters in the note below.
+:::
+
+At the defaults, the decade 2035–2044 is 48% internal variability, 46% model and 7% scenario, and the middle 90% of the 150 runs spans 0.5 to 1.7 °C. Set σ to 0.2 °C and the same decade becomes 13% internal, 76% model and 11% scenario; set it to 1.0 °C and it becomes 79%, 19% and 3%. The smaller the area, the more natural swings dominate.
+
+In the lower chart, model 1's five runs differ by 0.38 °C for 2035–2044 with identical physics and forcing: each is a weather history, not a model result.
+
+::: {.callout-note collapse="true"}
+## How the shares are computed, in the paper and in the toy
+
+Skip this unless you want the maths.
+
+**Hawkins and Sutton (2009)[^1].** They used 15 models from CMIP3, one run each under three emissions scenarios (SRES B1, A1B and A2). A smooth polynomial fitted to each run gave the forced part and the residuals gave internal variability; model uncertainty was the (weighted) variance across models of the fits, and scenario uncertainty the variance of the three multi-model means, assumed independent so that they add. Scenario uncertainty contributed very little for lead times under about 30 years, for regional as well as global temperature. For the first decade ahead, internal variability was 40–60% of the total in most regions; by the fourth decade, model uncertainty dominated almost everywhere, above 70% at high latitudes; by the ninth decade, the scenario dominated over much of the globe, though model uncertainty still led at high latitudes. They call the method simple and the estimates likely lower limits, and the models and scenarios are a generation older than today's.
+
+**The toy.** For model $m$, scenario $s$, run $r$ and year $y$, the regional annual temperature (°C) is
+
+$$T_{msr}(y) = k_m F_s(y) + \sigma\,\varepsilon_{msr}(y)$$
+
+where $F_s(y) = 0.03\,(y - 2005) + b_s \max(0,\,y - 2020)^2$ is the forced warming (°C), with $b_s = -0.0002$, $0.00005$ and $0.0003$ °C yr⁻² for the low, middle and high scenarios; $k_m = 1 + \kappa z_m$ is the model's sensitivity factor (dimensionless), with $z_m$ ten fixed standard normal draws and $\kappa$ the disagreement slider; $\sigma$ (°C) is the year-to-year swing; and $\varepsilon$ is unit-variance noise with a year-to-year correlation of 0.5. A run's change is its decade mean minus its own 1995–2014 mean. Because the toy is built from known parts, the sources separate exactly: internal $I$ is $\sigma^2$ times the variance across the five runs, averaged over the 30 model–scenario pairs; model $M$ is the variance across models of the forced change, averaged over scenarios; scenario $S$ is the variance across scenarios of the multi-model mean forced change. Each share is that part over $I + M + S$.
+
+At the defaults, models overtake internal variability in the decade starting 2036 and the scenario overtakes the models in the decade starting 2058. By 2090–2099 the scenario takes 74%, with the low, middle and high multi-model means at 1.7, 3.2 and 4.8 °C. Every toy number is my choice; none is fitted to any region.
+:::
+
+## Reading a map: robust changes and warming levels
+
+A projection map packs two answers into one picture, the size of the change and how far to trust it, and the second is in the overlay. AR6's markers on maps of model projections[^4]:
+
+| Marker | In plain words | AR6 rule |
+|---|---|---|
+| No overlay | Models agree; read the colour | ≥80% of models agree on the sign (advanced maps also need ≥66% to show a change larger than natural variability) |
+| Diagonal lines (///) | Models split on whether it goes up or down | <80% agree on the sign |
+| Reverse diagonals (\\\\\\) | Too few models show a change bigger than natural swings | No robust signal (advanced maps) |
+| Crossed lines | Models show clear changes, but in opposite directions | Significant change, low agreement |
+
+On maps of observations, an "x" marks a trend that is not statistically significant[^4]. Other papers use dots ("stippling") for any of these, so read the caption every time. Agreement on the sign is not agreement on the size, and models that agree can share an error ([Downscaling](downscaling.qmd)). AR6 also notes that grid-cell hatching is not informative for larger areas, where averaging reduces small-scale variability[^3]: a hatched cell over your farm and a confident regional average do not contradict each other.
+
+**Years or warming levels.** A map labelled "2041–2060, SSP2-4.5" answers *when*, for one scenario. A map labelled "2 °C global warming level" answers *what it looks like when the world is 2 °C warmer* than 1850–1900, averaging the 20 years around when each model run reaches that level, across all models and scenarios that reach it[^3]^,^[^4]. For temperature, precipitation and their extremes, the pattern at a given level depends little on the scenario that got there; *when* the level arrives does depend on it[^4]. [CMIP and the SSPs](cmip-and-the-ssps.qmd) covers the timing.
+
+## Using a projection in a 15–20-year berry or orchard plan
+
+A blueberry or orchard block planted now crops through roughly the 2040s, where natural variability and model differences, not the scenario, set most of the uncertainty. Everything in this section is my inference from the sources above, not a tested procedure.
+
+**Where to get the numbers.** [CMIP and the SSPs](cmip-and-the-ssps.qmd#from-a-global-number-to-your-site) lists sources for regional and site projections. Before using one, check how it was brought down to field scale ([Downscaling](downscaling.qmd)) and corrected ([Bias correction](bias-correction.qmd)).
+
+**A worked example, with placeholders.** Say a variety needs $R$ units of winter chill, measured with one particular chill model ([Chill hours and dormancy](chill-hours-and-dormancy.qmd) explains why the model matters). No real numbers are given here; use your nursery's or your own trial figure.
+
+1. **Read the edges, not the middle.** From a projection of *winter* temperature for your region, read the cool edge and the warm edge of the band for the decade that matters, say 2035–2044 for a block planted in 2026. To show the arithmetic only, borrow the toy's middle 90%: +0.5 °C and +1.7 °C on the 1995–2014 baseline.
+2. **Shift your own record.** Take hourly winter temperatures from your station, ideally covering the baseline years, and add each edge in turn. This is the delta-change method of [Bias correction](bias-correction.qmd); it assumes the shape of each night and each winter stays the same, which a warmer climate need not respect.
+3. **Count chill per winter** at each edge, with the same chill model the requirement was measured in, and count the winters that fall short of $R$.
+4. **Read the result.** If winters fall short often at the warm edge but rarely at the cool edge, the variety is exposed but not ruled out; if they fall short often even at the cool edge, look at lower-chill types ([Highbush, lowbush and rabbiteye](highbush-lowbush-rabbiteye.qmd)). The same steps work for days above a heat threshold your variety suffers from ([Heatwaves in a warming climate](heatwaves-in-a-warming-climate.qmd)).
+
+Before relying on the result:
+
+- **Check the baseline** of every source, and use many models and runs: a product built on one model run inherits its weather and its biases.
+- **Expect a cool decade too.** AR6 notes that near-term cooling at any particular location could occur and would still be consistent with global warming[^3].
+- **Trust rainfall less than temperature.** Models agree less on it, and internal variability is larger[^1]; forced changes in temperature can be detected earlier, with fewer runs, than those in precipitation[^2].
+
+::: {.callout-tip}
+## What this means for you
+
+My inferences, not tested on a real farm:
+
+- For a 15–20-year decision, test the plan at both edges of the band across models and runs; at that horizon, picking a scenario matters less than people expect.
+- Ask whether the variety and site still work in a warm-edge decade, not only in the average one.
+:::
+
+## Key takeaways
+
+- Two models that disagree over the next 20 years may only have drawn different weather; compare averages over several runs.
+- For lead times under about 30 years, put effort into sampling models and runs rather than choosing among scenarios.
+- Hatching is about agreement on direction at grid-cell scale; it says nothing about the size of the change and can disappear when you average over a region.
+- Use warming-level maps for "what would 2 °C look like here" and scenario-by-year maps for "when".
+
+## References
+
+[^1]: Hawkins, E. & Sutton, R. The potential to narrow uncertainty in regional climate predictions. *Bull. Am. Meteorol. Soc.* **90**, 1095–1108 (2009). https://doi.org/10.1175/2009BAMS2607.1
+
+[^2]: Deser, C., Phillips, A., Bourdette, V. & Teng, H. Uncertainty in climate change projections: the role of internal variability. *Clim. Dyn.* **38**, 527–546 (2012). https://doi.org/10.1007/s00382-010-0977-x
+
+[^3]: IPCC. Summary for Policymakers. In *Climate Change 2021: The Physical Science Basis. Contribution of Working Group I to the Sixth Assessment Report of the Intergovernmental Panel on Climate Change* (eds Masson-Delmotte, V. et al.) 3–32 (Cambridge Univ. Press, 2021). https://doi.org/10.1017/9781009157896.001
+
+[^4]: Arias, P. A. et al. Technical Summary. In *Climate Change 2021: The Physical Science Basis. Contribution of Working Group I to the Sixth Assessment Report of the Intergovernmental Panel on Climate Change* (eds Masson-Delmotte, V. et al.) 35–144 (Cambridge Univ. Press, 2021). https://doi.org/10.1017/9781009157896.002
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/cmip-and-the-ssps.html"><span>Previous</span>CMIP and the SSPs</a><a class="mf-up" href="/series/prediction/index.html"><span>Series</span>Weather, Climate and Prediction</a></div>
+<!-- CURRICULUM_FOOTER_END -->

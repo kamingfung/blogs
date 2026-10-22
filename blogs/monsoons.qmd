@@ -1,0 +1,200 @@
+---
+title: Monsoons
+description: What a monsoon is, how the North American, South Asian, East Asian and West African monsoons start, stall and end, how El Niño shifts them, and what that means for berry regions in Mexico and China.
+date: 2026-10-21
+categories:
+- climate
+- meteorology
+- forecasting
+- agriculture
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/prediction/index.html">Weather, Climate and Prediction</a><span class="sep">·</span>Part 5 · Modes of variability</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">Comfort with averages and histograms. Python for the notebooks.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+A monsoon is a seasonal reversal of wind and rain. For a few months moist wind blows in from the sea and it rains hard; then the wind turns and the land dries out. The old explanation is a giant sea breeze: land heats faster than ocean in summer. The fuller picture is the tropical rain belt following the sun north and south, with land heating helping decide how far it reaches. North America, South Asia, East Asia and West Africa each have one. Start dates wander: over Kerala, in southern India, the mean onset is about 1 June, give or take 8–9 days. Mid-season the rain can stall for a week or more. El Niño tilts the odds toward a weak Indian monsoon without deciding it. In Mexico, USDA reports that every berry type dips in July–September; in China, Guizhou and Sichuan harvest blueberries from May to August, which by our reading overlaps the summer rains.
+
+Plan around the rainy-season calendar as a window, not a date, and shift it with the season's outlook.
+:::
+
+**Why it matters for fruit.** In western Mexico and southern China the summer rains fall inside or beside the berry harvest, so their timing shapes harvest windows, tunnel use and irrigation. The sources below support that for Mexican blackberries; for other berries and for China it is our inference.
+
+## What a monsoon is
+
+A monsoon decides when a region is dry and when it is soaked. Knowing how it works explains why the rains arrive in a window rather than on a date.
+
+The textbook picture is a sea breeze the size of a continent. In summer the land heats faster than the sea, air over the land rises and pressure falls, and moist air is drawn in from the ocean. In winter the gradient reverses and dry wind blows out to sea. For over 300 years that was the standard view[^1]. Gadgil argues from satellite and ground observations that the monsoon is better seen as the **intertropical convergence zone (ITCZ)**, the band of rising air and heavy rain that circles the tropics, moving onto the land for the summer[^1]. The two pictures are compatible as a sketch: heating sets up the low pressure, and the rain belt follows.
+
+::: {.callout-note collapse="true"}
+## Sea breeze or rain belt?
+
+Gadgil also finds vertical moist stability, how readily moist air overturns, a key control on monthly convection over ocean and land[^1]. In both pictures, heat released as the rising moist air condenses deepens the low that feeds it; that feedback is standard background, not a claim from the sources cited here, and [Why rising air cools](why-rising-air-cools.qmd) and [What lifts the air](what-lifts-the-air.qmd) cover the physics.
+:::
+
+The widget runs the sea-breeze picture on its own, with synthetic settings, so you can see what it explains and what it misses.
+
+::: {.sim-card}
+#### Land, sea and the toy monsoon
+
+It shows why a deep ocean delays the peak in land–sea contrast, not when any real place gets rain. Start at the defaults, then set the ocean to 10 m and 100 m.
+
+```{ojs}
+//| echo: false
+viewof depth = Inputs.range([10, 100], {value: 50, step: 5, label: "Ocean mixed layer (m)"})
+viewof need = Inputs.range([0, 8], {value: 3, step: 0.5, label: "Rain threshold (toy, °C of land–sea contrast)"})
+
+// Toy energy balance per surface: C dT/dt = F(t) - λT, with sunshine peaking at the
+// June solstice (day 172). Synthetic settings: equilibrium swing ±15 °C, λ = 20 W m⁻² K⁻¹,
+// water 4.2e6 J m⁻³ K⁻¹, land stores heat like 1 m of water.
+w = 2 * Math.PI / 365
+resp = h => { const x = w * h * 4.2e6 / 20 / 86400;
+              return {amp: 15 / Math.sqrt(1 + x * x), lag: Math.atan(x) / w}; }
+landR = resp(1)
+seaR = resp(depth)
+days = d3.range(1, 366).map(d => {
+  const land = landR.amp * Math.cos(w * (d - 172 - landR.lag));
+  const sea = seaR.amp * Math.cos(w * (d - 172 - seaR.lag));
+  return {d, land, sea, gap: land - sea};
+})
+// First day the land-minus-sea contrast crosses the threshold upward (onset) or downward (end).
+cross = up => { const p = days.find((p, i) => { const q = days[(i + 364) % 365];
+  return up ? p.gap >= need && q.gap < need : p.gap < need && q.gap >= need; });
+  return p ? p.d : null; }
+onset = cross(true)
+ending = cross(false)
+peak = d3.greatest(days, p => p.gap)
+mon = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+cum = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334]
+date = d => { const m = d3.bisectRight(cum, d - 1) - 1; return (d - cum[m]) + " " + mon[m]; }
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div></div>`
+
+html`<div class="sim-readouts">
+  ${card("Toy rains start / end", onset === null ? "never: threshold above the peak contrast"
+         : date(onset) + " / " + date(ending), "#10b981")}
+  ${card("Largest land–sea contrast", peak.gap.toFixed(1) + " °C on " + date(peak.d), "#f59e0b")}
+  ${card("Sea peaks after land by", (seaR.lag - landR.lag).toFixed(0) + " days", "#38bdf8")}
+</div>`
+
+Plot.plot({
+  width: Math.min(width, 640), height: 260, marginLeft: 40,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {label: null, ticks: cum.filter((c, i) => i % 2 === 0).map(c => c + 1),
+      tickFormat: d => mon[d3.bisectRight(cum, d - 1) - 1]},
+  y: {label: "↑ Temperature anomaly (°C)", grid: true},
+  color: {legend: true, domain: ["Land", "Sea", "Land minus sea"], range: ["#f59e0b", "#38bdf8", "#10b981"]},
+  marks: [
+    Plot.ruleY([0], {stroke: "#94a3b8"}),
+    Plot.ruleY([need], {stroke: "#10b981", strokeDasharray: "4 4"}),
+    Plot.lineY(days.flatMap(p => [{d: p.d, v: p.land, k: "Land"}, {d: p.d, v: p.sea, k: "Sea"},
+                                  {d: p.d, v: p.gap, k: "Land minus sea"}]),
+               {x: "d", y: "v", stroke: "k", strokeWidth: 2})
+  ]
+})
+```
+
+The dashed line is your rain threshold. Below zero in winter the sea is warmer than the land and the toy wind blows offshore. The toy's rain dates match no real region.
+:::
+
+At the defaults (50 m of ocean, 3 °C threshold) the sea peaks about 63 days after the land, the contrast peaks at 13.3 °C on 29 May, and the toy's "rains" run from 12 March to 15 August. The real monsoon disagrees: over Kerala the mean onset falls between 30 May and 2 June[^2], and rain over India peaks in late July[^3], about two months after the toy's peak. With a 10 m ocean the sea keeps pace (21 days behind), the contrast peaks at only 5.2 °C on 16 April, and the toy rains run 20 February to 11 June, which looks like a spring season, not a monsoon. A 100 m ocean pushes the peak to 14.4 °C on 10 June. In the toy, heat capacity sets the timing; in the real world it is one ingredient. Our reading: heating prepares the ground, and moisture and the migrating rain belt time the rain, which is why the toy cannot make a sudden onset, a break or a late peak.
+
+## Four monsoons and their calendars
+
+Every monsoon has a start, a stall and an end, and each can be off by weeks. For planning, you need the usual window and its scatter.
+
+| Monsoon | Where | Rainy season and its markers |
+|---|---|---|
+| North American | Centred on northwestern Mexico, reaching the US Southwest | Summer rains with a rapid onset[^4]^,^[^5]; no Jalisco or Michoacán dates found in the sources read |
+| South Asian | India, Bay of Bengal, Arabian Sea | Onset over Kerala about 1 June; peak late July; rains withdraw southward[^2]^,^[^3] |
+| East Asian | South China Sea, China, Japan | Rain surges over the South China Sea mid-May; mei-yu (China) and baiu (Japan) begin early to mid-June; the season retreats northward[^3] |
+| West African | Gulf of Guinea to the Sahel | Pre-onset 14 May, onset 24 June (means, 1968–90)[^6] |
+
+**Onset.** At Kerala the standard deviation of onset is 8–9 days, and over the last century the earliest and latest onsets were 7 May and 22 June, 46 days apart[^2]. A simple wind index matches India's officially declared onset in 90% of years[^7], and in West Africa onset dates were uncorrelated with how much rain the Sahel got that summer[^6]: an early start is not a promise of a wet season.
+
+**Breaks.** In July and August the Indian monsoon alternates between active spells and breaks, when rain over the central "core zone" falls well below normal for three days or more. From daily gridded rain for 1951–2007, Rajeevan, Gadgil and Bhate found that breaks last longer than active spells: almost 80% of active spells lasted 3–4 days against 40% of breaks, and 32% of breaks ran a week or longer. Yet 26% of years had no break at all[^8]. Rain usually returns when the cloud band moves north again[^8].
+
+**Withdrawal.** Rains do not end everywhere at once: the season retreats northward over East Asia but southward over India[^3].
+
+::: {.callout-note collapse="true"}
+## Calendar detail for each system
+
+**North American.** The monsoon is centred over northwestern Mexico; in the United States it is most pronounced over New Mexico and southern Arizona[^4]. Most of its moisture comes from the eastern tropical Pacific and the Gulf of California[^5].
+
+**South Asian.** Onset over Kerala switches on a large heat source over South Asia that lasts from June to September, fed with moisture by a low-level jet crossing the equator[^2]. Long, intense breaks have a circulation like the one before onset, with a heat trough over the subcontinent[^8].
+
+**East Asian.** The Asian rainy season starts in two phases: rain surges over the South China Sea in mid-May, then the rain band advances northwestward, starting the Indian rains and the Chinese mei-yu and Japanese baiu in early to mid-June. Rain peaks in late June over the mei-yu–baiu region and in late July over northern China[^3]. Sampe and Xie describe mei-yu–baiu as the main rainy season from central China to Japan, June to mid-July, anchored by the westerly jet[^9].
+:::
+
+## What shifts a monsoon from year to year
+
+Some of a monsoon's year-to-year swing can be anticipated from the oceans, but the links are tendencies with exceptions, and they differ by system.
+
+**ENSO and North America.** The link is weak. Adams and Comrie found the North American monsoon highly variable from year to year but not strongly tied to El Niño[^5]. Castro and colleagues found that El Niño and a high phase of a North Pacific pattern favour a weaker, southward-displaced high over the monsoon region, a late onset and a drier early summer in the US Southwest, and that these links fade later in the season[^10]. Both studies focus on the US side.
+
+**ENSO and East Asia.** Wang, Wu and Fu traced the route: an El Niño builds an unusual high over the Philippine Sea in late autumn that persists into the following spring or early summer, making it unusually wet along the rain front that stretches from southern China northeastward past Japan; La Niña tends to do the reverse[^11].
+
+**ENSO and India.** In a 132-year rainfall record, every severe Indian drought came with an El Niño, but not every El Niño brought a severe drought; El Niños with the warmest water in the central equatorial Pacific were more effective at producing drought than those warmest in the east[^12]. An earlier study suggested the link had weakened[^13]; whether that drift is real or chance is debated, as [Teleconnections](teleconnections.qmd) explains. The Indian Ocean Dipole, a west–east contrast in Indian Ocean sea temperature (standard background), can counter or reinforce ENSO's effect on Indian rain[^14].
+
+**How well can it be forecast?** A seasonal outlook is worth acting on only if it beats your [climatology](what-a-climatology-is.qmd), as [Why seasonal forecasting is possible at all](why-seasonal-forecasting-is-possible-at-all.qmd) explains. For India, official seasonal forecasts for 1989–2012 had a correlation of −0.12 with the rain that fell, while a research model reached 0.51 on the same years, where 1 would be perfect[^15].
+
+## What it means for berry regions
+
+Monsoon timing decides which harvest months are wet. Published evidence on berries is thin: two USDA reports, plus our labelled inferences.
+
+**Western Mexico.** USDA's Guadalajara office reports that Mexican berry output is concentrated in January–June and November–December, and that every berry type slumps in July–September[^16]. It attributes the summer drop to heavy rainfall only for blackberries, and describes Michoacán and Jalisco as having a summer rainy season, with irrigation managed to prevent waterlogging. For raspberries it gives summer as the low season and "intense abnormal rain" as one reason growers keep investing in tunnels. For blueberries it gives no rain explanation: growers are shifting the peak harvest into February–May to avoid competing with Peru, and use high tunnels against strong UV[^16]. Jalisco, Michoacán and Sinaloa supply 52%, 19% and 11% of blueberries in the report's state table[^16]. Sinaloa lies in northwestern Mexico, the centre of the monsoon[^4]; that Jalisco and Michoacán's summer rains belong to the same monsoon is our reading, not something these sources state.
+
+**Southern and southwestern China.** USDA's Beijing office reports blueberries grown in 26 of China's 34 provinces, with Guizhou, Liaoning, Shandong, Sichuan and Yunnan producing 76.8% of the 2021 crop and Yunnan the main source of fresh fruit[^17]. Its harvest calendar puts Guizhou and Sichuan in May–August, Shandong in April–July and Yunnan from November to June[^17]. The report does not mention rain. Our inference: Guizhou and Sichuan pick through the East Asian summer rainy season, and Yunnan's calendar skips July–October.
+
+**Rain at harvest.** As general horticultural background, not from these sources: rain on ripe fruit can split berries and favours grey mould (*Botrytis*). We found no study measuring either against monsoon rainfall in these regions.
+
+::: {.callout-tip}
+## What this means for you
+
+Our inference from the sources above, not tested on a farm.
+
+- **Plan with a window, not a date.** Kerala's onset has a standard deviation of 8–9 days[^2]; local onsets will have their own scatter. Two standard deviations, 2 × (8 to 9) = 16 to 18 days either side, is a reasonable first planning window until you have your own station record.
+- **Budget for a dry week mid-season.** In India 32% of breaks lasted a week or longer[^8]. Where your crop depends on monsoon rain, size irrigation for that.
+- **Jalisco and Michoacán.** The summer slump is already in the calendar[^16]. The published ENSO link is weak and studied mainly on the US side[^5]^,^[^10], so lean on local rain records and tunnel cover. Mexico's national weather service (SMN) publishes monthly rainfall outlooks three and six months ahead[^18].
+- **Yunnan, Guizhou, Sichuan after a strong El Niño.** The [ENSO](enso.qmd) module reports a strong El Niño under way in October 2026. If the pattern Wang and colleagues describe holds, spring and early summer 2027 would lean wet from southern China toward Japan[^11], which overlaps the Guizhou and Sichuan harvest. Treat that as a hypothesis to check against the China Meteorological Administration's seasonal predictions, issued by its Beijing Climate Center[^19], not a forecast.
+- **Ask an outlook for its track record.** Monsoon forecasts have a mixed record[^15]; act on one only if its issuer shows skill for your region and season.
+:::
+
+## Key takeaways
+
+- When someone quotes an onset date, ask for the spread; a single date hides 8–9 days of scatter at Kerala.
+- Count dry spells inside the season, not only the seasonal total.
+- Read an El Niño as a shift in a monsoon's odds that depends on the system: weak for the North American monsoon, a lagged spring–early-summer effect for East Asia, fairly strong for India.
+- Before reading an El Niño as an Indian drought warning, check where the Pacific warming sits and what the Indian Ocean is doing.
+- Berry evidence is mostly calendars and attaché reports. Build your own record of rain at harvest against fruit loss before relying on monsoon forecasts.
+
+## References
+
+[^1]: Gadgil, S. The Indian monsoon and its variability. *Annu. Rev. Earth Planet. Sci.* **31**, 429–467 (2003). https://doi.org/10.1146/annurev.earth.31.100901.141251
+[^2]: Joseph, P. V., Eischeid, J. K. & Pyle, R. J. Interannual variability of the onset of the Indian summer monsoon and its association with atmospheric features, El Niño, and sea surface temperature anomalies. *J. Clim.* **7**, 81–105 (1994). https://doi.org/10.1175/1520-0442(1994)007<0081:IVOTOO>2.0.CO;2
+[^3]: Wang, B. & LinHo. Rainy season of the Asian–Pacific summer monsoon. *J. Clim.* **15**, 386–398 (2002). https://doi.org/10.1175/1520-0442(2002)015<0386:RSOTAP>2.0.CO;2
+[^4]: Douglas, M. W., Maddox, R. A., Howard, K. & Reyes, S. The Mexican monsoon. *J. Clim.* **6**, 1665–1677 (1993). https://doi.org/10.1175/1520-0442(1993)006<1665:TMM>2.0.CO;2
+[^5]: Adams, D. K. & Comrie, A. C. The North American monsoon. *Bull. Am. Meteorol. Soc.* **78**, 2197–2213 (1997). https://doi.org/10.1175/1520-0477(1997)078<2197:TNAM>2.0.CO;2
+[^6]: Sultan, B. & Janicot, S. The West African monsoon dynamics. Part II: The "preonset" and "onset" of the summer monsoon. *J. Clim.* **16**, 3407–3427 (2003). https://doi.org/10.1175/1520-0442(2003)016<3407:TWAMDP>2.0.CO;2
+[^7]: Wang, B., Ding, Q. & Joseph, P. V. Objective definition of the Indian summer monsoon onset. *J. Clim.* **22**, 3303–3316 (2009). https://doi.org/10.1175/2008JCLI2675.1
+[^8]: Rajeevan, M., Gadgil, S. & Bhate, J. Active and break spells of the Indian summer monsoon. *J. Earth Syst. Sci.* **119**, 229–247 (2010). https://doi.org/10.1007/s12040-010-0019-4
+[^9]: Sampe, T. & Xie, S.-P. Large-scale dynamics of the meiyu-baiu rainband: environmental forcing by the westerly jet. *J. Clim.* **23**, 113–134 (2010). https://doi.org/10.1175/2009JCLI3128.1
+[^10]: Castro, C. L., McKee, T. B. & Pielke, R. A. Sr. The relationship of the North American monsoon to tropical and North Pacific sea surface temperatures as revealed by observational analyses. *J. Clim.* **14**, 4449–4473 (2001). https://doi.org/10.1175/1520-0442(2001)014<4449:TROTNA>2.0.CO;2
+[^11]: Wang, B., Wu, R. & Fu, X. Pacific–East Asian teleconnection: how does ENSO affect East Asian climate? *J. Clim.* **13**, 1517–1536 (2000). https://doi.org/10.1175/1520-0442(2000)013<1517:PEATHD>2.0.CO;2
+[^12]: Krishna Kumar, K., Rajagopalan, B., Hoerling, M., Bates, G. & Cane, M. Unraveling the mystery of Indian monsoon failure during El Niño. *Science* **314**, 115–119 (2006). https://doi.org/10.1126/science.1131152
+[^13]: Krishna Kumar, K., Rajagopalan, B. & Cane, M. A. On the weakening relationship between the Indian monsoon and ENSO. *Science* **284**, 2156–2159 (1999). https://doi.org/10.1126/science.284.5423.2156
+[^14]: Ashok, K., Guan, Z. & Yamagata, T. Impact of the Indian Ocean dipole on the relationship between the Indian monsoon rainfall and ENSO. *Geophys. Res. Lett.* **28**, 4499–4502 (2001). https://doi.org/10.1029/2001GL013294
+[^15]: Wang, B. et al. Rethinking Indian monsoon rainfall prediction in the context of recent global warming. *Nat. Commun.* **6**, 7154 (2015). https://doi.org/10.1038/ncomms8154
+[^16]: Mandujano, M. Mexico: Berry Annual Voluntary. USDA Foreign Agricultural Service GAIN report MX2026-0015 (11 March 2026). https://apps.fas.usda.gov/newgainapi/api/Report/DownloadReportByFileName?fileName=Berry%20Annual%20Voluntary_Guadalajara_Mexico_MX2026-0015.pdf
+[^17]: ATO Beijing. China: Blueberry Annual Voluntary 2023. USDA Foreign Agricultural Service GAIN report CH2023-0046 (12 April 2023). https://apps.fas.usda.gov/newgainapi/api/Report/DownloadReportByFileName?fileName=Blueberry%20Annual%20Voluntary%202023_Beijing%20ATO_China%20-%20People%27s%20Republic%20of_CH2023-0046.pdf
+[^18]: Servicio Meteorológico Nacional (CONAGUA). Pronóstico climático: precipitación (perspectiva trimestral y semestral). Accessed 21 October 2026. https://smn.conagua.gob.mx/es/climatologia/pronostico-climatico/precipitacion-form
+[^19]: Beijing Climate Center, China Meteorological Administration. Climate Prediction Division. Accessed 21 October 2026. https://bcc.ncc-cma.net/department/index/41
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/enso.html"><span>Previous</span>ENSO</a><a class="mf-up" href="/series/prediction/index.html"><span>Series</span>Weather, Climate and Prediction</a><a class="mf-next" href="/blogs/the-nao-and-blocking.html"><span>Next</span>The NAO and blocking</a></div>
+<!-- CURRICULUM_FOOTER_END -->

@@ -242,6 +242,6 @@ Our inference from the sources above, not published advice.
 [^20]: Karrei, M. A. Z., Fraisse, C. W., Her, Y. G. & Boyd, N. El Niño Southern Oscillation and chill accumulation variability in the southeastern United States. *Int. J. Climatol.* e70600 (2026). https://doi.org/10.1002/joc.70600
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/detrending/detrend_hk_temperature.html"><span>Previous</span>Decomposing Hong Kong temperature</a><a class="mf-up" href="/series/prediction/index.html"><span>Series</span>Weather, Climate and Prediction</a><a class="mf-next" href="/blogs/why-seasonal-forecasting-is-possible-at-all.html"><span>Next</span>Why seasonal forecasting is possible at all</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/moving-averages-and-their-pitfalls.html"><span>Previous</span>Moving averages and their pitfalls</a><a class="mf-up" href="/series/prediction/index.html"><span>Series</span>Weather, Climate and Prediction</a><a class="mf-next" href="/blogs/monsoons.html"><span>Next</span>Monsoons</a></div>
 <!-- CURRICULUM_FOOTER_END -->
 

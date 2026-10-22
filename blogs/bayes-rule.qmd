@@ -259,3 +259,4 @@ These are my inferences from the arithmetic above, not tested recommendations.
 <!-- CURRICULUM_FOOTER_START -->
 <div class="mf"><a class="mf-prev" href="/blogs/heavy-tails.html"><span>Previous</span>Heavy tails</a><a class="mf-up" href="/series/statistics/index.html"><span>Series</span>Statistics</a><a class="mf-next" href="/blogs/priors-in-practice/priors_in_practice.html"><span>Next</span>Priors in practice</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+

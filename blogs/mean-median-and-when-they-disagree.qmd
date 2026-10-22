@@ -231,3 +231,4 @@ Trimming works in whole values: `int(0.1 * 7)` is zero, so here `trim_mean(x, 0.
 <!-- CURRICULUM_FOOTER_START -->
 <div class="mf"><a class="mf-prev" href="/blogs/histograms-quantiles-and-qq-plots.html"><span>Previous</span>Histograms, quantiles and QQ plots</a><a class="mf-up" href="/series/statistics/index.html"><span>Series</span>Statistics</a><a class="mf-next" href="/blogs/variance-and-standard-error.html"><span>Next</span>Variance and standard error</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+

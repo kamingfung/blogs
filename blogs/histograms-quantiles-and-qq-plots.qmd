@@ -296,3 +296,4 @@ My own inference: if the Q–Q plot is straight, the mean and standard deviation
 <!-- CURRICULUM_FOOTER_START -->
 <div class="mf"><a class="mf-up" href="/series/statistics/index.html"><span>Series</span>Statistics</a><a class="mf-next" href="/blogs/mean-median-and-when-they-disagree.html"><span>Next</span>Mean, median, and when they disagree</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+

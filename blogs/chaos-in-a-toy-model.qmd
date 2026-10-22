@@ -1,0 +1,287 @@
+---
+title: Chaos in a toy model
+description: How two runs of the Lorenz equations that start a billionth apart separate exponentially, and what that growth rate says about the two-week limit on weather forecasts.
+date: 2026-10-21
+categories:
+- meteorology
+- chaos theory
+- forecasting
+- simulation
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/prediction/index.html">Weather, Climate and Prediction</a><span class="sep">·</span>Part 2 · Limits of prediction</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Assumes <a href="/blogs/rainfall-predictability/why-cant-we-forecast-rain-six-months-out.html">Why can&#x27;t we forecast rain six months out?</a>.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+In a chaotic system a small error grows by the same factor in every equal stretch of time: it doubles, doubles again, and soon swamps the forecast. The Lorenz equations of 1963, a three-variable toy of convection, show this cleanly; there a tiny error doubles on average every 0.77 model time units. That doubling time sets the limit. A perfect model started from slightly wrong numbers still fails, and making the starting numbers ten times more accurate buys one fixed slice of extra time, not ten times as much. The path stays inside a bounded butterfly-shaped region, so long-run statistics remain predictable after the path is lost. Real weather models show the same pattern, losing day-to-day skill after roughly two weeks. In practice: past that horizon, plan with climatology and probabilities, not a single forecast run.
+:::
+
+The [previous module](rainfall-predictability/why-cant-we-forecast-rain-six-months-out.ipynb) showed two Lorenz runs peeling apart and said, in words, that weather forecasts lose skill after about two weeks. This one measures how fast they peel apart and uses that rate to explain why a better model cannot remove the limit and why better observations push it back so slowly.
+
+## Two runs, one tiny difference
+
+The payoff of this section is a feel for exponential error growth: a gap far too small to see grows into a complete disagreement after a predictable amount of time, and the time depends on the starting gap only weakly.
+
+The Lorenz system is three coupled equations for how three quantities change over time. Lorenz built it as a simple model of cellular convection, a toy rather than a model of the atmosphere, and found that all its solutions are unstable to small changes and almost all are non-periodic[^1]:
+
+$$
+\begin{aligned}
+\frac{dx}{dt} &= \sigma (y - x) \\
+\frac{dy}{dt} &= x(\rho - z) - y \\
+\frac{dz}{dt} &= xy - \beta z
+\end{aligned}
+$$
+
+where $t$ is dimensionless model time and $\sigma = 10$, $\rho = 28$ and $\beta = 8/3$ are fixed constants, the same values as in the previous module. As background from standard treatments (the 1963 abstract I read does not spell it out), the system is a drastic truncation of the equations for convection in a fluid layer heated from below: $x$ is proportional to the intensity of the convective overturning, $y$ to the temperature difference between rising and sinking currents, and $z$ to the distortion of the vertical temperature profile from a straight line, all dimensionless; $\sigma$ is the Prandtl number (viscosity over thermal diffusivity), $\rho$ the Rayleigh number scaled by its critical value for convection to start, and $\beta$ a geometric factor set by the shape of the convection cells. Nothing in these equations is random. Given the same start, a computer produces the same path every time.
+
+The widget runs the equations twice with a fourth-order Runge–Kutta scheme (step $0.01$ time units). Run A starts on the attractor; run B starts at the same point with $x$ nudged by $\delta_0$, set by the slider as a power of ten ($-5$ means $10^{-5}$). The second panel shows the 3-D distance between the two runs on a log scale, so exponential growth appears as a straight rising line. "Diverged" means the gap first reaches a threshold, by default 1. Two unrelated points on the attractor sit a median distance of about 18 apart (from my own sample of 20,000 random pairs along a 1,000-time-unit run), and the exponential law describes the gap only while it is much smaller than that, so 1 is the honest default; thresholds of 3 and 10 are there to show the curve bending over as the gap approaches the size of the attractor.
+
+::: {.sim-card}
+#### Two Lorenz runs, one nudged
+
+```{ojs}
+//| echo: false
+viewof logDelta = Inputs.range([-9, -1], {value: -5, step: 1, label: "log₁₀ δ₀"})
+viewof THRESH = Inputs.radio([1, 3, 10], {value: 1, label: "Diverged at gap"})
+
+// Lorenz 1963 with sigma = 10, rho = 28, beta = 8/3; classic RK4, step 0.01.
+SIG = 10.0
+RHO = 28.0
+BET = 8.0 / 3.0
+H = 0.01
+LAMBDA = 0.90     // largest Lyapunov exponent, measured in the text
+
+lz = (s) => [SIG * (s[1] - s[0]), s[0] * (RHO - s[2]) - s[1], s[0] * s[1] - BET * s[2]]
+
+rk4 = (s) => {
+  const k1 = lz(s);
+  let a = [0, 1, 2].map(i => s[i] + H / 2 * k1[i]);
+  const k2 = lz(a);
+  a = [0, 1, 2].map(i => s[i] + H / 2 * k2[i]);
+  const k3 = lz(a);
+  a = [0, 1, 2].map(i => s[i] + H * k3[i]);
+  const k4 = lz(a);
+  return [0, 1, 2].map(i => s[i] + H / 6 * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]));
+}
+
+// Spin up for 20 time units from (0, 1, 1.05) so run A starts on the attractor.
+start = {
+  let s = [0.0, 1.0, 1.05];
+  for (let i = 0; i < 2000; i++) s = rk4(s);
+  return s;
+}
+
+runs = {
+  const d0 = parseFloat(`1e${logDelta}`);
+  let a = start, b = [start[0] + d0, start[1], start[2]];
+  const rows = [], path = [];
+  let tDiv = null, divA = null, divB = null;
+  for (let i = 1; i <= 4000; i++) {
+    a = rk4(a); b = rk4(b);
+    const gap = Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+    if (tDiv === null && gap >= THRESH) {
+      tDiv = i * H;
+      divA = {x: a[0], z: a[2], run: "Run A"};
+      divB = {x: b[0], z: b[2], run: "Run B"};
+    }
+    if (i % 4 === 0) {
+      const t = i * H;
+      rows.push({t, xa: a[0], xb: b[0], gap: Math.max(gap, 1e-12),
+                 pred: Math.min(d0 * Math.exp(LAMBDA * t), 100)});
+      path.push({x: a[0], z: a[2], run: "Run A"}, {x: b[0], z: b[2], run: "Run B"});
+    }
+  }
+  return {d0, rows, path, tDiv, divs: tDiv === null ? [] : [divA, divB],
+          ends: [{x: a[0], z: a[2], run: "Run A"}, {x: b[0], z: b[2], run: "Run B"}]};
+}
+
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${card("Initial difference δ₀", runs.d0.toExponential(0), "#cbd5e1")}
+  ${card(`Gap reaches ${THRESH} at t =`, runs.tDiv === null ? "not by t = 40" : runs.tDiv.toFixed(2), "#ef4444")}
+  ${card(`Estimate ln(${THRESH}/δ₀)/λ`, (Math.log(THRESH / runs.d0) / LAMBDA).toFixed(2), "#a78bfa")}
+  ${card("Doublings needed", Math.log2(THRESH / runs.d0).toFixed(1), "#10b981")}
+</div>`
+
+Plot.plot({
+  height: 260,
+  marginLeft: 45,
+  // Plot paints its own white ground otherwise, which the dark card fights.
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, 40], label: "Model time →", grid: true},
+  y: {domain: [-22, 22], label: "↑ x", grid: true},
+  color: {legend: true, domain: ["Run A", "Run B"], range: ["#38bdf8", "#f59e0b"]},
+  marks: [
+    Plot.line(runs.rows, {x: "t", y: "xa", stroke: () => "Run A", strokeWidth: 1.6}),
+    Plot.line(runs.rows, {x: "t", y: "xb", stroke: () => "Run B", strokeWidth: 1.6, strokeDasharray: "5 3"}),
+    runs.tDiv === null ? null : Plot.ruleX([runs.tDiv], {stroke: "#ef4444", strokeWidth: 1.5})
+  ]
+})
+
+Plot.plot({
+  height: 260,
+  marginLeft: 55,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, 40], label: "Model time →", grid: true},
+  y: {type: "log", domain: [1e-10, 100], label: "↑ Gap between runs", grid: true},
+  color: {legend: true, domain: ["Gap", "δ₀ e^(λt), λ = 0.90", "Diverged"],
+          range: ["#10b981", "#a78bfa", "#ef4444"]},
+  marks: [
+    Plot.line(runs.rows, {x: "t", y: "pred", stroke: () => "δ₀ e^(λt), λ = 0.90", strokeWidth: 1.5, strokeDasharray: "6 4"}),
+    Plot.line(runs.rows, {x: "t", y: "gap", stroke: () => "Gap", strokeWidth: 2}),
+    Plot.ruleY([THRESH], {stroke: "#ef4444", strokeOpacity: 0.6}),
+    runs.tDiv === null ? null : Plot.ruleX([runs.tDiv], {stroke: () => "Diverged", strokeWidth: 1.5})
+  ]
+})
+
+Plot.plot({
+  height: 260,
+  marginLeft: 45,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [-22, 22], label: "x →", grid: true},
+  y: {domain: [0, 50], label: "↑ z", grid: true},
+  color: {legend: true, domain: ["Run A", "Run B"], range: ["#38bdf8", "#f59e0b"]},
+  marks: [
+    Plot.line(runs.path.filter(d => d.run === "Run A"), {x: "x", y: "z", stroke: "run", strokeWidth: 0.8, strokeOpacity: 0.8}),
+    Plot.line(runs.path.filter(d => d.run === "Run B"), {x: "x", y: "z", stroke: "run", strokeWidth: 0.8, strokeOpacity: 0.6}),
+    // Where each run is at the moment the gap reaches the threshold.
+    Plot.dot(runs.divs, {x: "x", y: "z", fill: "run", stroke: "#ef4444", strokeWidth: 2.5, r: 7}),
+    // Where each run is at t = 40.
+    Plot.dot(runs.ends, {x: "x", y: "z", fill: "run", stroke: "#ffffff", strokeWidth: 2.5, r: 7})
+  ]
+})
+```
+
+Top: $x(t)$ for both runs. Middle: the gap on a log scale, with the red line at the divergence threshold. Bottom: both paths seen side-on, the butterfly, with red-ringed dots where the two runs were at the divergence time and white-ringed dots where they are at $t = 40$. Set the slider to −1, then −5, then −9, and compare the red divergence time; then try thresholds 3 and 10 and watch the gap flatten as it nears the size of the attractor.
+:::
+
+At the default settings ($\delta_0 = 10^{-5}$, threshold 1) the two runs are indistinguishable until the gap reaches 1 at $t = 15.34$. With the threshold at 1, the slider's range gives:
+
+| $\delta_0$ | Gap reaches 1 at $t =$ | Estimate $\ln(1/\delta_0)/0.90$ | Lag |
+|---|---|---|---|
+| $10^{-1}$ | 4.78 | 2.56 | 2.22 |
+| $10^{-3}$ | 9.42 | 7.68 | 1.74 |
+| $10^{-5}$ | 15.34 | 12.79 | 2.55 |
+| $10^{-7}$ | 19.28 | 17.91 | 1.37 |
+| $10^{-9}$ | 23.93 | 23.03 | 0.90 |
+
+Shrinking the initial error a hundred-million-fold, from $10^{-1}$ to $10^{-9}$, extends the agreement from 4.78 to 23.93 time units: $23.93 / 4.78 = 5.0$ times longer, not $10^8$ times. The estimate column and the lag are explained in the next section.
+
+## One number for the growth: the Lyapunov exponent
+
+This section turns the straight line in the middle panel into a single rate, which is what lets you predict the divergence time for any starting error without running anything.
+
+When the gap is small, it grows on average like
+
+$$d(t) \approx d_0 \, e^{\lambda t}$$
+
+where $d(t)$ is the distance between the two runs at time $t$, $d_0$ is the starting distance, and $\lambda$ is the **largest Lyapunov exponent**, the average exponential growth rate of a small error, in units of one per model time unit. A positive $\lambda$ is the working definition of chaos: errors grow exponentially on average. Two derived numbers are easier to hold in your head:
+
+- the **doubling time** $T_2 = \ln 2 / \lambda$, how long a small error takes to double;
+- the **predictability time** $T_p = \frac{1}{\lambda} \ln \frac{D}{d_0}$, how long a starting error $d_0$ takes to reach a tolerance $D$ beyond which the forecast is useless (here $D$ is the widget's threshold).
+
+For the Lorenz system with these constants I measured $\lambda = 0.90$ per time unit (method below), so $T_2 = 0.693 / 0.90 = 0.77$ time units. Going from $10^{-9}$ to 1 is a factor of $10^{9}$, which is $\log_2 10^{9} = 29.9$ doublings, or $29.9 \times 0.77 = 23.0$ time units; the run took 23.93. Every measured time in the table is later than its estimate, by between 0.90 and 2.55 time units, for two reasons.
+
+- **A slow start.** The nudge is purely in $x$, which is not the direction in which errors grow fastest, and it has to rotate into that direction before it grows at the full rate. In my Python run at $\delta_0 = 10^{-9}$, the gap had grown only 1.5-fold by $t = 3$, where the average rate predicts $e^{0.90 \times 3} = 14.9$-fold. Making up that shortfall alone costs $\ln(14.9 / 1.5) / 0.90 = 2.5$ time units, which is the size of most lags in the table.
+- **Uneven growth afterwards.** How fast a small gap grows depends on where on the attractor the runs are. The growth rate over a short stretch is the **finite-time** (or local) **Lyapunov exponent**; $\lambda$ is its average over a very long time. The gap therefore grows in bursts and lulls, visible as steps in the middle panel, and the lag depends on whether the threshold falls just after a burst. The smallest lag, 0.90 at $10^{-9}$, is such a case: between $t = 23.03$ and $t = 23.93$ the gap grew from 0.096 to 1.01, tenfold in 0.90 time units, a local rate of $\ln 10 / 0.90 = 2.6$ per time unit, nearly three times the average.
+
+With a threshold of 3 or 10 a third effect enters: the gap is no longer small next to the attractor, its growth slows as it saturates, and the crossing time partly measures that bend-over rather than exponential growth.
+
+Because the local rate varies, predictability depends on the starting state: some starts stay predictable for longer than $T_p$ suggests and some for less. Measuring that state-dependent spread for each day's forecast is what an ensemble does; see [Ensemble forecasts](ensemble-forecasts.qmd).
+
+::: {.callout-note collapse="true"}
+## How the exponent was measured
+
+Run two copies of the system a tiny distance apart, $10^{-8}$. Every 0.1 time units, record how much the gap has grown, $\ln(d/10^{-8})$, then pull copy B back along the same direction to distance $10^{-8}$ so the gap never leaves the small-error regime. The average growth per unit time over a long run is $\lambda$. This is the standard renormalisation (Benettin) approach. Over 2,000 time units, starting from the same on-attractor point as the widget, it gives $\lambda = 0.903$, which the text and widget round to 0.90.
+
+Copy this (plain Python, no libraries beyond `math`; runs in a few seconds):
+
+```python
+import math
+
+def lorenz(s, sig=10.0, rho=28.0, beta=8.0 / 3.0):
+    x, y, z = s
+    return (sig * (y - x), x * (rho - z) - y, x * y - beta * z)
+
+def rk4(s, h=0.01):
+    k1 = lorenz(s)
+    k2 = lorenz([s[i] + h / 2 * k1[i] for i in range(3)])
+    k3 = lorenz([s[i] + h / 2 * k2[i] for i in range(3)])
+    k4 = lorenz([s[i] + h * k3[i] for i in range(3)])
+    return tuple(s[i] + h / 6 * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]) for i in range(3))
+
+a = (0.0, 1.0, 1.05)
+for _ in range(2000):                      # spin up onto the attractor
+    a = rk4(a)
+eps, b, total = 1e-8, (a[0] + 1e-8, a[1], a[2]), 0.0
+for i in range(1, 200_001):                # 2,000 time units
+    a, b = rk4(a), rk4(b)
+    if i % 10 == 0:                        # renormalise every 0.1 time units
+        d = math.dist(a, b)
+        total += math.log(d / eps)
+        b = tuple(a[k] + (b[k] - a[k]) * eps / d for k in range(3))
+lam = total / (200_000 * 0.01)
+print(f"lambda = {lam:.3f}, doubling time = {math.log(2) / lam:.2f}")
+```
+:::
+
+One Lorenz time unit is not a day, so $\lambda = 0.90$ says nothing directly about the atmosphere; only the shape of the argument carries over.
+
+## Why a better model does not remove the limit
+
+The answer first: in the widget the model is perfect, and the runs still part. The limit comes from the growth rate of the system being forecast.
+
+Both runs use exactly the same equations, so there is no model error at all; the only difference is the starting point. A real forecast also has model error, which adds a second source of drift, and better models do reduce that. But the error from imperfect starting conditions grows at whatever rate the real atmosphere imposes, and a faithful model is one that reproduces that rate. In my framing, which is an inference rather than a sourced result, a better model moves its growth rates towards the true ones rather than lowering them: a higher-resolution model resolves faster error growth at small scales, so its small-scale detail may be lost sooner, more realistically. Real models can get growth rates wrong in either direction, and a model whose errors grow too slowly looks more predictable than the atmosphere is, which is overconfidence rather than skill.
+
+Better observations do help, through the logarithm in $T_p$. Making $d_0$ ten times smaller adds $\ln 10 / \lambda = 2.303 / 0.90 = 2.56$ time units, which is $\log_2 10 = 3.32$ doublings, whatever $d_0$ was to begin with. The table above shows gains of this size: each hundredfold improvement bought between 3.94 and 5.92 time units, against $2 \times 2.56 = 5.1$ expected. Every extra slice of forecast time costs another tenfold improvement in the initial state.
+
+Real weather models behave the same way. Zhang and colleagues ran a 9-km version of the European Centre for Medium-Range Weather Forecasts (ECMWF) ensemble twice: once with initial-condition perturbations sized to the current uncertainty in ECMWF's analysis (their "EDA" ensemble), and once with the amplitude of every initial perturbation cut to 10% of that ("EDA0.1"), which leaves about 1% of the perturbation kinetic energy. The spread between members saturated, meaning the forecast had lost its day-to-day information, at about 10–12 days in the first case and 14–15 days in the second, a delay of 3–4 days for a tenfold improvement[^2]. They concluded that midlatitude weather may have an intrinsic limit near two weeks even with nearly perfect models and initial conditions.
+
+If 3–4 days is what one factor of ten buys, and a factor of ten is 3.32 doublings, the effective error doubling time in that experiment is about $3/3.32 = 0.9$ to $4/3.32 = 1.2$ days. That is my rough inference from their numbers, not a figure they report, and I have not checked it against published doubling times.
+
+The real atmosphere is harsher than the toy in one respect. Lorenz-63 has a single growth rate, so in principle every tenfold improvement buys the same 2.56 time units forever. Lorenz proposed in 1969 that in a flow with many scales of motion, two states that start a small observational error apart become as different as two randomly chosen states within a finite time that cannot be lengthened by reducing the initial error. In his model each scale had its own finite range: with his chosen constants, cumulus-scale motions were predictable about an hour ahead, weather-system (synoptic) scales a few days and the largest scales a few weeks[^3]. Zhang and colleagues summarise the mechanism as errors growing faster at smaller scales and spreading upscale[^2]. Past a point, even the logarithmic gain runs out.
+
+## Bounded but unpredictable
+
+The payoff here is the other half of chaos: the path is lost, but the region it lives in, and the statistics of that region, are not.
+
+Look at the bottom panel of the widget. Both runs trace the same two-lobed shape, the Lorenz attractor, but they do not stay together on it. Set the slider to −9: the red-ringed dots, where the runs were at the moment of divergence, almost touch, while the white-ringed dots at $t = 40$ are 18.0 apart (my Python run of the same integration). At the default of −5 they happen to be only 1.9 apart at $t = 40$: after saturation the runs wander independently and can pass close by chance, which is not agreement. In my 1,000-time-unit run, $x$ stayed between −18.8 and 19.3 and $z$ between 1.9 and 47.2. The system circles one lobe for a while, then switches to the other at irregular moments; in the same run it spent 48% of the time on the $x > 0$ lobe, and the average of $z$ was 23.6. A second 1,000-unit run from a different start, $(5, -3, 30)$, gave 50% and the same average $z$ of 23.6, so these long-run statistics do not depend on where you begin. Which lobe the system will be on at $t = 40$ is not knowable from a starting error of $10^{-5}$.
+
+This split is the toy version of weather and [climate](climate-vs-weather/climate-vs-weather.ipynb). Day-to-day weather is a position on the attractor and is lost after a couple of weeks. A [climatology](what-a-climatology-is.qmd), the long-run distribution of weather at a place and season, is the shape of the attractor and stays predictable. Forecasters work between the two by running many members from slightly different starts and reading the spread ([Ensemble forecasts](ensemble-forecasts.qmd)).
+
+::: {.callout-tip}
+## What this means for you
+
+These points are my own inferences from the results above, not findings of the cited studies.
+
+- If a model of yours takes weather forecasts as inputs, measure its skill by lead time against a [climatology baseline](persistence-and-climatology-baselines.qmd), using a [skill score](skill-scores.qmd). Expect the weather inputs to stop adding day-specific skill somewhere around 10–15 days, as in the ECMWF experiment.
+- Beyond that horizon, feed the model climatological distributions or seasonal-outlook probabilities, not a single forecast run.
+- Do not expect a more precise input dataset to extend a useful horizon in proportion. Under exponential growth, ten times more precise buys a fixed few doubling times.
+:::
+
+## Key takeaways
+
+- Read error growth on a log axis. A straight line means exponential growth, and its long-run slope is the Lyapunov exponent; a line that bends over means the error has saturated and the forecast has nothing left to say.
+- Treat $\lambda$ as an average. The local growth rate varies with the state, so a predictability time from $\lambda$ is a typical value, not a guarantee for any one start; the spread of an ensemble is the per-start answer.
+- Quote predictability as a doubling time or a predictability time, $T_p = \frac{1}{\lambda}\ln\frac{D}{d_0}$, not as a vague "chaotic". It turns "how much would better data help?" into arithmetic.
+- Separate the two error sources when judging a forecast system: model error, which better models reduce, and initial-condition error, which only better observations and data assimilation reduce, and only logarithmically.
+- In a many-scale system such as the atmosphere, assume even that logarithmic gain runs out; the current evidence puts the midlatitude limit near two weeks.
+- Treat a chaotic system's statistics as the predictable product once the path is lost: ranges, frequencies and averages over the attractor.
+
+## References
+
+[^1]: Lorenz, E. N. Deterministic nonperiodic flow. *J. Atmos. Sci.* **20**, 130–141 (1963). https://doi.org/10.1175/1520-0469(1963)020<0130:DNF>2.0.CO;2
+[^2]: Zhang, F. et al. What is the predictability limit of midlatitude weather? *J. Atmos. Sci.* **76**, 1077–1091 (2019). https://doi.org/10.1175/JAS-D-18-0269.1
+[^3]: Lorenz, E. N. The predictability of a flow which possesses many scales of motion. *Tellus* **21**, 289–307 (1969). https://doi.org/10.3402/tellusa.v21i3.10086
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/rainfall-predictability/why-cant-we-forecast-rain-six-months-out.html"><span>Previous</span>Why can&#x27;t we forecast rain six months out?</a><a class="mf-up" href="/series/prediction/index.html"><span>Series</span>Weather, Climate and Prediction</a><a class="mf-next" href="/blogs/ensemble-forecasts.html"><span>Next</span>Ensemble forecasts</a></div>
+<!-- CURRICULUM_FOOTER_END -->
