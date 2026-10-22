@@ -1,0 +1,219 @@
+---
+title: Ensemble forecasts
+description: Forecast centres run many slightly different forecasts at once, and the share that agree on an event is a probability only as good as the ensemble's spread is honest.
+date: 2026-10-21
+categories:
+- meteorology
+- forecasting
+- statistics
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/prediction/index.html">Weather, Climate and Prediction</a><span class="sep">·</span>Part 2 · Limits of prediction</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Assumes <a href="/blogs/chaos-in-a-toy-model.html">Chaos in a toy model</a>.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Protect when the calibrated chance of loss is higher than your cost-to-loss ratio, the cost of protecting divided by the loss it prevents. An ensemble forecast is where that chance comes from. Forecast centres run many forecasts at once, each from a slightly different but plausible starting state and often with slightly different model physics, because small errors in today's weather grow until one forecast cannot be trusted on its own. Counting members gives a probability: if 12 of 20 are below 0 °C, the raw ensemble says 60%. How far the members spread out tells you how far to trust the forecast, and that changes from day to day. Raw ensembles are usually too confident, so the real outcome falls outside all the members too often. Probabilities calibrated against past forecasts and observations correct much of this, and they are the ones to use for decisions.
+
+Ask whether a frost probability is calibrated for your site, then compare it with your own cost-to-loss ratio.
+:::
+
+## Why one forecast is not enough
+
+A single forecast cannot tell you how much to trust it; a set of forecasts can. Ensembles trade some detail for honesty about uncertainty: each member runs on a coarser grid than the centre's single best forecast, and the errors they reveal grow with lead time until the forecast is no better than climatology[^2].
+
+::: {.callout-note collapse="true"}
+## The figures behind that sentence
+
+When Leutbecher and Palmer wrote the review this module mainly draws on, the European Centre for Medium-Range Weather Forecasts (ECMWF) ran 50 perturbed forecasts and one unperturbed one on a grid of about 50 km, against about 25 km for its single best forecast. In their ECMWF example, the difference between forecasts started 12 hours apart doubled in about 2 days and had nearly saturated by about 20 days[^2]. Operational ensembles have of the order of 10 to 100 members[^2]^,^[^3].
+:::
+
+The reason is chaos. A forecast starts from an estimate of today's weather built from imperfect observations, and runs a model that approximates what it cannot resolve. Leutbecher and Palmer call these initial-condition errors and model errors, and note that they cannot be cleanly separated, because the starting estimate is itself made with the model[^2]. Lorenz's three-variable model[^1] shows the mechanism in [Chaos in a toy model](chaos-in-a-toy-model.qmd), and [Data assimilation](data-assimilation.qmd) shows how the starting estimate is built.
+
+What matters most to users is that error growth depends on the weather itself[^2]. On some days small errors stay small for longer; on others they grow fast. A single forecast looks equally sure on both. An ensemble does not: its members stay together on the first kind of day and fan out on the second.
+
+The ensemble also gives a better single number. The **ensemble mean** generally has a lower root-mean-square error than an unperturbed forecast, because averaging filters out the features the members disagree on and keeps the predictable part[^2]. Our gloss: the mean is therefore smoother than real weather and understates extremes, so read thresholds and extremes from the members. How the underlying model works is in [Numerical weather prediction](numerical-weather-prediction.qmd).
+
+## How the members are made different
+
+Members differ in their starting state and in the model physics, by about as much as the real forecast could be wrong in each. Without the physics differences, Leutbecher and Palmer note, an ensemble is too narrow unless the starting differences are inflated to compensate[^2].
+
+::: {.callout-note collapse="true"}
+## How centres make the differences
+
+**Starting state.** Leutbecher and Palmer describe three families[^2]:
+
+- **Singular vectors** (ECMWF): the patterns a linearised model says will grow most over the next 48 hours, combined with random weights and scaled to typical analysis errors, so that a few dozen members spread enough.
+- **Bred vectors** (the US National Centers for Environmental Prediction, then moving to a related transform method): run a perturbed and an unperturbed forecast for 6 to 24 hours, shrink their difference back to analysis-error size, and repeat until the growing patterns emerge.
+- **Ensemble data assimilation** (Canada's ensemble Kalman filter, the UK Met Office's ensemble transform Kalman filter): run the assimilation many times with perturbed observations or an equivalent transformation, so each member gets its own plausible starting state.
+
+**Model physics.** The three approaches are a multi-model ensemble pooling different centres' models, perturbed parameters that vary uncertain constants inside one model, and stochastic physics that adds randomness to the model's treatment of unresolved processes as it runs[^2]. ECMWF's first stochastic scheme multiplied the total physics tendency by a random number between 0.5 and 1.5; it increased the spread and improved probabilistic precipitation forecasts[^4].
+:::
+
+## From members to probabilities, and spread to skill
+
+An ensemble becomes a probability by counting, and its spread becomes a forecast of its own error. The widget is a toy of chaotic weather, Lorenz's model, not a temperature forecast: "x below 0" stands for "below a threshold such as frost".
+
+Each of 300 **synthetic** cases starts from a point on the Lorenz attractor, one model time unit apart along one long run. The analysis is the truth plus an error of standard deviation 0.3 in each of the three variables, drawn from a fixed seed. Members are the analysis plus perturbations of the size you set. The model is perfect, so only the perturbation size can be wrong. Lorenz's variables and time are dimensionless; a model time unit is not a day.
+
+Try this: read the top panel at the default settings, then set the initial spread to 0.1, too small for the real error, and watch the cards and the bottom panel.
+
+::: {.sim-card}
+#### An ensemble of the Lorenz model
+
+```{ojs}
+//| echo: false
+viewof M = Inputs.range([5, 50], {value: 20, step: 1, label: "Members"})
+viewof sprd = Inputs.range([0.05, 1], {value: 0.3, step: 0.05, label: "Initial spread (true error is 0.3)"})
+viewof lead = Inputs.range([0, 4], {value: 2.5, step: 0.25, label: "Lead time (model time units)"})
+
+// Lorenz-63, classic parameters: one fourth-order Runge-Kutta step of DT.
+DT = 0.01
+step = ([x, y, z]) => {
+  const f = (x, y, z) => [10 * (y - x), x * (28 - z) - y, x * y - (8 / 3) * z], h = DT / 2;
+  const [a1, b1, c1] = f(x, y, z), [a2, b2, c2] = f(x + h * a1, y + h * b1, z + h * c1);
+  const [a3, b3, c3] = f(x + h * a2, y + h * b2, z + h * c2), [a4, b4, c4] = f(x + DT * a3, y + DT * b3, z + DT * c3);
+  return [x + DT / 6 * (a1 + 2 * a2 + 2 * a3 + a4), y + DT / 6 * (b1 + 2 * b2 + 2 * b3 + b4),
+          z + DT / 6 * (c1 + 2 * c2 + 2 * c3 + c4)];
+}
+// x at leads 0, 0.25, ..., 4 (out) and every 0.05 for drawing (fine).
+path = s0 => {
+  const out = [s0[0]], fine = [s0[0]]; let s = s0;
+  for (let n = 1; n <= 400; n++) {
+    s = step(s);
+    if (n % 5 === 0) fine.push(s[0]);
+    if (n % 25 === 0) out.push(s[0]);
+  }
+  return {out, fine};
+}
+// Seeded generator (mulberry32) so every reader sees the same synthetic cases.
+mulberry32 = seed => () => {
+  seed = (seed + 0x6D2B79F5) | 0;
+  let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+  t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+}
+// 300 cases one time unit apart; analysis = truth + N(0, 0.3^2); 50 stored member draws per case.
+world = {
+  const rand = mulberry32(20261021);
+  const gauss = () => Math.sqrt(-2 * Math.log(1 - rand())) * Math.cos(2 * Math.PI * rand());
+  let s = [1, 1, 1];
+  for (let i = 0; i < 1000; i++) s = step(s);
+  return d3.range(300).map(() => {
+    for (let i = 0; i < 100; i++) s = step(s);
+    const truth0 = s.slice(), analysis = truth0.map(v => v + 0.3 * gauss());
+    return {truth: path(truth0), analysis, z: d3.range(50).map(() => [gauss(), gauss(), gauss()])};
+  });
+}
+SHOW = 56   // the case drawn in the top panel
+runs = world.map(c => d3.range(M).map(k => path(c.analysis.map((v, i) => v + sprd * c.z[k][i]))))
+stats = {
+  const j = Math.round(lead / 0.25);
+  const rows = world.map((c, i) => {
+    const xs = runs[i].map(p => p.out[j]), m = d3.mean(xs), t = c.truth.out[j];
+    return {s2: d3.sum(xs, x => (x - m) ** 2) / (M - 1), e2: (t - m) ** 2, out: t < d3.min(xs) || t > d3.max(xs)};
+  });
+  // Ten groups of 30 cases by spread; spread = sqrt(mean variance), error = RMS error of the mean.
+  const sorted = rows.slice().sort((a, b) => a.s2 - b.s2), rms = (r, k) => Math.sqrt(d3.mean(r, d => d[k]));
+  const bins = d3.range(10).map(b => sorted.slice(30 * b, 30 * b + 30)).map(r => ({sp: rms(r, "s2"), er: rms(r, "e2")}));
+  const xs = runs[SHOW].map(p => p.out[j]);
+  return {spread: rms(rows, "s2"), rmse: rms(rows, "e2"), outside: d3.mean(rows, d => d.out ? 1 : 0), bins,
+          below: xs.filter(x => x < 0).length, truth: world[SHOW].truth.out[j]};
+}
+card = (label, value, colour, note) => html`<div class="sim-readout"><div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+  <div class="sim-readout-label" style="text-transform:none">${note}</div></div>`
+html`<div class="sim-readouts">
+  ${card("Members with x < 0, this case", `${stats.below} of ${M} = ${Math.round(100 * stats.below / M)}%`, "#38bdf8", "The raw probability, by counting")}
+  ${card("Truth at this lead, this case", stats.truth.toFixed(1).replace("-", "−"), "#f59e0b", "What actually happened")}
+  ${card("Spread · error of mean, 300 cases", `${stats.spread.toFixed(2)} · ${stats.rmse.toFixed(2)}`, "#10b981", "Honest if the two are close")}
+  ${card("Truth outside all members", `${(100 * stats.outside).toFixed(1)}% (honest ≈ ${(200 / (M + 1)).toFixed(1)}%)`, "#ef4444", "How often reality escaped every member")}
+</div>`
+
+Plot.plot({
+  height: 300, marginLeft: 50, style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, 4], label: "Lead time (model time units) →", grid: true},
+  y: {domain: [-22, 22], label: "↑ Toy variable x (dimensionless)", grid: true},
+  color: {legend: true, domain: ["Members", "Ensemble mean", "Truth"], range: ["#38bdf8", "#10b981", "#f59e0b"]},
+  marks: [
+    Plot.ruleY([0], {stroke: "#ef4444", strokeDasharray: "4 4"}),
+    Plot.ruleX([lead], {stroke: "#64748b"}),
+    Plot.line(runs[SHOW].flatMap((p, k) => p.fine.map((x, n) => ({t: n * 0.05, x, k}))),
+              {x: "t", y: "x", z: "k", stroke: () => "Members", strokeOpacity: 0.45, strokeWidth: 1}),
+    Plot.line(d3.range(81).map(n => ({t: n * 0.05, x: d3.mean(runs[SHOW], p => p.fine[n])})),
+              {x: "t", y: "x", stroke: () => "Ensemble mean", strokeWidth: 2}),
+    Plot.line(world[SHOW].truth.fine.map((x, n) => ({t: n * 0.05, x})), {x: "t", y: "x", stroke: () => "Truth", strokeWidth: 2.5})
+  ]
+})
+
+Plot.plot({
+  height: 260, marginLeft: 50, style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, 14], label: "RMS spread in a tenth of the cases →", grid: true},
+  y: {domain: [0, 14], label: "↑ RMS error of the ensemble mean", grid: true},
+  marks: [Plot.line([[0, 0], [14, 14]], {stroke: "#64748b", strokeDasharray: "4 4"}),
+          Plot.dot(stats.bins, {x: "sp", y: "er", fill: "#a78bfa", stroke: "#0f172a", r: 5})]
+})
+```
+
+Synthetic cases from a fixed seed. Top: one case; the dashed red line is the event threshold $x = 0$, the grey line the lead time read by the cards. Bottom, for the curious: are the ensemble's own error bars honest? The 300 cases are sorted by spread at that lead and split into ten groups of 30; on the dashed diagonal, spread equals error.
+:::
+
+**Counting.** At the default settings, 12 of the 20 members are below zero at lead 2.5, a raw probability of 60%; the truth, at $-8.2$, is below zero too. With 20 members, a true 60% chance would give counts that vary between ensembles with a standard deviation of $\sqrt{0.6 \times 0.4 / 20} = 0.11$, eleven percentage points. At 50 members this case reads 24 of 50, 48%. Larger ensembles steady the count, and Richardson found 50 members worth substantially more than 10 to a range of users[^5].
+
+**Spread predicts error.** At lead 2.5, the spread of the ten groups runs from 0.53 to 11.14 and the error of the ensemble mean follows, from 0.53 to 11.50; averaged over all cases, RMS spread is 5.54 and RMS error 5.81. That is the **spread–skill relationship**: a fanned-out ensemble is warning that its mean is unreliable today. Compare them over groups of cases, as here: even a perfect ensemble matches its error only moderately case by case, because each error is one draw from the distribution the spread describes[^2].
+
+::: {.callout-note collapse="true"}
+## What "spread matches error" means exactly
+
+Call an ensemble **statistically consistent** when, in each case, the truth and the $M$ members behave like independent draws from one distribution. Leutbecher and Palmer show that over many cases the mean squared error of the ensemble mean then tends to $(M+1)/M$ times the ensemble variance, computed with the $1/(M-1)$ formula[^2]; the extra $1/M$ is because the mean is itself estimated from $M$ draws. For $M = 20$ the RMS factor is $\sqrt{21/20} = 1.025$. At the default settings, $5.81 / 5.54 = 1.05$. Fortin and colleagues add that average spread must be the square root of the average variance, not the average standard deviation, to be comparable with an RMS error[^6]; the widget does this.
+
+The "truth outside all members" card uses a related fact. If truth and members are exchangeable, the truth is equally likely to take any of the $M + 1$ ranks among them, so it falls outside the range with probability $2/(M+1)$, 9.5% for 20 members. The histogram of those ranks over many cases is the **rank histogram**[^7].
+:::
+
+## When the ensemble is too confident
+
+Raw ensembles are usually too narrow. Gneiting and colleagues describe operational ensembles as having positive spread–error correlation but being biased and typically under-dispersive, and so uncalibrated[^8]. Leutbecher and Palmer report that the three major global ensembles of the time lacked spread beyond about 5 days, possibly because model error was not represented adequately[^2].
+
+The widget shows the cost. Set the initial spread to 0.1 at 20 members and lead 2.5. RMS spread falls to 3.41 while the error of the ensemble mean rises to 6.36, every dot sits above the diagonal, and the truth falls outside all members in 40.7% of cases against an honest 9.5%. This case now reads 16 of 20 below zero, 80%: a confident number from an ensemble that is wrong about its own uncertainty. In a real system, missing model error and bias add to this.
+
+On a rank histogram, under-dispersion shows as a U, with too many observations in the end ranks. Hamill cautions that a U can also come from conditional bias, that a flat histogram can come from an unreliable ensemble, and that observation errors must be allowed for[^7]. Read it alongside a reliability diagram, as in [Skill scores](skill-scores.qmd).
+
+**Calibration** fixes much of this by fitting a correction to past forecasts and the observations that followed; in one such method, the corrected forecasts were much better calibrated than the raw ensemble[^8]. Because the corrected spread still follows the ensemble's own spread, the day-to-day warning survives. The seasonal version of the same idea, members sampling chaos around a slow signal, is in [Why seasonal forecasting is possible at all](why-seasonal-forecasting-is-possible-at-all.qmd).
+
+::: {.callout-tip}
+## What this means for you
+
+Our advice, drawn from the sources above where cited and otherwise our inference; the costs are hypothetical. Suppose 60% of members are below 0 °C at bloom tomorrow night.
+
+- **Ask whether the probability is calibrated against observations at or near your site.** A calibrated 60% means frost on about 6 in 10 such nights. Calibrated probabilities usually come from national weather services' probabilistic products and other post-processed forecasts, not from raw member counts (our inference).
+- **Allow for your frost pocket.** A forecast is an average over a grid box, and our inference is that a raw count will often run low in a hollow colder than that average. [Downscaling](downscaling.qmd) shows with a widget why a grid box misses a frost pocket, and [Frost, and the night the crop is lost](frost-and-the-night-the-crop-is-lost.qmd) covers the night itself.
+- **Compare it with your cost–loss ratio.** If protecting costs $C$ and an unprotected frost loses $L$, protect when the probability exceeds $C/L$; for a reliable forecast this is the optimal rule[^2]. If running fans costs a fifth of the crop value saved, $C/L = 0.2$: protect at 60%, and at 25% too.
+- **Use the right window.** Raw ensembles have been found too narrow beyond about 5 days[^2]. Our inference: for frost decisions the useful window is the next few days, followed on the night by your own thermometer and dew-point rules.
+- **Treat one or two members with care.** One in 20 is a raw 5% with a large sampling error.
+:::
+
+## Key takeaways
+
+- Read an ensemble for its spread as well as its middle; a widening plume says how far to trust it today.
+- Use the ensemble mean as the single number and the members for thresholds and extremes.
+- Expect raw ensembles to be too confident: if the real outcome often falls outside all the members, the probabilities are too sharp.
+- Prefer calibrated probabilities to raw counts, and ask what observations they were calibrated against.
+- Act when the probability exceeds your cost–loss ratio, which may be well below 50%.
+
+## References
+
+[^1]: Lorenz, E. N. Deterministic nonperiodic flow. *J. Atmos. Sci.* **20**, 130–141 (1963). https://doi.org/10.1175/1520-0469(1963)020<0130:DNF>2.0.CO;2
+[^2]: Leutbecher, M. & Palmer, T. N. Ensemble forecasting. *J. Comput. Phys.* **227**, 3515–3539 (2008). https://doi.org/10.1016/j.jcp.2007.02.014
+[^3]: Gneiting, T. & Raftery, A. E. Weather forecasting with ensemble methods. *Science* **310**, 248–249 (2005). https://doi.org/10.1126/science.1115255
+[^4]: Buizza, R., Miller, M. & Palmer, T. N. Stochastic representation of model uncertainties in the ECMWF ensemble prediction system. *Q. J. R. Meteorol. Soc.* **125**, 2887–2908 (1999). https://doi.org/10.1002/qj.49712556006
+[^5]: Richardson, D. S. Skill and relative economic value of the ECMWF ensemble prediction system. *Q. J. R. Meteorol. Soc.* **126**, 649–667 (2000). https://doi.org/10.1002/qj.49712656313
+[^6]: Fortin, V., Abaza, M., Anctil, F. & Turcotte, R. Why should ensemble spread match the RMSE of the ensemble mean? *J. Hydrometeorol.* **15**, 1708–1713 (2014). https://doi.org/10.1175/JHM-D-14-0008.1
+[^7]: Hamill, T. M. Interpretation of rank histograms for verifying ensemble forecasts. *Mon. Wea. Rev.* **129**, 550–560 (2001). https://doi.org/10.1175/1520-0493(2001)129<0550:IORHFV>2.0.CO;2
+[^8]: Gneiting, T., Raftery, A. E., Westveld, A. H. & Goldman, T. Calibrated probabilistic forecasting using ensemble model output statistics and minimum CRPS estimation. *Mon. Wea. Rev.* **133**, 1098–1118 (2005). https://doi.org/10.1175/MWR2904.1
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/chaos-in-a-toy-model.html"><span>Previous</span>Chaos in a toy model</a><a class="mf-up" href="/series/prediction/index.html"><span>Series</span>Weather, Climate and Prediction</a><a class="mf-next" href="/blogs/markov-weather/why-markov-chains-work-for-weather.html"><span>Next</span>Markov chains for weather</a></div>
+<!-- CURRICULUM_FOOTER_END -->

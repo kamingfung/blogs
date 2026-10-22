@@ -31,11 +31,13 @@ parts:
       - id: prediction/chaos-in-a-toy-model
         title: "Chaos in a toy model"
         level: intermediate
+        path: blogs/chaos-in-a-toy-model.md
         requires:
           - prediction/why-can-t-we-forecast-rain-six-months-out
       - id: prediction/ensemble-forecasts
         title: "Ensemble forecasts"
         level: intermediate
+        path: blogs/ensemble-forecasts.md
         requires:
           - prediction/chaos-in-a-toy-model
   - title: "Simple models that work"
@@ -69,6 +71,7 @@ parts:
       - id: prediction/moving-averages-and-their-pitfalls
         title: "Moving averages and their pitfalls"
         level: introductory
+        path: blogs/moving-averages-and-their-pitfalls.md
   - title: "Modes of variability"
     modules:
       - id: prediction/enso
@@ -78,9 +81,11 @@ parts:
       - id: prediction/monsoons
         title: "Monsoons"
         level: introductory
+        path: blogs/monsoons.md
       - id: prediction/the-nao-and-blocking
         title: "The NAO and blocking"
         level: intermediate
+        path: blogs/the-nao-and-blocking.md
   - title: "Seasonal forecasting"
     modules:
       - id: prediction/why-seasonal-forecasting-is-possible-at-all
@@ -90,6 +95,7 @@ parts:
       - id: prediction/teleconnections
         title: "Teleconnections"
         level: intermediate
+        path: blogs/teleconnections.md
   - title: "Extremes"
     modules:
       - id: prediction/return-periods
@@ -114,19 +120,23 @@ parts:
       - id: prediction/signal-and-noise-in-temperature-records
         title: "Signal and noise in temperature records"
         level: intermediate
+        path: blogs/signal-and-noise/signal_and_noise.ipynb
         requires:
           - statistics/is-the-trend-significant
       - id: prediction/attribution
         title: "Attribution"
         level: advanced
+        path: blogs/attribution.md
   - title: "How weather models work"
     modules:
       - id: prediction/numerical-weather-prediction
         title: "Numerical weather prediction"
         level: intermediate
+        path: blogs/numerical-weather-prediction.md
       - id: prediction/data-assimilation
         title: "Data assimilation"
         level: advanced
+        path: blogs/data-assimilation.md
   - title: "From global to local"
     modules:
       - id: prediction/downscaling
@@ -142,6 +152,8 @@ parts:
       - id: prediction/cmip-and-the-ssps
         title: "CMIP and the SSPs"
         level: introductory
+        path: blogs/cmip-and-the-ssps.md
       - id: prediction/reading-a-climate-projection
         title: "Reading a climate projection"
         level: intermediate
+        path: blogs/reading-a-climate-projection.md

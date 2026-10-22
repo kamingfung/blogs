@@ -236,3 +236,4 @@ The evidence supports trying a foundation model as a candidate, not skipping you
 <!-- CURRICULUM_FOOTER_START -->
 <div class="mf"><a class="mf-prev" href="/blogs/n-beats-and-tft/n_beats_and_tft.html"><span>Previous</span>N-BEATS and TFT</a><a class="mf-up" href="/series/forecasting/index.html"><span>Series</span>Forecasting with Machine Learning</a><a class="mf-next" href="/blogs/retraining-and-drift/retraining_and_drift.html"><span>Next</span>Retraining and drift</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+

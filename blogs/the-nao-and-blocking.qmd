@@ -1,0 +1,203 @@
+---
+title: The NAO and blocking
+description: What the North Atlantic Oscillation does to winter rain and cold from Morocco to Norway, what an atmospheric block is, and how far ahead a grower in Spain or Morocco can see it coming.
+date: 2026-10-21
+categories:
+- climate
+- meteorology
+- forecasting
+- agriculture
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/prediction/index.html">Weather, Climate and Prediction</a><span class="sep">·</span>Part 5 · Modes of variability</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Comfort with averages and histograms. Python for the notebooks.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+The North Atlantic Oscillation (NAO) is a seesaw in air pressure between the high near the Azores and the low near Iceland, and it decides where the Atlantic's winter storms go. In a positive-NAO winter the storms run north: northern Europe is mild and wet, while Spain, Portugal and Morocco tend to stay dry, and, by our inference, the settled high can still bring frosty nights. In a negative-NAO winter the storms take a southern route, Iberia and Morocco get more rain, and northern and western Europe are open to cold spells, as in 2009/10, the most negative winter in NOAA's index since 1950. A block is a high that sits still for days to weeks, behind many heatwaves and cold snaps. Winter rain in southern Iberia refills the water that irrigation draws on, so a dry winter shows up as allocation cuts in spring.
+
+In October and November, check the seasonal outlook for December to February; treat a confidently positive NAO as a reason to plan for less irrigation water and colder clear nights.
+:::
+
+[ENSO](enso.qmd) is a slow mode rooted in the tropical ocean. The NAO is its noisier cousin over the North Atlantic, one of the [teleconnections](teleconnections.qmd) that carry one region's climate to another, and it matters most in winter.
+
+## What the NAO does to a winter in Spain and Morocco
+
+The NAO tells you, in one number, whether the North Atlantic's westerly winds and their storms are strong and running north, or weak and running south. NOAA's Climate Prediction Center (CPC) describes it as a north–south dipole: one centre over Greenland, the other of opposite sign between 35°N and 40°N. In a positive phase, pressure is below normal in the high latitudes and above normal over the central North Atlantic, the eastern United States and western Europe; a negative phase is the reverse. Both phases shift the jet stream and storm track, and with them how heat and moisture reach Europe[^1]. As background, the southern centre is the Azores High and the northern one the Icelandic Low.
+
+| Region | Positive NAO | Negative NAO |
+|---|---|---|
+| Northern Europe | Mild, wet | Colder, drier |
+| Southern Europe | Drier | Wetter |
+| Morocco | Drier | Wetter |
+| Greenland | Colder | Milder |
+
+<small>Winter tendencies over many years, not rules. Sources: CPC[^1]; Lamb and Peppler for Morocco[^7].</small>
+
+The southern signal is strong. Lamb and Peppler showed that Morocco's winter-half-year rainfall runs opposite to the NAO, and suggested the NAO could help forecast Moroccan, and probably Spanish and Portuguese, winter rain[^7]. Hurrell tied NAO-linked changes in the atmosphere's moisture budget since 1980 to drier winters in southern Europe and the Mediterranean and wetter ones in the north[^8]. In Iberia's big river basins, winter flow tracks the winter NAO closely, and Trigo and colleagues warned of the consequences for intensive agriculture and hydropower, whose output in Spain can vary by a factor of three between wet and dry years[^9]. The cold side shows in 2009/10: Cattiaux and colleagues describe record persistence of the negative NAO that winter, with several severe cold spells over northern and western Europe[^10].
+
+Groups compute the index differently, so check which one before comparing numbers from two sources. The values below are winter (December–February) averages of CPC's monthly index[^6]:
+
+| Winter | NAO | Note |
+|---|---:|---|
+| 2009/10 | −1.67 | Lowest since 1950/51 |
+| 2014/15 | +1.66 | Highest |
+| 2022/23 | +0.68 | Jan +1.25, Feb +0.92 |
+| 2025/26 | −0.11 | Near neutral |
+
+<small>Computed from CPC's monthly index, 76 winters from 1950/51 to 2025/26, downloaded 21 October 2026[^6]. Example: 2009/10 is (−1.93 − 1.11 − 1.98)/3 = −1.67.</small>
+
+::: {.callout-note collapse="true"}
+## How the index is measured: station versus pattern
+
+| | Station | Pattern (CPC) |
+|---|---|---|
+| Uses | Lisbon minus Iceland sea-level pressure | 500 hPa height, 20–90°N |
+| Since | 1864 | 1950 |
+| Weak spot | Fixed stations, local noise | Shorter record |
+
+**Station index (Hurrell).** Divide each station's seasonal pressure anomaly, at Lisbon and at Stykkisholmur/Reykjavik, by its standard deviation, then subtract Iceland from Lisbon. The record is long and simple, but fixed stations cannot follow the centres as they move through the year. The NCAR Climate Data Guide reports a correlation of 0.93 over 1899–2018 between the station index and a principal-component index built from gridded sea-level pressure, and notes there is no unique way to define the NAO's spatial pattern[^2].
+
+**CPC index.** CPC uses a rotated principal component analysis following Barnston and Livezey[^3]. In outline[^4]: standardise monthly 500 hPa height anomalies from 20°N to 90°N against 1950–2000; for each calendar month, pool the three months centred on it and compute the ten leading empirical orthogonal functions (the spatial patterns that explain the most variance); rotate them (Varimax) so each is more local; one rotated pattern is the NAO, and each month's ten index values are solved together by least squares. The published indices are standardised by the 1981–2010 climatology[^5], so they are dimensionless: +1 is about one standard deviation above that period's normal. Both indices are anomalies in the sense of [Anomalies](anomalies/anomalies.ipynb).
+:::
+
+::: {.sim-card}
+#### How the NAO moves the storm track (toy)
+
+```{ojs}
+//| echo: false
+viewof nao = Inputs.range([-2, 2], {value: 0, step: 0.1, label: "NAO index"})
+
+// Toy pressure profile along a north–south line, latitude 20–75°N (0.1° steps).
+lat = d3.range(551).map(i => Math.round(200 + i) / 10)
+W = 13          // width of each pressure centre (degrees latitude)
+SPREAD = 8      // spread of individual storm paths around the track (degrees)
+toy = n => {
+  const A = 12 + 4 * n, hi = 38 + 2 * n, lo = 64 + 2 * n;  // hPa, °N, °N
+  const p = f => 1013 + A * Math.exp(-(((f - hi) / W) ** 2)) - A * Math.exp(-(((f - lo) / W) ** 2));
+  const prof = lat.map(f => ({lat: f, p: p(f)}));
+  // Westerly wind is proportional to how fast pressure falls northward.
+  const g = d3.range(1, lat.length - 1).map(i => -(prof[i + 1].p - prof[i - 1].p));
+  const track = lat[d3.maxIndex(g) + 1];
+  return {prof, track, dp: p(hi) - p(lo)};
+}
+m = toy(nao)
+Phi = z => 0.5 * (1 + erf(z / Math.SQRT2))
+// Abramowitz–Stegun 7.1.26 approximation to the error function.
+erf = x => { const s = Math.sign(x), t = 1 / (1 + 0.3275911 * Math.abs(x));
+  return s * (1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x)); }
+share = (a, b) => Phi((b - m.track) / SPREAD) - Phi((a - m.track) / SPREAD)
+pct = v => Math.round(100 * v) + "%"
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+html`<div class="sim-readouts">
+  ${card("High minus low", m.dp.toFixed(1) + " hPa", "#cbd5e1")}
+  ${card("Storm-track latitude", m.track.toFixed(1) + "°N", "#f59e0b")}
+  ${card("Rain-bearing storms over Spain/Morocco", pct(share(34, 44)), "#38bdf8")}
+  ${card("Rain-bearing storms over northern Europe", pct(share(55, 65)), "#10b981")}
+</div>`
+Plot.plot({
+  height: 260, marginLeft: 50,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [20, 75], label: "Latitude (°N) →"},
+  y: {domain: [988, 1038], label: "↑ Sea-level pressure (hPa)", grid: true},
+  marks: [
+    Plot.rect([{x1: 34, x2: 44}], {x1: "x1", x2: "x2", y1: 988, y2: 1038, fill: "#38bdf8", fillOpacity: 0.15}),
+    Plot.rect([{x1: 55, x2: 65}], {x1: "x1", x2: "x2", y1: 988, y2: 1038, fill: "#10b981", fillOpacity: 0.15}),
+    Plot.line(m.prof, {x: "lat", y: "p", stroke: "#cbd5e1", strokeWidth: 2.5}),
+    Plot.ruleX([m.track], {stroke: "#f59e0b", strokeWidth: 2, strokeDasharray: "5 4"})
+  ]
+})
+```
+
+Both pressure centres strengthen and move 2° north per unit of index (assumed); the storm track (dashed) is where pressure falls fastest northward; storms scatter around it with an assumed 8° spread. Blue band: Spain and northern Morocco, 34–44°N. Green: northern Europe, 55–65°N.
+:::
+
+Drag to +2: the share of rain-bearing storms over Spain and Morocco falls from 17% to 8%. Drag to −2: it rises to 30%.
+
+## What it means on the farm
+
+The NAO matters to a grower in southern Iberia or Morocco mainly through water, and second through cold nights. Everything in this section beyond the cited facts is my inference, not tested against farm data.
+
+**Winter rain is next season's irrigation water.** In southern Spain, most of the year's rain falls in winter, and it refills the reservoirs and aquifers that irrigation draws on (my summary, not a sourced figure). A dry winter therefore arrives as an allocation cut in spring. In March 2023, Huelva's growers association reported strawberry production 30% below the previous season and blueberries expected 25% below plan, and among the causes cited no rain after December, which kept irrigation allocations restricted, and a cold January and February[^15]. That winter's NAO was positive in January (+1.25) and February (+0.92)[^6]. It fits the dry-south pattern, but one season proves nothing.
+
+**A positive NAO can still bring frost.** Positive winters put above-normal pressure over western Europe[^1]. My inference: settled high pressure means more clear, calm nights, and those are the nights of radiation frost, when the ground and plants lose heat to a clear sky (see [Frost, and the night the crop is lost](frost-and-the-night-the-crop-is-lost.qmd)). So a dry winter is not a frost-free one.
+
+**Rain at the wrong time is a separate risk.** A wetter negative-NAO winter helps the water budget, but rain at flowering or harvest is a quality and disease problem the NAO index will not resolve week by week.
+
+**Morocco may not respond as one place.** Lamb and Peppler treated Moroccan rainfall as a whole[^7]. The trade press names Loukkos, on the Atlantic north, and Agadir, in the south, as the key berry regions, with water scarcity among the pressures[^16]. The two may respond differently to the NAO; that has not been checked here.
+
+**Check the link on your own farm.** I found no hit rate for southern Iberia in the sources read here. To get one, line up CPC's winter index[^6] against your own station's December–February rain for the past 20 or more winters and count how often a positive winter was a dry one.
+
+## Blocking: when the westerlies stall
+
+A block is the reason a single weather pattern can sit over a farm for a week or more. Woollings and colleagues' review lists its features: it persists, barely moves, and obstructs the usual westerly flow and storm tracks; most contain a large high, and some reverse the flow so that winds blow from the east. By disrupting the westerlies for a week or longer, blocks bring regional extremes, from summer heatwaves to severe winter cold[^11]. Two shapes have names: the omega block, where the flow bulges round a high in an Ω shape, and the Rex block, a high sitting poleward of a low, named after Rex, whose 1950 study mapped 112 cases[^11]^,^[^12].
+
+Automated blocking indices usually require a pattern to persist for 4 or 5 days[^11]. Persistence is what does the damage: temperature and moisture anomalies can build for one or more weeks. Over the Euro-Atlantic sector, a block raises the odds of a heatwave under the high and of cold spells to its south and downstream; it dries the ground beneath it, while neighbouring regions can get heavy rain as storms are steered along the same path again and again[^11]. [Heatwaves in a warming climate](heatwaves-in-a-warming-climate.qmd) shows how this builds a heatwave.
+
+How does blocking relate to the NAO? The review notes that high-latitude blocks go with a southward shift of the jet stream[^11], and a jet displaced south is what the negative NAO describes[^1]. My summary: a block over Greenland and a strongly negative NAO are largely two views of the same winter weather, one a local event and one a monthly index. For forecasts, the review adds that models underestimate how often blocks occur and how long they last, with little improvement over Europe[^11].
+
+## Can the winter NAO be forecast, and where to look
+
+Yes, partly, and the evidence is recent. The index shows why it is hard: in CPC's record, one month's value correlates with the next at only 0.20 over the 921 months from January 1950 to September 2026, and December with January at 0.39 over 76 winters (my calculation from the index[^6]). Most of a month's NAO is weather, not something carried forward.
+
+In 2014, Scaife and colleagues reported that the Met Office's new GloSea5 system predicted the surface winter NAO, storminess, near-surface temperature and wind speed months ahead with high skill in retrospective forecasts, where earlier systems had shown only modest skill[^13]. Its winter NAO forecasts correlated with what happened at about 0.6[^14]. As my inference from the model in [Why seasonal forecasting is possible at all](why-seasonal-forecasting-is-possible-at-all.qmd), that explains 0.6² = 36% of the year-to-year variance, leaving 64% unpredicted: a shift in odds, not a promise.
+
+There is a twist: model ensembles are too timid about their own skill, so ask for calibrated probabilities rather than raw member counts. This is the signal-to-noise paradox[^14].
+
+::: {.callout-note collapse="true"}
+## The signal-to-noise paradox in numbers
+
+Scaife and Smith give the numbers for the 2014 NAO forecasts: the predictable signal in the ensemble mean was about 2 hPa, the spread of individual members about 8 hPa, and the correlation with observations about 0.6[^14]. Read through the simple signal-plus-noise model, the system's own spread implies a correlation of only about 2/8 = 0.25, yet it scored 0.6, which is 0.6/0.25 = 2.4 times more. The ensemble mean predicts the real world better than it predicts one of its own members. Their review finds the same across several systems and judges the Atlantic's predictable component in models too weak by a factor of two or more.
+
+They write the ensemble mean as $M = S_m + N_m/\sqrt{n}$, where $S_m$ is the model's predictable signal, $N_m$ the noise of one member and $n$ the number of members; averaging shrinks the noise by $\sqrt{n}$. Their ratio of predictable components is $\text{RPC} = r_{mo}/r_{mm}$, where $r_{mo}$ is the ensemble mean's correlation with observations and $r_{mm}$ its correlation with a single member. A well-behaved system has $\text{RPC} = 1$; for the NAO it is about $0.6/(2/8) = 2.4$. In their figure of winter NAO hindcasts, skill keeps rising as members are added[^14]. My inference: a raw ensemble's probabilities sit too close to 33/33/33 even when its mean has real skill, which is why issued outlooks should be recalibrated.
+:::
+
+::: {.callout-tip}
+## What this means for you
+
+My inferences from the sources above, not tested against farm data:
+
+- **Read the December–February outlook in October and November**, before the season's water is committed. For Spain, AEMET publishes experimental seasonal precipitation forecasts for the peninsula with the probability of a dry, normal or wet quarter, updated monthly[^17]; see also the Copernicus C3S seasonal forecasts (page under maintenance when checked, 21 October 2026)[^18].
+- **Treat a confidently positive NAO as a water and frost flag**: plan for tighter irrigation allocations and more clear, cold nights.
+- **Treat a negative NAO as a wetter-winter lean, not a guarantee**, and keep watching for rain at flowering and harvest.
+- **Expect a block to outlast the forecast.** Models underestimate how long blocks last.
+:::
+
+## Key takeaways
+
+- Before comparing NAO numbers from two sources, check which index and base period each uses.
+- Use the December–February average for winter decisions; single months are mostly noise.
+- In southern Iberia and Morocco, the winter NAO is first a water signal; frost risk comes with the settled highs of positive winters.
+- A block's damage comes from how long it lasts, and models tend to cut that short.
+- Winter NAO forecasts have real skill, but raw ensembles understate it; use the issuer's calibrated probabilities.
+
+## References
+
+[^1]: NOAA Climate Prediction Center. North Atlantic Oscillation (NAO). Teleconnection pattern description. Accessed 21 October 2026. https://www.cpc.ncep.noaa.gov/data/teledoc/nao.shtml
+[^2]: Hurrell, J. & National Center for Atmospheric Research Staff (eds). The Climate Data Guide: Hurrell North Atlantic Oscillation (NAO) Index (station-based). Accessed 21 October 2026. https://climatedataguide.ucar.edu/climate-data/hurrell-north-atlantic-oscillation-nao-index-station-based
+[^3]: Barnston, A. G. & Livezey, R. E. Classification, seasonality and persistence of low-frequency atmospheric circulation patterns. *Mon. Weather Rev.* **115**, 1083–1126 (1987). https://doi.org/10.1175/1520-0493(1987)115<1083:CSAPOL>2.0.CO;2
+[^4]: NOAA Climate Prediction Center. Teleconnection pattern calculation procedures; Teleconnection index calculation procedures. Accessed 21 October 2026. https://www.cpc.ncep.noaa.gov/data/teledoc/telepatcalc.shtml ; https://www.cpc.ncep.noaa.gov/data/teledoc/teleindcalc.shtml
+[^5]: NOAA Climate Prediction Center. Northern Hemisphere teleconnection patterns. Accessed 21 October 2026. https://www.cpc.ncep.noaa.gov/data/teledoc/telecontents.shtml
+[^6]: NOAA Climate Prediction Center. Monthly mean NAO index since January 1950 (norm.nao.monthly.b5001.current.ascii), values through September 2026. Downloaded 21 October 2026. https://www.cpc.ncep.noaa.gov/products/precip/CWlink/pna/norm.nao.monthly.b5001.current.ascii
+[^7]: Lamb, P. J. & Peppler, R. A. North Atlantic Oscillation: concept and an application. *Bull. Am. Meteorol. Soc.* **68**, 1218–1225 (1987). https://doi.org/10.1175/1520-0477(1987)068<1218:NAOCAA>2.0.CO;2
+[^8]: Hurrell, J. W. Decadal trends in the North Atlantic Oscillation: regional temperatures and precipitation. *Science* **269**, 676–679 (1995). https://doi.org/10.1126/science.269.5224.676
+[^9]: Trigo, R. M. et al. North Atlantic oscillation influence on precipitation, river flow and water resources in the Iberian Peninsula. *Int. J. Climatol.* **24**, 925–944 (2004). https://doi.org/10.1002/joc.1048
+[^10]: Cattiaux, J. et al. Winter 2010 in Europe: a cold extreme in a warming climate. *Geophys. Res. Lett.* **37** (20) (2010). https://doi.org/10.1029/2010GL044613
+[^11]: Woollings, T. et al. Blocking and its response to climate change. *Curr. Clim. Change Rep.* **4**, 287–300 (2018). https://doi.org/10.1007/s40641-018-0108-z
+[^12]: Rex, D. F. Blocking action in the middle troposphere and its effect upon regional climate. *Tellus* **2**, 196–211 (1950). https://doi.org/10.1111/j.2153-3490.1950.tb00331.x
+[^13]: Scaife, A. A. et al. Skillful long-range prediction of European and North American winters. *Geophys. Res. Lett.* **41**, 2514–2519 (2014). https://doi.org/10.1002/2014GL059637
+[^14]: Scaife, A. A. & Smith, D. A signal-to-noise paradox in climate science. *npj Clim. Atmos. Sci.* **1**, 28 (2018). https://doi.org/10.1038/s41612-018-0038-4
+[^15]: FreshPlaza. Huelva's blueberry and strawberry production decreased by 25 and 30%, respectively (21 March 2023), reporting Freshuelva. https://www.freshplaza.com/europe/article/9513386/huelva-s-blueberry-and-strawberry-production-decreased-by-25-and-30-respectively/
+[^16]: FreshPlaza. Morocco shifts berry production to raspberries and blueberries (8 October 2025), republished from Morocco World News. https://www.freshplaza.com/africa/article/9772673/morocco-shifts-berry-production-to-raspberries-and-blueberries/
+[^17]: AEMET (Agencia Estatal de Meteorología). Predicción estacional. Accessed 21 October 2026. https://www.aemet.es/es/idi/clima/prediccion_estacional
+[^18]: Copernicus Climate Change Service (C3S). Seasonal forecasts. Page under maintenance when checked on 21 October 2026. https://climate.copernicus.eu/seasonal-forecasts
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/monsoons.html"><span>Previous</span>Monsoons</a><a class="mf-up" href="/series/prediction/index.html"><span>Series</span>Weather, Climate and Prediction</a><a class="mf-next" href="/blogs/why-seasonal-forecasting-is-possible-at-all.html"><span>Next</span>Why seasonal forecasting is possible at all</a></div>
+<!-- CURRICULUM_FOOTER_END -->

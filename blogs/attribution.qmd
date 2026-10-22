@@ -1,0 +1,180 @@
+---
+title: Attribution
+description: How climate scientists separate human influence from natural variability, first for long-term trends and then for single extreme events, and how to read an attribution claim before you lean on it.
+date: 2026-10-21
+categories:
+- climate
+- statistics
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/prediction/index.html">Weather, Climate and Prediction</a><span class="sep">·</span>Part 8 · Detecting climate change</p><p class="mh-facts"><span class="lvl lvl-advanced">Advanced</span></p><p class="mh-assumes">Comfort with averages and histograms. Python for the notebooks.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Attribution asks two different questions. The first is whether a long-term change, such as global warming, is caused by people rather than natural variability. It is answered by fitting observations to the patterns ("fingerprints") that climate models produce for each cause; the IPCC puts human-caused warming at about 1.07 °C by 2010–2019. The second asks how climate change altered one extreme event, by comparing the chance of an event at least as extreme today, $p_1$, with its chance without human influence, $p_0$. Their ratio PR, the fraction of attributable risk FAR = 1 − 1/PR, and the change in intensity are the standard summaries. For a bounded heat tail, PR explodes as events get rarer, so intervals running to infinity are normal. Before relying on a claim, check the event definition, because area and duration alone can change PR severalfold; check which models passed evaluation, because one model is usually overconfident; and read the full interval.
+:::
+
+## Two questions, two methods
+
+Faced with "climate change caused this", first ask which question was answered: why the climate changed, or how one event changed.
+
+**Detection and attribution of long-term change.** *Detection* shows that something has changed beyond what natural variability would produce; *attribution* assigns the change to causes. [Signal and noise in temperature records](signal-and-noise/signal_and_noise.ipynb) covers detection. The IPCC's Chapter 3 describes the main tool as regression: the observed change is treated as a sum of externally forced signals plus internal variability, and each signal's expected pattern in space and time is its **fingerprint**, usually taken from climate model simulations[^1]:
+
+$$\mathbf{y} = \sum_{i} \beta_i \, \mathbf{x}_i + \boldsymbol{\varepsilon}$$
+
+Here $\mathbf{y}$ (°C) is a vector of observed temperature anomalies, stacked over regions and decades. $\mathbf{x}_i$ (°C) is the response models simulate to forcing $i$, such as greenhouse gases, aerosols or the Sun and volcanoes. $\beta_i$ (dimensionless) is its **scaling factor**, and $\boldsymbol{\varepsilon}$ (°C) is internal variability. A scaling factor significantly above zero means the signal is detected. If its confidence interval also includes 1, the model's response is the right size, and the change can be attributed in part to that forcing[^1].
+
+**Optimal fingerprinting** is this regression with weights. Philip and colleagues describe it as giving more weight to areas with larger trends or lower variability, which maximises the signal-to-noise ratio[^2].
+
+::: {.callout-note collapse="true"}
+## The regression in matrix form
+
+Stack the fingerprints as the columns of $X$ and let $C$ be the covariance matrix of internal variability (°C²). The weighted fit is generalised least squares,
+
+$$\hat{\boldsymbol\beta} = \left(X^\top C^{-1} X\right)^{-1} X^\top C^{-1} \mathbf{y},$$
+
+the [least-squares](least-squares.qmd) estimate after rescaling the data so the noise is uncorrelated with unit variance. $C^{-1}$ is the weighting: patterns in which internal variability is small get large weights, which is the "more weight to lower variability" above. (My summary of the standard estimator.) The hard part is $C$, which must be estimated from a limited sample; the variants Chapter 3 reviews address uncertainty in the fingerprints and the covariance[^1].
+:::
+
+What this method yields is the IPCC's headline: it is *unequivocal* that human influence has warmed the atmosphere, ocean and land, and human-caused warming from 1850–1900 to 2010–2019 is best estimated at 1.07 °C (likely range 0.8 to 1.3 °C) against 1.06 °C observed[^3]. For trends in extremes the regression needs near-normal data, which Chapter 11 notes averaging over space can provide[^4].
+
+**Event attribution.** Stott, Stone and Allen called it ill-posed to ask whether the 2003 European heatwave was *caused* by greenhouse gases, since almost any weather could occur by chance in an unchanged climate. They estimated instead how much human influence had raised the risk: very likely (over 90% confidence) it had at least doubled[^5]. Chapter 11 calls this the probability-based approach: it compares an index of the event in today's climate with a counterfactual climate without human influence, giving statements such as "twice as likely" or "15% more intense"[^4].
+
+## Probability ratio, FAR and intensity change
+
+These three numbers cover nearly every event attribution result, and they behave very differently as events get rarer. Define the event as a class: every year whose index (say, the year's hottest day) reaches at least a threshold $x$ (°C). Let $p_1$ be its chance per year in today's climate and $p_0$ in the counterfactual one, approximated in practice by a past climate such as the late nineteenth century[^2]. Then
+
+$$\begin{aligned}
+\text{PR} &= \frac{p_1}{p_0} \\
+\text{FAR} &= 1 - \frac{1}{\text{PR}} = \frac{p_1 - p_0}{p_1} \\
+\Delta I &= x_1(T) - x_0(T)
+\end{aligned}$$
+
+PR (dimensionless) is the **probability ratio**, also called the risk ratio. FAR (dimensionless, at most 1) is the **fraction of attributable risk**: the share of today's probability that would be absent without the change. $\Delta I$ (°C) is the **intensity change**, where $x_1(T)$ and $x_0(T)$ are the levels reached once in $T$ years in each climate. So "at least doubled" means a FAR of at least 0.5 (my arithmetic). An infinite PR gives a FAR of exactly 1, which Chapter 11 reports for several heat events since 2016[^4]. FAR describes the probability of the *hazard*. It is not the share of the heat, and not the share of anyone's loss.
+
+**Where $p_0$ and $p_1$ come from.** For observations, Philip and colleagues fit a GEV whose parameters depend on a covariate, the smoothed global mean surface temperature (GMST), and evaluate it at today's GMST for $p_1$ and at a past GMST for $p_0$[^2]. For heat they let only the location move, $\mu = \mu_0 + \alpha T'$, where $T'$ (°C) is the smoothed GMST and $\alpha$ (dimensionless) the fitted trend, with scale and shape constant; then $\Delta I = \alpha (T'_1 - T'_0)$ is the same at every rarity by assumption, while PR varies strongly with magnitude[^2]. For rain they scale the whole distribution exponentially with $T'$, a form inspired by the Clausius–Clapeyron relation[^2]. Models are fitted the same way, or run twice, under current and under pre-industrial forcing[^2].
+
+The widget is the heat case, a pure location shift, as a toy: the hottest day of the year follows a GEV distribution ([Extreme value theory](extreme-value-theory/extreme_value_theory.ipynb)) with counterfactual location $\mu_0 = 32$ °C, scale $\sigma$ (°C) and shape $\xi$ (dimensionless), and today's climate shifts the location by $\Delta$ (°C). Pick the event by its rarity today; the widget finds its threshold, then holds that threshold fixed and shifts the distribution back by $\Delta$ to get $p_0$.
+
+::: {.sim-card}
+#### How the probability ratio grows with rarity
+
+```{ojs}
+//| echo: false
+viewof shift = Inputs.range([0, 3], {value: 1.2, step: 0.1, label: "Location shift Δ (°C)"})
+viewof sc = Inputs.range([0.5, 3], {value: 1.5, step: 0.1, label: "Scale σ, year-to-year noise (°C)"})
+viewof xi = Inputs.range([-0.4, 0.2], {value: -0.2, step: 0.05, label: "Shape ξ"})
+viewof T = Inputs.range([2, 10000], {value: 10, step: 1, transform: Math.log, label: "Event: 1-in-T years today"})
+MU0 = 32  // synthetic counterfactual location (°C)
+gevSf = (x, mu, s, k) => {  // P(yearly max > x); bounded above when k < 0
+  const z = (x - mu) / s, t = 1 + k * z;
+  if (Math.abs(k) < 1e-9) return -Math.expm1(-Math.exp(-z));
+  return t <= 0 ? (k < 0 ? 0 : 1) : -Math.expm1(-Math.pow(t, -1 / k));
+}
+gevIsf = (p, mu, s, k) => { const y = -Math.log1p(-p);  // level exceeded with probability p
+  return Math.abs(k) < 1e-9 ? mu - s * Math.log(y) : mu + s / k * (Math.pow(y, -k) - 1); }
+prAt = (Tr, k) => { const x = gevIsf(1 / Tr, MU0 + shift, sc, k); return gevSf(x, MU0 + shift, sc, k) / gevSf(x, MU0, sc, k); }
+thr = gevIsf(1 / T, MU0 + shift, sc, xi)
+p0 = gevSf(thr, MU0, sc, xi)
+pr = 1 / T / p0
+tInf = xi < 0 ? 1 / gevSf(MU0 - sc / xi, MU0 + shift, sc, xi) : Infinity  // beyond this, p0 = 0
+big = v => !isFinite(v) ? "∞" : v < 100 ? v.toPrecision(3) : v < 1e5 ? Math.round(v).toLocaleString("en-US") : v.toExponential(1)
+card = (label, value, colour) => html`<div class="sim-readout"><div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div></div>`
+html`<div class="sim-readouts">
+  ${card("Event threshold", thr.toFixed(2) + " °C", "#cbd5e1")}
+  ${card("Same threshold, shifted back", p0 > 0 ? "1 in " + big(1 / p0) + " years" : "never (above its limit)", "#38bdf8")}
+  ${card("Probability ratio PR", big(pr), "#f59e0b")}
+  ${card("FAR = 1 − 1/PR", (1 - 1 / pr).toFixed(3), "#ef4444")}
+  ${card("Intensity change ΔI", (thr - gevIsf(1 / T, MU0, sc, xi)).toFixed(2) + " °C", "#10b981")}
+</div>`
+curves = d3.range(Math.log10(2), 4.0001, 0.02).map(e => 10 ** e)
+  .flatMap(Tr => [{Tr, pr: prAt(Tr, xi), c: "Your shape ξ"}, {Tr, pr: prAt(Tr, 0), c: "Gumbel, ξ = 0"}]).filter(d => isFinite(d.pr))
+Plot.plot({height: 280, marginLeft: 55,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {type: "log", domain: [2, 10000], label: "Return period today, T (years) →", grid: true},
+  y: {type: "log", domain: [1, 10000], label: "↑ Probability ratio PR", grid: true},
+  color: {legend: true, domain: ["Your shape ξ", "Gumbel, ξ = 0", "PR infinite beyond"], range: ["#f59e0b", "#38bdf8", "#ef4444"]},
+  marks: [
+    Plot.line(curves, {x: "Tr", y: "pr", stroke: "c", strokeWidth: 2.5, clip: true}),
+    tInf <= 10000 ? Plot.ruleX([tInf], {stroke: () => "PR infinite beyond", strokeWidth: 2, strokeDasharray: "5 4"}) : null,
+    isFinite(pr) ? Plot.dot([{T, pr}], {x: "T", y: "pr", fill: "#f59e0b", stroke: "#0f172a", r: 6, clip: true}) : null
+  ]
+})
+```
+
+Synthetic GEV toy, not fitted to any place. Try: slide the event from 1-in-2 to 1-in-1000 years; set the shape to 0, then to 0.1; lower the scale from 1.5 to 1.0 °C.
+:::
+
+At the start (shift 1.2 °C, scale 1.5 °C, shape −0.2) the counterfactual climate has an upper limit of $\mu_0 - \sigma/\xi = 32 + 7.5 = 39.5$ °C. A 1-in-10-year event today, 35.92 °C, is crossed once in 40.8 years when the same threshold is kept and the distribution is shifted back: PR 4.08, FAR 0.755. Make it rarer, and PR climbs: 2.12 at 1-in-2 years, 13.0 at 1-in-100, 158 at 1-in-1000. Past about 1-in-9500 years today's threshold lies above 39.5 °C, so $p_0 = 0$ and PR is infinite. Throughout, the intensity change stays at 1.20 °C, because the toy, like the heat fit above, moves only the location. Real warming can also change $\sigma$ and $\xi$, and then $\Delta I$ varies with rarity; drying soils that amplify the hottest days would be one route (background, not from the sources here).
+
+Two more readings show what drives the explosion:
+
+- **The tail shape decides it.** A negative shape for heat maxima is an empirical fit, consistent with physical limits such as surface energy and soil moisture; its upper limit is a statistical extrapolation, not a hard ceiling (background). With $\xi = 0$, PR levels off: 2.16 at 1-in-10 and 2.22 at 1-in-1000. With $\xi = 0.1$, a heavy tail, it *falls* with rarity, from 1.81 to 1.48. Philip and colleagues note the same in real studies: near the end of a bounded heat distribution, small threshold changes make large PR changes; for the near-zero or positive shapes of heavy rain, PR is less sensitive[^2].
+- **Small shape errors matter.** At 1-in-100, a shape of −0.25 instead of −0.2 raises PR from 13.0 to 54.1. A 30-year record cannot pin $\xi$ that closely ([Extreme value theory](extreme-value-theory/extreme_value_theory.ipynb)). Some bootstrap resamples then put the event above the counterfactual's upper limit, which is how an interval like the 2021 Pacific Northwest study's in [Heatwaves in a warming climate](heatwaves-in-a-warming-climate.qmd) gets no finite top (my explanation).
+
+::: {.callout-note collapse="true"}
+## Why the Gumbel ratio levels off
+
+For $\xi = 0$ and a high threshold, the chance of exceeding $x$ is close to $e^{-(x-\mu)/\sigma}$. Shifting the location by $\Delta$ multiplies it by $e^{\Delta/\sigma}$ whatever $x$ is, so $\text{PR} \to e^{\Delta/\sigma} = e^{1.2/1.5} = 2.23$ at the widget's start, the 2.22 it shows at 1-in-1000. For $\xi < 0$ the distribution ends at $x_{\max} = \mu - \sigma/\xi$, and just below it the chance of exceeding $x$ is close to $\left[|\xi|\,(x_{\max} - x)/\sigma\right]^{1/|\xi|}$. The shifted climate ends at $x_{\max} + \Delta$, so
+
+$$\text{PR} \approx \left(\frac{x_{\max} + \Delta - x}{x_{\max} - x}\right)^{1/|\xi|},$$
+
+which grows without limit as the threshold $x$ approaches the counterfactual end $x_{\max}$. A heavy tail ($\xi > 0$) falls more slowly than exponentially, so the same shift multiplies its probability by ever less.
+:::
+
+## How a study is built, and the storyline alternative
+
+Knowing the steps tells you where a result can go wrong. World Weather Attribution's published protocol has eight: trigger, event definition, observational analysis, model evaluation, attribution in each model, synthesis, vulnerability and exposure, and communication; the trigger is the severity of the impact, not the expected result[^2]. Two steps matter most when you read a result:
+
+- **Model evaluation.** Each model is first given an overall bias correction, which for temperature removes a constant offset between the model's and the observed location[^2]. That is why the test then compares the parameters that remain: a model passes if the confidence intervals of its fitted scale (scale relative to location, for rain and wind) and shape overlap those fitted to observations[^2]. These are the parameters that set PR for a given shift, as the widget shows; an offset in the mean does not (my explanation). If fewer than two models pass, the group makes no robust statement, because a single model is usually overconfident[^2].
+- **Synthesis.** Results are averaged assuming $\log \text{PR}$ is normally distributed; the interval is widened when models disagree by more than chance explains, and nothing is synthesised if observed and modelled trends are incompatible[^2].
+
+A finished study can look quite unlike a heatwave. For the August 2016 rain in southern Louisiana, 3-day totals at 19 stations gave a return period of about 500 years, a PR of 2.8 (95% CI 1.7 to 3.8) and an intensity increase of 17% (10 to 21%)[^2]. Heavy rain usually has a near-zero or positive shape[^2], and, consistent with the widget, its interval is finite (my reading). Saturated air holds more water by the Clausius–Clapeyron rate $L/(R_v T^2) = 2.5\times10^6 / (461.5 \times 288^2) \approx 6.5\%$ per °C, with $L$ the latent heat of vaporisation (J kg⁻¹), $R_v$ the gas constant for water vapour (J kg⁻¹ K⁻¹) and $T$ = 288 K. After roughly 1 °C of global warming[^3], 17% is over twice that. Philip and colleagues do not make this comparison in what I read; it is mine, and the excess is unexplained here.
+
+**The storyline approach** asks a different question. Shepherd and colleagues define a storyline as "a physically self-consistent unfolding of past events, or of plausible future events or pathways". No probability is attached[^6]. The thermodynamic side of climate change (warming, moistening, melting) is robust in theory, observations and models; the dynamic side (circulation) is not anchored in accepted theory and diverges between models[^6]. So a storyline can take the observed weather pattern as given and ask how much worse warming made the outcome[^6]. Chapter 11 notes such conditional studies suit very rare events, but the imposed conditions may themselves have changed[^4]. Philip and colleagues treat the two approaches as complementary[^2].
+
+## Reading a claim, and what it means for a farm
+
+Six questions find the edges of a claim:
+
+1. **What exactly was the event?** Variable, duration, area, season. Large, long-duration events tend to have notably larger risk ratios because natural variability is smaller[^4]; in the widget, lowering $\sigma$ from 1.5 to 1.0 °C raises PR at 1-in-10 from 4.08 to 10.1. A regional 3-day PR is not your station's.
+2. **Why this event?** Studied events are not representative and may carry selection bias; studies in the developing world are generally lacking[^4].
+3. **Did the models pass?** How many survived evaluation, and did observed and modelled trends agree[^2]?
+4. **What does the whole interval say?** An upper bound of ∞ means the event fell outside the counterfactual distribution in part of the uncertainty range. Lower bounds can be quite insensitive to uncertainties in observations and models[^4], but quoting only the lower bound is not advisable: "at least" gets dropped, and the most likely value is lost[^2].
+5. **What was held fixed?** A conditional study that imposes the observed sea temperatures or circulation answers a narrower question[^4].
+6. **Hazard or impact?** Unless stated otherwise, the numbers describe the weather, not the damage[^2].
+
+::: {.callout-tip appearance="simple" icon=false}
+**What this means for you.** What follows is my inference from the sources above and the toy, not a tested method.
+
+An attribution result says how the odds of the *weather* changed over a defined region, not what fraction of a farm's loss climate change caused. Damage also depends on exposure and vulnerability, and preparedness often changes faster than the hazard[^2]. And damage is non-linear. At the widget's start, the 1-in-10-year hottest day is 35.92 °C today and $35.92 - 1.20 = 34.72$ °C without the shift. Against a synthetic damage threshold of 35 °C, that 1.2 °C is the whole difference between loss and no loss.
+
+- Use $\Delta I$ with your own damage threshold to ask whether the counterfactual event would have crossed it, a storyline question your own records can answer.
+- Use PR for planning, not blame: a regional PR of 3 compares today with the late nineteenth century; your older records, already partly warmed, sit in between, so check against your own station.
+- Do not quote FAR as the share of a loss caused by climate change in an insurance claim or a report.
+:::
+
+## Key takeaways
+
+- Treat PR as a property of the event definition. Change the area, duration or rarity, and PR changes, sometimes by orders of magnitude.
+- Prefer $\Delta I$ when the tail shape is uncertain; for bounded heat tails, PR is fragile and can be infinite.
+- Quote the full interval, with "at least" only alongside the central value.
+- For impacts, combine the hazard result with your own exposure and damage threshold; do not transfer FAR to losses.
+
+## References
+
+[^1]: Eyring, V. et al. Human influence on the climate system. In *Climate Change 2021: The Physical Science Basis. Contribution of Working Group I to the Sixth Assessment Report of the Intergovernmental Panel on Climate Change* (eds Masson-Delmotte, V. et al.) 423–552 (Cambridge Univ. Press, 2021). https://doi.org/10.1017/9781009157896.005
+[^2]: Philip, S. et al. A protocol for probabilistic extreme event attribution analyses. *Adv. Stat. Clim. Meteorol. Oceanogr.* **6**, 177–203 (2020). https://doi.org/10.5194/ascmo-6-177-2020
+[^3]: IPCC. Summary for Policymakers. In *Climate Change 2021: The Physical Science Basis. Contribution of Working Group I to the Sixth Assessment Report of the Intergovernmental Panel on Climate Change* (eds Masson-Delmotte, V. et al.) 3–32 (Cambridge Univ. Press, 2021). https://doi.org/10.1017/9781009157896.001
+[^4]: Seneviratne, S. I. et al. Weather and climate extreme events in a changing climate. In *Climate Change 2021: The Physical Science Basis. Contribution of Working Group I to the Sixth Assessment Report of the Intergovernmental Panel on Climate Change* (eds Masson-Delmotte, V. et al.) 1513–1766 (Cambridge Univ. Press, 2021). https://doi.org/10.1017/9781009157896.013
+[^5]: Stott, P. A., Stone, D. A. & Allen, M. R. Human contribution to the European heatwave of 2003. *Nature* **432**, 610–614 (2004). https://doi.org/10.1038/nature03089
+[^6]: Shepherd, T. G. et al. Storylines: an alternative approach to representing uncertainty in physical aspects of climate change. *Clim. Change* **151**, 555–571 (2018). https://doi.org/10.1007/s10584-018-2317-9
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/signal-and-noise/signal_and_noise.html"><span>Previous</span>Signal and noise in temperature records</a><a class="mf-up" href="/series/prediction/index.html"><span>Series</span>Weather, Climate and Prediction</a><a class="mf-next" href="/blogs/numerical-weather-prediction.html"><span>Next</span>Numerical weather prediction</a></div>
+<!-- CURRICULUM_FOOTER_END -->
