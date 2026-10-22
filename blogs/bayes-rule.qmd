@@ -1,0 +1,261 @@
+---
+title: "Bayes' rule"
+description: How to turn a test result into the chance that the thing tested for is really there, by counting cases first, then with the formula, then by updating as more evidence arrives.
+date: 2026-10-20
+categories:
+- statistics
+- data science
+- agriculture
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/statistics/index.html">Statistics</a><span class="sep">·</span>Part 7 · Bayesian basics</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">School maths. Python or R for the notebooks.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+A test tells you how often it flags a lot that has the problem. You want the reverse. This lot was flagged, so how likely is it to have the problem? Bayes' rule turns one into the other, and the two can be far apart. Take a synthetic example. Suppose 2% of blueberry lots are infested with larvae. A check catches 90% of infested lots and clears 95% of clean ones. Then only 18 of the 67 lots it flags in every 1,000 are infested: 27%. Clean lots are so common that their few false alarms outnumber the true catches. This is the base-rate fallacy. Counting lots, not multiplying probabilities, makes it plain. A second, independent check on the flagged lots lifts that to 87%. The formula does the same count for any numbers. Used week by week, the same rule turns a few inspections into an estimate of a supplier's failure rate, with its uncertainty. In practice: before acting on a flag, ask how common the problem is.
+:::
+
+## Count lots, not probabilities
+
+The quickest way to get a conditional probability right is to imagine a concrete number of cases and count them. Every number in this section can be checked with a pencil.
+
+**The example (synthetic numbers).** A packhouse checks each incoming blueberry lot for spotted-wing drosophila larvae, for instance with a salt-flotation check on a fruit sample. Call a lot **infested** when its sample is above the packhouse's action threshold, and **clean** otherwise. Three numbers describe the situation. They are invented for illustration and are not the accuracy of any real check.
+
+- **Base rate**: 2% of incoming lots are infested. This is what you would believe about a lot before checking it.
+- **Sensitivity**: the check flags 90% of infested lots, and misses the other 10%.
+- **Specificity**: the check clears 95% of clean lots, and wrongly flags the other 5%.
+
+A lot comes back flagged. How likely is it to be infested? The tempting answer is close to 90%, because the check "is 90% accurate". Count instead. Picture 1,000 lots arriving:
+
+- 2% of 1,000 is **20 infested lots**. The check flags 90% of them, **18**, and misses **2**.
+- That leaves **980 clean lots**. The check wrongly flags 5% of them, **49**, and clears **931**.
+
+So the check flags $18 + 49 = 67$ lots, and 18 of those are infested. A flagged lot is infested with probability $18/67 = 26.9\%$, not 90%.
+
+```{mermaid}
+flowchart TD
+    A["1,000 lots"] -->|"2% infested"| B["20 infested"]
+    A -->|"98% clean"| C["980 clean"]
+    B -->|"90% flagged"| D["18 flagged"]
+    B -->|"10% missed"| E["2 missed"]
+    C -->|"5% flagged"| F["49 flagged"]
+    C -->|"95% cleared"| G["931 cleared"]
+    class A indigo
+    class B,C sage
+    class D,F ochre
+    class E,G umber
+    classDef indigo fill:#1d4a62,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef umber fill:#3b1a18,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef ochre fill:#d69a2e,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+    classDef sage fill:#95a87f,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+```
+
+The flagged lots are the two ochre boxes. Of every 67, 18 are infested and 49 are false alarms.
+
+This module calls counts like these, which follow one group of lots through each step, **natural frequencies**; Gigerenzer and Hoffrage showed that the calculation is simpler with counts than with probabilities, and that people with no statistical training who were given counts reached up to half of their answers by Bayesian reasoning[^1].
+
+## The base-rate fallacy
+
+When the problem is rare, most flags are false alarms, however good the check sounds. Judging a flag by the check's sensitivity alone, and forgetting how rare the problem is, is the **base-rate fallacy**.
+
+The check above is not bad. It produces 49 false alarms against 18 true catches because there are $980/20 = 49$ clean lots for every infested one: a small error rate applied to a large group beats a large hit rate applied to a small one. The same check, used on a different population of lots, gives a different answer. In practice the base rate for your lots comes from your own records: past rejections or lab results, split by supplier, block, season and variety where you have them. That is my suggestion, not something the example tests.
+
+::: {.sim-card}
+#### What a flag means
+
+The widget starts at the example: 18 of 67 flagged lots are infested, 26.9%. Then try:
+
+1. Raise specificity to 99%, then put it back to 95%.
+2. Raise sensitivity to 99%, then put it back to 90%.
+3. Set the base rate to 20%.
+
+```{ojs}
+//| echo: false
+viewof baseRate = Inputs.range([0.1, 50], {value: 2, step: 0.1, label: "Base rate: lots infested (%)"})
+viewof sens = Inputs.range([50, 100], {value: 90, step: 0.5, label: "Sensitivity: infested lots flagged (%)"})
+viewof spec = Inputs.range([50, 100], {value: 95, step: 0.1, label: "Specificity: clean lots cleared (%)"})
+
+// Exact probabilities from Bayes' rule and its odds form.
+bayes = {
+  const p = baseRate / 100, se = sens / 100, sp = spec / 100;
+  const post = p * se / (p * se + (1 - p) * (1 - sp));
+  const lr = se / (1 - sp);                 // likelihood ratio of a flag; Infinity at 100%
+  const odds2 = p / (1 - p) * lr * lr;      // two independent flags
+  return {post, post2: isFinite(odds2) ? odds2 / (1 + odds2) : 1};
+}
+
+// The same thing as whole lots out of 1,000 (rounded).
+counts = {
+  const inf = Math.round(10 * baseRate);
+  const tp = Math.round(inf * sens / 100);
+  const fp = Math.round((1000 - inf) * (1 - spec / 100));
+  return {tp, fn: inf - tp, fp, tn: 1000 - inf - fp};
+}
+
+kinds = [`Infested, flagged: ${counts.tp}`, `Clean, flagged: ${counts.fp}`,
+         `Infested, missed: ${counts.fn}`, `Clean, cleared: ${counts.tn}`]
+
+// Fewer, larger dots on narrow screens.
+cols = width < 500 ? 20 : 40
+gridW = Math.min(width, 640)
+cell = (gridW - 24) / cols
+
+lots = [counts.tp, counts.fp, counts.fn, counts.tn]
+  .flatMap((n, k) => Array.from({length: n}, () => kinds[k]))
+  .map((kind, i) => ({kind, col: i % cols, row: Math.floor(i / cols)}))
+
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+pct = v => (100 * v).toFixed(1) + "%"
+
+html`<div class="sim-readouts">
+  ${card("Lots flagged, of 1,000", counts.tp + counts.fp, "#cbd5e1")}
+  ${card("Infested among flagged", `${counts.tp} of ${counts.tp + counts.fp}`, "#f59e0b")}
+  ${card("P(infested | flagged)", pct(bayes.post), "#f59e0b")}
+  ${card("After a second, independent flag", pct(bayes.post2), "#10b981")}
+</div>`
+
+Plot.plot({
+  width: gridW,
+  height: Math.round(cell * 1000 / cols) + 24,
+  margin: 12,
+  // Plot paints its own white ground otherwise, which the dark card fights.
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {axis: null, domain: [-0.5, cols - 0.5]},
+  y: {axis: null, domain: [-0.5, 1000 / cols - 0.5], reverse: true},
+  color: {legend: true, domain: kinds, range: ["#f59e0b", "#38bdf8", "#ef4444", "#475569"]},
+  marks: [Plot.dot(lots, {x: "col", y: "row", fill: "kind", r: cell * 0.38})]
+})
+```
+
+Each dot is one lot, rounded to whole lots; the percentages use the exact formula. Flagged lots fill the top rows.
+:::
+
+Raising specificity from 95% to 99% cuts the false alarms from 49 to about 10 and lifts the chance that a flagged lot is infested from 26.9% to 64.7%. Raising sensitivity from 90% to 99% instead barely moves it, to 28.8%, because it only adds catches among the 20 infested lots. When the problem is rare, specificity is the number that decides whether a flag means anything. At a 20% base rate the original check does well: 180 true catches against 40 false alarms per 1,000, or 81.8%.
+
+A clearance, by contrast, is very reliable at a 2% base rate: of the $931 + 2 = 933$ cleared lots, only 2 are infested, $2/933 = 0.21\%$.
+
+**A second check.** Now check the 67 flagged lots again, independently, with the same sensitivity and specificity. Of the 18 infested lots, 90% are flagged again: $0.9 \times 18 = 16.2$, about 16. Of the 49 false alarms, only 5% are: $0.05 \times 49 = 2.45$, about 2 or 3. So about $16.2/(16.2 + 2.45) = 86.9\%$ of lots flagged twice are really infested, the widget's last readout. This works only if the second check fails for different reasons from the first. A fresh sample drawn from different pallets, or a different method such as a lab check, is closer to independent than re-floating the same fruit, which would repeat the same false alarms; that judgement is my inference.
+
+**Hold or release.** My inference, not something the example measures: holding a flagged lot costs shelf life and dock time, and releasing an infested one costs a rejection or a claim. So hold a lot when its chance of being infested is above the ratio of the holding cost to that loss, the cost–loss rule in [Why seasonal forecasting is possible at all](why-seasonal-forecasting-is-possible-at-all.qmd).
+
+A significance test is the same kind of screen, with power as its sensitivity and the threshold $\alpha$ as its false-alarm rate; [What a p-value is not](p-values/what_a_p_value_is_not.ipynb) shows that when one tested idea in ten is real, most significant results can be false.
+
+## The formula
+
+The formula is the count above written once for any numbers. It is worth knowing in two forms: the probability form, and an odds form that makes adding evidence a multiplication.
+
+Write $I$ for "the lot is infested", $C$ for "the lot is clean", and $F$ for "the check flags it". $P(F \mid I)$, read "the probability of $F$ given $I$", is the share of infested lots that get flagged. Bayes' rule is
+
+$$P(I \mid F) = \frac{P(F \mid I)\,P(I)}{P(F \mid I)\,P(I) + P(F \mid C)\,P(C)}$$
+
+where $P(I)$ is the base rate, also called the **prior** (here 0.02); $P(C) = 1 - P(I)$; $P(F \mid I)$ is the sensitivity (0.90); $P(F \mid C) = 1 - \text{specificity}$ is the false-alarm rate (0.05); and $P(I \mid F)$, the answer, is the **posterior**. All are probabilities, so they have no units. The denominator is $P(F)$, the overall share of lots flagged. With the example's numbers,
+
+$$P(I \mid F) = \frac{0.90 \times 0.02}{0.90 \times 0.02 + 0.05 \times 0.98} = \frac{0.018}{0.018 + 0.049} = 0.269$$
+
+Multiply the top and bottom by 1,000 and they are the 18 and the 49 from the tree.
+
+::: {.callout-note collapse="true"}
+## Where the formula comes from
+
+The chance that a lot is both infested and flagged can be built in two orders: first infested, then flagged; or first flagged, then infested.
+
+$$P(I \text{ and } F) = P(F \mid I)\,P(I) = P(I \mid F)\,P(F)$$
+
+Dividing both sides by $P(F)$ gives $P(I \mid F) = P(F \mid I)\,P(I)/P(F)$. Every flagged lot is either infested or clean, so $P(F) = P(F \mid I)\,P(I) + P(F \mid C)\,P(C)$, which is the denominator above.
+:::
+
+The formula's main lesson is that $P(I \mid F)$ and $P(F \mid I)$ are different quantities: 0.269 and 0.90 here. Swapping them is the error in the tempting answer, and the same error as reading a p-value, a probability of data given the null hypothesis, as the probability of the null hypothesis given the data.
+
+**The odds form.** Odds are a probability divided by its complement, $p/(1-p)$. In odds, Bayes' rule is one multiplication:
+
+$$\text{posterior odds} = \text{prior odds} \times \text{LR}, \qquad \text{LR} = \frac{P(F \mid I)}{P(F \mid C)}$$
+
+where LR, the **likelihood ratio**, says how many times more often a flag turns up on an infested lot than on a clean one: $0.90/0.05 = 18$ here. Prior odds of $0.02/0.98 = 1/49$ become $18/49$ after one flag, which is $18/67 = 26.9\%$, and $18 \times 18/49 = 6.61$ after a second independent flag, which is $6.61/7.61 = 86.9\%$. The posterior after one check is the prior for the next.
+
+## Updating as evidence arrives
+
+Is a new supplier failing more than 10% of its lots? After three weeks of inspections the honest answer is "not sure yet: about a 46% chance", so keep inspecting. Bayes' rule gives that answer and updates it every week, so there is always a current estimate rather than a wait for "enough data".
+
+**The example (synthetic numbers).** A packhouse takes on a new supplier and wants to know $\theta$, the share of that supplier's lots that fail inspection, against a contract limit of 10%. Before any lots arrive, its belief is "about 5%, about as firm as if we had already seen 40 lots". Three weeks of 10 lots each then fail 2, 0 and 3 times.
+
+A convenient way to hold a belief about a rate is the **Beta distribution**, $\text{Beta}(a, b)$, which you can read as "$a$ failures and $b$ passes already counted". Its mean is $a/(a + b)$. The prior above is $\text{Beta}(2, 38)$: mean $2/40 = 5\%$. Bayes' rule for this case is bookkeeping. After $k$ failures in $n$ lots,
+
+$$\text{Beta}(a, b) \;\to\; \text{Beta}(a + k,\; b + n - k)$$
+
+where $k$ and $n$ are counts of lots. Add the failures to $a$ and the passes to $b$.
+
+| After | Lots (failed) | Belief | Mean, 90% interval |
+|---|---|---|---|
+| Start | none | Beta(2, 38) | 5.0%, 0.9 to 11.6% |
+| Week 1 | 10 (2) | Beta(4, 46) | 8.0%, 2.8 to 15.1% |
+| Week 2 | 10 (0) | Beta(4, 56) | 6.7%, 2.3 to 12.6% |
+| Week 3 | 10 (3) | Beta(7, 63) | 10.0%, 4.9 to 16.4% |
+
+The intervals are the 5th and 95th percentiles of each Beta distribution, computed with `scipy` (the snippet below).
+
+- **The decision.** The probability that the supplier's rate is above the 10% limit, $P(\theta > 0.10)$, is 45.8% after week 3, up from 8.8% before any data. Not grounds to drop the supplier; grounds to keep inspecting.
+- **The estimate is a compromise.** The supplier has failed $5/30 = 16.7\%$ of lots. The posterior mean of 10.0% is the average of the prior mean and the observed rate, weighted by the 40 lots the prior is "worth" and the 30 actually seen: $(40 \times 5\% + 30 \times 16.7\%)/70 = 7/70 = 10.0\%$. More weeks shift the weight toward the data.
+- **Order does not matter.** Updating with all 30 lots at once, $\text{Beta}(2 + 5, 38 + 25)$, gives the same $\text{Beta}(7, 63)$ as updating week by week.
+
+With this little data the prior matters. Starting from $\text{Beta}(1, 1)$, which treats every rate from 0 to 100% as equally plausible, the same 30 lots give $\text{Beta}(6, 26)$: mean 18.8% and $P(\theta > 0.10) = 91.7\%$. Choosing and defending a prior is the subject of [Priors in practice](priors-in-practice/priors_in_practice.ipynb).
+
+Copy this to run the update on your own counts:
+
+```python
+from scipy import stats
+
+a, b = 2, 38                                # prior: 2 failures, 38 passes "already seen"
+for n, k in [(10, 2), (10, 0), (10, 3)]:    # (lots inspected, lots failed) per week
+    a, b = a + k, b + n - k
+    post = stats.beta(a, b)
+    print(f"Beta({a},{b}) mean {post.mean():.3f}, "
+          f"90% interval {post.ppf(0.05):.3f} to {post.ppf(0.95):.3f}, "
+          f"P(rate > 10%) {post.sf(0.10):.3f}")
+```
+
+::: {.callout-note collapse="true"}
+## Why the update is just adding counts
+
+Here the hypotheses are every possible rate $\theta$ between 0 and 1, not just "infested" or "clean", so Bayes' rule is written with densities. The posterior is proportional to the likelihood times the prior:
+
+$$p(\theta \mid k, n) \propto \theta^{k}(1 - \theta)^{n - k} \times \theta^{a - 1}(1 - \theta)^{b - 1} = \theta^{a + k - 1}(1 - \theta)^{b + n - k - 1}$$
+
+where $\theta^{k}(1-\theta)^{n-k}$ is the binomial likelihood of $k$ failures in $n$ independent lots, and $\theta^{a-1}(1-\theta)^{b-1}$ is the shape of the $\text{Beta}(a, b)$ density. The product has the shape of $\text{Beta}(a + k, b + n - k)$. The denominator of Bayes' rule only rescales it so that it integrates to 1, which is why it can be left out. A prior that stays in the same family after updating is called **conjugate**.
+
+The model assumes lots are independent and share one failure rate. If a supplier's quality drifts through the season, old weeks should count for less than new ones; down-weighting them is a modelling choice this simple version does not make.
+:::
+
+::: {.callout-tip}
+## What this means for you
+
+These are my inferences from the arithmetic above, not tested recommendations.
+
+- **Before acting on any flag, alert or significant result, ask how common the problem is.** Sketch 1,000 cases and count the true and false flags; it takes a minute.
+- **For a model or detector, report precision at the base rate it will meet in use**, not only sensitivity and specificity. A classifier scored on a balanced test set can look excellent and still be wrong on most of its positive calls when the event is rare.
+- **For a check on lots, read a flag on a low-risk lot as "hold and recheck"**, with a fresh sample or a different method, and read a clearance as reliable.
+- **For a rate you are estimating, keep a running Beta and update it each week.** You get a current estimate and a probability of crossing the threshold you care about, instead of waiting for a fixed sample.
+:::
+
+## Key takeaways
+
+- Convert any conditional-probability question to whole cases before calculating: pick 1,000, follow them down the tree, and compare the two counts that end in the same observation.
+- A check's sensitivity and specificity belong to the check; what a positive result means also depends on the lots it is used on. Redo the count whenever the population changes.
+- When the condition is rare, buy specificity or confirm positives; extra sensitivity barely changes what a flag means.
+- In odds, each independent piece of evidence multiplies by its likelihood ratio. Check independence before multiplying twice.
+- A Beta prior on a rate updates by adding failures and passes. Ask how many cases the prior is "worth", and compare the answer with a flatter prior when data are few.
+
+## References
+
+[^1]: Gigerenzer, G. & Hoffrage, U. How to improve Bayesian reasoning without instruction: frequency formats. *Psychol. Rev.* **102**, 684–704 (1995). https://doi.org/10.1037/0033-295X.102.4.684
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/heavy-tails.html"><span>Previous</span>Heavy tails</a><a class="mf-up" href="/series/statistics/index.html"><span>Series</span>Statistics</a><a class="mf-next" href="/blogs/priors-in-practice/priors_in_practice.html"><span>Next</span>Priors in practice</a></div>
+<!-- CURRICULUM_FOOTER_END -->

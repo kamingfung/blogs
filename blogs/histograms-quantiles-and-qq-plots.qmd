@@ -1,0 +1,298 @@
+---
+title: Histograms, quantiles and QQ plots
+description: How to look at a distribution before summarising it, with histograms and their bin width, quantiles such as P90, box plots, and Q–Q plots for checking a distributional assumption.
+date: 2026-10-20
+categories:
+- statistics
+- data science
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/statistics/index.html">Statistics</a><span class="sep">·</span>Part 1 · Describing data</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">School maths. Python or R for the notebooks.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Before you average a column, look at it. Three plots do most of the work. A histogram shows where values pile up, but the bin width you pick changes the picture: narrow bins turn noise into peaks, and wide bins merge two groups into one hump. Quantiles summarise without assuming any shape. P90 is the value that 90% of observations are at or below, so it answers questions like "how big is a big week?", and one mistyped record barely moves it. A box plot draws a few quantiles and marks unusual points, many of which turn out to be genuine. A Q–Q plot is the sharpest test of whether data follow an assumed distribution such as the normal. Straight means yes, and the way the points bend says what is different: long tails, clipped tails, skew, or two groups mixed together. In practice, draw a histogram at two bin widths and a Q–Q plot before you quote a mean.
+:::
+
+A mean is a summary of a shape, and it only means what you think if the shape is roughly what you assumed. In a lot that mixes two blueberry varieties, the mean weight can sit in the trough between them, where few berries are. The plots below catch that before it reaches a report; [Mean, median, and when they disagree](mean-median-and-when-they-disagree.qmd) picks up what to do next.
+
+## Histograms: the bin width is a choice
+
+A histogram shows where values pile up, and the bin width you choose decides what it shows. Try it first. The widget holds five synthetic lots of 500 values each, drawn from one fixed seed so every reader sees the same samples:
+
+| Lot | Field situation (distribution) |
+|---|---|
+| One variety | One cultivar from one block (normal, mean 2.0 g, SD 0.3 g) |
+| Scale misreads | A line scale that now and then misreads by a lot (Student t, 3 degrees of freedom, centred on 2.0 g) |
+| Size-graded | A lot a grader has cut to 1.6–2.4 g (the same normal, trimmed) |
+| Farm volume | Weekly volume per farm, in tonnes (lognormal, median 8 t) |
+| Two varieties mixed | Two cultivars packed together, 60:40 (normals centred on 1.8 and 2.6 g) |
+
+The left panel is the histogram at your bin width. The right panel is the normal Q–Q plot from the third section; it has no bins, so the slider does not touch it.
+
+::: {.sim-card}
+#### Look before you summarise
+
+```{ojs}
+//| echo: false
+viewof lot = Inputs.radio(
+  ["One variety", "Scale misreads", "Size-graded", "Farm volume", "Two varieties mixed"],
+  {value: "Two varieties mixed", label: "Synthetic lot"})
+
+isFarm = lot === "Farm volume"
+unit = isFarm ? "t" : "g"
+
+// The slider is rebuilt when the lot changes, because grams and tonnes need different ranges.
+viewof binW = isFarm
+  ? Inputs.range([0.5, 15], {value: 2, step: 0.5, label: "Bin width (t)"})
+  : Inputs.range([0.02, 0.5], {value: 0.1, step: 0.01, label: "Bin width (g)"})
+
+// Seeded generator (mulberry32) so every reader sees the same synthetic sample.
+rng32 = a => () => {
+  a = (a + 0x6D2B79F5) | 0;
+  let t = Math.imul(a ^ (a >>> 15), 1 | a);
+  t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+}
+
+// 500 values per lot, every lot built from the same random stream.
+values = {
+  const u = rng32(2026), out = [];
+  const z = () => Math.sqrt(-2 * Math.log(1 - u())) * Math.cos(2 * Math.PI * u());  // Box–Muller
+  while (out.length < 500) {
+    let v;
+    if (lot === "One variety") v = 2.0 + 0.3 * z();
+    else if (lot === "Scale misreads") {
+      const z0 = z(); let c = 0;
+      for (let j = 0; j < 3; j++) c += z() ** 2;     // chi-square, 3 degrees of freedom
+      v = 2.0 + 0.2 * z0 / Math.sqrt(c / 3);          // Student t, scaled to grams
+    }
+    else if (lot.startsWith("Size")) { v = 2.0 + 0.3 * z(); if (v < 1.6 || v > 2.4) continue; }
+    else if (isFarm) v = 8 * Math.exp(0.7 * z());     // lognormal, median 8 t
+    else v = u() < 0.6 ? 1.8 + 0.2 * z() : 2.6 + 0.22 * z();
+    out.push(v);
+  }
+  return out;
+}
+
+sorted = Float64Array.from(values).sort()
+n = sorted.length
+q = p => d3.quantileSorted(sorted, p)      // linear interpolation, numpy's default
+iqr = q(0.75) - q(0.25)
+fdWidth = 2 * iqr * n ** (-1 / 3)          // Freedman–Diaconis rule
+edges = {
+  const lo = Math.floor(sorted[0] / binW) * binW;
+  return d3.range(Math.ceil((sorted[n - 1] - lo) / binW + 1e-9) + 1).map(i => lo + i * binW);
+}
+
+// Normal quantile from Winitzki's inverse-erf approximation (error ~0.2%, enough for a plot).
+zq = p => {
+  const x = 2 * p - 1, l = Math.log(1 - x * x), t = 2 / (Math.PI * 0.147) + l / 2;
+  return Math.sign(x) * Math.SQRT2 * Math.sqrt(Math.sqrt(t * t - l / 0.147) - t);
+}
+qq = Array.from(sorted, (v, i) => ({z: zq((i + 0.5) / n), v}))
+// Reference line through the quartiles: slope IQR / 1.349, centred on their midpoint.
+lineSlope = iqr / 1.349
+lineMid = (q(0.25) + q(0.75)) / 2
+
+f = v => v.toFixed(isFarm ? 2 : 3)
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${card("Mean / median", `${f(d3.mean(values))} / ${f(q(0.5))} ${unit}`, "#f59e0b")}
+  ${card("P10 / P90", `${f(q(0.1))} / ${f(q(0.9))} ${unit}`, "#38bdf8")}
+  ${card("SD / IQR÷1.349", `${f(d3.deviation(values))} / ${f(lineSlope)} ${unit}`, "#cbd5e1")}
+  ${card("Freedman–Diaconis width", `${f(fdWidth)} ${unit}`, "#10b981")}
+  ${card("Bins shown", `${edges.length - 1}`, "#cbd5e1")}
+</div>`
+
+{
+  const w = width >= 680 ? Math.floor((width - 16) / 2) : width;   // CSS grid below shrinks to fit
+  const hist = Plot.plot({
+    width: w, height: 300, marginLeft: 45,
+    style: {background: "transparent", color: "#cbd5e1"},
+    x: {label: `${isFarm ? "weekly volume" : "berry weight"} (${unit}) →`, grid: true},
+    y: {label: "↑ count", grid: true},
+    color: {legend: true, domain: ["Mean", "Median", "P90"], range: ["#f59e0b", "#10b981", "#38bdf8"]},
+    marks: [
+      Plot.rectY(values, Plot.binX({y: "count"}, {x: d => d, thresholds: edges, fill: "#38bdf8", fillOpacity: 0.55})),
+      Plot.ruleX([d3.mean(values)], {stroke: () => "Mean", strokeWidth: 2.5}),
+      Plot.ruleX([q(0.5)], {stroke: () => "Median", strokeWidth: 2.5}),
+      Plot.ruleX([q(0.9)], {stroke: () => "P90", strokeWidth: 2, strokeDasharray: "5 4"}),
+      Plot.ruleY([0])
+    ]
+  });
+  const qqPlot = Plot.plot({
+    width: w, height: 300, marginLeft: 45,
+    style: {background: "transparent", color: "#cbd5e1"},
+    x: {label: "normal quantile z →", grid: true, domain: [-3.3, 3.3]},
+    y: {label: `↑ sorted data (${unit})`, grid: true},
+    color: {legend: true, domain: ["Data", "Line through the quartiles"], range: ["#38bdf8", "#64748b"]},
+    marks: [
+      Plot.line([-3.3, 3.3].map(z => ({z, v: lineMid + lineSlope * z})),
+                {x: "z", y: "v", stroke: () => "Line through the quartiles", strokeWidth: 2, strokeDasharray: "6 4"}),
+      Plot.dot(qq, {x: "z", y: "v", fill: () => "Data", r: 2.2})
+    ]
+  });
+  return html`<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap:16px">
+    <div style="min-width:0">${hist}</div><div style="min-width:0">${qqPlot}</div></div>`;
+}
+```
+
+Start on two varieties mixed. Drag the bin width from 0.02 g up to 0.5 g, then try one variety at the same widths.
+:::
+
+On the two-variety lot, three bin widths tell three stories:
+
+- **0.02 g** gives about a hundred bins with a handful of berries each, and the outline is ragged with dips and spikes that a fresh sample would rearrange.
+- **0.10 g** shows two clear peaks, a tall one at 1.8–1.9 g and a broader one across 2.4–2.8 g: the two varieties, centred on 1.8 and 2.6 g, that the lot was built from.
+- **0.50 g** leaves five bars with counts of 26, 234, 117, 115 and 8. The second peak has become a shoulder, and the histogram reads as one lopsided hump.
+
+None of the three is wrong; narrow bins are faithful but noisy, wide bins steady but blurred. To compare samples of different sizes, scale the bars so their areas sum to 1 (each height becomes count ÷ ($n \times h$), in g⁻¹), which is `density=True` in numpy and matplotlib.
+
+**For a starting width, use the Freedman–Diaconis rule.** It is a good default, and because it is built on the interquartile range it ignores outliers. **Sturges's rule under-bins large samples**, because its bin count grows only with $\log_2 n$. Scott derived the width that, for large samples, minimises a histogram's average squared error against the true density, using the normal as a reference[^scott]; numpy offers all three (`bins="fd"`, `"sturges"`, `"scott"`). The two named here are
+
+$$h_{\text{FD}} = 2\,\text{IQR}\;n^{-1/3}, \qquad k_{\text{Sturges}} = 1 + \log_2 n$$
+
+where $h_{\text{FD}}$ is a bin width in the data's units, $n$ the number of observations, IQR the interquartile range (the distance between the 25th and 75th percentiles, explained in the next section), and $k_{\text{Sturges}}$ a number of bins, rounded up, spread across the data's range. For the two-variety lot the widget's Freedman–Diaconis readout is 0.185 g, and Sturges gives $1 + \log_2 500 = 9.97$, so 10 bins of $1.98/10 = 0.198$ g across its 1.98 g range. Both show the two peaks here. My own habit, not a rule from these papers: draw every histogram at the rule's width and at about half of it, and trust only features that survive both.
+
+## Quantiles: P90 and its relatives
+
+A quantile answers "how big is big?" without assuming any shape. The $p$-quantile, written $q_p$, is the value that a fraction $p$ of the observations are at or below. Percentiles are the same thing on a 0–100 scale, so P90 is $q_{0.9}$: 90% of farm-weeks shipped at most that much. The median is P50, and the **quartiles** are P25 and P75. Their gap, $\text{IQR} = q_{0.75} - q_{0.25}$, is the width of the middle half of the data.
+
+To compute one from a sample, sort the $n$ values, $x_{(1)} \le x_{(2)} \le \dots \le x_{(n)}$, find the position
+
+$$r = 1 + (n - 1)\,p$$
+
+and interpolate between the two sorted values either side of it:
+
+$$\hat{q}_p = x_{(\lfloor r \rfloor)} + \big(r - \lfloor r \rfloor\big)\big(x_{(\lfloor r \rfloor + 1)} - x_{(\lfloor r \rfloor)}\big)$$
+
+where $\lfloor r \rfloor$ is $r$ rounded down, $x_{(j)}$ is the $j$-th smallest value, and $\hat{q}_p$ is in the units of the data. This is the default in numpy and pandas.
+
+Here are 20 synthetic farm-weeks, the first 20 of the widget's farm lot rounded to 0.1 t, sorted: 3.2, 3.8, 6.1, 6.5, 6.6, 6.8, 7.3, 7.4, 8.6, 8.8, 9.4, 10.6, 11.2, 13.4, 13.5, 14.0, 14.1, 15.0, 19.7, 25.6 t. For P90, $r = 1 + 19 \times 0.9 = 18.1$, so
+
+$$\hat{q}_{0.9} = 15.0 + 0.1 \times (19.7 - 15.0) = 15.47 \text{ t}$$
+
+The median, at $r = 10.5$, is $(8.8 + 9.4)/2 = 9.1$ t; the mean is $211.6/20 = 10.58$ t, pulled above the median by the two largest weeks.
+
+**Which method? Use your library's default, and write the method down whenever the number goes into a contract or a service level.** Packages disagree: Hyndman and Fan found many definitions in use, sometimes several inside one package, and recommended the median-unbiased one as a common standard[^hf]. With few values the choice matters. On these 20 weeks numpy's `lower`, `median_unbiased` and `weibull` methods give 15.00, 17.98 and 19.23 t against the default's 15.47 t, while on all 500 weeks the default, `median_unbiased` and `weibull` span only 22.37–22.74 t.
+
+**Quantiles are robust; the mean is not.** Suppose the 25.6 t week was typed as 256 t. The mean jumps from 10.58 t to $(211.6 - 25.6 + 256)/20 = 22.1$ t, more than double, while the median stays at 9.1 t and P90 at 15.47 t, because neither touches the largest value. That protection has a limit. P90 here leans on the 18th and 19th values, so if the 19.7 t week were also mistyped, as 197 t, P90 would jump to $15.0 + 0.1 \times (197 - 15.0) = 33.2$ t. Roughly, an upper quantile $q_p$ survives errors in fewer than a fraction $1 - p$ of the values; the median survives almost half. That is also why a quantile is a sound target when the mean is unstable, as [Heavy tails](heavy-tails.qmd) shows, and [Pinball loss and quantiles](pinball-loss-and-quantiles.qmd) shows how to forecast and score one.
+
+::: {.callout-note collapse="true"}
+## Box plots, briefly
+
+A box plot draws a handful of quantiles. McGill, Tukey and Larsen describe the conventional one as built from five values: the extremes, the two hinges (quartiles) and the median[^mtl]. Matplotlib's default, which its documentation calls Tukey's original definition, ends each whisker at the furthest point within 1.5 IQR of the box and draws anything beyond as a separate point.
+
+For the 20 farm-weeks, $q_{0.25} = 6.75$ t, $q_{0.75} = 13.625$ t and $\text{IQR} = 6.875$ t, so the upper fence is $13.625 + 1.5 \times 6.875 = 23.94$ t. The 25.6 t week is drawn as a point; the upper whisker stops at 19.7 t.
+
+About 0.7% of normal data lie beyond the fences (they sit $0.6745 + 1.5 \times 1.349 = 2.698$ standard deviations from the mean), so expect 3 or 4 in 500; the one-variety lot happens to have none. Skewed data put many more there: 29 of the 500 farm-weeks lie beyond the upper fence, and every one is a genuine large farm in the generator. A point beyond the fence is worth a look, not a deletion.
+
+A box plot also cannot show two groups. The two-variety lot has no points beyond its fences, and its box looks like any other; only the histogram and the Q–Q plot reveal the mixture.
+:::
+
+## Q–Q plots: the sharpest check of a shape
+
+A Q–Q plot shows whether data follow an assumed distribution and, if not, where they differ, and one rule reads it: **points steeper than the line mean the data are sparse there; flatter means bunched.** Four departures from the normal cover most of what you will meet.
+
+| Shape in the data | What the points do | Synthetic lot |
+|---|---|---|
+| Heavy tails | Both ends bend away from the line: low end down, high end up | Scale misreads |
+| Light tails | Both ends flatten toward horizontal | Size-graded |
+| Right skew | A bow, curving up at both ends with the middle below the line | Farm volume |
+| Two groups | Two flatter stretches joined by a steep step where the groups meet | Two varieties mixed |
+
+To build one, sort the $n$ values and plot the $i$-th smallest against $z_i = \Phi^{-1}\big((i - 0.5)/n\big)$, the value a standard normal sample would be expected to have at that rank, where $\Phi^{-1}$ is the inverse of the standard normal cumulative distribution function and $z_i$ is dimensionless[^wg]. Normal data with mean $\mu$ and standard deviation $\sigma$ then fall on the straight line $x = \mu + \sigma z$. The widget's dashed line passes through the quartiles; its slope, $\text{IQR}/1.349$, is a standard deviation estimated from the middle half (the normal's quartiles sit at $z = \pm 0.6745$, which are 1.349 apart), so the tails cannot tilt it.
+
+Switch the widget through the lots and compare the readouts as well as the shapes.
+
+- **One variety** lies on the line, and its two spread estimates agree: SD 0.315 g against IQR÷1.349 = 0.328 g. The last few points at each end wander a little even here, so judge the overall bend, not the final two dots.
+- **Scale misreads** sits on the line in the middle, but its lowest point, a 0.326 g reading, falls far below it. The SD, 0.281 g, is a third larger than the middle-half estimate of 0.211 g, because the tails inflate it.
+- **Size-graded** flattens at 1.6 and 2.4 g, where the grader cut. Here the SD, 0.208 g, is smaller than the middle-half estimate, 0.244 g.
+- **Farm volume** bows upward, and its mean, 10.55 t, sits above its median, 8.30 t. As [Normal, lognormal, Poisson](normal-lognormal-poisson.qmd) shows, a lognormal straightens on the Q–Q plot of its logarithm.
+- **Two varieties mixed** has a steep stretch a little right of the middle, near the 60th percentile, where the lighter variety runs out. Its histogram at 0.5 g bins looked like a single skewed hump; the Q–Q plot shows the step at any bin width, because it has none.
+
+The same plot works against any reference: set two samples' quantiles against each other, such as two farms or two seasons, and points off the diagonal show where they differ, the comparison that [The Kolmogorov–Smirnov test](ks_test/ks_test.ipynb) turns into a test.
+
+## When the plot is not straight
+
+A bent Q–Q plot is a diagnosis, and each shape points to a next step. These are my own working rules, not results from the cited papers:
+
+- **Heavy right tail or right skew:** model the logarithm ([Log and Box–Cox transforms](log-and-boxcox-transforms.qmd)), or forecast quantiles and score them with [pinball loss](pinball-loss-and-quantiles.qmd) instead of the mean.
+- **Heavy tails on both sides:** check the extreme records first, then prefer medians, quantiles and losses that do not square large errors.
+- **A step in the middle:** split by the grouping variable and summarise each group separately.
+- **Clipped or flattened ends:** look for grading, capping or a detection limit in how the data were made.
+- **Horizontal runs of tied points:** the values were rounded, for example weights to the nearest 0.1 g; that is the scale, not the berries.
+
+To find the grouping variable, draw one Q–Q line per candidate group:
+
+```python
+import matplotlib.pyplot as plt
+from scipy import stats
+
+fig, ax = plt.subplots()
+for name, g in df.groupby("variety"):                   # one line per group
+    (z, x), _ = stats.probplot(g["weight_g"], dist="norm")
+    ax.plot(z, x, ".", label=name)
+ax.legend()
+```
+
+Run on the mixture lot, labelled by the variety each berry was drawn from (306 of A, 194 of B), the step disappears: each variety lies on its own straight line, and within each the SD and IQR/1.349 agree (0.208 against 0.204 g for A, 0.227 against 0.226 g for B), where the pooled lot gave 0.444 against 0.544 g. If no single column gives straight lines, try the next candidate: farm, block, picking pass, scale.
+
+The normality that regression and $t$-intervals assume is about the errors, so for a model, draw the Q–Q plot of the residuals, not the raw values; [Reading residuals](reading-residuals/reading_residuals.ipynb) does that on a weekly harvest. Tree models such as gradient boosting assume no normal inputs, but, as my own inference, the shape still matters for them: it should guide the loss you train on, it decides whether symmetric prediction intervals make sense, and odd shapes are often how data errors show up. Whenever you build intervals from residuals, check the residuals' Q–Q plot.
+
+For a new column, the routine below draws both plots and prints the numbers you will probably quote.
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy import stats
+
+x = df["weight_g"].dropna().to_numpy()            # df: your DataFrame
+
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(9, 3.5))
+for bins in ["fd", "sturges"]:                     # two rule-of-thumb widths
+    ax1.hist(x, bins=bins, histtype="step", label=bins)
+ax1.legend()
+stats.probplot(x, dist="norm", plot=ax2)            # normal Q-Q plot
+
+print(np.quantile(x, [0.1, 0.25, 0.5, 0.75, 0.9]))  # numpy's default method
+iqr = np.subtract(*np.quantile(x, [0.75, 0.25]))
+print("SD", x.std(ddof=1), "IQR/1.349", iqr / 1.349)
+```
+
+`scipy.stats.probplot` fits its reference line by least squares through all the points rather than through the quartiles, so heavy tails tilt it slightly; the reading rule is the same.
+
+::: {.callout-tip}
+## What this means for you
+
+My own inference: if the Q–Q plot is straight, the mean and standard deviation describe the column. If it is not, report the median and P10–P90 alongside the mean, and find out why before modelling; one number for a mixture describes neither group.
+:::
+
+## Key takeaways
+
+- Draw each histogram at the rule's bin width and at about half of it; a peak that appears at only one width is not yet a finding.
+- Quote quantiles from small samples with the method named; on 20 values, P90 moved from 15.0 to 19.2 t across numpy's methods.
+- A point beyond a box plot's fence is a prompt to check the record, not a reason to drop it; in skewed data many are genuine.
+- Compare the SD with IQR/1.349. Much larger means heavy tails or bad records; smaller means trimmed data or a mixture.
+- A step in a Q–Q plot means a hidden group; plot one line per candidate group until each is straight.
+- Check the residuals, not the raw data, when a model or an interval assumes normal errors.
+
+## References
+
+[^scott]: Scott, D. W. On optimal and data-based histograms. *Biometrika* **66**, 605–610 (1979). https://doi.org/10.1093/biomet/66.3.605
+[^hf]: Hyndman, R. J. & Fan, Y. Sample quantiles in statistical packages. *Am. Stat.* **50**, 361–365 (1996). https://doi.org/10.1080/00031305.1996.10473566
+[^mtl]: McGill, R., Tukey, J. W. & Larsen, W. A. Variations of box plots. *Am. Stat.* **32**, 12–16 (1978). https://doi.org/10.1080/00031305.1978.10479236
+[^wg]: Wilk, M. B. & Gnanadesikan, R. Probability plotting methods for the analysis of data. *Biometrika* **55**, 1–17 (1968). https://doi.org/10.1093/biomet/55.1.1
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-up" href="/series/statistics/index.html"><span>Series</span>Statistics</a><a class="mf-next" href="/blogs/mean-median-and-when-they-disagree.html"><span>Next</span>Mean, median, and when they disagree</a></div>
+<!-- CURRICULUM_FOOTER_END -->

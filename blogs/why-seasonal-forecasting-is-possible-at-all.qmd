@@ -220,3 +220,4 @@ My inferences from the sources above, untested in the field:
 <!-- CURRICULUM_FOOTER_START -->
 <div class="mf"><a class="mf-prev" href="/blogs/enso.html"><span>Previous</span>ENSO</a><a class="mf-up" href="/series/prediction/index.html"><span>Series</span>Weather, Climate and Prediction</a><a class="mf-next" href="/blogs/return-periods.html"><span>Next</span>Return periods</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+

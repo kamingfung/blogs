@@ -6,15 +6,15 @@ description: "The statistics the other series lean on, kept short and separate s
 <dl class="syl-meta">
 <div><dt>Level</dt><dd>Introductory to intermediate</dd></div>
 <div><dt>Parts</dt><dd>8</dd></div>
-<div><dt>Modules</dt><dd>15 of 19 written</dd></div>
+<div><dt>Modules</dt><dd>19 of 19 written</dd></div>
 <div class="wide"><dt>Assumes</dt><dd>School maths. Python or R for the notebooks.</dd></div>
 </dl>
 
 ## Part 1 · Describing data
 
 <ul class="syl">
-<li class="g">Histograms, quantiles and QQ plots<span class="m">Introductory · not written</span></li>
-<li class="g">Mean, median, and when they disagree<span class="m">Introductory · not written</span></li>
+<li class="w"><a href="/blogs/histograms-quantiles-and-qq-plots.html">Histograms, quantiles and QQ plots</a><span class="m">Introductory</span></li>
+<li class="w"><a href="/blogs/mean-median-and-when-they-disagree.html">Mean, median, and when they disagree</a><span class="m">Introductory</span></li>
 <li class="w"><a href="/blogs/variance-and-standard-error.html">Variance and standard error</a><span class="m">Introductory</span></li>
 </ul>
 
@@ -58,8 +58,8 @@ description: "The statistics the other series lean on, kept short and separate s
 ## Part 7 · Bayesian basics
 
 <ul class="syl">
-<li class="g">Bayes&#x27; rule<span class="m">Introductory · not written</span></li>
-<li class="g">Priors in practice<span class="m">Intermediate · not written</span></li>
+<li class="w"><a href="/blogs/bayes-rule.html">Bayes&#x27; rule</a><span class="m">Introductory</span></li>
+<li class="w"><a href="/blogs/priors-in-practice/priors_in_practice.html">Priors in practice</a><span class="m">Intermediate</span></li>
 </ul>
 
 ## Part 8 · Experimental design

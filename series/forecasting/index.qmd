@@ -6,7 +6,7 @@ description: "Tabular machine learning for time series, from framing the problem
 <dl class="syl-meta">
 <div><dt>Level</dt><dd>Introductory to advanced</dd></div>
 <div><dt>Parts</dt><dd>15</dd></div>
-<div><dt>Modules</dt><dd>31 of 34 written</dd></div>
+<div><dt>Modules</dt><dd>34 of 34 written</dd></div>
 <div class="wide"><dt>Assumes</dt><dd>Python and pandas. Basic statistics. No prior forecasting.</dd></div>
 </dl>
 
@@ -102,14 +102,14 @@ description: "Tabular machine learning for time series, from framing the problem
 ## Part 13 · Deep learning
 
 <ul class="syl">
-<li class="g">When deep learning helps<span class="m">Intermediate · not written</span></li>
-<li class="g">N-BEATS and TFT<span class="m">Advanced · not written</span></li>
+<li class="w"><a href="/blogs/when-deep-learning-helps.html">When deep learning helps</a><span class="m">Intermediate</span></li>
+<li class="w"><a href="/blogs/n-beats-and-tft/n_beats_and_tft.html">N-BEATS and TFT</a><span class="m">Advanced</span></li>
 </ul>
 
 ## Part 14 · Foundation models
 
 <ul class="syl">
-<li class="g">Time series foundation models<span class="m">Advanced · not written</span></li>
+<li class="w"><a href="/blogs/time-series-foundation-models.html">Time series foundation models</a><span class="m">Advanced</span></li>
 </ul>
 
 ## Part 15 · In production

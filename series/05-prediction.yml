@@ -101,6 +101,7 @@ parts:
       - id: prediction/extreme-value-theory
         title: "Extreme value theory"
         level: advanced
+        path: blogs/extreme-value-theory/extreme_value_theory.ipynb
         requires:
           - prediction/return-periods
           - statistics/heavy-tails
@@ -131,9 +132,11 @@ parts:
       - id: prediction/downscaling
         title: "Downscaling"
         level: intermediate
+        path: blogs/downscaling.md
       - id: prediction/bias-correction
         title: "Bias correction"
         level: intermediate
+        path: blogs/bias-correction.md
   - title: "Climate scenarios"
     modules:
       - id: prediction/cmip-and-the-ssps

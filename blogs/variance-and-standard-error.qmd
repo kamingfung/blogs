@@ -219,6 +219,6 @@ Report which spread an error bar shows: $s$ for the variability of the data, $s/
 [^1]: Killip, S., Mahfoud, Z. & Pearce, K. What is an intracluster correlation coefficient? Crucial concepts for primary care researchers. *Ann. Fam. Med.* **2**, 204–208 (2004). https://doi.org/10.1370/afm.141
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-up" href="/series/statistics/index.html"><span>Series</span>Statistics</a><a class="mf-next" href="/blogs/ks_test/ks_test.html"><span>Next</span>The Kolmogorov–Smirnov test</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/mean-median-and-when-they-disagree.html"><span>Previous</span>Mean, median, and when they disagree</a><a class="mf-up" href="/series/statistics/index.html"><span>Series</span>Statistics</a><a class="mf-next" href="/blogs/ks_test/ks_test.html"><span>Next</span>The Kolmogorov–Smirnov test</a></div>
 <!-- CURRICULUM_FOOTER_END -->
 

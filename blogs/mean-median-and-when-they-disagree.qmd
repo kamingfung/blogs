@@ -1,0 +1,233 @@
+---
+title: Mean, median, and when they disagree
+description: What the mean and the median each answer, why skew and outliers pull them apart, where the geometric and trimmed means fit, and why an average of ratios is not the ratio of the totals.
+date: 2026-10-20
+categories:
+- statistics
+- data science
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/statistics/index.html">Statistics</a><span class="sep">·</span>Part 1 · Describing data</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">School maths. Python or R for the notebooks.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Three rules cover most cases. Use the **mean for totals**: the count times the mean is the total, so plan trucks, stock and budgets with it. Use the **median for the typical unit**: half the growers harvest less and half more, so it describes one grower. For **ratios, divide the totals**: the average of farm yields per hectare is not total harvest over total area, and only the second multiplies back to tonnes. On symmetric data the mean and the median agree. On right-skewed data, where a few large values stretch the upper tail, the mean sits above the median, and one extreme value can move the mean a long way while the median barely shifts. A forecast trained on absolute error aims at the median, so on skewed volumes it runs short on totals. And when groups differ in their mix, a pooled average can reverse a comparison that holds inside every group. Before you report an average, say which decision it feeds.
+:::
+
+## Two summaries, two questions
+
+The mean tells you what the units add up to; the median tells you what a typical unit looks like. Which one you need depends on whether your decision is about the total or about one unit.
+
+For $n$ values $x_1, \dots, x_n$, the **mean** is
+
+$$\bar{x} = \frac{1}{n} \sum_{i=1}^{n} x_i, \qquad \text{so} \qquad n\bar{x} = \sum_{i=1}^{n} x_i$$
+
+where $\bar{x}$ has the units of the data. The second form is the reason the mean exists: the count times the mean is the total, exactly. The **median** is the middle value once the data are sorted, or the average of the two middle values when $n$ is even. Half the values lie at or below it and half at or above.
+
+A synthetic example: seven growers deliver $4, 6, 7, 8, 9, 12$ and $38$ tonnes in one week. The total is $84$ t, so the mean is $84/7 = 12$ t. The median is the fourth value, $8$ t.
+
+- **Planning trucks.** With trucks that carry 20 t, the week needs $84/20 = 4.2$, so five trucks. The mean gets you there: $7 \times 12 = 84$. Planning from the median, $7 \times 8 = 56$ t, books three trucks; they carry 60 t and leave $84 - 60 = 24$ t on the dock, from a plan $84 - 56 = 28$ t short.
+- **Describing a grower.** Five of the seven growers deliver less than the mean of 12 t. If a new grower asks what a typical farm in the group harvests, 8 t is the honest answer; 12 t is pulled up by the one grower at 38 t.
+
+Each summary is also the best single guess under a particular cost: the mean minimises the sum of squared misses, the median the sum of absolute misses. So a model trained on absolute error (MAE, or L1 loss) aims at the median, and on right-skewed volumes its predictions, summed over days or growers, fall short of the total; one trained on squared error (MSE) aims at the mean, which adds up. My inference, not tested here: gradient-boosted models behave the same way, so LightGBM with `objective="mae"` or scikit-learn with `loss="absolute_error"` will under-forecast totals on skewed sales. [Which metric?](which-metric.qmd) shows the shortfall on a skewed sample of daily orders, and [Pinball loss and quantiles](pinball-loss-and-quantiles.qmd) covers costs that differ for shortfalls and surpluses.
+
+## What skew and outliers do
+
+On a right-skewed sample the mean sits above the median, and one extreme value moves the mean far more than it moves the median. The geometric and trimmed means sit in between, and the widget shows where.
+
+**Skew** means one tail is longer than the other. Harvests, incomes, pack-out volumes and most quantities built from multiplied factors are right-skewed: they cannot go below zero but can run far above the middle. [Normal, lognormal, Poisson](normal-lognormal-poisson.qmd) explains why multiplication produces this shape. An **outlier** is a single value far from the rest, whether a real large grower or a typing error.
+
+Two more summaries are useful here:
+
+- The **geometric mean** is the exponential of the mean of the logs, $\exp\!\left(\frac{1}{n}\sum \ln x_i\right)$, equivalently the $n$-th root of the product of the values. It needs every $x_i > 0$.
+- A **trimmed mean** sorts the values, drops a fixed fraction $p$ from each end, and averages the rest. The widget uses $p = 0.1$; for the seven growers, dropping one value from each end ($1/7$, about 14%) gives $(6 + 7 + 8 + 9 + 12)/5 = 8.4$ t.
+
+The widget draws a synthetic sample of 40 weekly harvests from a fixed seed. Each harvest is $10\,e^{\sigma z}$ tonnes, with $z$ a standard normal draw, so the logs are normal and the sample is lognormal. The slider sets $\sigma$, the standard deviation of the log harvest: near zero the sample is almost symmetric around 10 t, and larger values stretch the upper tail. The same 40 draws of $z$ are reused at every setting, so only the skew changes. Start at the default $\sigma = 0.6$, then switch on the extra grower, then drag $\sigma$ up to 1.5.
+
+::: {.sim-card}
+#### Pull the mean and the median apart
+
+```{ojs}
+//| echo: false
+viewof skewSigma = Inputs.range([0.05, 1.5], {value: 0.6, step: 0.05, label: "Skew: σ of ln(harvest)"})
+viewof addBig = Inputs.toggle({label: "Add one grower at 150 t", value: false})
+
+// Seeded generator (mulberry32) so every reader sees the same synthetic sample.
+rng32 = a => () => {
+  a = (a + 0x6D2B79F5) | 0;
+  let t = Math.imul(a ^ (a >>> 15), 1 | a);
+  t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+}
+
+// 40 standard normal draws (Box–Muller), fixed once; the slider only rescales them.
+zDraws = {
+  const u = rng32(7);
+  return Array.from({length: 40}, () => Math.sqrt(-2 * Math.log(1 - u())) * Math.cos(2 * Math.PI * u()));
+}
+
+harvest = {
+  const h = zDraws.map(z => ({t: 10 * Math.exp(skewSigma * z), big: false}));
+  if (addBig) h.push({t: 150, big: true});
+  return h;
+}
+vals = harvest.map(d => d.t)
+
+// Trimmed mean: sort, drop floor(p * n) from each end (as scipy.stats.trim_mean does).
+trimMean = (a, p) => {
+  const s = [...a].sort((x, y) => x - y), k = Math.floor(p * s.length);
+  return d3.mean(s.slice(k, s.length - k));
+}
+
+summ = [
+  {name: "Mean", v: d3.mean(vals), c: "#38bdf8"},
+  {name: "Median", v: d3.median(vals), c: "#10b981"},
+  {name: "10% trimmed mean", v: trimMean(vals, 0.1), c: "#f59e0b"},
+  {name: "Geometric mean", v: Math.exp(d3.mean(vals, Math.log)), c: "#ef4444"}
+]
+
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${summ.map(s => card(s.name, s.v.toFixed(2) + " t", s.c))}
+  ${card("Total (n × mean)", d3.sum(vals).toFixed(1) + " t", "#cbd5e1")}
+</div>`
+
+Plot.plot({
+  height: 260,
+  marginLeft: 20,
+  // Plot paints its own white ground otherwise, which the dark card fights.
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, Math.max(40, d3.max(vals) * 1.05)], label: "Weekly harvest (t) →", grid: true},
+  y: {axis: null},
+  color: {legend: true,
+          domain: ["Grower", "Added grower", ...summ.map(s => s.name)],
+          range: ["#cbd5e1", "#64748b", ...summ.map(s => s.c)]},
+  marks: [
+    Plot.dot(harvest, Plot.dodgeY({x: "t", anchor: "bottom", r: 5,
+      fill: d => d.big ? "Added grower" : "Grower", stroke: "#0f172a", strokeWidth: 1.5})),
+    Plot.ruleX(summ, {x: "v", stroke: "name", strokeWidth: 2.5}),
+    Plot.text(harvest.filter(d => d.big), {x: "t", frameAnchor: "bottom", dy: -16, text: () => "added grower", fill: "#cbd5e1"})
+  ]
+})
+```
+
+Each dot is one synthetic grower; the darker dot is the added one. The coloured lines are the four summaries.
+:::
+
+At $\sigma = 0.6$ the mean reads $12.88$ t and the median $10.73$ t, a ratio of $12.88/10.73 = 1.20$. That is what lognormal theory predicts for this $\sigma$: the mean exceeds the median by a factor $e^{\sigma^2/2} = e^{0.18} = 1.20$. The trimmed mean, $12.25$ t, sits between them, and the geometric mean, $10.97$ t, sits next to the median.
+
+Switch on the grower at 150 t. The total rises by exactly 150 t, from $515.4$ to $665.4$ t, and the mean jumps from $12.88$ to $16.23$ t, a rise of $3.35$ t from one grower in 41. The median moves only from $10.73$ to $10.89$ t, because adding one value shifts the middle by at most half a position, however large that value is. The trimmed mean moves from $12.25$ to $12.55$ t and the geometric mean from $10.97$ to $11.69$ t: both give the outlier some say, but far less than the mean does.
+
+Now drag $\sigma$ to 1.5 with the outlier off. The mean climbs to $30.16$ t while the median reads $11.94$ t and the geometric mean $12.61$ t; the trimmed mean, $22.59$ t, has dropped four values from each end and still sits far above the median, because the skew is spread across many upper values, not concentrated in a few.
+
+::: {.callout-note collapse="true"}
+## Why the geometric mean tracks the median here
+
+Taking logs turns the lognormal sample into a normal one, $\ln x_i = \ln 10 + \sigma z_i$. A normal sample is symmetric, so the mean of the logs and the median of the logs estimate the same number, $\ln 10$. Exponentiating both brings them back to the original scale: the median of $x$ is the exponential of the median of $\ln x$ (sorting is unchanged by a log), and the geometric mean is the exponential of the mean of $\ln x$. So for lognormal data the geometric mean estimates the median, $e^{\mu}$, not the mean, $e^{\mu + \sigma^2/2}$, where $\mu$ and $\sigma$ are the mean and standard deviation of $\ln x$. If you model on the log scale and need a total, multiply the back-transformed figure by $e^{\sigma^2/2}$; [Normal, lognormal, Poisson](normal-lognormal-poisson.qmd) shows this correction.
+
+The geometric mean is also the right average of growth factors. If a crop's yield rises 50% one year and falls 50% the next, the factors are $1.5$ and $0.5$. Their arithmetic mean, $1.0$, suggests no change, but the yield ends at $1.5 \times 0.5 = 0.75$ of where it started. The geometric mean, $\sqrt{0.75} = 0.866$, is the constant factor that gives the same end point: a fall of 13.4% a year.
+
+A single zero sends the product, and so the geometric mean, to zero, and a log of zero is undefined. Data with zeros, such as days with no sales, need a different summary.
+:::
+
+For heavier tails the gap gets worse: the sample mean may not settle as $n$ grows, while the median still does ([Heavy tails](heavy-tails.qmd)). A quick check is to recompute the mean without the largest value; if it jumps, as it does in the widget from $16.23$ back to $12.88$ t, the mean is resting on one row. My inference: targets with many zeros, such as daily sales of a slow item, are usually summarised in two parts, the share of zero days and the size of the non-zero days, rather than by one average.
+
+## Averages of ratios
+
+When each unit is itself a ratio, such as tonnes per hectare, the plain average of the ratios is not the ratio of the totals. Only the second one converts back into tonnes.
+
+Three synthetic farms:
+
+| Farm | Area (ha) | Harvest (t) | Yield (t/ha) |
+|---|---|---|---|
+| A | 2 | 30 | 15 |
+| B | 10 | 100 | 10 |
+| C | 50 | 400 | 8 |
+| Total | 62 | 530 | |
+
+The **average of the farm yields** is $(15 + 10 + 8)/3 = 11$ t/ha. The **ratio of the totals** is $530/62 = 8.55$ t/ha. Multiplying the first by the area, $62 \times 11 = 682$ t, overstates the real harvest of 530 t by 152 t, or $152/530 = 29\%$. The small, high-yielding farm A counts as a third of the first average while holding 3% of the land.
+
+The ratio of the totals is itself a weighted mean of the farm yields, with each farm weighted by its area:
+
+$$\frac{\sum_j H_j}{\sum_j A_j} = \sum_j \frac{A_j}{\sum_k A_k} \cdot \frac{H_j}{A_j}$$
+
+where $H_j$ is farm $j$'s harvest in tonnes, $A_j$ its area in hectares, and $H_j/A_j$ its yield in t/ha. Here, $(2 \times 15 + 10 \times 10 + 50 \times 8)/62 = 530/62$. In pandas, with one row per farm, the two versions are:
+
+```python
+df.groupby("region")["yield_per_ha"].mean()                       # average of ratios: 11.0
+df.groupby("region")[["harvest", "area"]].sum().eval("harvest / area")  # ratio of totals: 8.548
+```
+
+Run on the three farms above, the first prints 11.0 and the second 8.548387. Neither average is wrong. The area-weighted one answers "how much does a hectare in this region produce", which is what a regional forecast multiplies by area. The unweighted one answers "how well does a typical farm do per hectare", and for that question the median of the farm yields is often the better choice still.
+
+Weighting can do more than shift a number: it can reverse a comparison. Two synthetic varieties are grown in a good region (North) and a poor one (South):
+
+| Variety | North | South | Pooled |
+|---|---|---|---|
+| X | 10 ha at 20 t/ha | 40 ha at 8 t/ha | 520 t / 50 ha = 10.4 t/ha |
+| Y | 40 ha at 18 t/ha | 10 ha at 6 t/ha | 780 t / 50 ha = 15.6 t/ha |
+
+Variety X out-yields Y in each region, by 2 t/ha in both, yet pooled it looks 5.2 t/ha worse, because most of X was planted in the poor region. The pooled figure compares where the varieties were grown, not how they grow. This reversal is usually called Simpson's paradox. Its best-known real case is graduate admissions at Berkeley in 1973, where the aggregate figures showed a clear pattern against women but few departments did, because women had applied more often to departments that were harder for anyone to enter[^1].
+
+The remedy is to decide what comparison you want before pooling. If the question is "which variety should I plant on this field", compare within region. If it is "how much did each variety contribute to the season", the pooled totals are the answer. When the mix differs between groups, a pooled average mostly reports the mix.
+
+## Which summary for which decision
+
+Pick the summary by the decision it will feed, then report a second one when they differ. The table is a starting point, not a rule book; it is my own summary of the cases above.
+
+| Decision | Report | Why |
+|---|---|---|
+| Trucks, stock, budgets, anything summed | Mean | Count × mean = total |
+| A typical grower, day or crate | Median | Half above, half below; ignores the extremes |
+| Growth factors; lognormal data on the log scale | Geometric mean | Averages multiplicatively; estimates the median, not the mean |
+| A stable centre with a few bad readings | Trimmed mean | Sheds the extremes, but sits below the mean on right skew |
+| Yield per hectare for a region | Total ÷ total area | The area-weighted mean converts back to tonnes |
+
+If you need the summaries in code, these lines compute all four for a positive sample.
+
+```python
+import numpy as np
+from scipy import stats
+
+x = np.array([4, 6, 7, 8, 9, 12, 38])          # tonnes; any positive values
+print(x.mean(), np.median(x))                   # 12.0, 8.0
+print(stats.trim_mean(x, 0.1))                  # drops int(0.1 * n) from each end
+print(stats.gmean(x))                           # exp(mean(log x)); needs x > 0
+```
+
+Trimming works in whole values: `int(0.1 * 7)` is zero, so here `trim_mean(x, 0.1)` drops nothing and returns 12.0, while `trim_mean(x, 0.15)` drops one from each end and gives the 8.4 t from earlier.
+
+::: {.callout-tip}
+## What this means for you
+
+- When someone hands you "the average", ask whether it is a mean or a median, and over what units. A report of "average yield 11 t/ha" may be an average across farms that does not multiply back to the harvest.
+- If the mean and the median differ by more than you would round away, report both and say which one the decision uses. In the widget at $\sigma = 0.6$ they differ by $12.88 - 10.73 = 2.15$ t, 17% of the mean.
+- If you model log(volume), exponentiating the prediction gives roughly the median, not the mean. For lognormal data the mean is that figure times $e^{\sigma^2/2}$, with $\sigma$ the residual standard deviation on the log scale: at $\sigma = 0.6$, a factor of $1.20$ on every total. A QQ plot of the logs tells you whether lognormal is a fair description; see [Histograms, quantiles and QQ plots](histograms-quantiles-and-qq-plots.qmd).
+- My inference: a mean–median gap that widens from one season to the next is worth a look, since it suggests a few units pulling away from the rest, or a data error.
+:::
+
+## Key takeaways
+
+- Use the mean when the figure will be multiplied by a count or summed; no other summary turns back into the total.
+- Use the median to describe one typical unit, and do not multiply it by a count.
+- On right-skewed data, expect the mean above the median; for lognormal data the ratio is about $e^{\sigma^2/2}$, with $\sigma$ the standard deviation of the logs.
+- Check whether one value is moving the mean: recompute without the largest value and see how far it shifts.
+- The geometric and trimmed means estimate smaller numbers than the mean on right-skewed data. Use them for growth factors and typical values, never for anything that will be summed.
+- For ratios, divide the totals. An unweighted average of per-unit ratios answers a different question.
+- Before pooling groups, check whether the mix differs between them; if it does, compare within groups.
+
+## References
+
+[^1]: Bickel, P. J., Hammel, E. A. & O'Connell, J. W. Sex bias in graduate admissions: data from Berkeley. *Science* **187**, 398–404 (1975). https://doi.org/10.1126/science.187.4175.398
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/histograms-quantiles-and-qq-plots.html"><span>Previous</span>Histograms, quantiles and QQ plots</a><a class="mf-up" href="/series/statistics/index.html"><span>Series</span>Statistics</a><a class="mf-next" href="/blogs/variance-and-standard-error.html"><span>Next</span>Variance and standard error</a></div>
+<!-- CURRICULUM_FOOTER_END -->
