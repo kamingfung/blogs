@@ -1,0 +1,252 @@
+---
+title: "Data assimilation"
+description: How weather centres blend a model forecast with imperfect observations, weighting each by its error, and why that is Bayes' rule run on a cycle.
+date: 2026-10-21
+categories:
+- meteorology
+- forecasting
+- statistics
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/prediction/index.html">Weather, Climate and Prediction</a><span class="sep">·</span>Part 9 · How weather models work</p><p class="mh-facts"><span class="lvl lvl-advanced">Advanced</span></p><p class="mh-assumes">Comfort with averages and histograms. Python for the notebooks.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+A forecast and a fresh observation both describe the weather now, and both are wrong by some amount. Data assimilation combines them, weighting each by how wrong it usually is: Bayes' rule with the forecast as the prior. In one dimension the weight on the observation, the **gain**, is the forecast's error variance over the sum of both error variances. A forecast of 12 °C (typical error 1 °C) and a reading of 14 °C (typical error 0.5 °C) combine to 13.6 °C, with an error of 0.45 °C: better than either. Forecast from each blend, blend again, and you have a Kalman filter. Weather centres do this for the whole atmosphere with variational methods or ensembles, using observation operators that turn model temperatures into what a satellite measures. Rerun over decades with one fixed system, it builds a reanalysis such as ERA5.
+
+In practice: weight each source by its measured error, not by habit.
+:::
+
+## A forecast is a prior
+
+Given a forecast of the current state and an observation of it, the best single estimate is a weighted average, with weights set by the two error variances.
+
+**The example (synthetic numbers).** A model's six-hour forecast of a station's temperature, the **background**, is $x_b = 12.0$ °C, and such forecasts are typically off by $\sigma_b = 1.0$ °C. The thermometer reads $y = 14.0$ °C, typically off by $\sigma_o = 0.5$ °C, counting instrument error and the station not representing the model's grid box. Both errors are assumed unbiased and independent. The thermometer is more precise, so the estimate should sit closer to it, by an amount set by the **gain** $K$:
+
+$$\begin{aligned}
+K &= \frac{\sigma_b^2}{\sigma_b^2 + \sigma_o^2} \\
+x_a &= x_b + K\,(y - x_b) \\
+\sigma_a^2 &= (1 - K)\,\sigma_b^2
+\end{aligned}$$
+
+where $x_a$ is the **analysis**, the blended estimate (°C); $y - x_b$ is the **innovation**, how far the observation is from the forecast (°C); $\sigma_b^2$ and $\sigma_o^2$ are the background and observation error variances (°C²); and $\sigma_a^2$ is the analysis error variance (°C²). $K$ has no units and lies between 0 and 1. With the example's numbers:
+
+- $K = 1.0^2/(1.0^2 + 0.5^2) = 1/1.25 = 0.8$.
+- $x_a = 12.0 + 0.8 \times (14.0 - 12.0) = 13.6$ °C.
+- $\sigma_a^2 = 0.2 \times 1.0 = 0.2$ °C², so $\sigma_a = 0.45$ °C.
+
+The analysis error, 0.45 °C, is below both the forecast's 1.0 °C and the thermometer's 0.5 °C: two independent, unbiased sources always beat either alone, and the gain decides how to split the difference. "Unbiased" matters: an observation reading $b$ too high moves the analysis by $K b$, so a thermometer 0.5 °C high would shift it by $0.8 \times 0.5 = 0.4$ °C, which no weighting removes. A blend of this kind with weights fixed in advance is what meteorologists call **optimal interpolation**.
+
+**Why this is Bayes' rule.** In [Bayes' rule](bayes-rule.qmd) a prior and new evidence combine into a posterior. Here the prior is the forecast, a normal distribution centred on 12.0 °C with standard deviation 1.0 °C; the evidence is the reading; the posterior is the analysis (the callout below shows the algebra). [Priors in practice](priors-in-practice/priors_in_practice.ipynb) writes the same update as a weight $w = (n/\sigma^2)/(n/\sigma^2 + 1/\tau^2)$ on the data, where $n$ is the number of observations, $\sigma$ the error of each and $\tau$ the prior's standard deviation. With $n = 1$, $\sigma = \sigma_o$ and $\tau = \sigma_b$, $w$ is exactly $K$, and the forecast is "worth" $\sigma_o^2/\sigma_b^2 = 0.25$ of a thermometer reading.
+
+::: {.callout-note collapse="true"}
+## Where the gain comes from
+
+**As Bayes' rule.** With a normal prior $x \sim N(x_b, \sigma_b^2)$ and a normal likelihood $y \mid x \sim N(x, \sigma_o^2)$, the posterior density is proportional to
+
+$$\exp\!\left[-\frac{(x - x_b)^2}{2\sigma_b^2} - \frac{(y - x)^2}{2\sigma_o^2}\right]$$
+
+The exponent is quadratic in $x$, so the posterior is normal; its precision (one over its variance) is the sum of the two precisions, and its mean is the precision-weighted mean:
+
+$$\begin{aligned}
+\frac{1}{\sigma_a^2} &= \frac{1}{\sigma_b^2} + \frac{1}{\sigma_o^2} \\
+x_a &= \sigma_a^2\left(\frac{x_b}{\sigma_b^2} + \frac{y}{\sigma_o^2}\right)
+\end{aligned}$$
+
+Rearranged, this is the gain form. In the example, $1/\sigma_a^2 = 1 + 4 = 5$ °C⁻², so $\sigma_a^2 = 0.2$ °C².
+
+**As least squares.** The same $x_a$ minimises the **cost function** $J(x) = (x - x_b)^2/\sigma_b^2 + (y - x)^2/\sigma_o^2$: a weighted [least-squares](least-squares.qmd) fit to two "data points". Variational methods, below, use this form. Without normal errors, $K$ is still the best linear blend if the errors are unbiased and uncorrelated; normality makes it the full posterior.
+:::
+
+## The cycle: a Kalman filter in one dimension
+
+A chain of analyses is how weather forecasting runs: each analysis starts the next forecast, which becomes the next background, which new observations correct. The posterior after one cycle is the prior for the next, as with the second check in [Bayes' rule](bayes-rule.qmd).
+
+```{mermaid}
+flowchart TD
+    A["Analysis<br/>best estimate now"] -->|"run the model ahead"| B["Forecast<br/>error grows"]
+    B -->|"becomes the background"| C["Blend with<br/>new observations"]
+    D["Observations"] -->|"weighted by their error"| C
+    C -->|"error shrinks"| A
+    class A sage
+    class B indigo
+    class C ochre
+    class D umber
+    classDef indigo fill:#1d4a62,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef umber fill:#3b1a18,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef ochre fill:#d69a2e,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+    classDef sage fill:#95a87f,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+```
+
+The **forecast step** carries the estimate forward with the model and adds the model's own error, so the error variance grows. The **analysis step** blends in observations, so it shrinks. Doing both while tracking the variance is the **Kalman filter**; Kalman derived the equation for the error variance of the optimal linear filter in 1960[^1]. In one dimension, with a model that predicts no change, the first line below is the forecast step and the other three the analysis step:
+
+$$\begin{aligned}
+P_f &= P_a^{\text{prev}} + Q \\
+K &= \frac{P_f}{P_f + R} \\
+x_a &= x_f + K\,(y - x_f) \\
+P_a &= (1 - K)\,P_f
+\end{aligned}$$
+
+where $x_f$ is the forecast and $P_f$ its error variance (the $x_b$ and $\sigma_b^2$ above); $Q$ is the variance the model fails to predict each day; $R = \sigma_o^2$; and $x_a$, $P_a$ are the analysis and its error variance. Variances are in °C². The filter now works the gain out from how uncertain its own forecast currently is. Adding a fixed $Q$ each day is a stand-in: in a real atmosphere, forecast errors grow chaotically and faster in some weather than others ([Chaos in a toy model](chaos-in-a-toy-model.qmd)).
+
+::: {.sim-card}
+#### Track a wandering temperature
+
+A synthetic daily temperature anomaly (°C) wanders as a random walk for 60 days, read once a day by a noisy thermometer; the filter knows both error sizes. "No assimilation" starts from the same correct value and never looks at an observation. The random draws are fixed (seed 7); the sliders only scale them.
+
+Try each, then return to the defaults (0.5 and 1.0):
+
+1. Raise the observation error to 3.0 °C.
+2. Lower it to 0.1 °C.
+3. Raise the forecast error to 2.0 °C per day.
+
+```{ojs}
+//| echo: false
+viewof q = Inputs.range([0.1, 2], {value: 0.5, step: 0.1, label: "Forecast error added per day, √Q (°C)"})
+viewof r = Inputs.range([0.1, 3], {value: 1.0, step: 0.1, label: "Observation error, √R (°C)"})
+
+// Seeded uniform generator (mulberry32), then standard normals by Box–Muller.
+nDays = 60
+z = {
+  let a = 7;
+  const rand = () => {
+    a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+  return Array.from({length: 2 * nDays}, () => Math.sqrt(-2 * Math.log(1 - rand())) * Math.cos(2 * Math.PI * rand()));
+}
+
+// Truth, observations and the 1-D Kalman filter, starting from a known state.
+run = {
+  let x = 0, xa = 0, Pa = 0, K = 0;
+  const rows = [], se = [0, 0, 0];
+  for (let k = 0; k < nDays; k++) {
+    x += q * z[k];                                  // truth: random walk
+    const y = x + r * z[nDays + k], Pf = Pa + q * q; // observation; forecast step
+    K = Pf / (Pf + r * r); xa += K * (y - xa); Pa = (1 - K) * Pf;  // analysis step
+    [0 - x, y - x, xa - x].forEach((e, i) => se[i] += e * e);
+    rows.push({day: k + 1, x, y, xa, lo: xa - Math.sqrt(Pa), hi: xa + Math.sqrt(Pa)});
+  }
+  return {rows, K, rmse: se.map(s => Math.sqrt(s / nDays)), sdPa: Math.sqrt(Pa)};
+}
+
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+html`<div class="sim-readouts">
+  ${card("Gain K (day 60)", run.K.toFixed(3), "#cbd5e1")}
+  ${card("Error, no assimilation", run.rmse[0].toFixed(2) + " °C", "#ef4444")}
+  ${card("Error, observations alone", run.rmse[1].toFixed(2) + " °C", "#f59e0b")}
+  ${card("Error, analysis", run.rmse[2].toFixed(2) + " °C", "#10b981")}
+  ${card("Expected error, analysis", run.sdPa.toFixed(2) + " °C", "#10b981")}
+</div>`
+
+Plot.plot({
+  height: 340,
+  marginLeft: 50,
+  // Plot paints its own white ground otherwise, which the dark card fights.
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, nDays + 1], label: "Day →", grid: true},
+  y: {label: "↑ Temperature anomaly (°C)", grid: true},
+  color: {legend: true,
+          domain: ["Truth", "Observation", "Analysis ± 1 sd", "No assimilation"],
+          range: ["#cbd5e1", "#f59e0b", "#10b981", "#ef4444"]},
+  marks: [
+    Plot.areaY(run.rows, {x: "day", y1: "lo", y2: "hi", fill: "#10b981", fillOpacity: 0.2}),
+    Plot.ruleY([0], {stroke: () => "No assimilation", strokeWidth: 2, strokeDasharray: "6 4"}),
+    Plot.line(run.rows, {x: "day", y: "x", stroke: () => "Truth", strokeWidth: 2}),
+    Plot.dot(run.rows, {x: "day", y: "y", fill: () => "Observation", r: 3}),
+    Plot.line(run.rows, {x: "day", y: "xa", stroke: () => "Analysis ± 1 sd", strokeWidth: 2.5})
+  ]
+})
+```
+
+Errors are root-mean-square over the 60 days of this one draw. "Expected error" is the filter's own estimate, $\sqrt{P_a}$ on day 60, also the shaded band; for observations alone it is $\sqrt{R}$.
+:::
+
+At the defaults ($\sqrt{Q} = 0.5$ °C per day, $\sqrt{R} = 1.0$ °C) the gain settles at 0.390: each day the filter moves 39% of the way from its forecast to the reading. The filter expects an analysis error of 0.62 °C; this draw came out at 0.73 °C, against 1.07 °C for the raw observations and 2.60 °C without assimilation. The flat no-assimilation line is persistence of the starting value, so its error grows as $0.5\sqrt{k}$ °C on day $k$: 3.9 °C by day 60, and $0.5 \times \sqrt{30.5} = 2.8$ °C root-mean-square over the 60 days in expectation (30.5 is the average of $k$ from 1 to 60), of which this draw's 2.60 °C is one sample.
+
+- **Observation error 3.0 °C.** The gain drops to 0.153 and the filter leans on its forecast. Expected analysis error 1.17 °C against the observations' 3.0 °C; this draw, 1.36 against 3.20.
+- **Observation error 0.1 °C.** The gain rises to 0.963 and the analysis follows the readings: expected 0.10 °C, about the observations' own 0.1 °C.
+- **Forecast error 2.0 °C per day.** The gain rises to 0.828 and the observations dominate. Expected analysis error 0.91 °C against 1.0 °C for the observations alone, a small gain; this draw's 0.99 against 1.07 is within sampling noise of that.
+
+Real systems must estimate $Q$, $R$ and their many-variable versions, usually from statistics of past innovations and from ensemble spread (background, not sourced here), and wrong values mis-weight every cycle. The filter carries its own check: if $Q$ and $R$ are right, the innovations $y - x_f$ have variance $P_f + R$.
+
+::: {.callout-note collapse="true"}
+## Why the gain settles
+
+The gain stops changing when $P_a$ returns to the same value after a forecast step and an analysis step. Substituting $P_a = P_f R/(P_f + R)$ into $P_f = P_a + Q$ gives $P_f^2 - Q P_f - QR = 0$, whose positive root sets the steady gain $K = P_f/(P_f + R)$:
+
+$$P_f = \frac{Q + \sqrt{Q^2 + 4QR}}{2}$$
+
+At the defaults, $Q = 0.25$ and $R = 1$ °C², so $P_f = (0.25 + \sqrt{0.0625 + 1})/2 = 0.640$ °C², $K = 0.640/1.640 = 0.390$, and $P_a = 0.390$ °C², a standard deviation of 0.62 °C. The steady gain depends only on $Q/R$: how fast the truth wanders compared with how noisy the observations are.
+:::
+
+## From one number to the whole atmosphere
+
+For a global model the idea is unchanged; only the bookkeeping grows. The scalar variances become a background error covariance matrix $\mathbf{B}$, with one row and one column per model variable. Its off-diagonal terms do the useful work, and their structure has two sources (textbook background, not from a source cited here): forecast errors are correlated over a length scale, so an error at one grid point implies a similar one at its neighbours; and balances tie variables together, so outside the tropics a pressure error implies a wind error through geostrophic balance. That is how one observation corrects places and variables it never measured. Carrying the matrix through the model every cycle, as a full Kalman filter would, is far too expensive; Evensen calls the extended Kalman filter's error covariance equation "computationally extremely demanding"[^3]. Three families of method get around it:
+
+- **3D-Var** finds the state, at one time, that best fits background and observations, each weighted by its error covariance: the callout's cost function with vectors, and a $\mathbf{B}$ modelled in advance.
+- **4D-Var** fits a whole model run to observations spread over a window of hours. In its usual strong-constraint form it treats the model as perfect within the window, with no $Q$. Comparing a 4D-Var with a 6-hour window against 3D-Var at ECMWF, Rabier and colleagues found a small but consistent improvement in both hemispheres and a clear advantage during rapidly deepening storms[^2].
+- **The ensemble Kalman filter** replaces the covariance equation with a set of forecasts whose spread serves as the forecast error statistics. Evensen proposed it in 1994 for an ocean model, storing about 100 model states at a cost of about 100 model runs[^3]. With far more model variables than members, sampled covariances between distant points are mostly noise, so ensemble filters damp them with distance (**localisation**) and widen the spread for missing error sources (**inflation**); this is background, not from that paper. The same spread is what [ensemble forecasts](ensemble-forecasts.qmd) are built on; how the model gets from one analysis to the next is [Numerical weather prediction](numerical-weather-prediction.qmd).
+
+**Observation operators.** A satellite radiometer does not measure a model variable: it measures radiance at particular wavelengths, emitted by a deep layer of atmosphere whose temperature and humidity both contribute. An **observation operator** $H$, here a radiative transfer model, computes what the instrument would see from the model state, and the innovation $y - H(x_b)$ is formed in the instrument's units. Eyre and colleagues' review traces the history: early systems assimilated temperature profiles retrieved from radiances, their impact declined as the rest of forecasting improved, and positive impacts returned in the 1990s with more direct assimilation of radiances[^4]. My explanation, not the review's: a retrieval needs its own prior, whose errors are then tangled with the background's, while assimilating radiances keeps one prior and one error description.
+
+::: {.callout-note collapse="true"}
+## The same equations with vectors
+
+With state $\mathbf{x}$, observations $\mathbf{y}$, error covariances $\mathbf{B}$ and $\mathbf{R}$, and observation operator $H$ (linearised as $\mathbf{H}$), 3D-Var minimises
+
+$$\begin{aligned}
+J(\mathbf{x}) = {} & (\mathbf{x} - \mathbf{x}_b)^\top \mathbf{B}^{-1} (\mathbf{x} - \mathbf{x}_b) \\
+& + \big(\mathbf{y} - H(\mathbf{x})\big)^\top \mathbf{R}^{-1} \big(\mathbf{y} - H(\mathbf{x})\big)
+\end{aligned}$$
+
+For linear $H$ the minimum is the Kalman update
+
+$$\begin{aligned}
+\mathbf{K} &= \mathbf{B}\mathbf{H}^\top (\mathbf{H}\mathbf{B}\mathbf{H}^\top + \mathbf{R})^{-1} \\
+\mathbf{x}_a &= \mathbf{x}_b + \mathbf{K}\big(\mathbf{y} - H(\mathbf{x}_b)\big)
+\end{aligned}$$
+
+In one dimension, with a sensor reading a fixed multiple $h$ of the quantity ($y = hx$), $K = h\sigma_b^2/(h^2\sigma_b^2 + \sigma_o^2)$; $h = 1$ gives the first section's gain. The factor $\mathbf{B}\mathbf{H}^\top$ spreads one observation's correction to other variables in proportion to their background error covariance with what was observed. 4D-Var makes $H$ "run the model to each observation's time, then observe"; the ensemble Kalman filter re-estimates $\mathbf{B}$ from the ensemble each cycle.
+:::
+
+## Reanalyses, and the same blend for a crop
+
+Assimilation's by-product, a complete, physically consistent picture of the atmosphere every few hours, is valuable in itself. A **reanalysis** reruns the past with one fixed assimilation system; my gloss on why is that operational analyses change with every system upgrade, which can put jumps into a long record that are not in the weather. ERA5, from ECMWF, is one example. Its description paper reports a record of the global atmosphere, land surface and ocean waves from 1950 onwards, built with the forecasting system version operational in 2016; hourly output; and an uncertainty estimate from an ensemble that "reflects the evolution of the observing systems"[^5]. In Kalman terms (my reading), fewer observations mean more weight on the model and more uncertainty. Reanalyses are often the "observed" large-scale fields that statistical [downscaling](downscaling.qmd) trains on.
+
+**The same idea in a crop forecast.** My inference, not an agronomy result: a yield model's forecast is the background and fruit counts on sampled bushes are the observation, with berry weight and bushes per hectare as the observation operator. In a synthetic example, a forecast of 10 t/ha (past error 2 t/ha) and counts implying 12 t/ha (sampling error 1.5 t/ha) give $K = 4/6.25 = 0.64$ and an analysis of $10 + 0.64 \times 2 = 11.3$ t/ha with error $\sqrt{0.36 \times 4} = 1.2$ t/ha. The weights should come from the model's past errors and the count's standard error, and the blend is overconfident if the model was calibrated on the same counts.
+
+::: {.callout-tip}
+## What this means for you
+
+My inference, not a tested recommendation: run a crop forecast as a cycle. Make each week's blend next week's background, with its variance widened for what can change in a week, so the estimate carries an error bar every week instead of jumping on count day.
+:::
+
+## Key takeaways
+
+- Check the weights with innovations: if forecast-minus-observation differences are routinely larger than $\sqrt{\sigma_b^2 + \sigma_o^2}$, an error estimate is too small.
+- A noisy but unbiased, independent source still helps; give it a small weight rather than dropping it.
+- Remove known biases before blending: the gain handles random error only, and passes on $K$ times any observation bias.
+- Treat a reanalysis as a model-weighted estimate, least reliable where and when observations were sparse; for long records, prefer it to archived operational analyses.
+
+## References
+
+[^1]: Kalman, R. E. A new approach to linear filtering and prediction problems. *J. Basic Eng.* **82**, 35–45 (1960). https://doi.org/10.1115/1.3662552
+[^2]: Rabier, F., Järvinen, H., Klinker, E., Mahfouf, J.-F. & Simmons, A. The ECMWF operational implementation of four-dimensional variational assimilation. I: Experimental results with simplified physics. *Q. J. R. Meteorol. Soc.* **126**, 1143–1170 (2000). https://doi.org/10.1002/qj.49712656415
+[^3]: Evensen, G. Sequential data assimilation with a nonlinear quasi-geostrophic model using Monte Carlo methods to forecast error statistics. *J. Geophys. Res. Oceans* **99**, 10143–10162 (1994). https://doi.org/10.1029/94JC00572
+[^4]: Eyre, J. R., English, S. J. & Forsythe, M. Assimilation of satellite data in numerical weather prediction. Part I: The early years. *Q. J. R. Meteorol. Soc.* **146**, 49–68 (2020). https://doi.org/10.1002/qj.3654
+[^5]: Hersbach, H. et al. The ERA5 global reanalysis. *Q. J. R. Meteorol. Soc.* **146**, 1999–2049 (2020). https://doi.org/10.1002/qj.3803
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/numerical-weather-prediction.html"><span>Previous</span>Numerical weather prediction</a><a class="mf-up" href="/series/prediction/index.html"><span>Series</span>Weather, Climate and Prediction</a><a class="mf-next" href="/blogs/downscaling.html"><span>Next</span>Downscaling</a></div>
+<!-- CURRICULUM_FOOTER_END -->

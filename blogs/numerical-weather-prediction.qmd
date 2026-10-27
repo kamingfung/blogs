@@ -1,0 +1,208 @@
+---
+title: Numerical weather prediction
+description: How a weather model turns the laws of physics into a forecast, from the grid and the time step to parameterisation, data assimilation and a century of progress.
+date: 2026-10-21
+categories:
+- meteorology
+- forecasting
+- simulation
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/prediction/index.html">Weather, Climate and Prediction</a><span class="sep">·</span>Part 9 · How weather models work</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Comfort with averages and histograms. Python for the notebooks.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+A weather model is a calculation, not a pattern-matcher. It divides the atmosphere into a three-dimensional grid of boxes, stores wind, temperature, pressure and moisture in each, and uses conservation of momentum, mass, energy and water to work out how every box changes over the next few minutes, then repeats that thousands of times. The step cannot be too long: if a signal can cross more than one box per step, a simple scheme blows up, as the widget below shows. Anything smaller than a box, such as a thunderstorm or a gust, has to be estimated from what the grid does see; this is parameterisation. Each run starts from a best estimate of the present built from millions of observations, and the whole system has gained about one day of useful lead time per decade. Practical line: when two forecasts disagree, ask about their grid, start time and ensemble before asking which is "better".
+:::
+
+## A forecast is a calculation on a grid
+
+If you know the state of the atmosphere now and the laws it obeys, you can calculate its state later; that idea is a century old. Bauer, Thorpe and Brunet list those laws as the Navier–Stokes and mass-continuity equations, including the Earth's rotation, plus the first law of thermodynamics and the ideal gas law[^1]. In plain terms, a model keeps four budgets.
+
+| Budget | What it says | What it updates |
+|---|---|---|
+| Momentum | Air speeds up or turns when pressure differences, the Earth's spin, gravity or friction push it | Wind |
+| Mass | Air that flows into a box and not out piles up | Density, pressure |
+| Energy | Air warms when compressed or heated, cools when it expands or radiates | Temperature |
+| Water | Vapour is carried by the wind and turns to cloud, rain or ice and back | Humidity, cloud, rain |
+
+The model cuts the atmosphere into columns across the globe, each stacked with layers, and stores one average value per variable in each box. For every box it computes how fast each variable is changing, multiplies by a short time step, adds the change on, and repeats. In 2015 the European Centre for Medium-Range Weather Forecasts (ECMWF) ran a 16 km model with two million grid columns, stepped 10 minutes at a time over 10 days: $10 \times 24 \times 6 = 1{,}440$ steps[^1]. That seems to break the rule in the next section: taking 50 m/s for a strong upper-level wind and 300 m/s for the fastest waves in the full equations (illustrative round figures, not from a source), the Courant number defined below would be $50 \times 600 / 16{,}000 \approx 1.9$ for the wind and $300 \times 600 / 16{,}000 \approx 11$ for the waves. The next section explains why that works.
+
+::: {.callout-note collapse="true"}
+## The equations, written out
+
+One common form, using the rate of change following a parcel of air, $\mathrm{D}/\mathrm{D}t = \partial/\partial t + \mathbf{v}\cdot\nabla$:
+
+$$\frac{\mathrm{D}\mathbf{v}}{\mathrm{D}t} = -\frac{1}{\rho}\nabla p - 2\boldsymbol{\Omega}\times\mathbf{v} + \mathbf{g} + \mathbf{F}, \qquad \frac{\partial \rho}{\partial t} = -\nabla\cdot(\rho\mathbf{v})$$
+
+$$c_p\frac{\mathrm{D}T}{\mathrm{D}t} - \frac{1}{\rho}\frac{\mathrm{D}p}{\mathrm{D}t} = Q, \qquad \frac{\mathrm{D}q}{\mathrm{D}t} = S_q, \qquad p = \rho R_\text{d} T$$
+
+where $\mathbf{v}$ is the wind (m/s), $t$ is time (s), $\rho$ is air density (kg/m³), $p$ is pressure (Pa), $\boldsymbol{\Omega}$ is the Earth's rotation vector (rad/s), $\mathbf{g}$ is gravity (m/s²), $\mathbf{F}$ is friction per unit mass (m/s²), $c_p$ is the specific heat of air at constant pressure (J/(kg K)), $T$ is temperature (K), $Q$ is heating per unit mass (W/kg), $q$ is water vapour per mass of air (kg/kg), $S_q$ is its net source from evaporation minus condensation ((kg/kg)/s), and $R_\text{d}$ is the gas constant for dry air (J/(kg K)). Real models add equations for cloud water, rain, ice and snow.
+
+$\mathbf{F}$, $Q$ and $S_q$ are the hard part: Bauer and colleagues explain that unresolved processes enter the equations through these source terms[^1], which parameterisation, below, supplies.
+:::
+
+## The time step has a speed limit
+
+If a signal can cross more than one grid box in a single step, small errors grow every step until the numbers explode. This is the CFL condition, after Courant, Friedrichs and Lewy, who showed in the 1920s that a numerical solution has a limit on its time step for a given grid spacing[^2]. For a quantity carried by a steady wind it reads
+
+$$C = \frac{u\,\Delta t}{\Delta x} \le 1$$
+
+where $u$ is the wind speed (m/s), $\Delta t$ is the time step (s), $\Delta x$ is the grid spacing (m), and the **Courant number** $C$ is the number of boxes the air crosses per step.
+
+The toy below carries a 5 °C warm bump around a ring of 60 boxes, each 20 km wide, in a steady 20 m/s wind, using the simplest scheme there is (upwind: each box's new value blends itself with its upwind neighbour). The starting field also carries a box-to-box ripple of ±0.001 °C, far below what a thermometer could detect, standing in for the small errors every real starting state has. The CFL limit here is $\Delta t = \Delta x / u = 20{,}000 / 20 = 1{,}000$ s. Temperature here is a passive tracer in a prescribed wind: the wind never feels the bump, whereas in the real equations wind, pressure and temperature push on each other.
+
+Try three things: keep the defaults (500 s, 12 h) and compare the two curves; set the step to 1,000 s; then set it to 1,100 s and slide the forecast length from 12 to 48 h.
+
+::: {.sim-card}
+#### A toy model: one wind, one warm bump
+
+```{ojs}
+//| echo: false
+viewof dt = Inputs.range([100, 1500], {value: 500, step: 50, label: "Time step Δt (s)"})
+viewof hours = Inputs.range([6, 48], {value: 12, step: 6, label: "Forecast length (h)"})
+
+// 60 boxes of 20 km on a ring, wind 20 m/s, 5 °C bump on 15 °C centred at 160 km.
+nBox = 60
+dx = 20e3
+ring = nBox * dx
+bump = x => 15 + 5 * Math.exp(-((x - 160e3) ** 2) / (2 * 60e3 ** 2))
+wrap = x => ((((x - 160e3 + ring / 2) % ring) + ring) % ring) - ring / 2 + 160e3
+
+toy = {
+  const C = 20 * dt / dx, n = Math.round(hours * 3600 / dt), shift = 20 * n * dt;
+  // Start: the bump plus a ±0.001 °C box-to-box ripple.
+  let T = d3.range(nBox).map(i => bump(wrap(i * dx)) + (i % 2 ? -0.001 : 0.001));
+  // Upwind step: blend each box with its upwind neighbour.
+  for (let s = 0; s < n; s++) T = T.map((v, i) => v - C * (v - T[(i - 1 + nBox) % nBox]));
+  const truth = d3.range(nBox).map(i => bump(wrap(i * dx - shift)));
+  return {C, n, shift, model: T.map((v, i) => ({x: i * 20, T: v})),
+          peak: d3.max(T), err: d3.max(T, (v, i) => Math.abs(v - truth[i]))};
+}
+
+fmtT = v => Math.abs(v) < 1e4 ? v.toFixed(2) : v.toExponential(1).replace("e+", " × 10^")
+
+card = (label, value, colour) => html`<div class="sim-readout"><div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div></div>`
+
+html`<div class="sim-readouts">
+  ${card("Courant number C", toy.C.toFixed(2) + (toy.C > 1 ? " (unstable)" : ""), toy.C > 1 ? "#ef4444" : "#10b981")}
+  ${card("Steps taken", toy.n, "#cbd5e1")}
+  ${card("Warmest model box", fmtT(toy.peak) + " °C", "#38bdf8")}
+  ${card("Largest error vs truth", fmtT(toy.err) + " °C", "#f59e0b")}
+</div>`
+
+Plot.plot({
+  height: 320, marginLeft: 50,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, 1200], label: "Distance around the ring (km) →", grid: true},
+  y: {domain: [5, 25], label: "↑ Temperature (°C)", grid: true},
+  color: {legend: true, domain: ["True bump", "Model"], range: ["#10b981", "#38bdf8"]},
+  marks: [
+    Plot.line(d3.range(0, 1200, 2).map(x => ({x, T: bump(wrap(x * 1e3 - toy.shift))})),
+              {x: "x", y: "T", stroke: () => "True bump", strokeWidth: 2, strokeDasharray: "6 4"}),
+    Plot.line(toy.model, {x: "x", y: "T", stroke: () => "Model", strokeWidth: 2.5, clip: true}),
+    Plot.dot(toy.model, {x: "x", y: "T", fill: () => "Model", r: 2.5, clip: true})
+  ]
+})
+```
+
+A toy, not a weather model: one dimension, one constant wind, a deliberately crude scheme.
+:::
+
+**Too long a step blows up, and long runs show it first.** At 1,100 s ($C = 1.1$) the warmest box reads 22.71 °C after 12 hours, 1,825 °C after 24 hours, and about $2.7 \times 10^9$ °C after 48 hours. The invisible ripple is multiplied every step.
+
+**A stable step is not an accurate one.** At 500 s ($C = 0.5$) nothing blows up, but after 12 hours the warmest box is 17.71 °C: the 5 °C bump has been smeared to 2.71 °C. This **numerical diffusion** comes from the scheme, not from physics, and a shorter step makes it worse, not better: at 100 s the warmest box is 17.17 °C. The artificial diffusion coefficient derived below, $K = (u\,\Delta x/2)(1 - C)$, rises from $1.0 \times 10^5$ m²/s at $C = 0.5$ to $1.8 \times 10^5$ m²/s at $C = 0.1$, nearly double, and can never exceed $u\,\Delta x/2 = 2.0 \times 10^5$ m²/s. Only a finer grid or a better scheme lowers that ceiling.
+
+**$C = 1$ is exact here, and only here.** At 1,000 s each step moves the bump exactly one box. Real winds vary from box to box, so no single step gives $C = 1$ everywhere.
+
+Two pieces of background, not drawn from the sources cited here. A feature needs several grid lengths to be represented well, so a 16 km model does not reliably handle features 16 km across: its effective resolution is coarser than its grid spacing. And real models keep numerical diffusion and noise in check with higher-order or spectral methods plus deliberate, controlled damping, not with a crude upwind scheme like this one.
+
+In real models the limit is set by the fastest signal, not just the wind. Lynch recounts that in 1946 the pioneers of computer forecasting saw that fast gravity waves would force an impractically short step[^2]. So how does ECMWF take 10-minute steps at Courant numbers near 1.9 and 11? Bauer and colleagues describe semi-Lagrangian, semi-implicit schemes, used worldwide since the 1990s, as allowing a significantly longer time step[^1]. In plain words (my gloss): a semi-Lagrangian scheme asks, for each grid point, where the air arriving there was one step earlier, and takes the value from that departure point, so air may cross several boxes per step without the scheme losing track. A semi-implicit scheme, in the same gloss, treats the terms behind the fastest waves so that those waves are slowed down in the calculation and no longer set the step.
+
+::: {.callout-note collapse="true"}
+## Why upwind blows up above C = 1 and smears below it
+
+The upwind scheme updates box $i$ from step $n$ to $n+1$ as
+
+$$T_i^{n+1} = (1 - C)\,T_i^n + C\,T_{i-1}^n$$
+
+where $T_i^n$ is the temperature of box $i$ at step $n$ (°C).
+
+**Stability.** For $0 \le C \le 1$ the new value is a weighted average of two old values, so it cannot exceed the largest of them and errors cannot grow. For $C > 1$ the weight $1 - C$ is negative and the scheme extrapolates. A box-to-box zigzag $T_i = (-1)^i$ becomes $(1 - 2C)\,T_i$ each step, so it is multiplied by $|1 - 2C|$. At $C = 1.1$ that is $1.2$; the 157 steps of a 48-hour run give $0.001 \times 1.2^{157} \approx 2.7 \times 10^9$ °C, the figure in the widget.
+
+**Numerical diffusion.** Expand about box $i$ at step $n$, writing subscripts for partial derivatives: $T_{i-1} = T - \Delta x\,T_x + \tfrac{1}{2}\Delta x^2\,T_{xx} - \dots$ and $T^{n+1} = T + \Delta t\,T_t + \tfrac{1}{2}\Delta t^2\,T_{tt} + \dots$. Substituting into the update and dividing by $\Delta t$ gives $T_t + u\,T_x = \tfrac{1}{2}u\,\Delta x\,T_{xx} - \tfrac{1}{2}\Delta t\,T_{tt} + \dots$. To leading order $T_{tt} = u^2\,T_{xx}$, so the scheme actually solves
+
+$$\frac{\partial T}{\partial t} + u\frac{\partial T}{\partial x} = K\frac{\partial^2 T}{\partial x^2}, \qquad K = \frac{u\,\Delta x}{2}(1 - C)$$
+
+where $K$ is an artificial diffusion coefficient (m²/s). In the toy, $K = 20 \times 20{,}000 \times 0.5 / 2 = 1.0 \times 10^5$ m²/s at $C = 0.5$ and $20 \times 20{,}000 \times 0.9 / 2 = 1.8 \times 10^5$ m²/s at $C = 0.1$. $K$ is zero at $C = 1$ and approaches its ceiling $u\,\Delta x/2$ as $C \to 0$; the ceiling scales with $\Delta x$, so the cure is a finer grid or a higher-order scheme, not a shorter step.
+:::
+
+## What the grid cannot see
+
+Parameterisation is how a model accounts for weather smaller than its boxes, which in operational models are 10–100 km across[^1]. Such a box holds one temperature, yet a thunderstorm, shallow cloud and gusty air inside it set its rain, cloud and heating. A **parameterisation** is a sub-model that estimates their combined effect from the values the grid does hold. The main ones cover convection (the rising towers that build showers), clouds and their conversion to rain or snow, turbulence near the ground, radiation, and the land surface, which [The land model: CLM](the-land-model-clm.qmd) covers in detail.
+
+Bauer and colleagues write that parameterisations determine clouds and precipitation as well as temperature and wind, and so play a fundamental role in predictive skill[^1]. Unlike radiation and cloud microphysics, deep convection and parts of the boundary layer fill only a small fraction of a box, so their parameterisations depend critically on resolution[^1]. A finer grid changes what the model must guess. [What an Earth system model is](what-an-earth-system-model-is.qmd) shows the same split in climate models.
+
+## The forecast cycle, its cost, and a century of progress
+
+A model run is only as good as its starting point, so forecast centres run a cycle. Observations are blended with a short-range forecast from the previous cycle to make the **analysis**, the best estimate of the atmosphere now. Bauer and colleagues describe this as a Bayesian inversion using of the order of $10^7$ observations per day[^1]. That blending is [data assimilation](data-assimilation.qmd).
+
+```{mermaid}
+flowchart TD
+  O["Observations<br/>satellites, balloons, stations"] --> DA["Data assimilation"]
+  FG["Short-range forecast<br/>from the last cycle"] --> DA
+  DA --> A["Analysis:<br/>best estimate of now"]
+  A --> M["Model steps the<br/>equations forward"]
+  M --> F["Forecast for the<br/>days ahead"]
+  M -->|"next cycle"| FG
+  class O sage
+  class FG ochre
+  class DA,A indigo
+  class M rust
+  class F olive
+    classDef indigo fill:#1d4a62,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef rust fill:#a04b2d,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef olive fill:#5b6e34,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef ochre fill:#d69a2e,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+    classDef sage fill:#95a87f,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+```
+
+Small errors in the analysis still grow, as [Chaos in a toy model](chaos-in-a-toy-model.qmd) shows, so centres also run an ensemble from slightly different starts ([Ensemble forecasts](ensemble-forecasts.qmd)). In 2015 ECMWF's ensemble had 50 members at 30–60 km[^1].
+
+**Resolution is expensive.** Halving the grid spacing doubles the columns in each horizontal direction and, through the CFL limit, roughly halves the time step: $2 \times 2 \times 2 = 8$ times the computation, before adding vertical levels. Bauer and colleagues describe the goal of 1 km global models[^1]; from 16 km that rule gives $16^3 = 4{,}096$ times the cost (my arithmetic, ignoring vertical levels and changes of method).
+
+**The history is one of slow, steady gains.**
+
+- **Richardson, 1922.** Lewis Fry Richardson's 1922 book set out a six-hour forecast for two points in central Europe, computed by hand; he estimated that keeping pace with the weather would take 64,000 human computers[^2]. It predicted a surface pressure rise of 145 hPa when the barometer was nearly steady[^2]. Richardson traced the error to the initial winds; Lynch later rebuilt the model, reproduced the 145 hPa, and got realistic changes once the starting data were brought into balance[^2]. The starting state, not the method, was at fault: the problem data assimilation now solves.
+- **ENIAC, 1950.** The first computer forecasts, made on ENIAC, barely kept pace with the weather[^2]; real-time computer forecasting followed in Stockholm in 1954[^1].
+- **A day per decade.** Bauer and colleagues report that skill 3 to 10 days ahead has improved by about one day per decade, so that a 6-day forecast in 2015 was as accurate as a 5-day forecast ten years earlier[^1]. Their measure is an anomaly correlation for the 500 hPa pressure surface, about 5 km up[^1]; [Skill scores](skill-scores.qmd) explains such scores.
+
+**Machine-learning models are the newest step.** GraphCast, trained on reanalysis data, forecasts 10 days ahead on a 0.25° global grid in under a minute and outperformed the most accurate operational deterministic systems on 90% of 1,380 verification targets[^3]. It does not step the physical equations forward, but (my inference) it still starts from an analysis that data assimilation produced.
+
+::: {.callout-tip}
+## What this means for you
+
+A forecast is a grid-box average, and its effective resolution is coarser than its box. Check the model's grid spacing before comparing its temperature or rainfall with your own gauge, and expect a single-site gauge to differ most for showers and thunderstorms, the parameterised part (my inference).
+:::
+
+## Key takeaways
+
+- Instability shows up first in long runs; numerical smearing is fixed by a finer grid or better scheme, not a shorter step.
+- Halving grid spacing costs about eight times the computation, so every centre trades resolution against ensemble size and forecast length.
+- Judge a model upgrade by its physics and starting state, not only resolution; Bauer and colleagues credit past gains mainly to physics, ensembles and initialisation[^1].
+- Judge any new model, physical or machine-learned, by skill scores over many cases, not by single striking forecasts.
+
+## References
+
+[^1]: Bauer, P., Thorpe, A. & Brunet, G. The quiet revolution of numerical weather prediction. *Nature* **525**, 47–55 (2015). https://doi.org/10.1038/nature14956
+[^2]: Lynch, P. The origins of computer weather prediction and climate modeling. *J. Comput. Phys.* **227**, 3431–3444 (2008). https://doi.org/10.1016/j.jcp.2007.02.034
+[^3]: Lam, R. et al. Learning skillful medium-range global weather forecasting. *Science* **382**, 1416–1421 (2023). https://doi.org/10.1126/science.adi2336
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/attribution.html"><span>Previous</span>Attribution</a><a class="mf-up" href="/series/prediction/index.html"><span>Series</span>Weather, Climate and Prediction</a><a class="mf-next" href="/blogs/data-assimilation.html"><span>Next</span>Data assimilation</a></div>
+<!-- CURRICULUM_FOOTER_END -->

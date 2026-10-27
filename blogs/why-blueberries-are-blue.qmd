@@ -117,10 +117,7 @@ A copigment is a flat molecule that stacks against the pigment and stops water a
 
 Treat the widget as a guide to direction, not a model of a berry. Its constants are for one grape pigment at about 18 micromoles per litre. Blueberries carry other sugar forms too, and a skin cell's vacuole is far more concentrated, which favours stacking. Puree pH also mixes all the berry's cells, so it is not the pH inside the skin cells.
 
-::: {.callout-note collapse="true"}
-## The chemistry: forms and equilibria
-
-The red form is the **flavylium cation** ($\text{AH}^+$), the purple form the **quinoidal base** ($\text{A}$), and the blue form the **anionic quinoidal base** ($\text{A}^-$). The colourless forms are the **hemiketal** ($\text{B}$) and the *cis*- and *trans*-**chalcones** ($\text{C}_\text{c}$, $\text{C}_\text{t}$), which can be pale yellow.
+The pigment switches between five forms as it gains or loses a hydrogen ion or adds water:
 
 ```{mermaid}
 flowchart TD
@@ -140,6 +137,11 @@ flowchart TD
     classDef rust fill:#a04b2d,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
     classDef ochre fill:#d69a2e,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
 ```
+
+::: {.callout-note collapse="true"}
+## The chemistry: forms and equilibria
+
+The red form is the **flavylium cation** ($\text{AH}^+$), the purple form the **quinoidal base** ($\text{A}$), and the blue form the **anionic quinoidal base** ($\text{A}^-$). The colourless forms are the **hemiketal** ($\text{B}$) and the *cis*- and *trans*-**chalcones** ($\text{C}_\text{c}$, $\text{C}_\text{t}$), which can be pale yellow.
 
 Four equilibria link the forms below the second deprotonation:
 

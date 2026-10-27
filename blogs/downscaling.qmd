@@ -204,5 +204,6 @@ My inferences, not tested on a real farm:
 [^11]: Clements, C. B., Whiteman, C. D. & Horel, J. D. Cold-air-pool structure and evolution in a mountain basin: Peter Sinks, Utah. *J. Appl. Meteorol.* **42**, 752–768 (2003). https://doi.org/10.1175/1520-0450(2003)042%3C0752:CSAEIA%3E2.0.CO;2
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/heatwaves-in-a-warming-climate.html"><span>Previous</span>Heatwaves in a warming climate</a><a class="mf-up" href="/series/prediction/index.html"><span>Series</span>Weather, Climate and Prediction</a><a class="mf-next" href="/blogs/bias-correction.html"><span>Next</span>Bias correction</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/data-assimilation.html"><span>Previous</span>Data assimilation</a><a class="mf-up" href="/series/prediction/index.html"><span>Series</span>Weather, Climate and Prediction</a><a class="mf-next" href="/blogs/bias-correction.html"><span>Next</span>Bias correction</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+

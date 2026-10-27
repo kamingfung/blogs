@@ -196,5 +196,6 @@ My inferences from the sources above, untested on a farm:
 [^7]: Maraun, D. et al. Precipitation downscaling under climate change: recent developments to bridge the gap between dynamical models and the end user. *Rev. Geophys.* **48**, RG3003 (2010). https://doi.org/10.1029/2009RG000314
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/downscaling.html"><span>Previous</span>Downscaling</a><a class="mf-up" href="/series/prediction/index.html"><span>Series</span>Weather, Climate and Prediction</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/downscaling.html"><span>Previous</span>Downscaling</a><a class="mf-up" href="/series/prediction/index.html"><span>Series</span>Weather, Climate and Prediction</a><a class="mf-next" href="/blogs/cmip-and-the-ssps.html"><span>Next</span>CMIP and the SSPs</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+

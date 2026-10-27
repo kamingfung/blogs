@@ -1,0 +1,247 @@
+---
+title: Moving averages and their pitfalls
+description: A moving average smooths a series by averaging neighbouring values, and in doing so it delays turning points, borrows from the future, blanks the ends, erases cycles shorter than its window and invents cycles in pure noise.
+date: 2026-10-21
+categories:
+- time series
+- statistics
+- forecasting
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/prediction/index.html">Weather, Climate and Prediction</a><span class="sep">·</span>Part 4 · Trend and season</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">Comfort with averages and histograms. Python for the notebooks.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+A moving average replaces each week by the mean of the $k$ weeks before it or around it: a low-pass filter that passes slow movements and damps fast ones. Its traps are predictable. A trailing mean runs $(k-1)/2$ weeks behind, so on a synthetic berry season a 13-week mean peaks 6.0 weeks after the season does. A centred mean removes the delay by using later weeks, which is fine for describing the past and is leakage in a forecast; it also leaves the newest weeks blank. The window decides what survives: a 4-week mean keeps 99% of an annual cycle, a 52-week mean keeps none. And smoothing pure noise creates waves: a 13-week mean of synthetic white noise rises and falls in swings 16.6 weeks long on average, where the raw noise averages 4.0.
+
+Use trailing windows in forecasts, centred ones in description, and test any cycle you see against smoothed noise.
+:::
+
+## What a moving average does
+
+A moving average turns a jagged weekly series into a smooth line you can read by eye, and its window decides what survives. A 52-week mean of weekly data deletes the annual season; a 4-week mean keeps almost all of it.
+
+The **trailing** moving average of window $k$ averages the current week and the $k-1$ weeks before it:
+
+$$m_t = \frac{1}{k} \sum_{j=0}^{k-1} y_{t-j}$$
+
+where $y_t$ is the value in week $t$ (tonnes per week of berries, say, or degrees Celsius), $k$ is the window length in weeks, and $m_t$ is the smoothed value, in the same units as $y$. The **centred** version uses the same $k$ weights but places the window around week $t$: for odd $k$, weeks $t - (k-1)/2$ to $t + (k-1)/2$[^4].
+
+The reason is that averaging is a **low-pass filter**: it lets slow movements through and damps fast ones. For a regular cycle of period $P$ weeks, the fraction of its swing that survives a $k$-week mean is
+
+$$G(k, P) = \frac{\sin(\pi k / P)}{k \, \sin(\pi / P)}$$
+
+where $G$ is the gain, a pure number (1 keeps the cycle whole, 0 removes it). For the annual cycle in weekly data, $P = 52$, so a 4-week mean keeps $G = 0.991$ of the swing, a 13-week mean $0.901$, a 26-week mean $0.637$, and a 52-week mean exactly $0$. A 52-week mean of temperature is the running annual mean: no season, only the slow warming and year-to-year swings. Hyndman and Athanasopoulos make the same point for monthly data with the $2 \times 12$ average, a 13-month window with half weights on its two end months, so it is centred yet spans exactly one year: it averages the season out, while other window lengths leave the trend estimate contaminated by it[^2].
+
+::: {.callout-note collapse="true"}
+## Where the gain formula comes from, and what happens past one year
+
+Sum a sine wave of angular frequency $\omega = 2\pi/P$ over $k$ equally spaced weeks:
+
+$$\frac{1}{k}\sum_{j=0}^{k-1} \sin\big(\omega (t-j)\big) = \frac{\sin(k\omega/2)}{k \sin(\omega/2)} \, \sin\!\Big(\omega \big(t - \tfrac{k-1}{2}\big)\Big)$$
+
+The first factor is $G(k, P)$; the second is the same wave, delayed by $(k-1)/2$ weeks. So a trailing mean shrinks every cycle by its own $G$ and delays every cycle by the same $(k-1)/2$ weeks.
+
+$G$ is zero whenever $k$ is a whole multiple of $P$, and for $k = 52$ it is also zero for every harmonic of the annual cycle ($P = 26$, $17.3$, $13$, …). A 52-week mean therefore removes any fixed annual shape, not only a sine. Past one year the gain turns negative: $G(53, 52) = -0.019$, $G(60, 52) = -0.128$, a faint copy of the season upside down. Real years are $365.25/7 = 52.18$ weeks long, so a 52-week window leaves $G = 0.003$ of the annual cycle; on a 25-tonne swing that is under 0.1 tonne.
+:::
+
+The widget runs a moving average over five years of synthetic weekly data with a trend, an annual cycle and noise. Try, in order:
+
+1. Berry volume, $k = 13$, trailing: the blue average peaks **6.0 weeks late** and keeps **90.1%** of the swing.
+2. Switch to centred: **0.0 weeks late**, and **6** blank weeks at the end.
+3. Drag $k$ to 4: **99.1%** kept. Then to 52, on berry volume or temperature: **no cycle left**, **0.0%**.
+4. Pure noise, $k = 1$ then $k = 13$: average wave length **4.0**, then **16.6 weeks**; week-to-week correlation **0.923**.
+
+::: {.sim-card}
+#### A moving average on synthetic weekly data
+
+```{ojs}
+//| echo: false
+viewof series = Inputs.radio(["Berry volume", "Temperature", "Pure noise"], {value: "Berry volume", label: "Synthetic series"})
+viewof k = Inputs.range([1, 60], {value: 13, step: 1, label: "Window k (weeks)"})
+viewof align = Inputs.radio(["Trailing", "Centred"], {value: "Trailing", label: "Window position"})
+
+N = 260  // weeks shown: five years
+P = 52   // weeks per annual cycle
+
+// True signal = base + slope·t + amp·sin(2π(t − phase)/P); data = signal + sigma·noise.
+presets = ({
+  "Berry volume": {base: 60, slope: 0.05, amp: 25, phase: 13, sigma: 6, unit: "t/week"},
+  "Temperature": {base: 23, slope: 0.0004, amp: 5, phase: 17, sigma: 1.2, unit: "°C"},
+  "Pure noise": {base: 0, slope: 0, amp: 0, phase: 0, sigma: 1, unit: "σ"}
+})
+p = presets[series]
+
+// 2,600 seeded standard normals (mulberry32, Box–Muller): the same draws for every reader.
+z = {
+  let a = 2026;
+  const rand = () => {
+    a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  return d3.range(2600).map(() => Math.sqrt(-2 * Math.log(1 - rand())) * Math.cos(2 * Math.PI * rand()));
+}
+
+sig = t => p.base + p.slope * t + p.amp * Math.sin(2 * Math.PI * (t - p.phase) / P)
+// First week of the window relative to t; centred matches pandas rolling(k, center=True).
+off = align === "Trailing" ? -(k - 1) : -Math.floor(k / 2)
+avg = (f, t) => d3.mean(d3.range(k), j => f(t + off + j))
+y = d3.range(N).map(t => sig(t) + p.sigma * z[t])
+rows = d3.range(N).map(t => ({t, y: y[t], s: p.amp > 0 ? sig(t) : NaN,
+  m: t + off < 0 || t + off + k - 1 >= N ? NaN : avg(i => y[i], t)}))
+
+gain = Math.sin(Math.PI * k / P) / (k * Math.sin(Math.PI / P))
+argmax = (f, lo, hi) => d3.greatest(d3.range(lo, hi + 1e-9, 0.01), f)
+tp = argmax(sig, 104, 156)
+ts = argmax(t => avg(sig, t), tp - 10, tp + 40)
+lag = ts - tp
+
+// Pure noise: statistics of a trailing k-week mean over all 2,600 weeks.
+noise = {
+  const m = d3.range(k - 1, z.length).map(t => d3.mean(d3.range(k), j => z[t - j]));
+  const mu = d3.mean(m);
+  let num = 0, den = 0;
+  m.forEach((v, i) => { den += (v - mu) ** 2; if (i > 0) num += (v - mu) * (m[i - 1] - mu); });
+  const up = d3.range(1, m.length).filter(i => m[i - 1] < 0 && m[i] >= 0);
+  return {r1: num / den, wave: (up[up.length - 1] - up[0]) / (up.length - 1)};
+}
+
+blank = align === "Trailing" ? 0 : Math.ceil(k / 2) - 1
+peakText = Math.abs(gain) < 0.05 ? "no cycle left" : gain < 0 ? "cycle inverted"
+  : `${lag.toFixed(1)} weeks ${lag >= 0 ? "late" : "early"}`
+
+card = (label, value, colour) => html`<div class="sim-readout">
+  <div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div>
+</div>`
+
+readouts = p.amp > 0 ? [
+  card("Peak of the average", peakText, "#38bdf8"),
+  card("Annual swing kept, G", (Math.abs(gain) < 5e-4 ? "0.0" : (100 * gain).toFixed(1)) + "%", "#10b981")
+] : [
+  card("Week-to-week correlation", `${noise.r1.toFixed(3)} (theory ${((k - 1) / k).toFixed(3)})`, "#38bdf8"),
+  card("Average wave length", noise.wave.toFixed(1) + " weeks", "#f59e0b")
+]
+
+html`<div class="sim-readouts">${readouts}${card("Blank weeks at the end", blank, "#ef4444")}</div>`
+
+Plot.plot({
+  height: 340,
+  marginLeft: 50,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [0, N], label: "Week →", grid: true},
+  y: {label: `↑ ${series} (${p.unit})`, grid: true},
+  color: {legend: true,
+          domain: p.amp > 0 ? ["Weekly data", "True signal", "Moving average"] : ["Weekly data", "Moving average"],
+          range: p.amp > 0 ? ["#64748b", "#10b981", "#38bdf8"] : ["#64748b", "#38bdf8"]},
+  marks: [
+    Plot.line(rows, {x: "t", y: "y", stroke: () => "Weekly data", strokeWidth: 1}),
+    p.amp > 0 ? Plot.line(rows, {x: "t", y: "s", stroke: () => "True signal", strokeWidth: 2, strokeDasharray: "6 4"}) : null,
+    Plot.line(rows, {x: "t", y: "m", stroke: () => "Moving average", strokeWidth: 2.5}),
+    p.amp > 0 && Math.abs(gain) >= 0.05 && gain > 0 ? Plot.ruleX([tp], {stroke: "#10b981", strokeDasharray: "2 3"}) : null,
+    p.amp > 0 && Math.abs(gain) >= 0.05 && gain > 0 ? Plot.ruleX([ts], {stroke: "#38bdf8", strokeDasharray: "2 3"}) : null,
+    p.amp > 0 ? null : Plot.ruleY([0], {stroke: "#cbd5e1", strokeOpacity: 0.5})
+  ]
+})
+```
+
+Synthetic data, fixed seed. The dotted vertical lines mark the third-year peak of the true signal (green) and of the moving average of the noise-free signal (blue). Pure-noise statistics use 2,600 weeks, of which the chart shows the first 260.
+:::
+
+## Lag, the centred fix, and the ragged end
+
+A trailing average tells you where the series was, not where it is: it describes the middle of its window, $(k-1)/2$ weeks ago. On a straight-line trend $y_t = a + bt$, with $a$ the level at week 0 and $b$ the slope per week, the trailing mean is
+
+$$m_t = a + b\left(t - \frac{k-1}{2}\right)$$
+
+which is the line itself, $(k-1)/2$ weeks late, and the collapsed note above gives the same delay for cycles. In the widget, berry volume at $k = 13$ peaks 6.0 weeks late, as $(13-1)/2 = 6$ predicts.
+
+The delay matters most at turning points. For six weeks after the berry season has peaked, the 13-week trailing mean is still rising, so a dashboard built on it reports a growing season that is already shrinking. The same arithmetic applies to temperature: a running 52-week mean dated at its last week describes the year centred $(52-1)/2 = 25.5$ weeks earlier.
+
+A **centred** average removes the delay (0.0 weeks at $k = 13$) by averaging the weeks after $t$ as well as before, which is the right choice for describing history and the wrong one for forecasting. A centred window used as a forecasting feature contains the week being predicted. In [Leakage](leakage/leakage.ipynb), a centred 4-week mean cut a backtest's error from 3.12 to 2.12 tonnes, and the same model, fed only what is known when the forecast is issued, missed by 4.98 tonnes.
+
+A centred average also leaves the newest weeks blank, because their windows reach into weeks that have not happened: for odd $k$, the last $(k-1)/2$; the widget shows 6 at $k = 13$. Hyndman and Athanasopoulos note the same gap at both ends of a centred average[^2]. Software that fills the gap, by shrinking the window or switching to a one-sided average near the end, gives values that change as new weeks arrive. So the right-hand end of a smoothed chart is its least settled part, and usually the part people act on.
+
+**In a forecasting pipeline** (my inference, not tested here):
+
+- *Feature.* On rows indexed by forecast origin, `df["y"].rolling(k).mean().shift(L)`, where $L$ is the data delay in weeks, is legal; build it per series, as in [Lags and rolling windows](lags-and-rolling-windows/lags_and_rolling_windows.ipynb). Choose $k$ by backtest, not by eye.
+- *Model.* A tree model can learn a fixed offset from a lagged mean, but the mean still blurs turning points. Several windows (say 2, 4 and 8 weeks), or the newest lag plus one mean, often do better than one long window; check with [Backtesting properly](backtesting/backtesting_properly.ipynb).
+- *Dashboard.* Draw the last $\lfloor k/2 \rfloor$ weeks of a centred or LOESS curve dashed or shaded, and say they will change.
+
+| Smoother | Delay on a trend | Uses later weeks? | Newest weeks |
+|---|---|---|---|
+| Trailing mean | $(k-1)/2$ weeks | No | Present, late |
+| Centred mean | None (odd $k$) | Yes | Blank, or revised later |
+| Exponential smoothing | $(1-\alpha)/\alpha$ weeks | No | Present, late |
+
+## Smoothing noise makes cycles
+
+Smoothing can create a pattern that is not in the data at all. Slutsky showed why in 1937: an equal-weight average over $n$ terms of pure noise makes values $j$ steps apart share $n - j$ of their inputs, so they correlate by $(n-j)/n$, and smooth waves appear that resemble business cycles[^1].
+
+In the widget's pure noise, the average wave length (weeks between successive upward crossings of zero) is 4.0 weeks raw, and 16.6 weeks after a 13-week mean, whose week-to-week correlation is 0.923, matching $(13-1)/13$. Nothing in the data repeats; the window made the waves.
+
+So a smoothed residual or anomaly series that rises and falls every few months may be showing nothing but its window. One check, my suggestion rather than a standard test: smooth simulated white noise with your residuals' SD, length and window, and see whether your smoothed swings are bigger than the noise's. Copy this:
+
+```python
+import numpy as np
+import pandas as pd
+
+def noise_band(resid, k, n_sims=500, seed=1):
+    """5th-95th percentile SD of k-week means of white noise with resid's SD and length."""
+    rng = np.random.default_rng(seed)
+    sds = [pd.Series(rng.normal(0, resid.std(), len(resid))).rolling(k).mean().std() for _ in range(n_sims)]
+    return np.percentile(sds, [5, 95]).round(2)
+
+# Synthetic residuals: 5 years of weekly white noise (SD 6 t), and the same plus a 26-week cycle.
+rng = np.random.default_rng(7)
+t, k = np.arange(260), 8
+for name, resid in {"noise only": pd.Series(rng.normal(0, 6, 260)),
+                    "noise + cycle": pd.Series(rng.normal(0, 6, 260) + 4 * np.sin(2 * np.pi * t / 26))}.items():
+    print(f"{name}: smoothed SD {resid.rolling(k).mean().std():.2f} t, noise band {noise_band(resid, k)}")
+```
+
+```
+noise only: smoothed SD 2.06 t, noise band [1.59 2.23]
+noise + cycle: smoothed SD 3.07 t, noise band [1.85 2.59]
+```
+
+The pure-noise residuals smooth to swings inside the band; the ones with a real 26-week cycle sit well above it. The band is conservative when a real cycle is present, because the cycle inflates the residual SD used to simulate it.
+
+## What to use instead
+
+**Exponential smoothing** weights the past by $\alpha(1-\alpha)^j$ for a value $j$ weeks old, with $0 < \alpha \le 1$, so recent weeks count most and old weeks fade instead of dropping out of the window all at once. It is trailing, so it is safe in a forecast, but it is still late: the mean age of its weights is $\sum_j j\,\alpha(1-\alpha)^j = (1-\alpha)/\alpha$ weeks. pandas' `ewm(span=k)` sets $\alpha = 2/(k+1)$, which makes that mean age $(k-1)/2$, the same delay as a $k$-week trailing mean. Versions that also track a slope are covered in [ETS and ARIMA](ets-and-arima/ets_and_arima.ipynb).
+
+**LOESS** fits a polynomial around each point by [weighted least squares](least-squares.qmd), weighting nearby points most[^3]; it is the smoother inside STL, used in [Decomposing Hong Kong temperature](detrending/detrend_hk_temperature.ipynb), where its windows are the same kind of choice as $k$ here.
+
+**Anomalies first.** To remove the season without a long window, subtract a climatology, as in [Anomalies](anomalies/anomalies.ipynb).
+
+::: {.callout-tip}
+## What this means for you
+
+My inference from the arithmetic above: before reading a smoothed chart, ask how long the window is, whether it is trailing (late) or centred (blank or provisional at the end), and whether noise smoothed the same way would wiggle as much.
+:::
+
+## Key takeaways
+
+- State the window length and position next to every smoothed line, as you would a baseline next to an anomaly.
+- Expect a $k$-week trailing mean to call turning points $(k-1)/2$ weeks late; at a season's peak it will still be rising.
+- Match the window to the purpose: a whole number of seasons to remove the season, much shorter than a season to keep it. A 52-week mean of weekly data is a statement about years, delayed by half a year.
+- Never use a centred window, or anything filled from later weeks, as a forecasting feature.
+- Before reporting a cycle in smoothed data, check that smoothed noise of the same spread does not produce one just as convincing.
+
+## References
+
+[^1]: Slutzky, E. The summation of random causes as the source of cyclic processes. *Econometrica* **5**, 105–146 (1937). https://doi.org/10.2307/1907241
+[^2]: Hyndman, R. J. & Athanasopoulos, G. *Forecasting: Principles and Practice* 3rd edn (OTexts, 2021).
+[^3]: Cleveland, W. S. Robust locally weighted regression and smoothing scatterplots. *J. Am. Stat. Assoc.* **74**, 829–836 (1979). https://doi.org/10.1080/01621459.1979.10481038
+[^4]: For even $k$, pandas' `rolling(k, center=True)` takes weeks $t - k/2$ to $t + k/2 - 1$, half a week off centre; the widget shows 0.5 week late at $k = 4$, centred.
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/detrending/detrend_hk_temperature.html"><span>Previous</span>Decomposing Hong Kong temperature</a><a class="mf-up" href="/series/prediction/index.html"><span>Series</span>Weather, Climate and Prediction</a><a class="mf-next" href="/blogs/enso.html"><span>Next</span>ENSO</a></div>
+<!-- CURRICULUM_FOOTER_END -->

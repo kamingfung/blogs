@@ -1,0 +1,235 @@
+---
+title: Teleconnections
+description: How a warm patch of tropical ocean changes the weather thousands of kilometres away, how teleconnection maps are made, and how to check whether ENSO really matters for your region.
+date: 2026-10-21
+categories:
+- climate
+- meteorology
+- forecasting
+- statistics
+- agriculture
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/prediction/index.html">Weather, Climate and Prediction</a><span class="sep">·</span>Part 6 · Seasonal forecasting</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Comfort with averages and histograms. Python for the notebooks.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+A warm patch of tropical Pacific feeds extra thunderstorms. The air they lift spreads out near the top of the atmosphere, and where that outflow meets the jet stream it starts a chain of giant highs and lows, a Rossby wave train, arching poleward and east for thousands of kilometres. Over North America the best-known chain is the Pacific–North American (PNA) pattern. The result is shifted odds for a season, not a fixed outcome.
+
+A teleconnection map correlates an index such as Niño 3.4 with the weather at each place, one season at a time, and it is easy to over-read. Test hundreds of places and about one in twenty correlates by chance. With 40 years of record, a true correlation of 0.3 passes the usual significance test in only 47% of synthetic records, and the ones that pass overstate it. The link can also wander between decades.
+
+Before acting on ENSO, check your own season's record against the index, then against a published map.
+:::
+
+[ENSO](enso.qmd) listed where El Niño tends to bring rain or chill, and [Why seasonal forecasting is possible at all](why-seasonal-forecasting-is-possible-at-all.qmd) said such distant links shift a season's odds. Here is how the influence travels and how to tell a real link from a lucky one; see also [The NAO and blocking](the-nao-and-blocking.qmd) and [Monsoons](monsoons.qmd).
+
+## How warm water far away moves the weather
+
+The short version: tropical thunderstorms push on the jet stream, and the jet carries the push to higher latitudes as a chain of highs and lows.
+
+```{mermaid}
+flowchart TD
+  A["Warm tropical sea"] -->|"more storms"| B["Deep convection<br/>and rain"]
+  B -->|"air rises, spreads out aloft"| C["Upper-level outflow"]
+  C -->|"spins the flow at<br/>the jet's edge"| D["Rossby wave source"]
+  D -->|"travels poleward<br/>and east"| E["Wave train of<br/>highs and lows"]
+  E -->|"shifts jet and<br/>storm track"| F["Changed odds of<br/>heat, cold, rain"]
+  class A rust
+  class B ochre
+  class C ochre
+  class D indigo
+  class E indigo
+  class F sage
+    classDef indigo fill:#1d4a62,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef rust fill:#a04b2d,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef ochre fill:#d69a2e,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+    classDef sage fill:#95a87f,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+```
+
+**Heat goes up.** A warmer sea feeds more deep convection[^1], whose heat is balanced by air rising and cooling[^2]. What rises must spread out near the top of the troposphere: upper-level **divergence**.
+
+**The outflow disturbs the jet.** As standard background, air spreading out aloft spins up anticyclonically, so divergence is a negative vorticity source. Where the divergent wind crosses the steep gradient of absolute vorticity at the edge of the subtropical jet, carrying that gradient along becomes the larger term. Sardeshmukh and Hoskins showed this puts the effective wave source at the jet edge, well away from the storms, where it is "extremely effective"[^2]. Trenberth and colleagues describe the pair: divergence over the tropics and convergence in the subtropics act together as the wave source[^1].
+
+**A wave train carries it away.** A **Rossby wave** is a large meander of the westerlies. As standard background, a column of air pushed north keeps its absolute vorticity, so it gains clockwise spin as the Earth's share grows, and that spin turns it back south; pushed south, the reverse, so it overshoots and swings like a pendulum. A steady source sets up a train of these swings. In Hoskins and Karoly's model, long waves from a low-latitude source travel strongly poleward as well as eastward; shorter ones stay trapped on the equator side of the jet[^3]. Jets also act as waveguides: Hoskins and Ambrizzi found a strong one along the Asian jet and preferred paths arching across North America[^4].
+
+**The PNA pattern.** Correlating monthly 500 hPa heights between every pair of grid points over 15 northern winters, Wallace and Gutzler found, among the most reproducible patterns, the **Pacific–North American (PNA) pattern**: a north–south seesaw in the central Pacific, with centres of action over western Canada and the southeastern United States[^5]. They found it as a recurring pattern of winter weather, not as ENSO's own; ENSO is one thing that tilts it. Horel and Wallace found that warm Pacific episodes tend to bring below-normal heights over the North Pacific and southeastern US and above-normal heights over western Canada, and that wave theory explained the pattern's size, shape and seasonal dependence[^6]. Because the jets shape the response, the same few patterns recur[^1].
+
+::: {.callout-note collapse="true"}
+## The light maths: where the waves come from and how long they are
+
+**Rossby wave source.** The vorticity budget of the upper-level flow gives a source term for waves:
+
+$$S = -\nabla \cdot (\mathbf{v}_\chi \zeta) = -\zeta D - \mathbf{v}_\chi \cdot \nabla \zeta$$
+
+where $S$ is the Rossby wave source (s⁻²), $\mathbf{v}_\chi$ is the divergent part of the horizontal wind (m s⁻¹), $\zeta$ is the absolute vorticity, the spin of the air including the Earth's (s⁻¹), and $D = \nabla \cdot \mathbf{v}_\chi$ is the divergence (s⁻¹). The first term is stretching where air spreads out; the second is the outflow carrying spin into the jet. Sardeshmukh and Hoskins showed that leaving out the second can give a badly wrong response[^2].
+
+**Wavelength of a stationary wave** (standard textbook result). On a uniform westerly wind $U$, a Rossby wave stands still over the ground when its total wavenumber is
+
+$$K_s = \sqrt{\beta / U}, \qquad \beta = \frac{2\Omega \cos\phi}{a}$$
+
+where $K_s$ is the stationary wavenumber (m⁻¹), $\beta$ is how fast the Earth's spin felt by the air grows with distance north (m⁻¹ s⁻¹), $\Omega = 7.292 \times 10^{-5}$ s⁻¹ is the Earth's rotation rate, $\phi$ is latitude, and $a = 6.371 \times 10^{6}$ m is the Earth's radius. At 30°N, $\beta = 2 \times 7.292\times10^{-5} \times 0.866 / 6.371\times10^{6} = 1.98 \times 10^{-11}$ m⁻¹ s⁻¹. With $U = 20$ m s⁻¹, $K_s = 9.96 \times 10^{-7}$ m⁻¹ and the wavelength $2\pi/K_s$ is about 6,300 km; with $U = 30$ m s⁻¹, about 7,700 km. Because $K_s$ counts the wave's north–south as well as east–west structure, that allows at most five or six waves around the 34,700 km circle of latitude. Horel and Wallace note that this wave theory explains the PNA's horizontal scale[^6].
+:::
+
+## How a teleconnection map is made
+
+A teleconnection map is a page of correlations: for each place, how closely its seasonal weather has moved with an index over the years of record.
+
+Choose an index (say, the October–December mean of Niño 3.4), a local variable (say, December–February rainfall at every station) and a set of years. For each place, compute the correlation across years:
+
+$$r = \frac{\sum_{t} (x_t - \bar{x})(y_t - \bar{y})}{\sqrt{\sum_{t} (x_t - \bar{x})^2 \, \sum_{t} (y_t - \bar{y})^2}}$$
+
+where $x_t$ is the index in year $t$ (°C), $y_t$ is the local variable in the same year (its own units, such as mm), and bars mark means over the record. Colour the map by $r$. Its square, $r^2$, is the share of the local variable's year-to-year variance that moves with the index: at $r = 0.5$, $0.5^2 = 25\%$, leaving 75% the index does not explain.
+
+A **composite** compares the local variable in El Niño years with other years. Ropelewski and Halpert built composites from more than 1,700 rain gauges; in almost every coherent region they found, the expected departure came in at least 80% of ENSO events[^7].
+
+**Why maps are seasonal.** The tropical heating and the jets that guide the waves both change through the year[^6]. Each region's ENSO-related rain had its own "season", usually in phase with its normal rainy season[^7]. Tropical forcing has tended to be strongest in northern winter, and Southern Hemisphere teleconnections are weaker, more variable and more easily masked[^1]. A map for December–February says nothing about June–August.
+
+**Why maps are probabilistic.** The wave train changes the background flow, but storms on it still follow chaotic paths, so one El Niño can bring a wet winter and another an ordinary one: the signal-and-noise picture of [Why seasonal forecasting is possible at all](why-seasonal-forecasting-is-possible-at-all.qmd). In Trenberth and colleagues' words, a modest signal sits in "the high level of noise from natural variability" outside the tropics[^1].
+
+**Not mirror images.** Hoerling, Kumar and Zhong found the La Niña wave train shifted about 35° of longitude from the El Niño one, with different tropical origins, which they trace to the nonlinear response of tropical rain[^12]. Events also differ, as the coastal El Niño in [ENSO](enso.qmd) shows. A single correlation, and the widget's linear model, are simplifications; compositing warm and cold years separately, as in step 4 below, avoids part of it.
+
+## Reading a correlation map without fooling yourself
+
+The dangers are short records, many places tested at once, and links that drift. The widget draws 2,000 synthetic records, each pairing an index with a local variable built to have a chosen **true correlation**, and counts how often one record looks "significant" at the 5% level.
+
+::: {.sim-card}
+#### How much can one record tell you?
+
+Start at the defaults, a true correlation of 0.3 and 40 years. Then set the true correlation to 0, and finally try 20 and 100 years.
+
+```{ojs}
+//| echo: false
+viewof rho = Inputs.range([0, 0.8], {value: 0.3, step: 0.05, label: "True correlation"})
+viewof nYears = Inputs.range([20, 100], {value: 40, step: 10, label: "Years of record"})
+// 2,000 synthetic records of up to 100 years, fixed seed: an index x and independent noise e.
+sims = {
+  let a = 20261021;
+  const rand = () => { a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  const gauss = () => Math.sqrt(-2 * Math.log(1 - rand())) * Math.cos(2 * Math.PI * rand());
+  return d3.range(2000).map(() => ({x: d3.range(100).map(gauss), e: d3.range(100).map(gauss)}));
+}
+corr = (x, y) => { const mx = d3.mean(x), my = d3.mean(y);
+  return d3.sum(x, (v, i) => (v - mx) * (y[i] - my)) / Math.sqrt(d3.sum(x, v => (v - mx) ** 2) * d3.sum(y, v => (v - my) ** 2)); }
+// Local variable y = rho * x + sqrt(1 - rho^2) * e has true correlation rho with the index.
+records = sims.map(s => {
+  const x = s.x.slice(0, nYears), y = x.map((v, i) => rho * v + Math.sqrt(1 - rho * rho) * s.e[i]);
+  return {x, y, r: corr(x, y)};
+})
+// Fisher z: atanh(r) is roughly normal with standard error 1/sqrt(n - 3).
+half = 1.959964 / Math.sqrt(nYears - 3)
+rCrit = Math.tanh(half)
+sig = records.filter(d => Math.abs(d.r) > rCrit)
+first = records[0]
+card = (label, value, colour) => html`<div class="sim-readout"><div class="sim-readout-label">${label}</div>
+  <div class="sim-readout-value" style="color:${colour}">${value}</div></div>`
+html`<div class="sim-readouts">
+  ${card("Records called significant", (100 * sig.length / records.length).toFixed(1) + "% (|r| > " + rCrit.toFixed(2) + ")", "#38bdf8")}
+  ${card("Middle 95% of sample r", d3.quantile(records, 0.025, d => d.r).toFixed(2) + " to " + d3.quantile(records, 0.975, d => d.r).toFixed(2), "#10b981")}
+  ${card("Average |r| of the significant ones", sig.length ? d3.mean(sig, d => Math.abs(d.r)).toFixed(2) : "none", "#ef4444")}
+  ${card("Record 1: r and 95% interval", first.r.toFixed(2) + " (" + Math.tanh(Math.atanh(first.r) - half).toFixed(2) + " to " + Math.tanh(Math.atanh(first.r) + half).toFixed(2) + ")", "#f59e0b")}
+</div>`
+Plot.plot({
+  width: Math.min(width, 640), height: 260, marginLeft: 45, style: {background: "transparent", color: "#cbd5e1"},
+  x: {domain: [-0.8, 1], label: "Sample correlation r →"},
+  y: {label: "↑ Records (of 2,000)", grid: true},
+  color: {legend: true, domain: ["Not significant", "Looks significant"], range: ["#64748b", "#38bdf8"]},
+  marks: [
+    Plot.rectY(records, Plot.binX({y: "count"}, {x: "r", thresholds: d3.range(-0.8, 1.001, 0.05),
+      fill: d => Math.abs(d.r) > rCrit ? "Looks significant" : "Not significant"})),
+    Plot.ruleX([-rCrit, rCrit], {stroke: "#cbd5e1", strokeDasharray: "4 4"}), Plot.ruleX([rho], {stroke: "#10b981", strokeWidth: 2.5})
+  ]
+})
+```
+
+Sample correlations of all 2,000 records. The green line is the true correlation; the dashed lines are the significance cut-offs. "Average |r|" includes any wrong-sign hits. Record 1 is one example record: the single answer a real station would give you. The default of 0.3 is illustrative, not a typical ENSO value.
+:::
+
+**Short records.** At the defaults, only 47.0% of the 40-year records pass the test, although every one has a real link. The middle 95% of sample correlations runs from −0.02 to 0.55: one record cannot tell a weak link from a fairly strong one. Those that pass average $|r| = 0.42$, 40% above the true 0.3: passing selects the lucky ones. Record 1 gives $r = 0.41$, 95% interval 0.11 to 0.64. With 100 years, 85.7% pass.
+
+**Many places at once.** Set the true correlation to 0: 5.4% of records still pass, close to the 5% the test allows. A map is hundreds of such tests: with 500 independent grid points and no real link, about $0.05 \times 500 = 25$ pass, and since neighbours move together, false hits come as blobs that look like regions. Whether a whole map beats chance, its **field significance**, depends on how many tests there are and how dependent[^8]; Wilks shows this is still widely ignored[^9]. See the note below.
+
+**Trends and memory.** Two series that both drift, from warming or a new instrument, correlate with no wave train involved; remove trends first. A series with memory, as monthly data have, also fools a test that assumes independence, as [Is the trend significant?](trend-significance/is_the_trend_significant.ipynb) shows.
+
+**Links that drift.** In a 140-year record the ENSO–Indian monsoon link appeared to break down in recent decades[^10]. Gershunov and colleagues showed that decades of strong correlation (about −0.8) alternating with decades of none could be noise alone[^11]. Set the widget to 20 years and a true correlation of 0.5: the middle 95% of sample correlations runs from 0.10 to 0.78. A 20-year window that disagrees with the long record is not by itself evidence of change.
+
+::: {.callout-note collapse="true"}
+## Field significance and the false discovery rate
+
+**Monte Carlo field significance**, in the spirit of Livezey and Chen[^8] and done as in [Permutation tests](permutation-tests.qmd): shuffle the index years, recompute the whole map (keeping each year's map intact, so neighbours stay correlated), and repeat a few thousand times. If the real map has more passing points than 95% of shuffled maps, the map as a whole beats chance, though not which points are real.
+
+**False discovery rate.** Wilks recommends capping the expected share of false hits among the points you call significant, rather than testing each point at 5%[^9].
+:::
+
+## Does ENSO matter for my region? A recipe
+
+These steps are my inference from the sources above, not a published protocol.
+
+1. **Name the decision and its season.** Pick the variable that drives it, such as chill hours, bloom frost or harvest rain, with the longest local record you have.
+2. **Pick the index and the lead.** Use the index from the months before you decide (NOAA's official one is the RONI; see [ENSO](enso.qmd)).
+3. **Remove trends** from both series, then compute the correlation, its interval and a permutation p-value.
+4. **Count by category.** Of the El Niño years, how many fell in your driest (or coldest) third? Chance gives about one in three.
+5. **Stress-test it.** Drop the strongest event and recompute; if the link vanishes, it rests on one year. Compare the two halves of the record, remembering how far a 20-year correlation wanders.
+6. **Check it against a published map.** A link matching a coherent region in Ropelewski and Halpert[^7] beats one station that stands out among many.
+
+A copy-ready function for steps 3 and 4 (Python, numpy only):
+
+```python
+import numpy as np
+
+def enso_check(index, local, n_perm=9999, seed=0):
+    """index, local: one value per year, same years. Returns r, 95% CI, p, El Nino hits."""
+    t = np.arange(len(index))
+    x = index - np.polyval(np.polyfit(t, index, 1), t)   # remove straight-line trends
+    y = local - np.polyval(np.polyfit(t, local, 1), t)
+    r = np.corrcoef(x, y)[0, 1]
+    half = 1.96 / np.sqrt(len(x) - 4)                     # Fisher z; -4, as detrending uses a dof
+    ci = np.tanh(np.arctanh(r) + np.array([-half, half]))
+    rng = np.random.default_rng(seed)                     # shuffle the years of the index
+    null = np.array([np.corrcoef(rng.permutation(x), y)[0, 1] for _ in range(n_perm)])
+    p = (np.sum(np.abs(null) >= abs(r)) + 1) / (n_perm + 1)
+    dry = y <= np.quantile(y, 1 / 3)                      # local lower tercile
+    warm = index >= 0.5                                   # El Nino years
+    return r, ci, p, (int(dry[warm].sum()), int(warm.sum()))
+```
+
+The last value is El Niño years in your lower third, out of all El Niño years. For the upper third use `y >= np.quantile(y, 2 / 3)`; for La Niña, `index <= -0.5`. Shuffling single years assumes they are independent. My inference: seasonal values a year apart are usually only weakly correlated, but if either series keeps memory after detrending, shuffle blocks of several years instead (a block permutation).
+
+::: {.callout-tip}
+## What this means for you
+
+My inferences from the sources and the synthetic widget above, untested on real farm records:
+
+- Treat a teleconnection as a shift in odds for one season, acted on through the cost–loss rule in [Why seasonal forecasting is possible at all](why-seasonal-forecasting-is-possible-at-all.qmd).
+- With 30 to 40 years of data, a correlation near 0.3 can be real and fail a test, or pass by luck; weigh it with published maps.
+:::
+
+## Key takeaways
+
+- Choose the index season by when you decide; a same-season correlation uses information you will not have in time.
+- Judge a map as a whole: expect about 5% of points to pass by chance, in blobs, and ask for field significance or false-discovery-rate control.
+- Discount a correlation reported because it passed a test: at 40 years and a true 0.3, passing ones averaged 0.42.
+- A shift in a 20-year running correlation is not a changed climate until it beats sampling noise and has a physical reason.
+
+## References
+
+[^1]: Trenberth, K. E. et al. Progress during TOGA in understanding and modeling global teleconnections associated with tropical sea surface temperatures. *J. Geophys. Res. Oceans* **103**, 14291–14324 (1998). https://doi.org/10.1029/97JC01444
+[^2]: Sardeshmukh, P. D. & Hoskins, B. J. The generation of global rotational flow by steady idealized tropical divergence. *J. Atmos. Sci.* **45**, 1228–1251 (1988). https://doi.org/10.1175/1520-0469(1988)045<1228:TGOGRF>2.0.CO;2
+[^3]: Hoskins, B. J. & Karoly, D. J. The steady linear response of a spherical atmosphere to thermal and orographic forcing. *J. Atmos. Sci.* **38**, 1179–1196 (1981). https://doi.org/10.1175/1520-0469(1981)038<1179:TSLROA>2.0.CO;2
+[^4]: Hoskins, B. J. & Ambrizzi, T. Rossby wave propagation on a realistic longitudinally varying flow. *J. Atmos. Sci.* **50**, 1661–1671 (1993). https://doi.org/10.1175/1520-0469(1993)050<1661:RWPOAR>2.0.CO;2
+[^5]: Wallace, J. M. & Gutzler, D. S. Teleconnections in the geopotential height field during the Northern Hemisphere winter. *Mon. Weather Rev.* **109**, 784–812 (1981). https://doi.org/10.1175/1520-0493(1981)109<0784:TITGHF>2.0.CO;2
+[^6]: Horel, J. D. & Wallace, J. M. Planetary-scale atmospheric phenomena associated with the Southern Oscillation. *Mon. Weather Rev.* **109**, 813–829 (1981). https://doi.org/10.1175/1520-0493(1981)109<0813:PSAPAW>2.0.CO;2
+[^7]: Ropelewski, C. F. & Halpert, M. S. Global and regional scale precipitation patterns associated with the El Niño/Southern Oscillation. *Mon. Weather Rev.* **115**, 1606–1626 (1987). https://doi.org/10.1175/1520-0493(1987)115<1606:GARSPP>2.0.CO;2
+[^8]: Livezey, R. E. & Chen, W. Y. Statistical field significance and its determination by Monte Carlo techniques. *Mon. Weather Rev.* **111**, 46–59 (1983). https://doi.org/10.1175/1520-0493(1983)111<0046:SFSAID>2.0.CO;2
+[^9]: Wilks, D. S. "The stippling shows statistically significant grid points": how research results are routinely overstated and overinterpreted, and what to do about it. *Bull. Am. Meteorol. Soc.* **97**, 2263–2273 (2016). https://doi.org/10.1175/BAMS-D-15-00267.1
+[^10]: Kumar, K. K., Rajagopalan, B. & Cane, M. A. On the weakening relationship between the Indian monsoon and ENSO. *Science* **284**, 2156–2159 (1999). https://doi.org/10.1126/science.284.5423.2156
+[^11]: Gershunov, A., Schneider, N. & Barnett, T. Low-frequency modulation of the ENSO–Indian monsoon rainfall relationship: signal or noise? *J. Clim.* **14**, 2486–2492 (2001). https://doi.org/10.1175/1520-0442(2001)014<2486:LFMOTE>2.0.CO;2
+[^12]: Hoerling, M. P., Kumar, A. & Zhong, M. El Niño, La Niña, and the nonlinearity of their teleconnections. *J. Clim.* **10**, 1769–1786 (1997). https://doi.org/10.1175/1520-0442(1997)010<1769:ENOLNA>2.0.CO;2
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/why-seasonal-forecasting-is-possible-at-all.html"><span>Previous</span>Why seasonal forecasting is possible at all</a><a class="mf-up" href="/series/prediction/index.html"><span>Series</span>Weather, Climate and Prediction</a><a class="mf-next" href="/blogs/return-periods.html"><span>Next</span>Return periods</a></div>
+<!-- CURRICULUM_FOOTER_END -->

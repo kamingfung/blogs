@@ -1,0 +1,180 @@
+---
+title: CMIP and the SSPs
+description: Which climate scenario a 20-year farm plan should look at, what labels like SSP2-4.5 mean, and where the projections behind them come from.
+date: 2026-10-21
+categories:
+- climate
+- climate modeling
+- agriculture
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/prediction/index.html">Weather, Climate and Prediction</a><span class="sep">·</span>Part 11 · Climate scenarios</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">Comfort with averages and histograms. Python for the notebooks.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Climate projections are labelled with scenarios such as SSP2-4.5. The first part, SSP2, names a storyline about how society develops. The second part, 4.5, says how hard the extra greenhouse gases push on the climate by 2100, in watts per square metre. A scenario is an "if", not a forecast: the IPCC does not say which one is most likely. The projections come from CMIP, in which many modelling centres run the same experiments so their results can be compared. For a farm plan, the useful news is in the IPCC's own table: before 2040 every scenario gives about the same global warming, and they split only after mid-century. Over 20 years the range within one scenario is wider than the gap between scenarios, so effort is better spent on the model spread and on bringing the number down to your site. Think in warming levels, such as 1.5 °C and 2 °C, and ask what each means for your chill and your hot days.
+
+For a 20-year planting plan, use a middle scenario and stress-test with a high one.
+:::
+
+Every projection on this site's later pages, from [Downscaling](downscaling.qmd) to [Bias correction](bias-correction.qmd), starts with two choices made upstream: which scenario, and which models. This page starts with the decision a grower faces, then explains the labels and the machinery behind them.
+
+## Which scenario a 20-year plan should look at
+
+A planting decision made now plays out over the next two decades, and over that horizon the scenarios barely differ. The IPCC reports warming as 20-year averages of global surface temperature, relative to 1850–1900[^3]. To compare with a recent baseline, subtract 0.85 °C, the observed warming from 1850–1900 to 1995–2014[^3]. For scale, 2011–2020 was already 1.09 °C warmer than 1850–1900 globally, and 1.59 °C over land[^3]: farmland warms faster than the global figure suggests.
+
+How to read the table: before 2040 every row says about 1.5 °C; the scenarios split after mid-century.
+
+| Scenario | 2021–2040 | 2041–2060 | 2081–2100 |
+|---|---|---|---|
+| SSP1-1.9 | 1.5<br>(1.2–1.7) | 1.6<br>(1.2–2.0) | 1.4<br>(1.0–1.8) |
+| SSP1-2.6 | 1.5<br>(1.2–1.8) | 1.7<br>(1.3–2.2) | 1.8<br>(1.3–2.4) |
+| SSP2-4.5 | 1.5<br>(1.2–1.8) | 2.0<br>(1.6–2.5) | 2.7<br>(2.1–3.5) |
+| SSP3-7.0 | 1.5<br>(1.2–1.8) | 2.1<br>(1.7–2.6) | 3.6<br>(2.8–4.6) |
+| SSP5-8.5 | 1.6<br>(1.3–1.9) | 2.4<br>(1.9–3.0) | 4.4<br>(3.3–5.7) |
+
+<small>Global warming relative to 1850–1900, °C: best estimate (very likely range). Table SPM.1 of the IPCC Sixth Assessment Report (AR6), Working Group I[^3].</small>
+
+- **Before 2040, the scenario hardly matters.** The best estimates for 2021–2040 differ by at most $1.6 - 1.5 = 0.1$ °C.
+- **By mid-century, the range within a scenario is wider than the gap between them.** For 2041–2060, SSP5-8.5 and SSP1-2.6 differ by $2.4 - 1.7 = 0.7$ °C, while the very likely range within SSP2-4.5 alone spans $2.5 - 1.6 = 0.9$ °C.
+- **By the end of the century, the scenario is the main story.** SSP5-8.5 and SSP1-2.6 are $4.4 - 1.8 = 2.6$ °C apart.
+
+AR6 also says when 2 °C is likely to be crossed: in 2041–2060 it is more likely than not under SSP2-4.5, likely under SSP3-7.0 and very likely under SSP5-8.5[^3].
+
+::: {.callout-tip}
+## What this means for you
+
+My inferences from the IPCC numbers above, not a tested rule. A block planted in 2026 for 20 years runs to 2046: inside the 2021–2040 window and the first years of 2041–2060.
+
+- **Plan on a middle scenario, SSP2-4.5,** and do not spend long choosing between scenarios. Over this horizon the gap between them is smaller than the range within each.
+- **Stress-test with a high one,** SSP3-7.0 or SSP5-8.5, or with the upper end of SSP2-4.5's range. For a 20-year decision they ask nearly the same question: what if warming comes faster?
+- **Think in warming levels.** Over a planting's life the question is roughly "what does my site look like at 1.5 °C, and at 2 °C?"
+- **Look at 2081–2100 only for decisions that last that long,** such as land or water rights. There the scenario dominates.
+:::
+
+## From a global number to your site
+
+A global warming level is not a farm temperature, but it is the right handle for one, because AR6 finds that many regional changes follow the warming level reached, largely whichever scenario and year get there[^3]. For every region, AR6 projects more of the hot conditions and fewer of the cold ones, with high confidence[^3]. On heat it is specific: "extreme heat thresholds relevant to agriculture and health are projected to be exceeded more frequently" at higher warming levels[^3].
+
+On a fruit farm that translates, as my inference, into two questions, each with its own page:
+
+- **Will winters still give enough chill?** Fewer cold conditions change how much chill a bud can bank; [Chill hours and dormancy](chill-hours-and-dormancy.qmd) shows how chill is counted and why the counting models disagree.
+- **How many more hot days?** A small shift in the average multiplies the hot extremes; [Heatwaves in a warming climate](heatwaves-in-a-warming-climate.qmd) explains why.
+
+**Variety choice** (my inference, not tested): low-chill and high-chill types are exposed differently. A type bred to need little winter cold, such as southern highbush, has more margin as winters warm; a high-chill type planted near the edge of its range has less. Heat and spring frost are separate risks for both. [Highbush, lowbush and rabbiteye](highbush-lowbush-rabbiteye.qmd) matches types to winters.
+
+**Where to get site numbers.** Global tables like the one above are the start, not the answer. Places to look:
+
+- your national meteorological or climate service;
+- regional downscaled datasets from CORDEX, the Coordinated Regional Climate Downscaling Experiment, which ScenarioMIP planned around SSP2-4.5 and SSP5-8.5[^2];
+- the Copernicus Climate Data Store;
+- the IPCC's WGI Interactive Atlas, for exploring AR6's climate change information across its reference regions[^3].
+
+Before using any of them, ask what resolution and method made the numbers ([Downscaling](downscaling.qmd)), how they were bias-corrected and whether the model's change survived ([Bias correction](bias-correction.qmd)). [Reading a climate projection](reading-a-climate-projection.qmd) covers how to read the spread of models that results.
+
+## What the labels mean
+
+An SSP label packs two ideas: the SSP part is the story, the number after the dash is how hard that future pushes on the climate.
+
+**The storylines.** The Shared Socioeconomic Pathways (SSPs) describe how society might develop without climate change or new climate policy[^2]. There are five: sustainable development, middle of the road, regional rivalry, inequality, and fossil-fuelled development[^4]. Integrated assessment models (computer models of the energy system, economy and land use) turn each storyline into emissions. Without new climate policy the storylines diverge widely: their CO₂ emissions run from about 25 to more than 120 gigatonnes a year by 2100[^4].
+
+**The forcing number.** Radiative forcing is the change in the planet's energy balance caused by, for example, more greenhouse gas, in watts per square metre ($\text{W m}^{-2}$); positive means the planet gains energy and warms. In SSPx-y, "y" is the approximate forcing in 2100[^3]. Adding climate policy lowers a storyline's forcing, so one storyline can appear at several levels.
+
+**Older names.** Older reports use RCP names; RCP4.5 is close to, not identical to, SSP2-4.5[^5]^,^[^2].
+
+| Scenario | Storyline | Emissions, as AR6 describes them |
+|---|---|---|
+| SSP1-1.9 | Sustainability | Very low: CO₂ net zero around or after 2050 |
+| SSP1-2.6 | Sustainability | Low: CO₂ net zero around or after 2050 |
+| SSP2-4.5 | Middle of the road | Intermediate: CO₂ near today's level to 2050 |
+| SSP3-7.0 | Regional rivalry | High: CO₂ roughly doubles by 2100 |
+| SSP5-8.5 | Fossil-fuelled growth | Very high: CO₂ roughly doubles by 2050 |
+
+<small>Emission descriptions from Box SPM.1 of AR6 Working Group I[^3]; both SSP1 scenarios go on to net negative CO₂, and SSP3-7.0 and SSP5-8.5 assume no new climate policy[^2]. Storyline names from Riahi et al.[^4] and O'Neill et al.[^2]</small>
+
+**A scenario is an "if".** A projection under a scenario answers: if the world followed this path, what would the climate do? The IPCC does not assess the likelihood of individual scenarios, is neutral about the assumptions behind the SSPs, and notes they do not cover all possible futures[^3]. So the range quoted for a scenario is uncertainty about the climate's response to that one path, not a probability across paths, and averaging across scenarios gives no central estimate.
+
+**The top scenario.** SSP5-8.5 and its predecessor RCP8.5 have often been called "business as usual"; Hausfather and Peters called that story misleading and argued the worst case should stop being treated as the most likely outcome[^6]. Schwalm and colleagues replied that RCP8.5 remains useful for physical climate risk to mid-century, matching historical cumulative CO₂ emissions to within 1%[^7]. My inference: both positions fit using SSP5-8.5 as a stress test rather than a central case, which is how this page uses it.
+
+::: {.callout-note collapse="true"}
+## More on the labels: RCPs and the scenario pairings
+
+**RCPs.** Before CMIP6, projections were driven by the four Representative Concentration Pathways used in CMIP5: RCP2.6, 4.5, 6.0 and 8.5, spanning the 2100 forcing values in the literature at the time[^5]^,^[^2]. They were built from earlier socio-economic scenarios, not from the SSPs, so an RCP and an SSP with the same forcing level are not the same scenario and their regional patterns of change need not match[^2]. The forcing numbers in both are nominal identifiers; the actual forcing differs somewhat[^2].
+
+**Why these pairings.** Not every storyline can reach every forcing level: many models could not reach 2.6 $\text{W m}^{-2}$ from the storylines with high challenges to mitigation[^4], so there is no SSP3-2.6 in the core set. SSP5 is paired with 8.5 because it is the only storyline with emissions high enough to reach it[^2]. ScenarioMIP chose the others for what they let other projects study[^2]:
+
+- **SSP3-7.0** has substantial land-use change, in particular less forest, and high emissions of aerosol-forming gases such as sulphur dioxide. It is close to the forcing of the SSP2 no-policy baseline and carries a large ensemble: nine or more extra runs per model.
+- **SSP2-4.5** has land-use and aerosol pathways that are not extreme, and is the reference scenario for regional downscaling in CORDEX and for decadal prediction.
+- **SSP1-2.6** has land-use change in the other direction, more forest, and was expected to give a multi-model mean warming significantly below 2 °C by 2100.
+
+Lower-priority scenarios add SSP4-6.0, SSP4-3.4, an overshoot scenario SSP5-3.4-OS, and a scenario below 2.6 $\text{W m}^{-2}$, marked as a preliminary SSP1-1.9[^2].
+:::
+
+## Where the projections come from: CMIP
+
+CMIP, the Coupled Model Intercomparison Project, has many modelling centres around the world run their climate models[^1]. Each model is given the same instructions: the same historical inputs and the same scenarios[^1]^,^[^2]. Because the inputs are shared, the spread between models shows how much the answer depends on the model, one of the uncertainties in every projection.
+
+```{mermaid}
+flowchart TD
+    Story["Storyline (SSP)"]
+    Emis["Emissions"]
+    Forc["Forcing<br/>(the '4.5')"]
+    Models["Climate models (CMIP)"]
+    Local["Downscaled to your farm"]
+
+    Story -->|"quantified"| Emis
+    Emis --> Forc
+    Forc --> Models
+    Models -->|"downscaling, bias correction"| Local
+
+    class Story ochre
+    class Emis rust
+    class Forc rust
+    class Models indigo
+    class Local sage
+    classDef indigo fill:#1d4a62,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef rust fill:#a04b2d,stroke:#c97d62,stroke-width:1.5px,color:#ffffff
+    classDef ochre fill:#d69a2e,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+    classDef sage fill:#95a87f,stroke:#3b1a18,stroke-width:1.5px,color:#3b1a18
+```
+
+<small>The chain behind one projection, simplified: models are actually given greenhouse-gas concentrations, and the forcing number labels the scenario[^2].</small>
+
+::: {.callout-note collapse="true"}
+## How CMIP6 is organised, and why AR6 does not just average the models
+
+CMIP is organised under the World Climate Research Programme's Working Group on Coupled Modelling and began as a comparison of a handful of early coupled models, about twenty years before its sixth phase was designed. Its output is published in a standard format so anyone can analyse many models side by side[^1]. CMIP6 has three layers[^1]:
+
+- **Entry experiments.** Every model runs a small common core (the DECK, described in [What an Earth system model is](what-an-earth-system-model-is.qmd)) and a historical simulation of 1850–2014, driven by forcings based as far as possible on observations.
+- **Common standards** for data, documentation and distribution.
+- **Endorsed projects** on particular questions, 21 of them in CMIP6, which each modelling group joins at its own discretion.
+
+Projections of the future come from one of those projects, ScenarioMIP. Its design has eight 21st-century scenarios plus a large ensemble and long-term extensions, in two tiers of priority, and every participating model is asked to run at least the four Tier 1 scenarios (SSP1-2.6, SSP2-4.5, SSP3-7.0, SSP5-8.5) once each[^2]. The scenario runs continue from the historical runs in the same model configuration and start in 2015[^2]^,^[^3]. Models are given the concentrations of long-lived greenhouse gases, and aerosols as emissions or concentrations[^2].
+
+The models are not fully independent and differ in quality; ScenarioMIP lists model performance and model dependence among what better uncertainty estimates must take into account[^2]. CMIP6 models also show a wider range of climate sensitivity than CMIP5 models, and a higher average than AR6's own best estimate[^3]. So for global temperature, AR6 combined the model projections with observational constraints from past warming and its own assessment of climate sensitivity, the first IPCC report to do so[^3]. The table at the top of this page is that assessment, not a raw model average.
+:::
+
+## Key takeaways
+
+- For decisions inside 20 years, spend effort on the model range and the local step, not on picking the scenario.
+- Plan around warming levels, 1.5 °C and 2 °C, and ask what each means for chill and hot days at your site.
+- Use SSP5-8.5 as a stress test, never as the expected path, and never average across scenarios.
+- When you pass numbers on, keep the scenario, period and range attached ("2.0 °C, 1.6 to 2.5, SSP2-4.5, 2041–2060"), and do not mix RCP and SSP results as if they were the same scenario.
+- Before using site data, ask its resolution, its downscaling method and its bias correction.
+
+## References
+
+[^1]: Eyring, V. et al. Overview of the Coupled Model Intercomparison Project Phase 6 (CMIP6) experimental design and organization. *Geosci. Model Dev.* **9**, 1937–1958 (2016). https://doi.org/10.5194/gmd-9-1937-2016
+[^2]: O'Neill, B. C. et al. The Scenario Model Intercomparison Project (ScenarioMIP) for CMIP6. *Geosci. Model Dev.* **9**, 3461–3482 (2016). https://doi.org/10.5194/gmd-9-3461-2016
+[^3]: IPCC. Summary for Policymakers. In *Climate Change 2021: The Physical Science Basis. Contribution of Working Group I to the Sixth Assessment Report of the Intergovernmental Panel on Climate Change* (eds Masson-Delmotte, V. et al.) 3–32 (Cambridge Univ. Press, 2021). https://doi.org/10.1017/9781009157896.001
+[^4]: Riahi, K. et al. The Shared Socioeconomic Pathways and their energy, land use, and greenhouse gas emissions implications: an overview. *Glob. Environ. Change* **42**, 153–168 (2017). https://doi.org/10.1016/j.gloenvcha.2016.05.009
+[^5]: van Vuuren, D. P. et al. The representative concentration pathways: an overview. *Clim. Change* **109**, 5–31 (2011). https://doi.org/10.1007/s10584-011-0148-z
+[^6]: Hausfather, Z. & Peters, G. P. Emissions – the 'business as usual' story is misleading. *Nature* **577**, 618–620 (2020). https://doi.org/10.1038/d41586-020-00177-3
+[^7]: Schwalm, C. R., Glendon, S. & Duffy, P. B. RCP8.5 tracks cumulative CO~2~ emissions. *Proc. Natl Acad. Sci. USA* **117**, 19656–19657 (2020). https://doi.org/10.1073/pnas.2007117117
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/bias-correction.html"><span>Previous</span>Bias correction</a><a class="mf-up" href="/series/prediction/index.html"><span>Series</span>Weather, Climate and Prediction</a><a class="mf-next" href="/blogs/reading-a-climate-projection.html"><span>Next</span>Reading a climate projection</a></div>
+<!-- CURRICULUM_FOOTER_END -->
