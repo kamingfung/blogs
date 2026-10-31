@@ -217,3 +217,4 @@ Our advice, drawn from the sources above where cited and otherwise our inference
 <!-- CURRICULUM_FOOTER_START -->
 <div class="mf"><a class="mf-prev" href="/blogs/chaos-in-a-toy-model.html"><span>Previous</span>Chaos in a toy model</a><a class="mf-up" href="/series/prediction/index.html"><span>Series</span>Weather, Climate and Prediction</a><a class="mf-next" href="/blogs/markov-weather/why-markov-chains-work-for-weather.html"><span>Next</span>Markov chains for weather</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+

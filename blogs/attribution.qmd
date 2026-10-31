@@ -178,3 +178,4 @@ An attribution result says how the odds of the *weather* changed over a defined 
 <!-- CURRICULUM_FOOTER_START -->
 <div class="mf"><a class="mf-prev" href="/blogs/signal-and-noise/signal_and_noise.html"><span>Previous</span>Signal and noise in temperature records</a><a class="mf-up" href="/series/prediction/index.html"><span>Series</span>Weather, Climate and Prediction</a><a class="mf-next" href="/blogs/numerical-weather-prediction.html"><span>Next</span>Numerical weather prediction</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+

@@ -178,3 +178,4 @@ The models are not fully independent and differ in quality; ScenarioMIP lists mo
 <!-- CURRICULUM_FOOTER_START -->
 <div class="mf"><a class="mf-prev" href="/blogs/bias-correction.html"><span>Previous</span>Bias correction</a><a class="mf-up" href="/series/prediction/index.html"><span>Series</span>Weather, Climate and Prediction</a><a class="mf-next" href="/blogs/reading-a-climate-projection.html"><span>Next</span>Reading a climate projection</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+

@@ -285,3 +285,4 @@ These points are my own inferences from the results above, not findings of the c
 <!-- CURRICULUM_FOOTER_START -->
 <div class="mf"><a class="mf-prev" href="/blogs/rainfall-predictability/why-cant-we-forecast-rain-six-months-out.html"><span>Previous</span>Why can&#x27;t we forecast rain six months out?</a><a class="mf-up" href="/series/prediction/index.html"><span>Series</span>Weather, Climate and Prediction</a><a class="mf-next" href="/blogs/ensemble-forecasts.html"><span>Next</span>Ensemble forecasts</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+
