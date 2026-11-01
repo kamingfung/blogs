@@ -18,16 +18,16 @@ categories:
 ::: {.callout-note appearance="simple" icon=false}
 ## TL;DR
 
-Ammonia ($\text{NH}_3$) from farms deposits reactive nitrogen on downwind forests and thickens the canopy by up to $15\%$. Coupling GEOS-Chem to a dynamic vegetation model shows the extra leaf does two things at once: it pulls ozone out of the air through stomata (about $-2.1\text{ ppb}$ in $\text{NO}_x$-limited rural forest) and emits more isoprene that makes ozone where $\text{NO}_x$ is abundant (about $+1.4\text{ ppb}$ at urban fringes). After this module you can explain why the sign of the feedback is set by the local $\text{NO}_x$ regime, not by the nitrogen dose.
+Ammonia ($\text{NH}_3$) from farms deposits reactive nitrogen downwind, and where plants are short of nitrogen the extra supply adds leaf. More leaf does two things to ozone at once: it pulls ozone out of the air through stomata, and it emits more isoprene, which makes ozone where $\text{NO}_x$ is abundant. In our global model study[^4], this leaf effect alone moved surface ozone by no more than about $\pm 0.5\text{ ppbv}$; larger changes came from extra soil $\text{NO}_x$ ($+1$ to $+3\text{ ppbv}$ in some low-$\text{NO}_x$ equatorial regions) and from vegetation-driven changes in weather (within $\pm 2$–$3\text{ ppbv}$ in summer). After this module you can explain why the leaf effect can take either sign, and why it was not the largest term in that study.
 :::
 
 ## From farm ammonia to forest canopy
 
-Three steps link a fertilised field to a forest canopy hundreds of kilometres downwind:
+Three steps link a fertilised field to a forest canopy downwind:
 
-1. **Agricultural Ammonia ($\text{NH}_3$) Emissions**: Over-fertilized croplands and concentrated animal feeding operations volatilize millions of tonnes of reactive nitrogen gas.
-2. **Atmospheric Transport & Wet/Dry Nitrogen Deposition**: Winds carry this reactive nitrogen downwind, depositing nitrate ($\text{NO}_3^-$) and ammonium ($\text{NH}_4^+$) onto natural temperate and tropical forests[^1].
-3. **Vegetation Response**: Chronic nitrogen deposition acts as a nutrient amendment, altering plant biomass, canopy density (**Leaf Area Index, LAI**), and stomatal conductance.
+1. **Agricultural ammonia ($\text{NH}_3$) emissions**: fertiliser and livestock release ammonia gas. The inventory used in our study puts year-2000 emissions at about $53\text{ Tg N yr}^{-1}$ ($71 - 18$; 53 million tonnes of nitrogen), rising to $71\text{ Tg N yr}^{-1}$ by 2050 under a business-as-usual scenario[^4].
+2. **Transport and wet/dry deposition**: much of the nitrogen humans fix is lost to air, water and land[^1]. Winds carry reactive nitrogen from ammonia (and from $\text{NO}_x$) downwind, and it returns to land and ocean by wet and dry deposition; as ammonia grows and $\text{NO}_x$ is regulated, deposition is projected to shift from nitrate ($\text{NO}_3^-$) towards ammonium ($\text{NH}_4^+$)[^4].
+3. **Vegetation response**: where soils are nitrogen-limited, the deposited nitrogen acts as fertiliser and can raise plant growth, canopy density (**leaf area index, LAI**) and canopy height. Where soils already have more nitrogen than plants can use, it adds little growth[^4].
 
 ```{mermaid}
 flowchart TD
@@ -40,8 +40,13 @@ flowchart TD
     LAI --> SinkPath["Enhanced Stomatal Ozone Dry Deposition (O3 Sink ↑)"]
     LAI --> SourcePath["Enhanced Biogenic VOC (Isoprene) Emissions (O3 Precursor ↑)"]
     
-    SinkPath --> O3Drop["Lowers Surface Ozone in NOx-Limited Rural Forests (-2.1 ppb)"]
-    SourcePath --> O3Rise["Increases Surface Ozone in VOC-Limited Urban Edges (+1.4 ppb)"]
+    SinkPath --> O3Drop["Lowers Surface Ozone where deposition wins"]
+    SourcePath --> O3Rise["Raises Surface Ozone where NOx is abundant"]
+
+    NDep --> SoilNOx["More Soil NOx Emission"]
+    SoilNOx --> O3Soil["Raises Surface Ozone in low-NOx regions"]
+    LAI --> Met["Changed Surface Energy Balance & Weather"]
+    Met --> O3Met["Ozone up or down, locally and downwind"]
 
     class Agriculture rust
     class NDep ochre
@@ -61,7 +66,7 @@ A denser canopy pulls ground-level ozone ($\text{O}_3$) in two directions at onc
 
 ```{=html}
 <figure markdown="span">
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 790 470" style="width:100%;max-width:790px;height:auto;font-family:system-ui,-apple-system,sans-serif;" role="img" aria-label="Two opposing pathways from nitrogen deposition and increased leaf area: a physical dry-deposition sink on the left and a biogenic isoprene ozone source on the right, converging on opposite net outcomes of minus 2.1 ppb in NOx-limited rural forest and plus 1.4 ppb at VOC-limited urban edges.">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 790 470" style="width:100%;max-width:790px;height:auto;font-family:system-ui,-apple-system,sans-serif;" role="img" aria-label="Two opposing pathways from nitrogen deposition and increased leaf area: a physical dry-deposition sink on the left and a biogenic isoprene ozone source on the right, converging on opposite net outcomes: ozone falls where deposition wins, as expected in NOx-limited rural forest, and rises where isoprene wins, as expected at VOC-limited urban edges.">
   <defs>
     <marker id="amF" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="var(--md-default-fg-color--light)"/></marker>
     <marker id="amB" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="var(--ink-indigo)"/></marker>
@@ -69,7 +74,7 @@ A denser canopy pulls ground-level ozone ($\text{O}_3$) in two directions at onc
   </defs>
   <rect x="245" y="20" width="300" height="52" rx="7" fill="var(--md-default-fg-color--light)" fill-opacity="0.10" stroke="var(--md-default-fg-color--light)" stroke-width="2"/>
   <text x="395.0" y="41.5" text-anchor="middle" fill="var(--md-default-fg-color)" font-size="13.5" font-weight="600">Reactive N deposition on forest</text>
-  <text x="395.0" y="59.5" text-anchor="middle" fill="var(--md-default-fg-color--light)" font-size="13">leaf area index +15 %</text>
+  <text x="395.0" y="59.5" text-anchor="middle" fill="var(--md-default-fg-color--light)" font-size="13">leaf area index rises</text>
   <line x1="395.0" y1="72.0" x2="395.0" y2="96.0" stroke="var(--md-default-fg-color--light)" stroke-width="2"/>
   <line x1="170.0" y1="96.0" x2="620.0" y2="96.0" stroke="var(--md-default-fg-color--light)" stroke-width="2"/>
   <line x1="170.0" y1="96.0" x2="170.0" y2="112.0" stroke="var(--md-default-fg-color--light)" stroke-width="2" marker-end="url(#amF)"/>
@@ -105,51 +110,53 @@ A denser canopy pulls ground-level ozone ($\text{O}_3$) in two directions at onc
   <line x1="590.0" y1="352.0" x2="590.0" y2="372.0" stroke="var(--ink-rust)" stroke-width="2" marker-end="url(#amM)"/>
   <rect x="30" y="380" width="280" height="62" rx="7" fill="var(--ink-indigo)" fill-opacity="0.10" stroke="var(--ink-indigo)" stroke-width="2"/>
   <text x="170.0" y="406.5" text-anchor="middle" fill="var(--md-default-fg-color)" font-size="13" font-weight="600">NO<tspan font-size="0.74em" dy="3.2">x</tspan><tspan dy="-3.2">-limited rural forest</tspan></text>
-  <text x="170.0" y="424.5" text-anchor="middle" fill="var(--md-default-fg-color)" font-size="15" font-weight="700">net &#8722;2.1 ppb O&#8323;</text>
+  <text x="170.0" y="424.5" text-anchor="middle" fill="var(--md-default-fg-color)" font-size="15" font-weight="700">net O&#8323; falls</text>
   <rect x="450" y="380" width="280" height="62" rx="7" fill="var(--ink-rust)" fill-opacity="0.10" stroke="var(--ink-rust)" stroke-width="2"/>
   <text x="590.0" y="406.5" text-anchor="middle" fill="var(--md-default-fg-color)" font-size="13" font-weight="600">VOC-limited urban forest edge</text>
-  <text x="590.0" y="424.5" text-anchor="middle" fill="var(--md-default-fg-color)" font-size="15" font-weight="700">net +1.4 ppb O&#8323;</text>
-  <text x="395.0" y="404.0" text-anchor="middle" fill="var(--md-default-fg-color--light)" font-size="12">which wins is set</text>
-  <text x="395.0" y="421.0" text-anchor="middle" fill="var(--md-default-fg-color--light)" font-size="12">by local NO&#8339;</text>
+  <text x="590.0" y="424.5" text-anchor="middle" fill="var(--md-default-fg-color)" font-size="15" font-weight="700">net O&#8323; rises</text>
+  <text x="395.0" y="404.0" text-anchor="middle" fill="var(--md-default-fg-color--light)" font-size="12">which wins depends</text>
+  <text x="395.0" y="421.0" text-anchor="middle" fill="var(--md-default-fg-color--light)" font-size="12">on local conditions</text>
 </svg>
-<figcaption><strong>Figure 1 | Nitrogen deposition does not raise or lower ozone; it strengthens both a sink and a source, and the local $\text{NO}_x$ regime decides the sign.</strong> A $15\%$ thicker canopy opens more stomata, which lowers canopy resistance $R_c$ and raises the dry deposition velocity $v_d$ in $F = -v_d[\text{O}_3]$ — a purely physical sink (blue). The same extra leaf mass emits more isoprene ($\text{C}_5\text{H}_8$), a potent ozone precursor that feeds photochemical production $P(\text{O}_3)$ — a chemical source (magenta). Both arms operate in every forest, so the observed change is a residual: where ozone chemistry is $\text{NO}_x$-limited the added VOC cannot be converted and deposition dominates, giving about $-2.1\text{ ppb}$; at VOC-limited urban edges the extra isoprene is immediately cashed in and the same greening yields about $+1.4\text{ ppb}$.</figcaption>
+<figcaption><strong>Figure 1 | Extra leaf strengthens both an ozone sink and an ozone source, so its net effect can take either sign.</strong> A thicker canopy has more stomata, which lowers canopy resistance $R_c$ and raises the dry deposition velocity $v_d$ in $F = -v_d[\text{O}_3]$, a physical sink (blue). The same extra leaf emits more isoprene ($\text{C}_5\text{H}_8$), an ozone precursor that feeds photochemical production $P(\text{O}_3)$, a chemical source (rust). The net change is the difference between the two. Standard regime chemistry suggests deposition should win where ozone production is $\text{NO}_x$-limited and isoprene should win where it is VOC-limited; the bottom boxes are that expectation, not model output. This is a schematic: in our model study (Liu, Tai &amp; Fung 2021) the leaf-only effect stayed within about $\pm 0.5\text{ ppbv}$.</figcaption>
 </figure>
 ```
 
 
 ### The dry deposition sink
 
-Ground-level ozone is physically removed from the boundary layer through **stomatal uptake** and non-stomatal canopy surface destruction:
+Ozone exchange between ecosystems and the air is a long-studied surface-exchange problem[^2]. Ground-level ozone is removed at the surface through **stomatal uptake** and destruction on other canopy surfaces, usually written as a flux through resistances in series:
 
 $$F_{\text{dry}} = -v_d [\text{O}_3] = -\frac{1}{R_a + R_b + R_c} [\text{O}_3]$$
 
-where $R_c$ is canopy resistance. As nitrogen deposition increases tree leaf area ($\text{LAI}$), the total stomatal surface area increases, lowering canopy resistance $R_c$, accelerating dry deposition velocity $v_d$, and removing ozone from the air[^2].
+where $R_c$ is canopy resistance. More leaf area ($\text{LAI}$) means more stomata, which lowers $R_c$, raises $v_d$ and removes ozone faster. The model in our study uses this resistance-in-series scheme with stomatal resistance tied to LAI[^4].
 
 ### The biogenic VOC source
 
-Plants synthesize **isoprene** ($\text{C}_5\text{H}_8$) and monoterpenes to protect photosystems from thermal and oxidative stress. Higher $\text{LAI}$ and nitrogen availability stimulate photosynthetic enzyme capacity ($V_{c,\text{max}}$), elevating biogenic VOC emissions:
+Plants emit **isoprene** ($\text{C}_5\text{H}_8$), monoterpenes and other volatile organic compounds (VOCs); MEGAN2.1 estimates global biogenic VOC emission at about $1\text{ Pg yr}^{-1}$, about half of it isoprene[^3]. In our study's model, MEGAN2.1 computes these emissions as functions of LAI, leaf temperature, sunlight and soil moisture, so more leaf means more isoprene[^4]. In sunlight, with $\text{NO}_x$ present, isoprene feeds ozone production:
 
 $$\text{Isoprene} + \text{OH} + \text{NO}_x + h\nu \to \text{Peroxy Radicals} \to \text{Tropospheric }\text{O}_3$$
 
-In urban and suburban perimeters with abundant anthropogenic $\text{NO}_x$ from cars and power plants ($\text{VOC}$-limited chemical regimes), additional biogenic isoprene fuels rapid photochemical ozone synthesis[^3].
+Where anthropogenic $\text{NO}_x$ is abundant (a VOC-limited regime; see [NOx, VOCs and sunlight](/blogs/nox-vocs-and-sunlight.html)), extra isoprene adds ozone. Earlier studies summarised in our paper describe the same two-way pull: more LAI can raise ozone through biogenic VOCs in high-$\text{NO}_x$ air and lower it through stomatal uptake[^4].
 
 ## What the coupled model shows
 
-In our study in *Atmospheric Chemistry and Physics*[^4], we simulated this feedback loop across East Asia under future agricultural emission pathways. The sign of the response follows the chemical regime, not the nitrogen dose:
+In our study in *Atmospheric Chemistry and Physics*[^4], we ran a global model with year-2000 and year-2050 agricultural ammonia emissions. Nitrogen deposition rose by $20\%$ ($20\text{ Tg N yr}^{-1}$), and LAI rose by $0.1$–$0.2\text{ m}^2\text{ m}^{-2}$ across midlatitude boreal and temperate forests and by up to $0.3$–$0.4\text{ m}^2\text{ m}^{-2}$ over tropical grasslands and croplands. We then switched each land change on separately, first with meteorology held fixed ("prescribed") and then with weather free to respond ("dynamic"). The two-pathway leaf effect turned out to be the smallest of the terms:
 
-| Region | Primary Chemical Regime | Dominant Mechanism | Net Surface $\text{O}_3$ Shift |
-| :--- | :--- | :--- | :--- |
-| **Northeast China (Remote Boreal Forests)** | $\text{NO}_x$-limited | Enhanced Stomatal Dry Deposition | **$-1.8\text{ to }-2.1\text{ ppb}$ (Cleaner Air)** |
-| **North China Plain (Dense Agricultural Basin)** | Mixed transition | Dry deposition balances isoprene | **$-0.5\text{ to }+0.3\text{ ppb}$ (Neutral)** |
-| **Yangtze River Delta (Industrial / Suburban)** | $\text{VOC}$-limited ($\text{NO}_x$-rich) | Biogenic Isoprene Photochemistry | **$+1.1\text{ to }+1.4\text{ ppb}$ (Smog Surge)** |
-| **Southeast US (Oak-Pine Canopies)** | $\text{NO}_x$-limited rural | Dry deposition sink dominates | **$-1.2\text{ to }-1.6\text{ ppb}$ (Cleaner Air)** |
+| Change switched on (meteorology) | Summer surface $\text{O}_3$ change | Where and why |
+| :--- | :--- | :--- |
+| **Leaf area index only** (prescribed) | within $\pm 0.5\text{ ppbv}$ | Isoprene and deposition partly cancel; isoprene dominated in northern midlatitude regions with low LAI to begin with |
+| **Canopy height only** (prescribed) | about $-0.2\text{ ppbv}$ | Taller canopy, more turbulent mixing, faster dry deposition |
+| **Soil $\text{NO}_x$ only**, $7.9 \to 8.7\text{ Tg N yr}^{-1}$ (prescribed) | $+1$ to $+3\text{ ppbv}$ | Some low-$\text{NO}_x$ equatorial regions; $80$–$90\%$ of the prescribed-meteorology total |
+| **All changes** (dynamic) | within $\pm 2$–$3\text{ ppbv}$ | Vegetation shifts surface energy balance, moisture and circulation; e.g. increases in the central–eastern USA |
+
+All numbers in the table are from the paper's full text[^4]. It is one model, a business-as-usual emission scenario the paper calls worst-case, and it leaves out ozone damage to plants; treat the magnitudes as one estimate, not a settled range.
 
 ### Explore the regime dependence
 
-Change the chemical regime and the deposition surge to see which term wins:
+Change the chemical regime and the deposition surge to see which term wins. This is a toy: its linear coefficients were chosen by hand to illustrate the sign change and are not output from the paper. At the default $40\%$ setting it gives $-0.84$ to $+0.60\text{ ppb}$, already larger than the paper's leaf-only signal of about $\pm 0.5\text{ ppbv}$.
 
 ::: {.sim-card}
-#### 🌲 Forest Nitrogen-Deposition Ozone Simulator
+#### Forest nitrogen-deposition ozone toy model
 
 ```{ojs}
 //| echo: false
@@ -170,16 +177,16 @@ o3 = {
   if (regime === "nox-lim") {
     const d = -(ndep * 0.021);
     return {text: d.toFixed(2) + " ppb", colour: "#38bdf8",
-      note: "🌿 NOx-Limited Remote Forest: Stomatal dry deposition dominates over biogenic VOCs, enhancing the natural vegetation ozone cleaning filter."};
+      note: "NOx-limited remote forest (toy setting): extra stomatal uptake outweighs the extra isoprene, so net surface ozone falls."};
   }
   if (regime === "trans") {
     const d = ndep * 0.003;
     return {text: (d >= 0 ? "+" : "") + d.toFixed(2) + " ppb", colour: "#f59e0b",
-      note: "⚖️ Transition Zone: Dry deposition sink and photochemical isoprene production nearly balance out, resulting in minimal net surface ozone shift."};
+      note: "Transition zone (toy setting): the deposition sink and the isoprene source nearly cancel, so net surface ozone barely moves."};
   }
   const d = ndep * 0.015;
   return {text: "+" + d.toFixed(2) + " ppb", colour: "#ef4444",
-    note: "🏭 VOC-Limited Urban Fringe: Abundant anthropogenic NOx reacts aggressively with the surplus biogenic isoprene, intensifying summer smog episodes."};
+    note: "VOC-limited urban fringe (toy setting): abundant anthropogenic NOx turns the extra isoprene into ozone, so net surface ozone rises."};
 }
 
 card = (label, value, colour) => html`<div class="sim-readout">
@@ -201,21 +208,21 @@ html`<div style="font-size: 0.9em; background: rgba(56, 189, 248, 0.1); border-l
 
 ### Data and code
 
-- **Atmospheric Chemical Transport Model**: Simulations were conducted with the open-source **GEOS-Chem Model** (version 12.0.0).
-- **Dynamic Vegetation Coupling**: Biophysical canopy responses were coupled using the **Community Land Model (CLM-DGVM)**.
-- **Analysis Code**: Geospatial mapping and statistical scripts are available on GitHub: [`kamingfung/N-Deposition-Ozone-Feedbacks`](https://github.com/kamingfung).
+- **Atmosphere and chemistry**: the **Community Earth System Model (CESM) 1.2.2**, with CAM4 coupled to CAM-Chem (MOZART-4 tropospheric chemistry)[^4].
+- **Land**: **Community Land Model 4.5**, run with active carbon–nitrogen biogeochemistry to get the vegetation and soil responses, then with those changes prescribed in the ozone runs (asynchronous coupling). Biogenic emissions come from MEGAN2.1[^3]^,^[^4].
+- **Data**: the paper states that model output can be obtained from the corresponding author on request; it does not link a public code repository[^4].
 
 ## Key takeaways
 
-- Agricultural ammonia is a forest fertiliser: downwind nitrogen deposition raises leaf area index by up to $15\%$.
-- More leaf strengthens both an ozone sink (stomatal dry deposition, lower $R_c$) and an ozone source (isoprene emission); the local $\text{NO}_x$ regime decides which dominates.
-- $\text{NO}_x$-limited rural forests get cleaner ($-1.8$ to $-2.1\text{ ppb}$), VOC-limited urban fringes get dirtier ($+1.1$ to $+1.4\text{ ppb}$), and mixed agricultural basins sit near zero.
-- Air quality models that treat deposition velocities and biogenic emissions as static climatology miss this: agricultural policy feeds back into forest ozone sinks and sources.
-- In suburban corridors around farmland, cutting industrial $\text{NO}_x$ is doubly useful, because it also stops the extra biogenic isoprene from becoming ozone.
+- Agricultural ammonia can act as a fertiliser downwind, but only where soils are nitrogen-limited. In our model, LAI rose by $0.1$–$0.2\text{ m}^2\text{ m}^{-2}$ in midlatitude forests, with little growth response in nitrogen-saturated regions such as India and northern China[^4].
+- More leaf strengthens both an ozone sink (stomatal dry deposition, lower $R_c$) and an ozone source (isoprene emission). Regime chemistry suggests the local $\text{NO}_x$ level helps decide which wins; in our model the isoprene term dominated where LAI was low to begin with[^4].
+- In that study the leaf effect alone was small (within $\pm 0.5\text{ ppbv}$). Soil $\text{NO}_x$ ($+1$ to $+3\text{ ppbv}$ in some low-$\text{NO}_x$ regions) and vegetation-driven weather changes (within $\pm 2$–$3\text{ ppbv}$) mattered more[^4].
+- My inference: models that hold deposition velocities and biogenic emissions fixed cannot represent this link between agricultural emissions and ozone, though how much that matters is not settled by one model study.
+- My inference, not tested in the paper: where ozone near farmland is VOC-limited, cutting $\text{NO}_x$ should also reduce how much extra biogenic isoprene becomes ozone.
 
 ## References
 
-[^1]: Galloway, J. N. et al. Transformation of the nitrogen cycle: recent trends, questions, and potential solutions. *Science* **320**, 889–895 (2008). https://doi.org/10.1126/science.1136674
+[^1]: Galloway, J. N. et al. Transformation of the nitrogen cycle: recent trends, questions, and potential solutions. *Science* **320**, 889–892 (2008). https://doi.org/10.1126/science.1136674
 [^2]: Fowler, D. et al. Atmospheric composition change: Ecosystems–Atmosphere interactions. *Atmos. Environ.* **43**, 5193–5267 (2009). https://doi.org/10.1016/j.atmosenv.2009.07.068
 [^3]: Guenther, A. et al. The Model of Emissions of Gases and Aerosols from Nature version 2.1 (MEGAN2.1): an extended and updated framework for modeling biogenic emissions. *Geosci. Model Dev.* **5**, 1471–1492 (2012). https://doi.org/10.5194/gmd-5-1471-2012
 [^4]: Liu, X., Tai, A. P. K. & Fung, K. M. Responses of surface ozone to future agricultural ammonia emissions and subsequent nitrogen deposition through terrestrial ecosystem changes. *Atmos. Chem. Phys.* **21**, 17743–17758 (2021). https://doi.org/10.5194/acp-21-17743-2021

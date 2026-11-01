@@ -201,3 +201,4 @@ My inferences from the sources above, not tested against farm data:
 <!-- CURRICULUM_FOOTER_START -->
 <div class="mf"><a class="mf-prev" href="/blogs/monsoons.html"><span>Previous</span>Monsoons</a><a class="mf-up" href="/series/prediction/index.html"><span>Series</span>Weather, Climate and Prediction</a><a class="mf-next" href="/blogs/why-seasonal-forecasting-is-possible-at-all.html"><span>Next</span>Why seasonal forecasting is possible at all</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+

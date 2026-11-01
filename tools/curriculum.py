@@ -172,7 +172,15 @@ def _meta(key: str) -> dict:
     try:
         if rel.endswith(".ipynb"):
             with open(path, encoding="utf-8") as fh:
-                return json.load(fh).get("metadata") or {}
+                nb = json.load(fh)
+            meta = dict(nb.get("metadata") or {})
+            # Quarto reads a notebook's frontmatter from a leading raw cell.
+            cells = nb.get("cells") or []
+            if cells and cells[0].get("cell_type") == "raw":
+                m = _FM.match("".join(cells[0].get("source") or []) + "\n")
+                if m:
+                    meta.update(yaml.safe_load(m.group(1)) or {})
+            return meta
         with open(path, encoding="utf-8") as fh:
             m = _FM.match(fh.read())
         return (yaml.safe_load(m.group(1)) or {}) if m else {}

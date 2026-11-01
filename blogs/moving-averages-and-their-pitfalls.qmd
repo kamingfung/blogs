@@ -245,3 +245,4 @@ My inference from the arithmetic above: before reading a smoothed chart, ask how
 <!-- CURRICULUM_FOOTER_START -->
 <div class="mf"><a class="mf-prev" href="/blogs/detrending/detrend_hk_temperature.html"><span>Previous</span>Decomposing Hong Kong temperature</a><a class="mf-up" href="/series/prediction/index.html"><span>Series</span>Weather, Climate and Prediction</a><a class="mf-next" href="/blogs/enso.html"><span>Next</span>ENSO</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+

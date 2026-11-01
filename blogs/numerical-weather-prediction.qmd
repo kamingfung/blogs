@@ -206,3 +206,4 @@ A forecast is a grid-box average, and its effective resolution is coarser than i
 <!-- CURRICULUM_FOOTER_START -->
 <div class="mf"><a class="mf-prev" href="/blogs/attribution.html"><span>Previous</span>Attribution</a><a class="mf-up" href="/series/prediction/index.html"><span>Series</span>Weather, Climate and Prediction</a><a class="mf-next" href="/blogs/data-assimilation.html"><span>Next</span>Data assimilation</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+
