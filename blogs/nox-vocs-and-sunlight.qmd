@@ -264,6 +264,6 @@ My own suggestions, untested. Compare $\text{O}_3 + \text{NO}_2$ with the surrou
 [^5]: Duncan, B. N. et al. Application of OMI observations to a space-based indicator of NO~x~ and VOC controls on surface ozone formation. *Atmos. Environ.* **44**, 2213–2223 (2010). https://doi.org/10.1016/j.atmosenv.2010.03.010
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/organic-aerosols-health-climate.html"><span>Previous</span>Organic aerosols: health versus climate</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/fixed-nitrogen.html"><span>Next</span>Fixed nitrogen</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/organic-aerosols-health-climate.html"><span>Previous</span>Organic aerosols: health versus climate</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/why-ozone-peaks-in-the-afternoon.html"><span>Next</span>Why ozone peaks in the afternoon</a></div>
 <!-- CURRICULUM_FOOTER_END -->
 
