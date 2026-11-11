@@ -44,6 +44,7 @@ parts:
       - id: air-land-climate/why-ozone-peaks-in-the-afternoon
         title: "Why ozone peaks in the afternoon"
         level: intermediate
+        path: blogs/why-ozone-peaks-in-the-afternoon.md
       - id: air-land-climate/ozone-titration-in-cities
         title: "Ozone titration in cities"
         level: intermediate

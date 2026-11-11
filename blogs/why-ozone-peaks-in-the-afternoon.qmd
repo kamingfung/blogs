@@ -1,0 +1,392 @@
+---
+title: Why ozone peaks in the afternoon
+description: Sunlight peaks at noon, yet surface ozone keeps rising into the afternoon and falls at night, because ozone fills like a bathtub that keeps rising until the drain catches up with the tap, and the air near the ground grows and shrinks each day.
+date: 2026-11-11
+categories:
+- atmospheric chemistry
+- air quality
+- ozone
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/air-land-climate/index.html">Air, Land and Climate</a><span class="sep">·</span>Part 3 · Ozone chemistry</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">School chemistry. Parts 1 and 5 of Clouds and Aerosols help but are not required.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Sunlight makes ozone ($\text{O}_3$) and peaks at noon, yet ground-level ozone at most low-lying sites keeps rising into the afternoon and is lowest around dawn. Think of a bathtub: sunlight-driven production is the tap, losses are the drain, and the level keeps rising until the drain catches up with the tap, a few hours after noon. The air near the ground adds a second effect. At night a thin, still layer at the ground loses its ozone, while the air above keeps the previous afternoon's ozone; after sunrise the sun-warmed layer grows upward into that air and stirs its ozone back down. Mountains, cities, winter and clouds change the shape. In practice: judge ozone by its worst 8 hours or by its daylight hours, not by a 24-hour average, and expect the highest exposure in the afternoon.
+:::
+
+## Recap: sunlight alone makes no ozone
+
+Sunlight makes ozone from nitrogen dioxide, and nitric oxide destroys it again, so on its own this is a round trip with no net gain. In symbols: sunlight splits $\text{NO}_2$ into NO and an oxygen atom, which joins $\text{O}_2$ to make ozone; NO then takes the atom back from ozone. Chemists call this round trip the null cycle, and the quick balance it settles into, within about a minute, the photostationary state. Ozone that builds up over a day needs a second route, through peroxy radicals made as volatile organic compounds (VOCs) are oxidized; the [previous module](nox-vocs-and-sunlight.qmd) covers it and when nitrogen oxides ($\text{NO}_x$) or VOCs limit it.
+
+Figure 1 plays the round trip forward, then backward.
+
+::: {.sim-card}
+#### Figure 1. The null cycle goes forward and back
+
+```{ojs}
+//| echo: false
+viewof play1 = Inputs.toggle({label: "Play", value: !reduceMotion})
+viewof u1 = Inputs.range([0, 4.7], {value: 1.2, step: 0.01, label: "Frame when paused (s)"})
+
+fig1 = {
+  const c = cardCanvas("An oxygen atom hops in three arches from NO₂ on the left to NO plus O₃ on the right while a blue sunlight bar fills, then hops back the same way while a red NO plus O₃ bar empties. Net ozone made: zero.");
+  return runCard(c, mp2.pingPong, play1, u1, invalidation);
+}
+```
+
+One loop is 4.7 s: 2.35 s forward (blue, $\text{NO}_2 + h\nu \rightarrow \text{NO} + \text{O}$, then $\text{O} + \text{O}_2 \rightarrow \text{O}_3$) and 2.35 s in reverse (red, $\text{NO} + \text{O}_3 \rightarrow \text{NO}_2 + \text{O}_2$). The token is the odd oxygen atom; the bar shows progress through the cycle, no unit. Schematic: the real relaxation takes tens of seconds.
+:::
+
+## Ozone fills like a bathtub
+
+Ozone at a place is an amount, like water in a bathtub. Production is the tap; losses (uptake by surfaces, chemistry, mixing with cleaner air) are the drain:
+
+$$\frac{d[\text{O}_3]}{dt} = P - L$$
+
+where $[\text{O}_3]$ is the mixing ratio (ppb, parts per billion by volume), $P$ the production rate and $L$ the loss rate, both in $\text{ppb h}^{-1}$. The tap follows sunlight: photochemical production peaks with the sunlight that drives it[^caputi]. The level rises as long as the tap beats the drain and peaks when the drain catches up, when $P = L$. At noon the tap is fully open and still beats the drain, so ozone keeps climbing into the afternoon. Observations show this pattern: an afternoon rise and an early-morning minimum, at rates set by local pollution and by the still night air near the ground[^tarasova].
+
+**A made-up example.** Figure 2 runs a one-box toy model I wrote for this module. Its numbers describe a made-up system, not any real site. Its ozone peaks at about 14:45, roughly 3 hours after noon. The slider $\tau$ (tau, the loss lifetime) sets how fast the drain works: a short $\tau$ is a fast drain and moves the peak toward noon; a long $\tau$ moves it toward sunset. The note after the figure gives the equations and exact values.
+
+::: {.sim-card}
+#### Figure 2. The sun peaks at noon; ozone peaks later
+
+```{ojs}
+//| echo: false
+viewof tau = Inputs.range([1, 24], {value: 4, step: 0.5, label: "Loss lifetime τ (h)"})
+viewof play2 = Inputs.toggle({label: "Play", value: !reduceMotion})
+viewof hour2 = Inputs.range([0, 23.9], {value: 12, step: 0.1, label: "Hour when paused"})
+
+toy = {   // dO/dt = P(t) - (O - Ob)/tau, 1-min forward Euler, 6 days; returns the last day
+  const Pmax = 10, Ob = 20, dt = 1 / 60;
+  const P = t => t > 6 && t < 18 ? Pmax * Math.sin(Math.PI * (t - 6) / 12) : 0;
+  let O = Ob, day = [];
+  for (let d = 0; d < 6; d++) {
+    day = [];
+    for (let i = 0; i < 1440; i++) { const t = i * dt; O += dt * (P(t) - (O - Ob) / tau); day.push({t, O, P: P(t), L: (O - Ob) / tau}); }
+  }
+  return day;
+}
+toyPeak = toy.reduce((a, b) => b.O > a.O ? b : a)
+toyMin = toy.reduce((a, b) => b.O < a.O ? b : a)
+clock = t => `${String(Math.floor(t)).padStart(2, "0")}:${String(Math.round((t % 1) * 60) % 60).padStart(2, "0")}`
+
+html`<div class="sim-readouts">
+  ${readout("O₃ peak", clock(toyPeak.t) + " · " + toyPeak.O.toFixed(1) + " ppb", "#ef4444")}
+  ${readout("P = L at peak", toyPeak.P.toFixed(1) + " ppb/h", "#cbd5e1")}
+  ${readout("O₃ at noon", toy[720].O.toFixed(1) + " ppb", "#f59e0b")}
+  ${readout("P − L at noon", (toy[720].P - toy[720].L).toFixed(1) + " ppb/h", "#f59e0b")}
+  ${readout("O₃ minimum", clock(toyMin.t) + " · " + toyMin.O.toFixed(1) + " ppb", "#38bdf8")}
+</div>`
+
+fig2 = {
+  const c = cardCanvas("A 24-hour ozone curve from the toy model runs left to right. A red marker with a fading trail moves along it while a yellow sun moves along its arc above. The sun is highest at noon, while the marker is still climbing; the marker tops out in the afternoon and sinks through the night.");
+  return runCard(c, mp1.trail(toy), play2, hour2 / 24 * 4.7, invalidation, 0.5);
+}
+```
+
+Toy model output, not measurements. The curve is ozone mixing ratio (ppb) against local solar hour, 00:00 to 24:00 from left to right; the vertical scale stretches from the day's minimum to its maximum (see the readouts). The sun's height is proportional to $P$. The dashed lines mark noon and the ozone peak. One loop is 9.4 s per 24 h.
+:::
+
+::: {.callout-note collapse="true"}
+## The toy model: equations and exact values
+
+$$\begin{aligned}
+P(t) &= P_\text{max} \sin\!\left(\frac{\pi (t - 6)}{12}\right) \quad \text{for } 6 < t < 18, \text{ else } 0 \\
+L(t) &= \frac{[\text{O}_3] - O_\text{b}}{\tau}
+\end{aligned}$$
+
+with $t$ the local solar hour, $P_\text{max} = 10\text{ ppb h}^{-1}$ (inside the 4.6 to 22.7 ppb h⁻¹ range that the [previous module's](nox-vocs-and-sunlight.qmd) production model gives), background $O_\text{b} = 20\text{ ppb}$ and $\tau = 4\text{ h}$. The page steps it forward in 1-minute steps (forward Euler) for six days so that the last day repeats, and plots that day. $\tau$ lumps deposition, chemistry and mixing with cleaner air; I chose 4 h to give a mid-afternoon peak, not from a measurement.
+
+With these values ozone peaks at 14:46 at 49.9 ppb, where $P = L = 7.5\text{ ppb h}^{-1}$. At noon it is 43.8 ppb, with $P = 10.0$ against $L = 6.0\text{ ppb h}^{-1}$, so it is still rising at 4 ppb per hour. The minimum is 21.0 ppb at 06:05. The peak is at 13:00 for $\tau = 1\text{ h}$ and 16:01 for $\tau = 12\text{ h}$.
+
+**Why the lag grows with $\tau$.** For a production that varies as a pure cosine, $P = \bar{P} + A\cos\omega(t - 12)$ with $\omega = 2\pi/24\text{ h}^{-1}$, the periodic solution peaks after noon by
+
+$$\Delta t = \frac{\arctan(\omega\tau)}{\omega}.$$
+
+At $\tau = 4\text{ h}$, $\omega\tau = 1.047$ and $\Delta t = 0.808/0.262 = 3.09\text{ h}$. The lag tends to zero for a short lifetime and to a quarter day (6 h) for a long one. The toy's daylight-only production is not a pure cosine, so its lag is 2.8 h; the reasoning is the same.
+:::
+
+The toy has one box with a fixed $\tau$, day and night. Real air does not: the depth of the air that holds the ozone changes several-fold between night and afternoon, and that is the second effect.
+
+## The boundary layer moves ozone up and down
+
+Diurnal variations in surface ozone come from photochemistry, boundary-layer dynamics, dry deposition and transport[^lefohn]. The boundary layer is the lowest part of the atmosphere, stirred by the ground. Its daily cycle has four steps.
+
+1. **Sunset.** When solar heating fades, the convective thermals stop. Radiative cooling forms a stable nocturnal boundary layer, typically 100 to 500 m deep[^caputi].
+2. **Night.** In that shallow layer, ozone is lost to dry deposition onto surfaces and to chemistry with nitrogen oxides[^caputi]. Above it, the old daytime mixed layer becomes the residual layer, a reservoir that keeps the afternoon's ozone and other trace gases[^caputi].
+3. **Morning.** Thermals, rising bubbles of sun-warmed air, start shortly after sunrise[^caputi]. The mixed layer they stir grows upward into the residual layer and mixes its ozone down to the ground. Meteorologists call this fumigation; it has nothing to do with pest fumigation. In California's San Joaquin Valley it adds ozone at the ground mainly in the early morning, until about 10:00[^caputi].
+4. **Afternoon.** The mixed layer is deepest. Over land, the boundary-layer height in the ERA5 reanalysis is about 250 m at night and peaks around 14:00 to 15:00 local solar time, at 1500 to 1900 m in the warm season[^dai].
+
+Studies reviewed by Caputi and colleagues found that ozone mixed down from aloft can make up about half or more of the next day's surface ozone[^caputi]. The toy above ignores this, so its morning rise relies on photochemistry alone.
+
+**Why depth matters.** The ground removes ozone from the bottom of the air above it, so a thin night layer loses its ozone fast; the same uptake spread through a deep afternoon layer lowers the concentration about 8 times more slowly. The ozone aloft, cut off from the ground, survives the night.
+
+::: {.callout-note collapse="true"}
+## Deposition arithmetic
+
+Deposition lowers the concentration at a rate $v_\text{d}[\text{O}_3]/h$, with $v_\text{d}$ the deposition velocity and $h$ the layer depth. Caputi and colleagues estimate a nighttime $v_\text{d} = 0.2\text{ cm s}^{-1}$[^caputi]. For an illustrative 200 m layer holding 35 ppb, the loss is $0.002\text{ m s}^{-1} / 200\text{ m} \times 3600\text{ s h}^{-1} \times 35\text{ ppb} = 1.3\text{ ppb h}^{-1}$. That is close to their measured deposition term of 1.2 ppb h⁻¹ in the valley's nocturnal layer, where chemistry removed another 2.7 ppb h⁻¹ and mixing from the residual layer added back 2.8 ppb h⁻¹ (midnight to 06:00)[^caputi]. The same flux into a 1700 m afternoon layer lowers the concentration $1700/200 = 8.5$ times more slowly. Global models at coarse resolution often miss the low nighttime values because they misrepresent the nocturnal boundary layer[^lefohn].
+:::
+
+Figure 3 shows the morning growth.
+
+::: {.sim-card}
+#### Figure 3. The mixed layer grows up into ozone-rich air
+
+```{ojs}
+//| echo: false
+viewof play3 = Inputs.toggle({label: "Play", value: !reduceMotion})
+viewof u3 = Inputs.range([0, 4.7], {value: 0.9, step: 0.01, label: "Frame when paused (s)"})
+
+fig3 = {
+  const c = cardCanvas("A band of ozone-rich air sits at the top. In the morning a warm blob of air rises from the ground, stretches upward and merges into that band, joining ground and ozone-rich air in one mixed layer. At sunset it sinks back and the layers separate again.");
+  return runCard(c, mp1.liquid, play3, u3, invalidation);
+}
+```
+
+Stylized, not to scale. Nothing drips: the warm blob is a thermal rising from the sunlit ground, and the band at the top is the ozone-rich residual layer. The ground-warmed layer grows upward into the ozone-rich air and stirs it down. The vertical axis is height above the ground; colors run from warm ground air (red) to ozone-rich air (blue to violet). One loop is 4.7 s: night, thermals rise as the mixed layer grows (0.35 to 1.45 s), afternoon, thermals stop at sunset (2.7 to 3.8 s).
+:::
+
+## What shifts the peak or flattens the curve
+
+The afternoon peak is typical of low-lying continental sites, not universal. A cluster analysis of 114 mostly Northern Hemisphere sites from 1990 to 2004 sorts them by the shape of their seasonal and daily cycles[^tarasova]:
+
+| Site type (cluster) | Largest daily range | Notes |
+|---|---|---|
+| Clean background | up to 7.0 ppb (July–August); below 1 ppb in winter | weak local production |
+| Rural, non-elevated | up to 16 ppb (August) | lower at night than background, from reaction with $\text{NO}_x$ |
+| Polluted | 3 ppb (December) to 27 ppb (August) | strong NO destruction in winter, strong production in summer |
+| Mountain, all above 1700 m | 0.3 ppb (December) to 6.0 ppb (June–July) | maximum at night; boundary-layer dynamics, not local photochemistry |
+| Polar and remote coastal | below 1 ppb | controlled by processes slower than a day |
+
+Daily range is the daily maximum minus the daily minimum, averaged by month within each cluster; the authors call it the amplitude, but I use "range" here because the toy's callout uses amplitude for half that span.
+
+- **Elevation.** Mountain sites sit above the nocturnal layer, in air that behaves like the residual layer, so they keep high ozone through the night. In a separate study of western Europe from 2001 to 2004, the daily photochemical cycle explained about a third of ozone variability in summer below about 1000 to 1200 m, but less than 20% above it and at all altitudes in winter[^chevalier].
+- **Cities.** Near large $\text{NO}_x$ sources, NO titration lowers ozone, especially at night and in winter[^lefohn]. A later module, Ozone titration in cities, covers this in depth.
+- **Transport.** The shape is set by the local boundary layer as well as by chemistry: sea-breeze sites can peak in the morning and mountain sites at night[^tarasova].
+- **Season.** In winter the sun is weaker and the mixed layer shallower: the warm-season peak of 1500 to 1900 m drops to 650 to 1100 m[^dai]. The daily range shrinks at every site type in the table.
+- **Clouds.** The photolysis frequency of $\text{NO}_2$ follows global irradiance[^trebs], so clouds slow production. Cloudy days, like night and winter, have lower photochemical activity[^lefohn]. On such a day the afternoon rise is smaller.
+
+::: {.callout-tip appearance="simple" icon=false}
+## What this means for you
+
+- **Use the right metric.** A 24-hour or monthly average smooths away the daily cycle[^lefohn]. For health, standards use the highest 8-hour average of the day (MDA8, the maximum daily 8-hour average); the controlled human studies behind it exposed exercising volunteers for 6.6 or 8 hours[^lefohn]. My inference: an 8-hour window catches the afternoon plateau that a 24-hour average dilutes.
+- **Crops.** The crop metrics count daylight hours only. AOT40 adds up how far each daylight hour's ozone exceeds 40 ppb (the EU target counts 08:00 to 19:59, May to July); POD~Y~, the phytotoxic ozone dose, adds up the ozone a leaf takes in through its stomata above a threshold $Y$ it can detoxify[^lefohn]. Both weight the afternoon peak. [How ozone damages crops](how-ozone-damages-crops.qmd) shows how to compute them and turn them into yield losses. TOAR (the Tropospheric Ozone Assessment Report) also defines nighttime AOT40 variants, worth a look at a mountain site with a night maximum[^lefohn].
+- **Clock time.** The hours here are local solar time (the toy, the boundary-layer heights[^dai]) or standard time (the valley study[^caputi]). Under daylight saving, clocks run an hour ahead, so the same peak reads about an hour later on the clock.
+- **Field work.** My own suggestion, untested: at a low-lying rural or suburban site, ozone is lowest in the early morning, so hard outdoor work fits there. Heat and harvest timing matter too and will often weigh more. This does not hold at high-elevation sites.
+:::
+
+## Key takeaways
+
+- Surface ozone peaks when losses catch up with production, like a bathtub when the drain catches up with the tap, so a few hours after the noon peak in sunlight; slower losses mean a later peak.
+- At night a thin layer at the ground loses ozone while the residual layer above keeps it; in the morning the growing mixed layer reaches up and stirs it back down.
+- Height, local $\text{NO}_x$, season and clouds change the daily cycle; mountain sites can peak at night.
+
+## References
+
+[^caputi]: Caputi, D. J. et al. Residual layer ozone, mixing, and the nocturnal jet in California's San Joaquin Valley. *Atmos. Chem. Phys.* **19**, 4721–4740 (2019). https://doi.org/10.5194/acp-19-4721-2019
+[^tarasova]: Tarasova, O. A. et al. A climatology of surface ozone in the extra tropics: cluster analysis of observations and model results. *Atmos. Chem. Phys.* **7**, 6099–6117 (2007). https://doi.org/10.5194/acp-7-6099-2007
+[^lefohn]: Lefohn, A. S. et al. Tropospheric ozone assessment report: Global ozone metrics for climate change, human health, and crop/ecosystem research. *Elem. Sci. Anth.* **6**, 28 (2018). https://doi.org/10.1525/elementa.279
+[^dai]: Dai, A. The diurnal cycle from observations and ERA5 in precipitation, clouds, boundary layer height, buoyancy, and surface fluxes. *Clim. Dyn.* (2024). https://doi.org/10.1007/s00382-024-07182-6
+[^chevalier]: Chevalier, A. et al. Influence of altitude on ozone levels and variability in the lower troposphere: a ground-based study for western Europe over the period 2001–2004. *Atmos. Chem. Phys.* **7**, 4311–4326 (2007). https://doi.org/10.5194/acp-7-4311-2007
+[^trebs]: Trebs, I. et al. Relationship between the NO~2~ photolysis frequency and the solar global irradiance. *Atmos. Meas. Tech.* **2**, 725–739 (2009). https://doi.org/10.5194/amt-2-725-2009
+
+```{ojs}
+//| echo: false
+reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+
+readout = (label, value, color) => html`<div class="sim-readout"><div class="sim-readout-label">${label}</div><div class="sim-readout-value" style="color:${color}">${value}</div></div>`
+
+cardCanvas = label => html`<canvas role="img" aria-label="${label}" style="display:block;width:100%;aspect-ratio:539/208;border-radius:8px"></canvas>`
+
+// Draws one card frame at the canvas's on-screen width, backing store sized for devicePixelRatio.
+paintCard = (canvas, cell, u) => {
+  const dpr = window.devicePixelRatio || 1, cssW = canvas.clientWidth || 539, s = cssW / 539;
+  const W = Math.round(cssW * dpr), H = Math.round(cssW * 208 / 539 * dpr);
+  if (canvas.width !== W || canvas.height !== H) { canvas.width = W; canvas.height = H; }
+  const k = canvas.getContext("2d");
+  k.setTransform(1, 0, 0, 1, 0, 0); k.clearRect(0, 0, W, H);
+  k.setTransform(s * dpr, 0, 0, s * dpr, 0, 0);
+  k.save(); k.beginPath(); k.rect(0, 0, 539, 208); k.clip(); cell(k, 539, 208, u); k.restore();
+}
+
+// Loops u = (t * speed) mod 4.7 s with requestAnimationFrame, or paints the still frame uStill when not playing.
+runCard = (canvas, cell, playing, uStill, stop, speed = 1) => {
+  if (!playing) { requestAnimationFrame(() => paintCard(canvas, cell, uStill)); return canvas; }
+  const t0 = performance.now();
+  let id;
+  const loop = now => { paintCard(canvas, cell, ((now - t0) / 1000 * speed) % 4.7); id = requestAnimationFrame(loop); };
+  id = requestAnimationFrame(loop);
+  stop.then(() => cancelAnimationFrame(id));
+  return canvas;
+}
+
+mp1 = {
+// Motion Prompt #001-024 · MIT License (c) 2026 Shohei Ohtaki · https://showheyohtaki.github.io/motion-prompt/#001
+// Kit "motion", @kit section only. Palette C re-themed to the site's dark .sim-card (same in light and dark mode).
+const CW = 539, CH = 208;
+const CYC = 4.7;
+const C = {
+  navy: '#0F172A', navy2: '#1E293B', navy3: '#334155', dim: '#94A3B8',
+  blue: '#0284C7', coral: '#EF4444', yel: '#F59E0B', mint: '#10B981', white: '#FFFFFF', cream: '#FFF1D6'
+};
+const DISP = '"Avenir Next", "Helvetica Neue", system-ui, sans-serif';
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, x) => a + (b - a) * x;
+const P = (t, a, b) => clamp((t - a) / (b - a));
+const mod = (a, n) => ((a % n) + n) % n;
+function mkCanvas(w, h) { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; }
+function txt(ctx, s, x, y, font, col, align = 'left', base = 'alphabetic', ls = '0px') {
+  ctx.font = font; ctx.fillStyle = col; ctx.textAlign = align; ctx.textBaseline = base; ctx.letterSpacing = ls; ctx.fillText(s, x, y); ctx.letterSpacing = '0px';
+}
+function hex(c) { return [parseInt(c.slice(1, 3), 16), parseInt(c.slice(3, 5), 16), parseInt(c.slice(5, 7), 16)]; }
+function mix(a, b, t) { const A = hex(a), B = hex(b); return `rgb(${Math.round(lerp(A[0], B[0], t))},${Math.round(lerp(A[1], B[1], t))},${Math.round(lerp(A[2], B[2], t))})`; }
+function bez(x1, y1, x2, y2) {
+  const cx_ = 3 * x1, bx = 3 * (x2 - x1) - cx_, ax = 1 - cx_ - bx;
+  const cy_ = 3 * y1, by = 3 * (y2 - y1) - cy_, ay = 1 - cy_ - by;
+  const sx = t => ((ax * t + bx) * t + cx_) * t, sy = t => ((ay * t + by) * t + cy_) * t;
+  return x => { if (x <= 0) return 0; if (x >= 1) return 1; let lo = 0, hi = 1, t = x; for (let i = 0; i < 40; i++) { if (sx(t) < x) lo = t; else hi = t; t = (lo + hi) / 2; } return sy(t); };
+}
+const G0 = mkCanvas(CW, CH), GK0 = G0.getContext('2d', { willReadFrequently: true });
+const G1 = mkCanvas(CW, CH), GK1 = G1.getContext('2d', { willReadFrequently: true });
+function stage(k, col = C.navy) { k.fillStyle = col; k.fillRect(0, 0, CW, CH); }
+function goo(draw, blur, paint) {
+  GK0.setTransform(1, 0, 0, 1, 0, 0); GK0.clearRect(0, 0, CW, CH); GK0.fillStyle = '#fff'; draw(GK0);
+  GK1.setTransform(1, 0, 0, 1, 0, 0); GK1.globalCompositeOperation = 'source-over'; GK1.clearRect(0, 0, CW, CH);
+  GK1.filter = `blur(${blur}px)`; GK1.drawImage(G0, 0, 0); GK1.filter = 'none';
+  const im = GK1.getImageData(0, 0, CW, CH), d = im.data;
+  for (let i = 3; i < d.length; i += 4) { const a = d[i]; d[i] = a < 112 ? 0 : a > 144 ? 255 : (a - 112) * 8; }
+  GK1.putImageData(im, 0, 0);
+  GK1.globalCompositeOperation = 'source-atop'; paint(GK1); GK1.globalCompositeOperation = 'source-over';
+  return G1;
+}
+const CELLS = [];
+
+// Motion Prompt #014 · MIT License (c) 2026 Shohei Ohtaki · https://showheyohtaki.github.io/motion-prompt/#014
+// Motion trail. The figure-eight path is replaced by a 24-hour ozone curve (day: 1440 one-minute points)
+// and a sun on its arc; the trail is unchanged: 15 copies 0.105 rad apart, radius 22->6,
+// opacity 0.9(1 - i/15) + 0.05, coral -> yellow -> blue from newest to oldest, oldest drawn first.
+CELLS[13] = day => {
+  const lo = Math.min(...day.map(d => d.O)), hi = Math.max(...day.map(d => d.O)), pk = day.find(d => d.O === hi).t;
+  return (k, w, h, u) => {
+    stage(k);
+    const X0 = 30, X1 = w - 30, Yt = 100, Yb = 158, SY = 84, SR = 62, th = u / CYC * Math.PI * 2;
+    const hx = t => lerp(X0, X1, t / 24);
+    const pt = a => { const t = mod(a / (Math.PI * 2) * 24, 24), d = day[Math.floor(t * 60) % 1440]; return [hx(t), lerp(Yb, Yt, (d.O - lo) / (hi - lo)), t, d.O]; };
+    // horizon, sun arc, noon and peak markers, full curve
+    k.fillStyle = C.navy3; k.fillRect(hx(6), SY, hx(18) - hx(6), 2);
+    k.save(); k.setLineDash([2, 8]); k.lineCap = 'round'; k.lineWidth = 3; k.strokeStyle = C.dim; k.beginPath();
+    for (let t = 6; t <= 18.001; t += 0.1) { const y = SY - SR * Math.sin(Math.PI * (t - 6) / 12); t === 6 ? k.moveTo(hx(t), y) : k.lineTo(hx(t), y); } k.stroke();
+    k.setLineDash([6, 6]); k.lineWidth = 2; k.strokeStyle = C.yel; k.beginPath(); k.moveTo(hx(12), 14); k.lineTo(hx(12), 182); k.stroke();
+    k.strokeStyle = C.coral; k.beginPath(); k.moveTo(hx(pk), 14); k.lineTo(hx(pk), 182); k.stroke(); k.restore();
+    k.strokeStyle = C.navy3; k.lineWidth = 4; k.beginPath();
+    for (let i = 0; i <= 240; i++) { const [x, y] = pt(i / 240 * Math.PI * 2 - 1e-9 * (i === 240)); i ? k.lineTo(x, y) : k.moveTo(x, y); } k.stroke();
+    txt(k, 'noon', hx(12) - 6, 202, `700 22px ${DISP}`, C.yel, 'right');
+    txt(k, 'O₃ peak', hx(pk) + 6, 202, `700 22px ${DISP}`, C.coral, 'left');
+    txt(k, '00:00', X0, 202, `600 22px ${DISP}`, C.dim, 'left'); txt(k, '24:00', X1, 202, `600 22px ${DISP}`, C.dim, 'right');
+    // trail (unchanged technique)
+    const N = 15;
+    for (let i = N; i >= 1; i--) {
+      const [x, y] = pt(th - i * 0.105), f = i / N;
+      k.globalAlpha = 0.9 * (1 - f) + 0.05; k.fillStyle = f < 0.5 ? mix(C.coral, C.yel, f * 2) : mix(C.yel, C.blue, (f - 0.5) * 2);
+      k.beginPath(); k.arc(x, y, lerp(22, 6, f), 0, 7); k.fill();
+    }
+    k.globalAlpha = 1; const [x, y, t, o] = pt(th);
+    k.fillStyle = C.coral; k.beginPath(); k.arc(x, y, 25, 0, 7); k.fill();
+    k.fillStyle = '#fff'; k.beginPath(); k.arc(x, y, 11, 0, 7); k.fill();
+    // sun in sync with the marker, above the horizon from 06:00 to 18:00
+    if (t > 6 && t < 18) { k.fillStyle = C.yel; k.beginPath(); k.arc(x, SY - SR * Math.sin(Math.PI * (t - 6) / 12), 13, 0, 7); k.fill(); }
+    const hh = Math.floor(t), mm = Math.floor((t - hh) * 60);
+    txt(k, `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`, 12, 30, `800 24px ${DISP}`, C.white);
+    txt(k, `O₃ ${o.toFixed(0)} ppb`, 12, 56, `700 22px ${DISP}`, C.dim);
+  };
+};
+
+// Motion Prompt #013 · MIT License (c) 2026 Shohei Ohtaki · https://showheyohtaki.github.io/motion-prompt/#013
+// Liquid motion, turned vertical: the lead blob is a thermal that rises 102 px from the ground (was 300 px right)
+// on the same 0.35-1.45 s cubic-bezier(.7, 0, .2, 1) and sinks back at 2.7-3.8 s; followers keep the 0.065 s stagger,
+// the 34 px sine arc and the follower wobble become sideways. The residual layer (top band) and the ground layer are
+// drawn into the same goo pass with a stem from the ground to the lead, so the thermal stays rooted and merges into them. Gradient runs warm ground (coral) up to ozone (blue, violet).
+const LQ = bez(.7, 0, .2, 1);
+const lqPos = uu => { const u = mod(uu, CYC); let p; if (u < 0.35) p = 0; else if (u < 1.45) p = LQ(P(u, 0.35, 1.45)); else if (u < 2.7) p = 1; else if (u < 3.8) p = 1 - LQ(P(u, 2.7, 3.8)); else p = 0; const mvp = (u >= 0.35 && u < 1.45) ? P(u, 0.35, 1.45) : (u >= 2.7 && u < 3.8) ? P(u, 2.7, 3.8) : 0; return [400 - 34 * Math.sin(Math.PI * mvp), lerp(176, 74, p), p]; };
+CELLS[12] = (k, w, h, u) => {
+  stage(k);
+  const blobs = [];
+  for (let i = 0; i < 8; i++) { const [x, y] = lqPos(u - i * 0.065); blobs.push([x + (i ? 6 * Math.sin(u * 2.67 + i) : 0), y, lerp(44, 15, i / 7)]); }
+  for (let j = 0; j < 3; j++) { const [x, y] = lqPos(u - 0.1), a = j * 2.2 + 0.6, d = 34 + 30 * (0.5 - 0.5 * Math.cos(u / CYC * Math.PI * 4 + j * 2.1)); blobs.push([x + Math.cos(a) * d, y + Math.sin(a) * d * 0.8, 15 - j * 2]); }
+  const L = goo(g => { g.fillRect(-20, -20, w + 40, 64); g.fillRect(-20, 196, w + 40, 40); const [sx, sy] = lqPos(u); g.fillRect(sx - 15, sy, 30, 210 - sy); for (const b of blobs) { g.beginPath(); g.arc(b[0], b[1], b[2], 0, 7); g.fill(); } }, 9, g => { const gr = g.createLinearGradient(0, 200, 0, 0); gr.addColorStop(0, C.coral); gr.addColorStop(0.55, C.blue); gr.addColorStop(1, '#7C5CFF'); g.fillStyle = gr; g.fillRect(0, 0, w, h); });
+  k.drawImage(L, 0, 0);
+  const [hx, hy] = lqPos(u); k.fillStyle = 'rgba(255,255,255,.75)'; k.beginPath(); k.ellipse(hx - 14, hy - 17, 10, 6, -0.6, 0, 7); k.fill();
+  txt(k, 'O₃-rich residual layer', 14, 30, `800 22px ${DISP}`, C.white);
+  const uu = mod(u, CYC), ph = uu >= 0.35 && uu < 1.45 ? ['Morning', 'warm thermals rise,', 'mixed layer grows up'] : uu >= 1.45 && uu < 2.7 ? ['Afternoon', 'mixed layer reaches', 'the O₃, stirs it down'] : uu >= 2.7 && uu < 3.8 ? ['Sunset', 'thermals stop,', 'mixed layer collapses'] : ['Night', 'no thermals; O₃', 'stays aloft'];
+  txt(k, ph[0], 14, 88, `800 26px ${DISP}`, C.white); txt(k, ph[1], 14, 116, `600 22px ${DISP}`, C.dim); txt(k, ph[2], 14, 142, `600 22px ${DISP}`, C.dim);
+  txt(k, 'ground', 14, 188, `700 22px ${DISP}`, C.dim);
+};
+
+return {trail: CELLS[13], liquid: CELLS[12]};
+}
+
+mp2 = {
+// Motion Prompt #121-144 · MIT License (c) 2026 Shohei Ohtaki · https://showheyohtaki.github.io/motion-prompt/#121
+// Kit "motion2", @kit section only. Palette C re-themed to the site's dark .sim-card (same in light and dark mode).
+const CW = 539, CH = 208;
+const CYC = 4.7;
+const C = {
+  navy: '#0F172A', navy2: '#1E293B', navy3: '#334155', dim: '#94A3B8',
+  blue: '#0284C7', coral: '#EF4444', yel: '#F59E0B', mint: '#10B981', white: '#FFFFFF', cream: '#FFF1D6'
+};
+const DISP = '"Avenir Next", "Helvetica Neue", system-ui, sans-serif';
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, x) => a + (b - a) * x;
+const mod = (a, n) => ((a % n) + n) % n;
+function rr(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.roundRect(x, y, w, h, r); }
+function txt(ctx, s, x, y, font, col, align = 'left', base = 'alphabetic', ls = '0px') {
+  ctx.font = font; ctx.fillStyle = col; ctx.textAlign = align; ctx.textBaseline = base; ctx.letterSpacing = ls; ctx.fillText(s, x, y); ctx.letterSpacing = '0px';
+}
+const snapU = u => mod(Math.round(u * 1e6) / 1e6, CYC);
+function stage(k, col = C.navy) { k.fillStyle = col; k.fillRect(0, 0, CW, CH); }
+const CELLS = [];
+
+// Motion Prompt #127 · MIT License (c) 2026 Shohei Ohtaki · https://showheyohtaki.github.io/motion-prompt/#127
+// Ping-pong loop. Kept: 2.35 s forward then 2.35 s reverse (linear g), three arches, four ghosts 0.045 s apart,
+// posts, blue/coral bar. Changed: the square is an oxygen atom (circle marked O, still turning with g),
+// end labels NO₂ and NO + O₃, bar labels "sunlight" / "NO + O₃", Latin font stack.
+CELLS[6] = (k, w, h, u) => {
+  u = snapU(u);
+  stage(k);
+  const q = u / CYC, fwd = q < 0.5, g = fwd ? 2 * q : 2 - 2 * q, X0 = 92, X1 = w - 92, base = 136, S = 48;
+  const pos = gg => [lerp(X0, X1, gg), base - 62 * Math.abs(Math.sin(3 * Math.PI * gg))];
+  k.save(); k.setLineDash([2, 12]); k.lineCap = 'round'; k.strokeStyle = C.navy3; k.lineWidth = 5; k.beginPath();
+  for (let i = 0; i <= 150; i++) { const [px, py] = pos(i / 150); i ? k.lineTo(px, py - S / 2) : k.moveTo(px, py - S / 2); } k.stroke(); k.restore();
+  k.fillStyle = C.navy3; rr(k, X0 - 40, base + 2, X1 - X0 + 80, 5, 2.5); k.fill();
+  [X0, X1].forEach(xx => { k.fillStyle = C.navy3; rr(k, xx - 4, base - 70, 8, 72, 4); k.fill(); });
+  txt(k, 'NO₂', X0, 34, `800 24px ${DISP}`, C.yel, 'center');
+  txt(k, 'NO + O₃', w - 16, 34, `800 24px ${DISP}`, '#38BDF8', 'right');
+  for (let j = 4; j >= 1; j--) { const qq = mod(u - j * 0.045, CYC) / CYC, gg = qq < 0.5 ? 2 * qq : 2 - 2 * qq, [gx, gy] = pos(gg); k.globalAlpha = 0.1 * (5 - j); k.fillStyle = C.mint; k.beginPath(); k.arc(gx, gy - S / 2, S / 2, 0, 7); k.fill(); }
+  k.globalAlpha = 1;
+  const [x, y] = pos(g);
+  k.save(); k.translate(x, y - S / 2); k.rotate(g * Math.PI * 2);
+  k.fillStyle = C.mint; k.beginPath(); k.arc(0, 0, S / 2, 0, 7); k.fill();
+  k.fillStyle = '#fff'; k.beginPath(); k.arc(S / 2 - 13, -S / 2 + 13, 6.5, 0, 7); k.fill();
+  txt(k, 'O', 0, 1, `800 24px ${DISP}`, C.navy, 'center', 'middle');
+  k.restore();
+  const ty = 184, tx0 = 196, tx1 = w - 34;
+  k.fillStyle = fwd ? C.blue : C.coral; rr(k, 22, ty - 20, 158, 40, 20); k.fill();
+  txt(k, fwd ? '▶ sunlight' : '◀ NO + O₃', 101, ty + 1, `800 22px ${DISP}`, '#fff', 'center', 'middle');
+  k.fillStyle = C.navy3; rr(k, tx0, ty - 5, tx1 - tx0, 10, 5); k.fill();
+  k.fillStyle = fwd ? C.blue : C.coral; rr(k, tx0, ty - 5, Math.max(10, (tx1 - tx0) * g), 10, 5); k.fill();
+  k.fillStyle = C.yel; k.beginPath(); k.arc(tx0 + (tx1 - tx0) * g, ty, 12, 0, 7); k.fill();
+};
+
+return {pingPong: CELLS[6]};
+}
+```
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/nox-vocs-and-sunlight.html"><span>Previous</span>NOx, VOCs and sunlight</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/fixed-nitrogen.html"><span>Next</span>Fixed nitrogen</a></div>
+<!-- CURRICULUM_FOOTER_END -->
+
