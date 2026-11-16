@@ -236,6 +236,6 @@ My suggestions, not tested on blueberries.
 [^17]: Fang, H., Baret, F., Plummer, S. & Schaepman-Strub, G. An overview of global leaf area index (LAI): methods, products, validation, and applications. *Rev. Geophys.* **57**, 739–799 (2019). https://doi.org/10.1029/2018RG000608
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/stomata-and-dry-deposition.html"><span>Previous</span>Stomata and dry deposition</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/cesm2-fertilizer-climate-feedback.html"><span>Next</span>Fertiliser ammonia in CESM2</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/stomata-and-dry-deposition.html"><span>Previous</span>Stomata and dry deposition</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/ammonia-deposition-ozone.html"><span>Next</span>Ammonia deposition and ozone feedbacks</a></div>
 <!-- CURRICULUM_FOOTER_END -->
 

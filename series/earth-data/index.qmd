@@ -19,17 +19,17 @@ description: "The tools for gridded, vector and image data in the Earth sciences
 ## Part 2 · Gridded data with xarray
 
 <ul class="syl">
-<li class="w"><a href="/blogs/partial-scaling-netcdf/index.html">Scaling a NetCDF subset</a><span class="m">Intermediate</span></li>
 <li class="w"><a href="/blogs/xarray-basics/dimensions_coordinates_attributes.html">Dimensions, coordinates and attributes</a><span class="m">Introductory</span></li>
+<li class="w"><a href="/blogs/partial-scaling-netcdf/index.html">Scaling a NetCDF subset</a><span class="m">Intermediate</span></li>
 <li class="g">Resampling and grouping in time<span class="m">Intermediate · not written</span></li>
 </ul>
 
 ## Part 3 · Regridding
 
 <ul class="syl">
+<li class="w"><a href="/blogs/regridding/conservative_vs_bilinear.html">Conservative vs bilinear</a><span class="m">Intermediate</span></li>
 <li class="w"><a href="/blogs/r-regridding/index.html">Regridding crop data for climate models</a><span class="m">Intermediate</span></li>
 <li class="g">Regridding in Python with xESMF<span class="m">Intermediate · not written</span></li>
-<li class="w"><a href="/blogs/regridding/conservative_vs_bilinear.html">Conservative vs bilinear</a><span class="m">Intermediate</span></li>
 </ul>
 
 ## Part 4 · Regions and masks
@@ -42,17 +42,17 @@ description: "The tools for gridded, vector and image data in the Earth sciences
 ## Part 5 · Vector data
 
 <ul class="syl">
-<li class="w"><a href="/blogs/ms-buildings/index.html">Downloading building footprints</a><span class="m">Intermediate</span></li>
 <li class="w"><a href="/blogs/geopandas-basics/geopandas_basics.html">GeoPandas basics</a><span class="m">Introductory</span></li>
+<li class="w"><a href="/blogs/ms-buildings/index.html">Downloading building footprints</a><span class="m">Intermediate</span></li>
 <li class="g">Projections<span class="m">Introductory · not written</span></li>
 </ul>
 
 ## Part 6 · Maps
 
 <ul class="syl">
+<li class="g">Choropleth pitfalls<span class="m">Introductory · not written</span></li>
 <li class="w"><a href="/blogs/pm25/plot_pm25_usa_by_county.html">Mapping PM2.5 by county</a><span class="m">Introductory</span></li>
 <li class="w"><a href="/blogs/atlantic-centered-map/index.html">An Atlantic-centred map</a><span class="m">Introductory</span></li>
-<li class="g">Choropleth pitfalls<span class="m">Introductory · not written</span></li>
 <li class="g">Cartopy<span class="m">Intermediate · not written</span></li>
 </ul>
 

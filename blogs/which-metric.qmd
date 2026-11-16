@@ -218,6 +218,6 @@ Whatever metric is chosen, the score only means something if it was computed the
 [^2]: Hyndman, R. J. & Koehler, A. B. Another look at measures of forecast accuracy. *Int. J. Forecast.* **22**, 679–688 (2006). https://doi.org/10.1016/j.ijforecast.2006.03.001
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/growth-curves.html"><span>Previous</span>Growth curves</a><a class="mf-up" href="/series/forecasting/index.html"><span>Series</span>Forecasting with Machine Learning</a><a class="mf-next" href="/blogs/pinball-loss-and-quantiles.html"><span>Next</span>Pinball loss and quantiles</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/curve-fitting-partial-timeseries.html"><span>Previous</span>Fitting a season from its first weeks</a><a class="mf-up" href="/series/forecasting/index.html"><span>Series</span>Forecasting with Machine Learning</a><a class="mf-next" href="/blogs/pinball-loss-and-quantiles.html"><span>Next</span>Pinball loss and quantiles</a></div>
 <!-- CURRICULUM_FOOTER_END -->
 
