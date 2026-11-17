@@ -115,3 +115,5 @@ parts:
   - id: cloud-formation/contrails
     title: Contrails
     level: introductory
+    requires:
+    - cloud-formation/how-much-water-can-air-hold

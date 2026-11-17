@@ -61,6 +61,10 @@ parts:
           - prediction/persistence-and-climatology-baselines
   - title: "Trend and season"
     modules:
+      - id: prediction/moving-averages-and-their-pitfalls
+        title: "Moving averages and their pitfalls"
+        level: introductory
+        path: blogs/moving-averages-and-their-pitfalls.md
       - id: prediction/decomposing-hong-kong-temperature
         title: "Decomposing Hong Kong temperature"
         level: intermediate
@@ -68,10 +72,6 @@ parts:
         requires:
           - prediction/anomalies
           - prediction/moving-averages-and-their-pitfalls
-      - id: prediction/moving-averages-and-their-pitfalls
-        title: "Moving averages and their pitfalls"
-        level: introductory
-        path: blogs/moving-averages-and-their-pitfalls.md
   - title: "Modes of variability"
     modules:
       - id: prediction/enso

@@ -34,8 +34,8 @@ description: "The parts of the training nobody examines you on: keeping the body
 ## Part 3 · Giving it back
 
 <ul class="syl">
-<li class="g">Your first contribution to a community model<span class="m">Intermediate · not written</span></li>
 <li class="g">Open source as a scientist<span class="m">Introductory · not written</span></li>
+<li class="g">Your first contribution to a community model<span class="m">Intermediate · not written</span></li>
 <li class="g">Research code someone else can run<span class="m">Intermediate · not written</span></li>
 <li class="g">Outreach that is not a press release<span class="m">Introductory · not written</span></li>
 </ul>

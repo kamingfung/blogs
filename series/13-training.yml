@@ -78,14 +78,15 @@ parts:
 
   - title: Giving it back
     modules:
+      - id: training/open-source-as-a-scientist
+        title: Open source as a scientist
+        level: introductory
       - id: training/your-first-contribution-to-a-community-model
         title: Your first contribution to a community model
         level: intermediate
         requires:
           - engineering/testing-analysis-code
-      - id: training/open-source-as-a-scientist
-        title: Open source as a scientist
-        level: introductory
+          - training/open-source-as-a-scientist
       - id: training/code-someone-else-can-run
         title: Research code someone else can run
         level: intermediate
@@ -118,6 +119,7 @@ parts:
         level: intermediate
         requires:
           - training/intervals-as-ratios
+          - training/why-a-string-has-harmonics
       - id: training/what-instruments-are-made-of
         title: What instruments are made of
         level: introductory

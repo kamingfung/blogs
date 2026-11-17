@@ -52,8 +52,8 @@ description: "What a teaching certificate taught a scientist, and how the same t
 
 <ul class="syl">
 <li class="g">One-on-ones<span class="m">Introductory · not written</span></li>
-<li class="g">Code review as feedback<span class="m">Intermediate · not written</span></li>
 <li class="g">Giving hard feedback<span class="m">Introductory · not written</span></li>
+<li class="g">Code review as feedback<span class="m">Intermediate · not written</span></li>
 </ul>
 
 ## Part 7 · Grading

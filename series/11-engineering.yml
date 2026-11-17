@@ -24,15 +24,15 @@ parts:
           - engineering/the-sneaky-comma-inlay-type-hints
   - title: "Working with AI agents"
     modules:
+      - id: engineering/instructions-that-agents-actually-follow
+        title: "Instructions that agents actually follow"
+        level: intermediate
       - id: engineering/harness-engineering
         title: "Harness engineering"
         level: intermediate
         path: blogs/harness-engineering.md
         requires:
           - engineering/instructions-that-agents-actually-follow
-      - id: engineering/instructions-that-agents-actually-follow
-        title: "Instructions that agents actually follow"
-        level: intermediate
       - id: engineering/evaluating-agent-output
         title: "Evaluating agent output"
         level: intermediate

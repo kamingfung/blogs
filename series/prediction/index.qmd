@@ -37,8 +37,8 @@ description: "What can and cannot be predicted about the atmosphere, and the sta
 ## Part 4 · Trend and season
 
 <ul class="syl">
-<li class="w"><a href="/blogs/detrending/detrend_hk_temperature.html">Decomposing Hong Kong temperature</a><span class="m">Intermediate</span></li>
 <li class="w"><a href="/blogs/moving-averages-and-their-pitfalls.html">Moving averages and their pitfalls</a><span class="m">Introductory</span></li>
+<li class="w"><a href="/blogs/detrending/detrend_hk_temperature.html">Decomposing Hong Kong temperature</a><span class="m">Intermediate</span></li>
 </ul>
 
 ## Part 5 · Modes of variability

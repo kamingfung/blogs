@@ -20,6 +20,8 @@ parts:
       - id: everyday-physics/tides
         title: "Tides"
         level: introductory
+        requires:
+          - everyday-physics/why-orbits-don-t-fall
   - title: "Solids"
     modules:
       - id: everyday-physics/why-broken-solids-cannot-re-bond
@@ -89,16 +91,16 @@ parts:
         level: introductory
   - title: "Information and energy"
     modules:
+      - id: everyday-physics/landauer-s-limit
+        title: "Landauer's limit"
+        level: intermediate
+        path: blogs/landauer-s-limit.md
       - id: everyday-physics/information-exchange-versus-energy
         title: "Information exchange versus energy"
         level: advanced
         path: blogs/information-vs-energy.md
         requires:
           - everyday-physics/landauer-s-limit
-      - id: everyday-physics/landauer-s-limit
-        title: "Landauer's limit"
-        level: intermediate
-        path: blogs/landauer-s-limit.md
       - id: everyday-physics/why-computers-get-hot
         title: "Why computers get hot"
         level: introductory
@@ -109,6 +111,9 @@ parts:
       - id: everyday-physics/why-satellite-clocks-drift
         title: "Why satellite clocks drift"
         level: intermediate
+        requires:
+          - everyday-physics/why-orbits-don-t-fall
+          - everyday-physics/gravitational-wells
       - id: everyday-physics/entropy-and-the-arrow-of-time
         title: "Entropy and the arrow of time"
         level: intermediate
