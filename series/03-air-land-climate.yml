@@ -13,6 +13,7 @@ parts:
       - id: air-land-climate/what-pm2-5-is-and-why-2-5
         title: "What PM2.5 is, and why 2.5"
         level: introductory
+        path: blogs/what-pm2-5-is.md
       - id: air-land-climate/ozone-good-up-high-bad-nearby
         title: "Ozone: good up high, bad nearby"
         level: introductory
@@ -48,6 +49,7 @@ parts:
       - id: air-land-climate/ozone-titration-in-cities
         title: "Ozone titration in cities"
         level: intermediate
+        path: blogs/ozone-titration-in-cities.md
         requires:
           - air-land-climate/nox-vocs-and-sunlight
   - title: "The nitrogen cascade"

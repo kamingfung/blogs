@@ -11,7 +11,7 @@ categories:
 ---
 
 <!-- CURRICULUM_HEADER_START -->
-<div class="mh"><p class="mh-crumb"><a href="/series/cloud-formation/index.html">How clouds form</a><span class="sep">·</span>Part 4 · What clouds form on</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Assumes <a href="/blogs/how-much-water-air-holds.html">How much water can air hold?</a>, <a href="/blogs/why-clean-air-makes-no-cloud.html">Why clean air doesn&#x27;t make clouds</a> and <span class="unwritten" title="not written yet">The Kelvin effect: why small drops evaporate</span>.</p></div>
+<div class="mh"><p class="mh-crumb"><a href="/series/cloud-formation/index.html">How clouds form</a><span class="sep">·</span>Part 4 · What clouds form on</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Assumes <a href="/blogs/how-much-water-air-holds.html">How much water can air hold?</a>, <a href="/blogs/why-clean-air-makes-no-cloud.html">Why clean air doesn&#x27;t make clouds</a> and <a href="/blogs/the-kelvin-effect.html">The Kelvin effect: why small drops evaporate</a>.</p></div>
 <!-- CURRICULUM_HEADER_END -->
 
 ::: {.callout-note appearance="simple" icon=false}

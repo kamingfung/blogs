@@ -1,0 +1,169 @@
+---
+title: Why cloud droplets don't fall
+description: Why a cloud droplet falls so slowly that rising air holds it up, and what happens to a drop that drifts into dry air.
+date: 2026-11-20
+categories:
+- cloud physics
+- fluid mechanics
+- precipitation
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/cloud-formation/index.html">How clouds form</a><span class="sep">·</span>Part 5 · From droplet to rain</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">Assumes <a href="/blogs/drop-shape-in-air.html">How a drop deforms in air</a>.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Every cloud droplet is falling. A droplet with a 10 µm radius falls about 1.2 cm/s, so any updraft faster than that carries it up. Weight grows with the cube of the radius, but drag grows only with the radius, so small drops settle at low speed. A drop that drifts out of the cloud into dry air shrinks, and it falls only a few centimeters before it vanishes. After reading this you should be able to explain why clouds stay up and why a cloud overhead is not a rain forecast.
+:::
+
+## Every droplet is falling
+
+Cloud water is far denser than air. Liquid water has a density of about 1000 kg/m³, and air at the surface has about 1.2 kg/m³. A cloud does not float because it is lighter than the air around it. It stays up because its droplets fall slowly enough for rising air to hold them.
+
+Gravity pulls a drop down, and air drag pushes it back up. The drop speeds up until the two forces balance. Then its speed stops changing. That steady speed is its terminal fall speed, the speed at which drag balances weight. Drag grows with speed, so the balance comes quickly. The time to adjust is
+
+$$\tau = \frac{2 r^2 (\rho_w - \rho_a)}{9 \mu},$$
+
+where $r$ is the drop radius, $\rho_w$ the density of water, $\rho_a$ the density of air and $\mu$ the viscosity of air, $1.81 \times 10^{-5}$ Pa s at 20 °C. For a 10 µm radius drop, $\tau = 1.2$ ms. The drop reaches its steady speed almost at once, so the fall speed, not the start-up, sets how a cloud behaves.
+
+## Small drops balance at low speed
+
+For slow motion, drag on a sphere is proportional to its speed, its radius and the air's viscosity. This is Stokes law[^rogers]. Weight grows with the cube of the radius, while this drag grows only with the radius and speed. A small drop therefore reaches a balance at a much lower speed. Balancing drag against weight, with air's buoyancy subtracted from the weight, gives the terminal fall speed $v$:
+
+$$v = \frac{2 g r^2 (\rho_w - \rho_a)}{9 \mu}$$
+
+where $g = 9.81$ m/s² is gravity and $\rho_a = 1.2$ kg/m³ is air density. The speed scales with $r^2$. A drop ten times smaller in radius falls one hundred times slower.
+
+| Drop radius | Fall speed (Stokes law, 20 °C) |
+|---|---|
+| 10 µm | 1.2 cm/s |
+| 20 µm | 4.8 cm/s |
+| 40 µm | 19 cm/s |
+
+Stokes law is accurate for the smallest drops. It starts to overestimate the speed as the Reynolds number (Re, the ratio of inertial to viscous forces, $\text{Re} = 2 r v \rho_a / \mu$) approaches 1 near 40 µm, so the 40 µm value in the table is on the high side. Re is 1.0 at 40 µm and 0.13 at 20 µm. Measured terminal velocities of water drops in still air, such as those of Gunn and Kinzer[^gunn], are the standard check on the formula for larger drops.
+
+```{ojs}
+//| echo: false
+stokesV = r => 2 * 9.81 * (1000 - 1.2) * (r * 1e-6) ** 2 / (9 * 1.81e-5)   // m/s, r in µm
+curve = (a, b, n) => Array.from({length: n}, (_, i) => {
+  const r = 10 ** (Math.log10(a) + i * (Math.log10(b) - Math.log10(a)) / (n - 1));
+  return {r, v: stokesV(r)};
+})
+
+Plot.plot({
+  width: Math.min(width, 720),
+  height: 340,
+  marginLeft: 60,
+  style: {background: "transparent", color: "currentColor"},
+  x: {type: "log", label: "Drop radius (µm) →", domain: [1, 100], tickFormat: d => d + " µm", grid: true},
+  y: {type: "log", label: "↑ Fall speed (m/s)", domain: [1e-5, 30], tickFormat: d => d.toString(), grid: true},
+  marks: [
+    Plot.ruleX([40], {stroke: "currentColor", strokeOpacity: 0.5, strokeDasharray: "2 3"}),
+    Plot.line(curve(1, 40, 60), {x: "r", y: "v", stroke: "#38bdf8", strokeWidth: 2.5}),
+    Plot.line(curve(40, 100, 60), {x: "r", y: "v", stroke: "#38bdf8", strokeWidth: 1.5, strokeDasharray: "5 4"}),
+    Plot.text([
+      {r: 1.6, v: 3e-5, t: "Stokes law, valid to about 40 µm (Re ≈ 1)"},
+      {r: 100, v: stokesV(100), t: "Stokes overestimates beyond 40 µm"}
+    ], {x: "r", y: "v", text: "t", textAnchor: "end", dy: -22, fill: "currentColor"})
+  ]
+})
+```
+
+**Figure 1.** Fall speed (m/s, log scale) of a water drop in still air at 20 °C against drop radius (1 to 100 µm, log scale). Solid line: Stokes law, valid up to about 40 µm radius. Dashed line: the same formula from 40 to 100 µm, shown only to mark where it departs from reality. Air density 1.2 kg/m³; air viscosity $1.81 \times 10^{-5}$ Pa s. Computed from the formula in the text; no measured points are plotted.
+
+## Updrafts win
+
+A drop's net vertical motion is the air's vertical speed $w$ minus its fall speed $v$. A 10 µm drop in an illustrative updraft of $w = 0.1$ m/s has a net motion of $0.1 - 0.012 = +0.088$ m/s, so it rises. Any updraft faster than 1.2 cm/s holds this drop up. This comparison uses an illustrative updraft. I did not verify measured updraft speeds for stratus (flat, layered cloud) or cumulus (heaped, puffy cloud), so the size of real updrafts is not established here.
+
+A drop moves with the air it sits in more than it moves through the air. When the air rises, small drops rise with it.
+
+## Evaporation below the base
+
+A drop that leaves the cloud enters air that is not saturated, where the relative humidity (RH) is below 100%. Its surface loses water vapor to the drier air, and the drop shrinks. Rogers and Yau give the growth law[^rogers]:
+
+$$r \frac{dr}{dt} = G s$$
+
+where $s = \text{RH} - 1$ is negative below cloud and $G$ is a constant that depends on temperature. I use $G = 1 \times 10^{-10}$ m² s⁻¹. A formula with textbook diffusivity and heat conductivity at 20 °C gives $1.2 \times 10^{-10}$ m² s⁻¹. That difference changes every distance below by about 17%.
+
+::: {.callout-note collapse="true"}
+## Derivation: fall distance before the drop vanishes
+
+Let $|s| = 1 - \text{RH}$. Integrating the growth law gives the radius at time $t$:
+
+$$r^2 = r_0^2 - 2 G |s| t.$$
+
+The drop vanishes at $t_\text{e} = r_0^2 / (2 G |s|)$. Its fall speed is $v = k r^2$, with $k = 2 g (\rho_w - \rho_a) / (9\mu) = 1.20 \times 10^{8}$ m⁻¹ s⁻¹. The fall distance is the integral of $v$ over the drop's life:
+
+$$z = \int_0^{t_\text{e}} k\left(r_0^2 - 2 G |s| t\right) dt = \frac{k\, r_0^4}{4 G |s|}.$$
+
+At $|s| = 0.1$ (RH 90%) and $G = 1 \times 10^{-10}$ m² s⁻¹:
+
+| Start radius $r_0$ | Time to vanish | Fall distance $z$ |
+|---|---|---|
+| 5 µm | 1.3 s | 2 mm |
+| 10 µm | 5 s | 3 cm |
+| 20 µm | 20 s | 48 cm |
+| 40 µm | 80 s | 7.7 m |
+
+Doubling the radius multiplies the fall distance by $2^4 = 16$.
+:::
+
+The table shows the effect. A 10 µm drop falls about 3 cm before it is gone, and a 40 µm drop falls about 8 m. Solving the same formula for a 1 km cloud base at 90% RH gives $r_0 = 135$ µm, about 14 times the 10 µm radius. This is a lower bound: at least about 135 µm radius by this Stokes estimate. Real drops of that size fall slower than Stokes predicts, so the true size is larger.
+
+The drops that reach the ground are the ones that grow large enough to outlast the dry air. Virga is the name for streaks of rain that evaporate before they reach the ground. They show the same process in the sky: the drop evaporates before it lands.
+
+Use the widget below to change the radius and humidity. The readouts use Stokes law and the same $G$.
+
+::: {.sim-card}
+#### How far does a droplet fall before it vanishes?
+
+```{ojs}
+//| echo: false
+viewof rad = Inputs.range([1, 40], {value: 10, step: 0.5, label: "Drop radius (µm)"})
+viewof hum = Inputs.range([50, 99], {value: 90, step: 1, label: "Relative humidity below cloud (%)"})
+
+kW = 2 * 9.81 * (1000 - 1.2) / (9 * 1.81e-5)   // Stokes constant, m⁻¹ s⁻¹
+GW = 1e-10                              // m² s⁻¹ at 20 °C
+rW = rad * 1e-6
+sW = hum / 100 - 1
+vW = kW * rW * rW
+tW = rW * rW / (2 * GW * -sW)
+zW = kW * rW ** 4 / (4 * GW * -sW)
+
+dist = m => m < 0.001 ? (m * 1e6).toFixed(0) + " µm" : m < 0.01 ? (m * 1000).toFixed(1) + " mm" : m < 1000 ? (m < 10 ? m.toFixed(2) : m.toFixed(1)) + " m" : (m / 1000).toFixed(2) + " km"
+timeTxt = s => s < 120 ? s.toFixed(s < 10 ? 2 : 0) + " s" : (s / 60).toFixed(1) + " min"
+
+html`<div class="sim-readouts">
+  <div class="sim-readout"><div class="sim-readout-label">Fall speed</div><div class="sim-readout-value" style="color:#38bdf8">${(vW * 100).toFixed(2)} cm/s</div></div>
+  <div class="sim-readout"><div class="sim-readout-label">Time to evaporate</div><div class="sim-readout-value" style="color:#f59e0b">${timeTxt(tW)}</div></div>
+  <div class="sim-readout"><div class="sim-readout-label">Fall distance before it vanishes</div><div class="sim-readout-value" style="color:#a78bfa">${dist(zW)}</div></div>
+</div>
+<p>Against a 1 km cloud base: ${zW < 1000 ? `the drop evaporates after ${dist(zW)}.` : "the drop would reach the ground."}</p>`
+```
+
+Stokes drag only, valid below about 40 µm radius. $G = 1 \times 10^{-10}$ m² s⁻¹ fixed. In this range the largest drop, 40 µm at 99% RH, falls 77 m, so every drop evaporates before a 1 km base. Reaching the ground needs at least about 135 µm radius by this Stokes estimate. That lies outside this widget.
+:::
+
+## What this means for you
+
+A cloud overhead is not rain. Cloud cover shows that droplets exist, not that they are large enough to fall. Rain needs drops large enough to fall and survive the dry air below the cloud. [How drops merge](drop-coalescence.qmd) describes how small drops grow into large ones. The same thick cloud can produce no rain, a drizzle or a downpour, and the difference lies in the drops, not the cloud cover.
+
+## Key takeaways
+
+- Cloud droplets are denser than air and always falling. They stay up when updrafts are faster than their fall speed.
+- Small drops balance at low speed. Weight grows with the cube of the radius, drag only with the radius, so fall speed scales as $r^2$ and a 10 µm radius drop falls about 1.2 cm/s.
+- A drop that enters dry air shrinks. Its fall distance scales as $r^4$, so a 10 µm drop falls about 3 cm at 90% RH before it vanishes.
+- Reaching the ground needs a much larger drop. For a 1 km base at 90% RH, this calculation gives at least about 135 µm radius by this Stokes estimate.
+
+## References
+
+[^rogers]: Rogers, R. R. & Yau, M. K. *A Short Course in Cloud Physics*. 3rd ed. Pergamon Press (1989). Book; no DOI.
+[^gunn]: Gunn, R. & Kinzer, G. D. The terminal velocity of fall for water droplets in stagnant air. *J. Meteorol.* **6**, 243–248 (1949). https://doi.org/10.1175/1520-0469(1949)006<0243:TTVOFF>2.0.CO;2
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/where-ccn-come-from.html"><span>Previous</span>Where CCN come from</a><a class="mf-up" href="/series/cloud-formation/index.html"><span>Series</span>How clouds form</a><a class="mf-next" href="/blogs/drop-coalescence.html"><span>Next</span>How drops merge</a></div>
+<!-- CURRICULUM_FOOTER_END -->
+
