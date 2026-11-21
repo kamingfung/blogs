@@ -12,12 +12,12 @@ categories:
 ::: {.callout-note appearance="simple" icon=false}
 ## TL;DR
 
-An inversion is a layer where temperature rises with height. It stops vertical mixing at its base, so smoke, dust and spray stay in a thinner layer of air. Inversions form in three common ways: on clear, calm nights at the ground, under high-pressure systems aloft, and where cool sea air sits under warmer air. For the same emissions, a layer 7.5 times shallower gives 7.5 times the concentration, so a still day can look worse with no change in what was released. Afterwards you should be able to explain the box model behind that effect and say how daytime heating breaks a radiation inversion.
+An inversion is a layer where temperature rises with height. It strongly suppresses vertical mixing at its base, so smoke, dust and spray stay in a thinner layer of air. Inversions form on clear, calm nights at the ground, under high-pressure systems aloft, and where cool sea air sits under warmer air. In a simple box model, the concentration $C$ rises as the mixing height $H$, the depth of the stirred air, falls. Lower wind speed $u$ also raises $C$, so a still day under a low lid can look worse with no change in what was released.
 :::
 
 ## When temperature rises with height
 
-Air usually gets colder as you go up. An inversion reverses that across a layer, so temperature rises with height instead. Vertical mixing stops at its base.
+Air usually gets colder as you go up. An inversion reverses that across a layer, so temperature rises with height instead. Vertical mixing is strongly suppressed at its base.
 
 Pushed upward, a parcel cools as it rises while the air beside it warms with height, so the parcel ends up colder and heavier than its surroundings and sinks back. This is the stability test from [Lapse rates and stability](lapse-rates-and-stability.qmd), applied to a layer where the surrounding air's lapse rate is negative.
 
@@ -45,8 +45,8 @@ Plot.plot({
     Plot.ruleX([0], {stroke: "currentColor", strokeOpacity: 0.4}),
     Plot.line(inv1Data.day, {x: "T", y: "z", stroke: "#f59e0b", strokeWidth: 2.5, strokeDasharray: "8 4"}),
     Plot.line(inv1Data.night, {x: "T", y: "z", stroke: "#a78bfa", strokeWidth: 2.5}),
-    Plot.text([{x: 14.3, y: 1000, t: "daytime, −6.5 K km⁻¹"}], {x: "x", y: "y", text: "t", textAnchor: "start", fill: "#f59e0b", fontWeight: 600}),
-    Plot.text([{x: 5.6, y: 800, t: "night inversion"}], {x: "x", y: "y", text: "t", textAnchor: "start", fill: "#a78bfa", fontWeight: 600}),
+    Plot.text([{x: 14.3, y: 1000, t: "daytime, −6.5 K km⁻¹"}], {x: "x", y: "y", text: "t", textAnchor: "start", fill: "currentColor", fontWeight: 600}),
+    Plot.text([{x: 5.6, y: 800, t: "night inversion"}], {x: "x", y: "y", text: "t", textAnchor: "start", fill: "currentColor", fontWeight: 600}),
     Plot.text([{x: 28, y: 110, t: "inversion layer"}], {x: "x", y: "y", text: "t", textAnchor: "end", fill: "currentColor"})
   ]
 })
@@ -60,15 +60,15 @@ Each route starts from a different cause, but in all three the air aloft is warm
 
 **Radiation.** On a clear, calm night the ground loses heat to the sky faster than the air above can replace it. The ground and the air touching it cool most, so cold air forms underneath milder air. The result is a surface inversion.
 
-**High pressure.** Under a high-pressure system, air aloft tends to sink. Largeron and Staquet report that persistent inversions in Alpine valleys occur during high-pressure conditions and begin when warm air is carried in aloft.[^largeron2016] Sinking air warms as the pressure on it rises, which is textbook physics. A warm layer aloft can therefore settle and cap the cooler air below it.
+**High pressure.** Under a high-pressure system, air aloft tends to sink. Sinking air warms as it is compressed, which is textbook physics, so a warm layer can build aloft and cap the cooler air below. Largeron and Staquet studied Alpine valleys near Grenoble. Their persistent inversions, lasting more than 3 days, occurred during high-pressure conditions and began with warm air carried in aloft. They occur from November to February and span about 35% of that time.[^largeron2016]
 
-**Marine.** On some coasts, cool, moist sea air flows in beneath a layer of warmer air from the land. The cool layer at the bottom and the warm layer above form an inversion, and it stays while the pattern holds.
+**Marine.** Sometimes cool sea air sits under warmer air over the coast.
 
 ## A lid on the mixing layer
 
-The mixing layer is the stirred air under the lid. Convection and turbulence keep it mixed. Its depth is the mixing height, $H$, in meters.
+The mixing layer is the stirred air under the lid. Convection and turbulence keep it mixed. The mixing height, $H$, is how deep that stirred air is, measured in meters from the ground to the lid.
 
-A box model shows why depth matters. Picture a box of air with the ground as its floor and $H$ as its top. Wind of speed $u$ (m s⁻¹) carries air across the box over a length $L$ (m) along the wind. The ground adds pollutant at a steady flux $F$ (µg m⁻² s⁻¹). Assume that no polluted air enters on the upwind side and that the box is well mixed. In steady state, what goes in must come out.
+A box model shows why depth matters. Picture a box of air with the ground as its floor and $H$ as its top. Wind of speed $u$ (m s⁻¹) carries air across the box over a length $L$ (m) along the wind. The ground adds pollutant at a steady flux $F$, the amount leaving each square meter of ground per second (µg m⁻² s⁻¹). Assume that no polluted air enters on the upwind side and that the box is well mixed. In steady state, what goes in must come out.
 
 The source adds $F L$ per unit width of box each second. Air leaving the downwind face carries the mean concentration $C$ (µg m⁻³) through an area $H$ per unit width, at speed $u$. It removes $C u H$ per unit width each second. Setting the two equal gives
 
@@ -78,9 +78,9 @@ The units check out: µg m⁻² s⁻¹ times m, divided by m s⁻¹ times m, giv
 
 Take $F = 1$ µg m⁻² s⁻¹, $L = 20$ km and $u = 2$ m s⁻¹. These illustrative values give 6.7 µg m⁻³ with the lid at $H = 1500$ m, 10 µg m⁻³ at 1000 m and 50 µg m⁻³ at 200 m. The emissions did not change. The concentration at 200 m is 7.5 times the value at 1500 m because the layer that mixes them is 7.5 times shallower.
 
-Real air does not follow the box exactly. Luan and colleagues paired fine particulate matter (PM2.5) with planetary boundary layer (PBL) height, the depth of the stirred air, for 11 long-lasting haze and fog-haze events in Beijing between January 2014 and March 2015. Their pairs run from 50 µg m⁻³ at 830 m to 400 µg m⁻³ at 290 m.[^luan2018] The depth fell by a factor of 2.9 while PM2.5 rose eightfold. The box model at fixed emissions would predict a rise of only 2.9 times. The events differ in more than depth, so this comparison is a rough check, not a test. The fit for fog-haze events has a coefficient of determination (R²) of 0.48, so depth accounts for less than half of the variation in PM2.5. The authors note that more emissions, outside transport and secondary aerosol also raise PM2.5.
+Real air does not follow the box exactly. Luan and colleagues compared fine particulate matter (PM2.5) with planetary boundary layer (PBL) height, the layer of air that mixes with the ground, for 11 long-lasting haze and fog-haze events in Beijing from January 2014 to March 2015. For fog-haze mixed events, they give five pairs: 50 µg m⁻³ at 830 m, 100 at 510 m, 200 at 330 m, 300 at 300 m and 400 at 290 m.[^luan2018] The depth fell by a factor of 2.9 while PM2.5 rose eightfold. The box model at fixed emissions predicts a 2.9-fold rise, and the observed rise is larger. The events differ in more than depth, so this comparison is a rough check, not a test. The fit for fog-haze events has an R², a measure of how well the line fits (0 to 1), of 0.48, so depth accounts for less than half of the variation in PM2.5. This is a correlation. The data cannot show which way cause runs. The authors note that more emissions, outside transport and secondary aerosol also raise PM2.5.
 
-Mixing height does not always predict pollution. Geiss and colleagues call mixing layer height "one of the controlling factors for the dilution of pollutants emitted near the ground".[^geiss2017] In Berlin, however, the link with PM10 coarse particulate matter differed from site to site and showed no clear pattern. The authors judged a single city-wide relation unrealistic. So the box model is a guide to the physics, not a rule for a city.
+Geiss and colleagues call mixing layer height "one of the controlling factors for the dilution of pollutants emitted near the ground".[^geiss2017] In Berlin, however, the link between mixing height and PM10 (coarse particulate matter) differed from site to site, so the box model is a guide, not a city-wide rule.
 
 Figure 2 lets you vary $H$, $u$ and $F$ and watch $C$ respond.
 
@@ -115,25 +115,27 @@ C_ref = conc(flux, wind, 1500)
 html`<div class="sim-readouts">
   <div class="sim-readout"><div class="sim-readout-label">Concentration C</div><div class="sim-readout-value">${C_now.toFixed(1)} µg m⁻³</div></div>
   <div class="sim-readout"><div class="sim-readout-label">Ratio to H = 1500 m, same F and u</div><div class="sim-readout-value">${(C_now / C_ref).toFixed(2)}×</div></div>
-</div>`
+</div>
+${C_now > 500 ? html`<p><em>Outside the range this toy model is meant for.</em></p>` : ""}`
 ```
 
 ```{ojs}
 //| echo: false
 {
   const curve = d3.range(100, 2001, 10).map(H => ({H, C: conc(flux, wind, H)}));
-  const cMax = d3.max(curve, d => d.C) * 1.05;
+  const labelH = hMix > 1500 ? hMix - 40 : hMix + 40;
+  const anchor = hMix > 1500 ? "end" : "start";
   return Plot.plot({
     width: Math.min(width, 720),
     height: 320,
     x: {label: "Mixing height H (m)", domain: [0, 2000]},
-    y: {label: "Concentration C (µg m⁻³)", domain: [0, cMax], grid: true},
+    y: {label: "Concentration C (µg m⁻³, log scale)", type: "log", domain: [0.1, 2000], tickFormat: "~g", grid: true},
     marks: [
       Plot.line(curve, {x: "H", y: "C", stroke: "#38bdf8", strokeWidth: 2.5}),
       Plot.ruleX([1500], {stroke: "#34d399", strokeDasharray: "4 3"}),
       Plot.dot([{H: hMix, C: C_now}], {x: "H", y: "C", r: 7, fill: "#f59e0b", stroke: "currentColor"}),
-      Plot.text([{H: 1560, C: cMax * 0.92, t: "H = 1500 m reference"}], {x: "H", y: "C", text: "t", textAnchor: "start", fill: "#34d399"}),
-      Plot.text([{H: hMix + 40, C: C_now, t: "you are here"}], {x: "H", y: "C", text: "t", textAnchor: "start", fill: "#f59e0b", fontWeight: 600})
+      Plot.text([{H: 1560, C: 1000, t: "H = 1500 m reference"}], {x: "H", y: "C", text: "t", textAnchor: "start", fill: "#34d399"}),
+      Plot.text([{H: labelH, C: C_now, t: "you are here"}], {x: "H", y: "C", text: "t", textAnchor: anchor, fill: "#f59e0b", fontWeight: 600})
     ]
   });
 }
@@ -141,7 +143,7 @@ html`<div class="sim-readouts">
 
 :::
 
-**Figure 2.** Steady box model, $C = FL/(uH)$, with $L = 20$ km fixed and no background air. The readouts give $C$ in µg m⁻³ and the ratio of $C$ to its value at $H = 1500$ m with the same $F$ and $u$. The ratio does not depend on $F$ or $u$, because $C$ scales with $1/H$. The dot marks the current $H$ on the curve, and the green dashed line marks $H = 1500$ m. The model has no chemistry, no deposition and a steady wind, so it describes a pollutant that does not react or settle out during the crossing. At $u = 2$ m s⁻¹, air crosses the 20 km box in about 2.8 h, which sets the time scale over which the steady state applies.
+**Figure 2.** Steady box model, $C = FL/(uH)$, with $L = 20$ km fixed and no background air. The y-axis is a log scale fixed from 0.1 to 2000 µg m⁻³, so it does not rescale as the sliders move. The readouts give $C$ in µg m⁻³ and the ratio of $C$ to its value at $H = 1500$ m with the same $F$ and $u$. The ratio does not depend on $F$ or $u$, because $C$ scales with $1/H$. The dot marks the current $H$ on the curve, and the green dashed line marks $H = 1500$ m. The model has no chemistry, no deposition and a steady wind, so it describes a pollutant that does not react or settle out during the crossing. At $u = 2$ m s⁻¹, air crosses the 20 km box in about 2.8 h, which sets the time scale over which the steady state applies.
 
 ## How a lid breaks
 
@@ -151,18 +153,18 @@ Other lids last longer. In the same basin, winter inversions built up over one o
 
 ## What this means for you
 
-**Spraying.** Bish and colleagues reviewed off-target pesticide movement. Their abstract links inversions, cool air drainage and radiation cooling to secondary pesticide movement, and it covers the role of wind in drift.[^bish2020] Read the product label before you spray. This post does not set spray timing.
+**Spraying.** Bish and colleagues reviewed off-target pesticide movement. Their abstract links inversions, cool air drainage and radiation cooling to secondary pesticide movement, and it covers the role of wind in drift.[^bish2020] Plain signs of a surface inversion follow from the physics above. Look for a calm, clear night or dawn, and for smoke or dust that spreads sideways in a flat layer instead of rising. Those conditions are when fine spray is most likely to stay low and move off target. Check the product label for timing.
 
-**Particles.** In the Alpine valley study, persistent inversions formed during high-pressure spells, and coarser particulate matter (PM10) rose as stability grew.[^largeron2016] For what the PM2.5 number measures, see [What PM2.5 is](what-pm2-5-is.qmd).
+**Particles.** In the Alpine valley study, persistent inversions formed during high-pressure spells, and PM10 rose as stability grew.[^largeron2016] For what the PM2.5 number measures, see [What PM2.5 is](what-pm2-5-is.qmd).
 
-**Frost.** On a frost night, the warmer air above a radiation inversion is the air that protection methods can use. [Frost, and the night the crop is lost](frost-and-the-night-the-crop-is-lost.qmd) explains how each method uses that air.
+**Frost.** On a frost night, the warmer air above a radiation inversion is the key feature that [Frost, and the night the crop is lost](frost-and-the-night-the-crop-is-lost.qmd) discusses.
 
 ## Key takeaways
 
-- An inversion is a layer where temperature rises with height, and vertical mixing stops at its base.
+- An inversion is a layer where temperature rises with height, and it strongly suppresses vertical mixing at its base.
 - For fixed emissions, the box model gives a concentration proportional to $1/H$. A shallower mixing layer means higher concentrations.
 - Real data follow that trend loosely. Other causes also raise particle concentrations, and the link with pollution can differ by site.
-- Radiation inversions form on clear, calm nights and erode after daytime heating. High-pressure lids in Alpine valleys can persist for more than three days.
+- Radiation inversions form on clear, calm nights and erode after daytime heating. In Alpine valleys, persistent inversions lasting more than 3 days occurred about 35% of the time from November to February.
 
 [^largeron2016]: Largeron, Y. & Staquet, C. Persistent inversion dynamics and wintertime PM10 air pollution in Alpine valleys. *Atmos. Environ.* **135**, 92-108 (2016). https://doi.org/10.1016/j.atmosenv.2016.03.045
 
