@@ -47,7 +47,7 @@ jobs:
       # still renders. Open every OJS page in Chrome and fail before deploying.
       - name: Check every widget renders
         run: |
-          uv pip install playwright
+          uv pip install playwright==1.63.0
           .venv/bin/python tools/check_widgets.py _site
 
       - name: Fail on any asset over 25 MiB
