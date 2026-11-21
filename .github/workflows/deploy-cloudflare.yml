@@ -18,13 +18,8 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-        with:
-          # tools/prerender.py falls back to git history for any post without
-          # an explicit date. A shallow clone would make those collapse to the
-          # checkout mtime and scramble the homepage ordering.
-          fetch-depth: 0
 
-      - uses: quarto-dev/quarto-actions/setup@v2
+      - uses: quarto-dev/quarto-actions/setup@8a96df13519ee81fd526f2dfca5962811136661b # v2
         with:
           # Same version used locally. Quarto's SCSS layering and raw-HTML
           # handling differ between releases, so pin it.
@@ -42,6 +37,9 @@ jobs:
           uv venv .venv
           uv pip install -r requirements.txt
 
+      - name: Self-test the curriculum tool
+        run: .venv/bin/python tools/curriculum.py --selftest
+
       - name: Render site
         run: quarto render
 
@@ -49,13 +47,15 @@ jobs:
       # still renders. Open every OJS page in Chrome and fail before deploying.
       - name: Check every widget renders
         run: |
-          uv pip install playwright
+          uv pip install playwright==1.63.0
           .venv/bin/python tools/check_widgets.py _site
 
+      - name: Fail on any asset over 25 MiB
+        run: "! find _site -type f -size +25M | grep ."
+
       - name: Deploy to Cloudflare
-        # Cloudflare rejects the whole deploy with `Asset too large.` if any
-        # single file in _site exceeds 25 MiB. That is a per-file cap, not a
-        # total, and the error names no file — check the largest outputs first.
+        # Cloudflare rejects the whole deploy with `Asset too large.` for any
+        # single file over 25 MiB and names no file; the step above does.
         uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd # v3
         with:
           # The action's default pins wrangler 3.90, which predates

@@ -142,6 +142,10 @@ def validate(seminars, moved, by_id, by_path) -> None:
             if req not in by_id:
                 problems.append(f"{mod['id']} requires unknown id {req!r}")
 
+    for key in list(by_path) + [x["path"] for x in seminars]:
+        if source_of(key) and not _meta(key).get("date"):
+            problems.append(f"no date in frontmatter: {source_of(key)}")
+
     claimed = set(by_path) | {x["path"] for x in seminars + moved}
     on_disk = set()
     for pattern in ("blogs/**/*.md", "blogs/**/*.qmd", "blogs/**/*.ipynb"):
@@ -189,15 +193,7 @@ def _meta(key: str) -> dict:
 
 
 def post_date(key: str) -> str:
-    date = _meta(key).get("date")
-    if date:
-        return str(date)[:10]
-    rel = source_of(key)
-    try:
-        stamp = os.path.getmtime(os.path.join(ROOT, rel))
-        return datetime.fromtimestamp(stamp).strftime("%Y-%m-%d")
-    except Exception:
-        return "1970-01-01"
+    return str(_meta(key)["date"])[:10]
 
 
 def description(key: str) -> str:
@@ -658,12 +654,9 @@ def run() -> int:
         text = splice(text, name, block, _at_end)
     write_if_changed(home, text)
 
-    touched, skipped = 0, 0
+    touched = 0
     for key, mod in by_path.items():
         rel = source_of(key)
-        if rel.endswith(".md"):  # not ported to .qmd yet; leave the source alone
-            skipped += 1
-            continue
         header, footer = module_header(mod, by_id), module_footer(mod)
         edit = inject_ipynb if rel.endswith(".ipynb") else inject_qmd
         touched += bool(edit(rel, header, footer))
@@ -671,7 +664,6 @@ def run() -> int:
     print(
         f"curriculum: {len(series)} series, {len(by_id)} modules, "
         f"{len(by_path)} written; {touched} page(s) updated"
-        + (f", {skipped} still .md" if skipped else "")
     )
     return 0
 
