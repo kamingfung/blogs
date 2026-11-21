@@ -1,0 +1,152 @@
+---
+title: Wildfire smoke
+description: After reading this, you can estimate how long a plume takes to reach you on the wind, explain how smoke ages and adds ozone downwind, and say how smoke light changes crop photosynthesis.
+date: 2026-11-20
+categories:
+- aerosols
+- air quality
+- atmospheric chemistry
+- meteorology
+- interactive
+---
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Wildfire smoke is a mix of gases and fine particles that wind can carry for thousands of kilometers. Fires supply most of the world's black carbon and primary organic aerosol emissions. A straight-line estimate gives a 2,000 km trip in a 10 m s⁻¹ wind a travel time of about 2.3 days, though real plumes bend with the wind. Smoke particles change within hours, and smoke mixed with city nitrogen oxides can raise ozone downwind. Thin smoke can raise crop photosynthesis, and thick smoke can lower it.
+:::
+
+## What smoke carries
+
+Smoke is a mix of gases and particles. Reid and colleagues list pollutants of concern for health, such as carbon monoxide ($\text{CO}$), nitrogen dioxide, ozone, particulate matter, polycyclic aromatic hydrocarbons, and volatile organic compounds (VOCs)[^reid2016]. Most people notice the particles as haze. Fine particles 2.5 µm or smaller across are called PM2.5. [What PM2.5 is](what-pm2-5-is.qmd) explains where that cut comes from.
+
+Particles come in two kinds. Primary particles are emitted as particles. Secondary particles form in the air from gases. [Primary and secondary aerosols](primary-and-secondary-aerosols.qmd) covers the difference.
+
+Fires emit a lot of the primary kind. Andreae's review reports that biomass burning supplies 59% of the world's black carbon emissions and 85% of its primary organic aerosol emissions[^andreae2019]. These are global emission shares, not the makeup of one plume.
+
+## Smoke travels on the wind
+
+Smoke moves with the air that carries it. On a straight path, travel time is distance divided by wind speed:
+
+$$t = \frac{d}{u}$$
+
+Here $t$ is travel time, $d$ is distance and $u$ is wind speed. For a plume 2,000 km away in a 10 m s⁻¹ wind, the time is $t = (2 \times 10^6\ \text{m}) / (10\ \text{m s}^{-1}) = 2 \times 10^5\ \text{s}$. That is 55.6 hours, or 2.3 days.
+
+Real winds turn, so this is the fastest straight-line case. Use it as a first estimate, not as an hourly forecast.
+
+Smoke can travel far in practice. Burke and colleagues found that in the Midwest and East, a growing share of smoke is estimated to originate from fires in the western United States or from outside the United States[^burke2021].
+
+Smoke reaches the ground when the air near the surface mixes with it. A temperature inversion can cap that mixing and hold smoke aloft. [Inversions and trapped pollution](inversions-and-trapped-pollution.qmd) explains how a lid forms.
+
+::: {.sim-card}
+#### When does the smoke arrive?
+
+```{ojs}
+//| echo: false
+viewof dist = Inputs.range([100, 5000], {value: 2000, step: 100, label: "Distance from fire (km)"})
+viewof wind = Inputs.range([2, 30], {value: 10, step: 0.5, label: "Wind speed at plume height (m s⁻¹)"})
+```
+
+```{ojs}
+//| echo: false
+arrivalH = dist * 1000 / wind / 3600
+arrivalD = arrivalH / 24
+fmt1 = v => v.toLocaleString("en-GB", {minimumFractionDigits: 1, maximumFractionDigits: 1})
+
+html`<div class="sim-readouts">
+  <div class="sim-readout"><div class="sim-readout-label">Arrival time</div><div class="sim-readout-value" style="color:#38bdf8">${fmt1(arrivalH)} h</div></div>
+  <div class="sim-readout"><div class="sim-readout-label">In days</div><div class="sim-readout-value" style="color:#f59e0b">${fmt1(arrivalD)} days</div></div>
+</div>`
+```
+
+```{ojs}
+//| echo: false
+Plot.plot({
+  height: 320,
+  width: Math.min(width, 720),
+  marginLeft: 55,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {label: "Distance from fire (km) →", domain: [0, 5000], grid: true},
+  y: {label: "↑ Arrival time (days)", grid: true},
+  marks: [
+    Plot.line(d3.range(100, 5001, 50).map(km => ({km, days: km * 1000 / wind / 86400})),
+              {x: "km", y: "days", stroke: "#38bdf8", strokeWidth: 2.5}),
+    Plot.dot([{km: dist, days: arrivalD}],
+             {x: "km", y: "days", r: 6, fill: "#f59e0b", stroke: "#ffffff"}),
+    Plot.text([{km: 5000, days: 5000 * 1000 / wind / 86400, t: `${wind} m s⁻¹`}],
+              {x: "km", y: "days", text: "t", dx: -10, dy: -12, textAnchor: "end", fill: "#38bdf8"})
+  ]
+})
+```
+
+**Figure 1.** Illustrative. Arrival time for a straight path at one constant wind speed, computed as distance divided by wind speed. The chart plots days against distance at the chosen speed, and the dot marks the slider setting. The model leaves out plume rise, changes in wind direction and mixing, so it gives the fastest straight-line case.
+:::
+
+## The growing share in the West
+
+Burke and colleagues report that in recent years wildfires have accounted for up to 25% of PM2.5 across the United States, and up to half in some Western regions[^burke2021]. They write that smoke's contribution "has grown substantially since the mid 2000s." In western regions, smoke now reaches up to half of PM2.5 exposure. A decade earlier it was under 20%. The authors warn that wildfire threatens to undo the air quality gains of the past two decades.
+
+A second study looks at the same trend from the monitor data. McClure and Jaffe analyzed rural sites from 1988 to 2016[^mcclure2018]. Across most of the country, the high end of daily PM2.5 fell by 0.66 ± 0.10 µg m⁻³ per year. That high end is the 98th percentile, which only 2% of days exceed. In the Northwest the same measure rose by 0.21 ± 0.12 µg m⁻³ per year. The authors credit the fall to lower human-made emissions and link the rise to wildfire activity.
+
+::: {.callout-note collapse="true"}
+## How the shares were estimated
+
+Burke and colleagues did not measure smoke chemistry at each monitor. A statistical model linked satellite fire and smoke data to PM2.5 monitors, and the shares come from that model[^burke2021].
+:::
+
+## Smoke ages within hours
+
+Smoke changes quickly after it leaves the fire. In southern African savanna plumes, the size, composition, light scattering and water uptake of the particles changed during the first 2 to 4 hours of transport[^vakkari2014]. Oxidation and secondary aerosol formation drove the change. Light scattering changed by a factor of 6, and cloud condensation nuclei, particles that seed cloud droplets, changed by more than a factor of 10. These are savanna fires, not forest fires in the western United States, so the timing there may differ.
+
+Organic material also shifts. Andreae's review reports that the apparent primary organic aerosol emission ratio falls by about a factor of 2 over the first minutes to hours[^andreae2019]. The drop comes from semivolatile compounds, which can exist as either gas or particle, evaporating while the plume dilutes.
+
+## Smoke and ozone downwind
+
+Ozone forms in sunlight from nitrogen oxides ($\text{NO}_x$) and VOCs. Smoke brings VOCs, and cities bring $\text{NO}_x$. In aircraft measurements of western US wildfire plumes, Xu and colleagues found that ozone formation rises when VOC-rich smoke mixes into $\text{NO}_x$-rich urban air, which worsens urban air quality[^xu2021].
+
+Ozone production slows within a few daylight hours, and it is largely limited by $\text{NO}_x$ after that. Smoke alone therefore adds less ozone as it ages. [Ozone titration in cities](ozone-titration-in-cities.qmd) explains why a city monitor can read lower ozone than the air downwind.
+
+## What smoke does to people
+
+Aguilera and colleagues compared wildfire smoke with other fine particles in Southern California. Each 10 µg m⁻³ rise in wildfire-specific PM2.5 was linked to a rise of 1.3 to up to 10% in respiratory hospitalizations. The same rise in PM2.5 from other sources was linked to a rise of 0.67 to 1.3%[^aguilera2021]. The authors note that air quality regulations assume the toxicity of PM2.5 does not vary across sources. [Units, standards and what unhealthy means](units-standards-and-aqi.qmd) explains how those PM2.5 limits are set.
+
+This study covers one region and one health outcome. Treat it as evidence that smoke may be more harmful per microgram, not as a settled result.
+
+## What smoke does to crops
+
+Smoke scatters sunlight. Diffuse light is the part that arrives from the sky rather than as a direct beam. In California's Central Valley, Hemes and colleagues measured a summer 2018 smoke period using eddy-covariance towers, which track the carbon exchange of a field[^hemes2020]. Diffuse photosynthetically active radiation (PAR), the light band plants use, rose by more than a third over the previous growing season. Total PAR fell only slightly. Light use efficiency, the carbon a field gains per unit of light, nearly doubled across the diffuse fractions observed. The gain was highest for corn and alfalfa. Daily gross ecosystem productivity rose 1.2 to 4.2% under mean radiation conditions. The authors flag a possible negative effect from higher ozone.
+
+Heavier smoke gives a different result. In an Amazon forest during the 2002 dry season, Yamasoe and colleagues found that more smoke first meant more carbon uptake. At the highest smoke levels, uptake fell below its level at intermediate levels. Smoke also significantly reduced the PAR reaching the top of the canopy[^yamasoe2006].
+
+In an old-growth conifer forest, a two-day smoke event lowered total sunlight. Ecosystem photosynthesis still rose about 10%, likely because diffuse light increased[^rastogi2022].
+
+Smoke can also taint grapes and wine, depending on when and how long the grapes are exposed[^wilkinson2021]. That paper studied stubble-burning smoke, so the sentence is background, not evidence about wildfire taint.
+
+## What this means for you
+
+Arrival time comes from transport, not from the local fire map. A fire map shows where smoke starts. Wind and mixing decide when it reaches you. Start with distance divided by wind speed, then check a transport forecast.
+
+For a yield model, a smoke day may need its own term, separate from cloud cover. The Central Valley study shows smoke can change the diffuse share of light and photosynthesis. My suggestion, untested: a model that uses only cloud cover may miss part of that effect. The sources give no effect size for yield, so fit any smoke term to local data.
+
+For health, one study suggests smoke PM2.5 may need its own exposure term. Only one region supports that so far.
+
+## Key takeaways
+
+- Fires supply most of the world's black carbon and primary organic aerosol emissions.
+- Straight-line travel time is distance divided by wind speed. A 2,000 km trip at 10 m s⁻¹ takes about 2.3 days, and real plumes bend with the wind.
+- Smoke's share of PM2.5 has grown in the West, reaching up to half in some regions as other sources decline.
+- Smoke can raise downwind ozone when it mixes with urban $\text{NO}_x$. It can raise photosynthesis when thin and lower it when thick.
+
+## References
+
+[^reid2016]: Reid, C. E. et al. Critical review of health impacts of wildfire smoke exposure. *Environ. Health Perspect.* **124**, 1334–1343 (2016). https://doi.org/10.1289/ehp.1409277
+[^andreae2019]: Andreae, M. O. Emission of trace gases and aerosols from biomass burning – an updated assessment. *Atmos. Chem. Phys.* **19**, 8523–8546 (2019). https://doi.org/10.5194/acp-19-8523-2019
+[^burke2021]: Burke, M. et al. The changing risk and burden of wildfire in the United States. *Proc. Natl Acad. Sci. USA* **118**, e2011048118 (2021). https://doi.org/10.1073/pnas.2011048118
+[^mcclure2018]: McClure, C. D. & Jaffe, D. A. US particulate matter air quality improves except in wildfire-prone areas. *Proc. Natl Acad. Sci. USA* **115**, 7901–7906 (2018). https://doi.org/10.1073/pnas.1804353115
+[^vakkari2014]: Vakkari, V. et al. Rapid changes in biomass burning aerosols by atmospheric oxidation. *Geophys. Res. Lett.* **41**, 2644–2651 (2014). https://doi.org/10.1002/2014GL059396
+[^xu2021]: Xu, L. et al. Ozone chemistry in western U.S. wildfire plumes. *Sci. Adv.* **7**, eabl3648 (2021). https://doi.org/10.1126/sciadv.abl3648
+[^aguilera2021]: Aguilera, R., Corringham, T., Gershunov, A. & Benmarhnia, T. Wildfire smoke impacts respiratory health more than fine particles from other sources: observational evidence from Southern California. *Nat. Commun.* **12**, 1493 (2021). https://doi.org/10.1038/s41467-021-21708-0
+[^hemes2020]: Hemes, K. S., Verfaillie, J. & Baldocchi, D. D. Wildfire-smoke aerosols lead to increased light use efficiency among agricultural and restored wetland land uses in California's Central Valley. *J. Geophys. Res. Biogeosci.* **125**, e2019JG005380 (2020). https://doi.org/10.1029/2019JG005380
+[^yamasoe2006]: Yamasoe, M. A. et al. Effect of smoke and clouds on the transmissivity of photosynthetically active radiation inside the canopy. *Atmos. Chem. Phys.* **6**, 1645–1656 (2006). https://doi.org/10.5194/acp-6-1645-2006
+[^rastogi2022]: Rastogi, B. et al. Enhanced photosynthesis and transpiration in an old growth forest due to wildfire smoke. *Geophys. Res. Lett.* **49**, e2022GL097959 (2022). https://doi.org/10.1029/2022GL097959
+[^wilkinson2021]: Wilkinson, K. L. et al. Evaluating the potential for smoke from stubble burning to taint grapes and wine. *Molecules* **26**, 7540 (2021). https://doi.org/10.3390/molecules26247540
