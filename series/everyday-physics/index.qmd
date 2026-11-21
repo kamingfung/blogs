@@ -67,8 +67,8 @@ description: "Ordinary things explained from first principles, with the maths ke
 ## Part 8 · Information and energy
 
 <ul class="syl">
-<li class="w"><a href="/blogs/information-vs-energy.html">Information exchange versus energy</a><span class="m">Advanced</span></li>
 <li class="w"><a href="/blogs/landauer-s-limit.html">Landauer&#x27;s limit</a><span class="m">Intermediate</span></li>
+<li class="w"><a href="/blogs/information-vs-energy.html">Information exchange versus energy</a><span class="m">Advanced</span></li>
 <li class="g">Why computers get hot<span class="m">Introductory · not written</span></li>
 </ul>
 

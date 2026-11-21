@@ -21,8 +21,8 @@ description: "Building things that work, from Python tooling and AI agents to a 
 ## Part 2 · Working with AI agents
 
 <ul class="syl">
-<li class="w"><a href="/blogs/harness-engineering.html">Harness engineering</a><span class="m">Intermediate</span></li>
 <li class="g">Instructions that agents actually follow<span class="m">Intermediate · not written</span></li>
+<li class="w"><a href="/blogs/harness-engineering.html">Harness engineering</a><span class="m">Intermediate</span></li>
 <li class="g">Evaluating agent output<span class="m">Intermediate · not written</span></li>
 </ul>
 

@@ -223,6 +223,6 @@ The ± values are about two standard errors. The estimates exclude $\text{CO}_2$
 [^10]: Minoli, S., Jägermeyr, J., Asseng, S., Urfels, A. & Müller, C. Global crop yields can be lifted by timely adaptation of growing periods to climate change. *Nat. Commun.* **13**, 7079 (2022). https://doi.org/10.1038/s41467-022-34411-5
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/how-ozone-damages-crops.html"><span>Previous</span>How ozone damages crops</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/what-an-earth-system-model-is.html"><span>Next</span>What an Earth system model is</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/agriculture-climate-challenges.html"><span>Previous</span>Agriculture under climate extremes</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/what-an-earth-system-model-is.html"><span>Next</span>What an Earth system model is</a></div>
 <!-- CURRICULUM_FOOTER_END -->
 

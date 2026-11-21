@@ -45,9 +45,9 @@ description: "Air pollution, the nitrogen cycle, farming, and how land and atmos
 ## Part 5 · Ammonia, forests and ozone
 
 <ul class="syl">
-<li class="w"><a href="/blogs/ammonia-deposition-ozone.html">Ammonia deposition and ozone feedbacks</a><span class="m">Advanced</span></li>
 <li class="w"><a href="/blogs/stomata-and-dry-deposition.html">Stomata and dry deposition</a><span class="m">Intermediate</span></li>
 <li class="w"><a href="/blogs/leaf-area-index.html">Leaf area index</a><span class="m">Intermediate</span></li>
+<li class="w"><a href="/blogs/ammonia-deposition-ozone.html">Ammonia deposition and ozone feedbacks</a><span class="m">Advanced</span></li>
 </ul>
 
 ## Part 6 · Fertiliser and the atmosphere
@@ -77,8 +77,8 @@ description: "Air pollution, the nitrogen cycle, farming, and how land and atmos
 ## Part 9 · Climate and food
 
 <ul class="syl">
-<li class="w"><a href="/blogs/agriculture-climate-challenges.html">Agriculture under climate extremes</a><span class="m">Introductory</span></li>
 <li class="w"><a href="/blogs/how-ozone-damages-crops.html">How ozone damages crops</a><span class="m">Intermediate</span></li>
+<li class="w"><a href="/blogs/agriculture-climate-challenges.html">Agriculture under climate extremes</a><span class="m">Introductory</span></li>
 <li class="w"><a href="/blogs/heat-stress-on-crops.html">Heat stress on crops</a><span class="m">Intermediate</span></li>
 </ul>
 

@@ -51,23 +51,23 @@ description: "Tabular machine learning for time series, from framing the problem
 ## Part 6 · Forecasting distributions
 
 <ul class="syl">
-<li class="w"><a href="/blogs/darts-size-distribution-forecast.html">Forecasting a size distribution</a><span class="m">Advanced</span></li>
 <li class="w"><a href="/blogs/compositional-data.html">Compositional data</a><span class="m">Intermediate</span></li>
+<li class="w"><a href="/blogs/darts-size-distribution-forecast.html">Forecasting a size distribution</a><span class="m">Advanced</span></li>
 </ul>
 
 ## Part 7 · Awkward targets
 
 <ul class="syl">
+<li class="w"><a href="/blogs/log-and-boxcox-transforms.html">Log and Box–Cox transforms</a><span class="m">Introductory</span></li>
 <li class="w"><a href="/blogs/lightgbm-cross-entropy-bounded-target.html">Cross-entropy for bounded targets</a><span class="m">Advanced</span></li>
 <li class="w"><a href="/blogs/zeros-and-tweedie/zeros_and_tweedie.html">Zeros and Tweedie</a><span class="m">Intermediate</span></li>
-<li class="w"><a href="/blogs/log-and-boxcox-transforms.html">Log and Box–Cox transforms</a><span class="m">Introductory</span></li>
 </ul>
 
 ## Part 8 · Curves from partial data
 
 <ul class="syl">
-<li class="w"><a href="/blogs/curve-fitting-partial-timeseries.html">Fitting a season from its first weeks</a><span class="m">Advanced</span></li>
 <li class="w"><a href="/blogs/growth-curves.html">Growth curves</a><span class="m">Intermediate</span></li>
+<li class="w"><a href="/blogs/curve-fitting-partial-timeseries.html">Fitting a season from its first weeks</a><span class="m">Advanced</span></li>
 </ul>
 
 ## Part 9 · Evaluating forecasts
@@ -88,8 +88,8 @@ description: "Tabular machine learning for time series, from framing the problem
 ## Part 11 · Hierarchies
 
 <ul class="syl">
-<li class="w"><a href="/blogs/hierarchical-reconciliation/hierarchical_reconciliation.html">Hierarchical reconciliation</a><span class="m">Advanced</span></li>
 <li class="w"><a href="/blogs/many-series/forecasting_many_series.html">Forecasting many series at once</a><span class="m">Intermediate</span></li>
+<li class="w"><a href="/blogs/hierarchical-reconciliation/hierarchical_reconciliation.html">Hierarchical reconciliation</a><span class="m">Advanced</span></li>
 </ul>
 
 ## Part 12 · Classical models

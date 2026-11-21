@@ -85,6 +85,10 @@ parts:
         path: blogs/multi-output/multi_output_models.ipynb
   - title: "Forecasting distributions"
     modules:
+      - id: forecasting/compositional-data
+        title: "Compositional data"
+        level: intermediate
+        path: blogs/compositional-data.md
       - id: forecasting/forecasting-a-size-distribution
         title: "Forecasting a size distribution"
         level: advanced
@@ -92,12 +96,12 @@ parts:
         requires:
           - forecasting/direct-vs-recursive-in-darts
           - forecasting/compositional-data
-      - id: forecasting/compositional-data
-        title: "Compositional data"
-        level: intermediate
-        path: blogs/compositional-data.md
   - title: "Awkward targets"
     modules:
+      - id: forecasting/log-and-boxcox-transforms
+        title: "Log and Box–Cox transforms"
+        level: introductory
+        path: blogs/log-and-boxcox-transforms.md
       - id: forecasting/cross-entropy-for-bounded-targets
         title: "Cross-entropy for bounded targets"
         level: advanced
@@ -109,12 +113,12 @@ parts:
         title: "Zeros and Tweedie"
         level: intermediate
         path: blogs/zeros-and-tweedie/zeros_and_tweedie.ipynb
-      - id: forecasting/log-and-boxcox-transforms
-        title: "Log and Box–Cox transforms"
-        level: introductory
-        path: blogs/log-and-boxcox-transforms.md
   - title: "Curves from partial data"
     modules:
+      - id: forecasting/growth-curves
+        title: "Growth curves"
+        level: intermediate
+        path: blogs/growth-curves.md
       - id: forecasting/fitting-a-season-from-its-first-weeks
         title: "Fitting a season from its first weeks"
         level: advanced
@@ -122,10 +126,6 @@ parts:
         requires:
           - forecasting/growth-curves
           - statistics/least-squares
-      - id: forecasting/growth-curves
-        title: "Growth curves"
-        level: intermediate
-        path: blogs/growth-curves.md
   - title: "Evaluating forecasts"
     modules:
       - id: forecasting/which-metric
@@ -157,16 +157,16 @@ parts:
           - statistics/cross-validation
   - title: "Hierarchies"
     modules:
+      - id: forecasting/forecasting-many-series-at-once
+        title: "Forecasting many series at once"
+        level: intermediate
+        path: blogs/many-series/forecasting_many_series.ipynb
       - id: forecasting/hierarchical-reconciliation
         title: "Hierarchical reconciliation"
         level: advanced
         path: blogs/hierarchical-reconciliation/hierarchical_reconciliation.ipynb
         requires:
           - forecasting/forecasting-many-series-at-once
-      - id: forecasting/forecasting-many-series-at-once
-        title: "Forecasting many series at once"
-        level: intermediate
-        path: blogs/many-series/forecasting_many_series.ipynb
   - title: "Classical models"
     modules:
       - id: forecasting/ets-and-arima

@@ -16,6 +16,10 @@ parts:
         path: blogs/python-basics-cesm/index.md
   - title: "Gridded data with xarray"
     modules:
+      - id: earth-data/dimensions-coordinates-and-attributes
+        title: "Dimensions, coordinates and attributes"
+        level: introductory
+        path: blogs/xarray-basics/dimensions_coordinates_attributes.ipynb
       - id: earth-data/scaling-a-netcdf-subset
         title: "Scaling a NetCDF subset"
         level: intermediate
@@ -23,10 +27,6 @@ parts:
         requires:
           - earth-data/python-basics-for-mapping
           - earth-data/dimensions-coordinates-and-attributes
-      - id: earth-data/dimensions-coordinates-and-attributes
-        title: "Dimensions, coordinates and attributes"
-        level: introductory
-        path: blogs/xarray-basics/dimensions_coordinates_attributes.ipynb
       - id: earth-data/resampling-and-grouping-in-time
         title: "Resampling and grouping in time"
         level: intermediate
@@ -34,6 +34,12 @@ parts:
           - earth-data/dimensions-coordinates-and-attributes
   - title: "Regridding"
     modules:
+      - id: earth-data/conservative-vs-bilinear
+        title: "Conservative vs bilinear"
+        level: intermediate
+        path: blogs/regridding/conservative_vs_bilinear.ipynb
+        requires:
+          - earth-data/dimensions-coordinates-and-attributes
       - id: earth-data/regridding-crop-data-for-climate-models
         title: "Regridding crop data for climate models"
         level: intermediate
@@ -46,12 +52,6 @@ parts:
         requires:
           - earth-data/dimensions-coordinates-and-attributes
           - earth-data/conservative-vs-bilinear
-      - id: earth-data/conservative-vs-bilinear
-        title: "Conservative vs bilinear"
-        level: intermediate
-        path: blogs/regridding/conservative_vs_bilinear.ipynb
-        requires:
-          - earth-data/dimensions-coordinates-and-attributes
   - title: "Regions and masks"
     modules:
       - id: earth-data/regional-analysis-in-r
@@ -63,23 +63,27 @@ parts:
         level: intermediate
         requires:
           - earth-data/geopandas-basics
+          - earth-data/dimensions-coordinates-and-attributes
   - title: "Vector data"
     modules:
+      - id: earth-data/geopandas-basics
+        title: "GeoPandas basics"
+        level: introductory
+        path: blogs/geopandas-basics/geopandas_basics.ipynb
       - id: earth-data/downloading-building-footprints
         title: "Downloading building footprints"
         level: intermediate
         path: blogs/ms-buildings/index.md
         requires:
           - earth-data/geopandas-basics
-      - id: earth-data/geopandas-basics
-        title: "GeoPandas basics"
-        level: introductory
-        path: blogs/geopandas-basics/geopandas_basics.ipynb
       - id: earth-data/projections
         title: "Projections"
         level: introductory
   - title: "Maps"
     modules:
+      - id: earth-data/choropleth-pitfalls
+        title: "Choropleth pitfalls"
+        level: introductory
       - id: earth-data/mapping-pm2-5-by-county
         title: "Mapping PM2.5 by county"
         level: introductory
@@ -92,14 +96,12 @@ parts:
         level: introductory
         path: blogs/atlantic-centered-map/index.md
         note: "Assumes ggplot2."
-      - id: earth-data/choropleth-pitfalls
-        title: "Choropleth pitfalls"
-        level: introductory
       - id: earth-data/cartopy
         title: "Cartopy"
         level: intermediate
         requires:
           - earth-data/projections
+          - earth-data/python-basics-for-mapping
   - title: "ggplot2"
     modules:
       - id: earth-data/direct-labels-on-bar-charts
@@ -134,6 +136,9 @@ parts:
       - id: earth-data/rasterio
         title: "rasterio"
         level: intermediate
+        requires:
+          - earth-data/projections
+          - earth-data/geopandas-basics
   - title: "Bigger than memory"
     modules:
       - id: earth-data/dask-and-chunking
@@ -144,8 +149,12 @@ parts:
       - id: earth-data/zarr
         title: "Zarr"
         level: intermediate
+        requires:
+          - earth-data/dask-and-chunking
   - title: "Interactive maps"
     modules:
       - id: earth-data/folium
         title: "folium"
         level: introductory
+        requires:
+          - earth-data/geopandas-basics
