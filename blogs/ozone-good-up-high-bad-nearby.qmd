@@ -12,50 +12,20 @@ categories:
 ::: {.callout-note appearance="simple" icon=false}
 ## TL;DR
 
-Ozone ($\text{O}_3$) is one molecule found in two places. About 90% of it sits high in the stratosphere, where it absorbs harmful ultraviolet light. About 10% sits in the troposphere, the air we breathe, where it is a pollutant that harms lungs and crops. The two layers form by different chemistry, and the smog near the ground holds only a small share of the total. Measured as a column, all the ozone in an average atmosphere would make a layer 3 mm thick, and even 50 ppb of smog over a 1 km deep layer holds only about 1.5% of that.
+Ozone ($\text{O}_3$) is one molecule found in two places. About 90% of it sits high in the stratosphere, where it absorbs harmful ultraviolet light. About 10% sits in the troposphere, the air we breathe, where it is a pollutant that harms lungs and crops. High up, UV-C splits oxygen molecules to make ozone. Near the ground, sunlight splits pollutant gases to make it, and the smog there holds only a small share of the total. Measured as a column, all the ozone in an average atmosphere would make a layer 3 mm thick, and even 50 ppb of smog over a 1 km deep layer holds only about 1.5% of that.
 :::
 
 ## One molecule, two places
 
 Most ozone sits high up. About 90% of Earth's ozone lies in the stratosphere, the layer that runs from the top of the troposphere to about 50 km altitude.[^salawitch2023] About 10% lies in the troposphere, which runs from the surface to about 10 to 15 km.[^salawitch2023]
 
-Concentration tells a different story. Near the peak of the ozone layer, the air holds a few thousand ozone molecules for every billion air molecules. Parts per billion, written ppb, is that ratio. Near the surface, the typical range is 20 to 100 ppb. The highest surface values occur in polluted air.[^salawitch2023]
-
-Figure 1 shows how the average column of ozone splits between the two layers.
-
-::: {.sim-card}
-#### Figure 1. Most of the ozone column is high up
-
-```{ojs}
-//| echo: false
-ozSplit = [
-  {layer: "Stratosphere, 90%", DU: 270, mm: 2.7},
-  {layer: "Troposphere, 10%", DU: 30, mm: 0.3}
-]
-
-Plot.plot({
-  height: 220,
-  width: Math.min(width, 720),
-  marginLeft: 150,
-  marginRight: 130,
-  style: {background: "transparent", color: "currentColor"},
-  x: {label: "Dobson units (DU)", domain: [0, 300], grid: true},
-  y: {label: null},
-  marks: [
-    Plot.barX(ozSplit, {x: "DU", y: "layer", fill: "#38bdf8", fillOpacity: 0.85}),
-    Plot.text(ozSplit, {x: "DU", y: "layer", text: d => `${d.DU} DU = ${d.mm} mm`, dx: 6, textAnchor: "start"})
-  ]
-})
-```
-
-**Figure 1.** Average ozone column of about 300 DU, split by layer. The stratosphere holds 90% (270 DU, 2.7 mm) and the troposphere 10% (30 DU, 0.3 mm), each labeled with its value. The 90% and 10% split and the 300 DU average come from Salawitch et al.[^salawitch2023] The mm values follow from 1 DU = 0.01 mm, which the section on Dobson units derives.
-:::
+Concentration tells a different story. Near the peak of the ozone layer, the World Meteorological Organization (WMO) Q&A gives a few thousand ozone molecules for every billion air molecules. Parts per billion, written ppb, is that ratio. Near the surface, the typical range is 20 to 100 ppb. The highest surface values occur in polluted air.[^salawitch2023]
 
 ## How the high layer forms and shields
 
 Sunlight builds the high-altitude ozone in two steps. First, ultraviolet light breaks an oxygen molecule ($\text{O}_2$) into two oxygen atoms. Second, each atom meets another oxygen molecule and forms ozone. Three oxygen molecules plus sunlight make two ozone molecules.[^salawitch2023]
 
-Ultraviolet light, or UV, is sunlight just beyond the violet end of the visible range. Scientists split it into bands. UV-C, from 100 to 280 nanometers (nm), is entirely absorbed within the ozone layer.[^salawitch2023] UV-B, from 280 to 315 nm, is only partly absorbed, so some of it reaches the ground.[^salawitch2023]
+Ultraviolet light, or UV, is sunlight just beyond the violet end of the visible range. Scientists split it into bands. The ozone layer absorbs all UV-C, from 100 to 280 nanometers (nm), and only part of UV-B, from 280 to 315 nm.[^salawitch2023]
 
 The ozone layer therefore acts as a shield. It absorbs a large part of the sun's biologically harmful UV before that light reaches the surface.[^salawitch2023]
 
@@ -63,7 +33,9 @@ The ozone layer therefore acts as a shield. It absorbs a large part of the sun's
 
 Ground-level ozone is a pollution product. Above natural levels, it forms from reactions involving nitrogen oxides (NOx), carbon monoxide (CO) and hydrocarbons, which are compounds of hydrogen and carbon. Human activities emit these pollutants.[^salawitch2023] The step-by-step chemistry, which needs sunlight, is explained in [NOx, VOCs and sunlight](nox-vocs-and-sunlight.qmd).
 
-The same gas damages living things. Ground-level ozone reduces crop yields and forest growth.[^salawitch2023] In people it can reduce lung capacity. It can also cause chest pain, throat irritation and coughing, and it can worsen existing heart and lung conditions.[^salawitch2023] Surface ozone also acts as a greenhouse gas that warms the surface.[^salawitch2023]
+Both layers end the same way: an oxygen atom joins an O₂ molecule. The atom comes from a different source in each layer. High up, UV-C splits O₂.[^salawitch2023] Near the ground, sunlight splits nitrogen dioxide (NO₂), as the [NOx, VOCs and sunlight](nox-vocs-and-sunlight.qmd) post explains.
+
+The same gas damages living things. Ground-level ozone reduces crop yields and forest growth.[^salawitch2023] In people it can reduce lung capacity. It can also cause chest pain, throat irritation and coughing, and it can worsen existing heart and lung conditions.[^salawitch2023]
 
 [How ozone damages crops](how-ozone-damages-crops.qmd) explains how the gas enters a leaf and how the damage is measured. [Why ozone peaks in the afternoon](why-ozone-peaks-in-the-afternoon.qmd) explains when the surface level is highest in a day. For why city monitors can read lower than the air downwind, see [Ozone titration in cities](ozone-titration-in-cities.qmd).
 
@@ -77,9 +49,9 @@ Ground-level ozone is a different problem with a different source. Because it co
 
 ## How much ozone is in a smoggy afternoon?
 
-Scientists measure ozone as a column: the total amount of ozone straight up from one spot. They report the column in Dobson units (DU). The global average is about 300 DU. If all of that ozone were brought down to the ground, it would form a layer of pure ozone about 3 mm thick.[^salawitch2023]
+Scientists measure ozone as a column: the total amount of ozone straight up from one spot. Scientists report the column in Dobson units (DU). A DU counts the ozone above one square centimeter of ground. One DU equals $2.687 \times 10^{16}$ ozone molecules.[^salawitch2023] The global average is about 300 DU. If all of that ozone were compressed into a layer of pure ozone at the ground, the WMO Q&A's 300 DU would be 3 mm thick.[^salawitch2023]
 
-That gives a simple conversion. Dividing 3 mm by 300 DU gives 0.01 mm for each DU. A DU also counts molecules: 1 DU equals $2.687 \times 10^{16}$ molecules per cm² of ground.[^salawitch2023]
+That gives a simple conversion. Dividing 3 mm by 300 DU gives 0.01 mm for each DU.
 
 Now take a smoggy case. Air at the surface holds 50 ppb of ozone, and the polluted air is 1 km deep. The column in DU is the ozone fraction times the number of air molecules per cm³, times the layer depth in cm, divided by the molecules in one DU:
 
@@ -91,7 +63,7 @@ $$\text{DU} = \frac{50 \times 10^{-9} \times 2.46 \times 10^{19} \times 10^{5}}{
 
 So the smoggy layer holds 4.58 DU. That is 0.046 mm of ozone if pressed to the ground, and 1.5% of the 300 DU average. Doubling the ozone to 100 ppb gives 9.16 DU, or 3.05%.
 
-The amount is small, and the two layers are made by different chemistry.[^salawitch2023] The widget below lets you change both the ozone level and the depth of the polluted air.
+The column and the concentration measure different things. What shields you from ultraviolet light is the whole column overhead.[^salawitch2023] What harms lungs and leaves is the concentration in the air you breathe. A small share of the column can still be a harmful concentration at nose height. The widget below lets you change both the ozone level and the depth of the polluted air.
 
 ::: {.callout-note collapse="true"}
 ## How the widget numbers are computed
@@ -104,7 +76,7 @@ The widget uses the same $n$ at every height in the layer. Real air thins with a
 :::
 
 ::: {.sim-card}
-#### Figure 2. How much of the ozone column is smog?
+#### Figure 1. How much of the ozone column is smog?
 
 ```{ojs}
 //| echo: false
@@ -124,35 +96,36 @@ ozReadout = (label, value, color) => html`<div class="sim-readout">
 
 html`<div class="sim-readouts">
   ${ozReadout("Column in this layer", ozColumn.toFixed(2) + " DU", "#38bdf8")}
-  ${ozReadout("Thickness if pressed to the ground", ozMm.toFixed(3) + " mm", "#f59e0b")}
+  ${ozReadout("Thickness if compressed to the ground", ozMm.toFixed(3) + " mm", "#f59e0b")}
   ${ozReadout("Share of a 300 DU column", ozPct.toFixed(2) + "%", "#a78bfa")}
 </div>`
+
+ozBars = [{k: "Whole column", v: 300, inside: true}, {k: "Smog layer", v: ozColumn, inside: false}]
 
 Plot.plot({
   height: 200,
   width: Math.min(width, 720),
-  marginLeft: 170,
-  marginRight: 40,
+  marginLeft: 90,
+  marginRight: 20,
   style: {background: "transparent", color: "#cbd5e1"},
   x: {label: "Dobson units (DU)", domain: [0, 300], grid: true},
   y: {label: null},
   marks: [
-    Plot.barX([{k: "Whole column, 300 DU", v: 300}, {k: "Smog layer", v: ozColumn}],
-              {x: "v", y: "k", fill: d => d.k === "Smog layer" ? "#a78bfa" : "#64748b"}),
-    Plot.text([{k: "Whole column, 300 DU", v: 300}, {k: "Smog layer", v: ozColumn}],
-              {x: "v", y: "k", text: d => `${d.v.toFixed(2)} DU`, dx: 6, textAnchor: "start", fill: "#cbd5e1"})
+    Plot.barX(ozBars, {x: "v", y: "k", fill: d => d.inside ? "#94a3b8" : "#a78bfa"}),
+    Plot.text(ozBars.filter(d => d.inside), {x: "v", y: "k", text: d => `${d.v.toFixed(0)} DU`, dx: -6, textAnchor: "end", fill: "#0f172a"}),
+    Plot.text(ozBars.filter(d => !d.inside), {x: "v", y: "k", text: d => `${d.v.toFixed(2)} DU`, dx: 6, textAnchor: "start", fill: "#cbd5e1"})
   ]
 })
 ```
 
-**Figure 2.** Column in one layer of air, in DU, against the 300 DU average column. The layer has a uniform ozone fraction and uniform air density of $2.46 \times 10^{19}$ cm⁻³ at 25 °C and 1 atm. This is an illustrative calculation, not a measurement. Use it for the stated ranges: at the slider extremes, 120 ppb over 3 km gives 33.0 DU, or 11.0%, and 10 ppb over 0.2 km gives 0.18 DU.
+**Figure 1.** Column in one layer of air, in DU, against the 300 DU average column. Converting ppb to molecules uses dry air at 25 °C and 1 atm, $n = 2.46 \times 10^{19}$ cm⁻³, with a uniform ozone fraction through the layer. Converting molecules to DU uses 1 DU = $2.687 \times 10^{16}$ molecules cm⁻². This is an illustrative calculation, not a measurement. Use it for the stated ranges: at the slider extremes, 120 ppb over 3 km gives 33.0 DU, or 11.0%, and 10 ppb over 0.2 km gives 0.18 DU.
 :::
 
 ## What this means for you
 
-Read the headline and the alert by altitude. An ozone-hole headline is about the high layer. A ground-level ozone alert is about the air you breathe. The two numbers describe different air, so neither one tells you about the other.
+Read the headline and the alert by altitude. An ozone-hole headline is about the high layer. A ground-level ozone alert is about the air you breathe. The two numbers describe different air, so they are largely separate problems.
 
-If you farm, garden or work outdoors, the surface number matters most. [How ozone damages crops](how-ozone-damages-crops.qmd) covers the effects on plants. To plan around the daily peak, read [Why ozone peaks in the afternoon](why-ozone-peaks-in-the-afternoon.qmd).
+If you farm, garden or work outdoors, the surface number matters most. [How ozone damages crops](how-ozone-damages-crops.qmd) gives loss estimates for wheat, soybean, maize and rice, so you can see which crops are sensitive. To plan around the daily peak, read [Why ozone peaks in the afternoon](why-ozone-peaks-in-the-afternoon.qmd).
 
 ## Key takeaways
 
