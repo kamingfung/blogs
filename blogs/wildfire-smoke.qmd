@@ -13,7 +13,7 @@ categories:
 ::: {.callout-note appearance="simple" icon=false}
 ## TL;DR
 
-Wildfire smoke is a mix of gases and fine particles that wind can carry for thousands of kilometers. Fires supply most of the world's black carbon and primary organic aerosol emissions. A straight-line estimate gives a 2,000 km trip in a 10 m s⁻¹ wind a travel time of about 2.3 days, though real plumes bend with the wind. Smoke particles change within hours, and smoke mixed with city nitrogen oxides can raise ozone downwind. Thin smoke can raise crop photosynthesis, and thick smoke can lower it.
+Wildfire smoke is a mix of gases and fine particles that wind can carry for thousands of kilometers. Fires supply most of the world's black carbon and primary organic aerosol emissions. A straight-line estimate gives a 2,000 km trip in a 10 m s⁻¹ wind a travel time of about 2.3 days, though real plumes bend with the wind. Smoke particles change within hours, and smoke mixed with city nitrogen oxides can raise ozone downwind. Its effect on plant productivity varied by site: a 1.2 to 4.2% rise in daily productivity at Central Valley farm and wetland sites, about a 10% rise for two days in an old-growth conifer forest, and lower carbon uptake under the heaviest smoke over Amazon forest.
 :::
 
 ## What smoke carries
@@ -36,7 +36,7 @@ Real winds turn, so this is the fastest straight-line case. Use it as a first es
 
 Smoke can travel far in practice. Burke and colleagues found that in the Midwest and East, a growing share of smoke is estimated to originate from fires in the western United States or from outside the United States[^burke2021].
 
-Smoke reaches the ground when the air near the surface mixes with it. A temperature inversion can cap that mixing and hold smoke aloft. [Inversions and trapped pollution](inversions-and-trapped-pollution.qmd) explains how a lid forms.
+Background physics, not from the sources: smoke aloft reaches the ground only when it mixes down. [Inversions and trapped pollution](inversions-and-trapped-pollution.qmd) explains how a lid can hold it aloft.
 
 ::: {.sim-card}
 #### When does the smoke arrive?
@@ -51,11 +51,12 @@ viewof wind = Inputs.range([2, 30], {value: 10, step: 0.5, label: "Wind speed at
 //| echo: false
 arrivalH = dist * 1000 / wind / 3600
 arrivalD = arrivalH / 24
-fmt1 = v => v.toLocaleString("en-GB", {minimumFractionDigits: 1, maximumFractionDigits: 1})
+fmt1 = v => v.toLocaleString("en-US", {minimumFractionDigits: 1, maximumFractionDigits: 1})
+fmt2 = v => v.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2})
 
 html`<div class="sim-readouts">
   <div class="sim-readout"><div class="sim-readout-label">Arrival time</div><div class="sim-readout-value" style="color:#38bdf8">${fmt1(arrivalH)} h</div></div>
-  <div class="sim-readout"><div class="sim-readout-label">In days</div><div class="sim-readout-value" style="color:#f59e0b">${fmt1(arrivalD)} days</div></div>
+  <div class="sim-readout"><div class="sim-readout-label">In days</div><div class="sim-readout-value" style="color:#f59e0b">${fmt2(arrivalD)} days</div></div>
 </div>`
 ```
 
@@ -114,7 +115,7 @@ This study covers one region and one health outcome. Treat it as evidence that s
 
 ## What smoke does to crops
 
-Smoke scatters sunlight. Diffuse light is the part that arrives from the sky rather than as a direct beam. In California's Central Valley, Hemes and colleagues measured a summer 2018 smoke period using eddy-covariance towers, which track the carbon exchange of a field[^hemes2020]. Diffuse photosynthetically active radiation (PAR), the light band plants use, rose by more than a third over the previous growing season. Total PAR fell only slightly. Light use efficiency, the carbon a field gains per unit of light, nearly doubled across the diffuse fractions observed. The gain was highest for corn and alfalfa. Daily gross ecosystem productivity rose 1.2 to 4.2% under mean radiation conditions. The authors flag a possible negative effect from higher ozone.
+Smoke scatters sunlight. Diffuse light is the part that arrives from the sky rather than as a direct beam. In California's Central Valley, Hemes and colleagues measured a summer 2018 smoke period using eddy-covariance towers, which track the carbon exchange of a field[^hemes2020]. Diffuse photosynthetically active radiation (PAR), the light band plants use, rose by more than a third over the previous growing season. Total PAR fell only slightly. Light use efficiency, the carbon a field gains per unit of light, nearly doubled across the diffuse fractions observed. The gain was highest for corn and alfalfa. Daily gross ecosystem productivity, the total carbon the plants take up per day, rose 1.2 to 4.2% under mean radiation conditions. The authors flag a possible negative effect from higher ozone.
 
 Heavier smoke gives a different result. In an Amazon forest during the 2002 dry season, Yamasoe and colleagues found that more smoke first meant more carbon uptake. At the highest smoke levels, uptake fell below its level at intermediate levels. Smoke also significantly reduced the PAR reaching the top of the canopy[^yamasoe2006].
 
