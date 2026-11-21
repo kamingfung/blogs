@@ -1,0 +1,176 @@
+---
+title: Sea spray
+description: Bursting bubbles at the sea surface send salt and organic particles into the air, wind speed sets how many they make, and counting them shows how much cloud seed the sea supplies.
+date: 2026-11-20
+categories:
+- atmospheric science
+- aerosols
+- cloud physics
+- climate
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/aerosols-climate/index.html">Aerosols and climate</a><span class="sep">·</span>Part 1 · Where aerosols come from</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">Assumes <a href="/blogs/where-ccn-come-from.html">Where CCN come from</a>.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Sea spray comes from bubbles that burst at the sea surface. Each bubble throws out film drops from its thin cap and jet drops from its base, and the jet drops can supply up to 43% of the particles smaller than 1 µm by number. Wind speed sets how much of the sea is covered by whitecaps, and that cover rises roughly as the 3.4th power of wind speed. Outside the high southern latitudes, and for supersaturations of 0.1 to 1.0%, sea spray supplies less than 30% of the cloud condensation nuclei (CCN), the particles clouds form on. Large salt particles still give rain a head start.
+:::
+
+## Bubbles, not splashes
+
+Sea spray starts with bubbles. A bubble that bursts at the sea surface throws out drops in two ways. Its thin cap produces film drops. Its base produces jet drops. Wang and colleagues note that film drops are often assumed to make most of the particles smaller than 1 µm, and jet drops most of the larger ones[^wang2017].
+
+That assumption is only partly right for counts. Wang and colleagues found that jet drops can supply up to 43% of the particles below 1 µm by number[^wang2017]. Counts matter for clouds, so the jet drops deserve more weight than the usual picture gives them. The two routes also differ in composition, so they do not make identical particles[^wang2017].
+
+Bubble bursting is the mechanism these sources describe. They do not rank it against drops that wind tears from wave crests, so this post does not rank the two either.
+
+## Wind sets the supply
+
+Whitecaps are the white foam patches on the sea. The share of the sea surface they cover is the whitecap cover, $W$, a fraction between 0 and 1. Wind is the main control. Monahan and O'Muircheartaigh fitted a power law to combined data from two earlier studies, where $U$ is the wind speed 10 m above the sea, in m/s[^monahan1980]:
+
+$$W = 3.84 \times 10^{-6}\,U^{3.41}$$
+
+In this fit, doubling the wind speed multiplies the cover by 10.6. At 5, 10, 15 and 20 m/s the cover is 0.093%, 0.99%, 3.9% and 10.5%. Figure 1 plots the whole range.
+
+```{ojs}
+//| echo: false
+coverPct = U => 3.84e-6 * Math.pow(U, 3.41) * 100
+fmtPct = x => x < 0.1 ? x.toFixed(3) : x < 1 ? x.toFixed(2) : x.toFixed(1)
+coverCurve = d3.range(2, 25.01, 0.25).map(U => ({U, W: coverPct(U)}))
+coverMarks = [5, 10, 15, 20].map(U => ({U, W: coverPct(U), lbl: `${U} m/s: ${fmtPct(coverPct(U))}%`}))
+```
+
+```{ojs}
+//| echo: false
+Plot.plot({
+  width: Math.min(width, 720),
+  height: 340,
+  marginLeft: 64,
+  x: {label: "Wind speed at 10 m, U (m/s) →", domain: [0, 25], grid: true},
+  y: {type: "log", label: "↑ Whitecap cover (%)", domain: [0.001, 30], ticks: [0.001, 0.01, 0.1, 1, 10], tickFormat: d => `${d}%`, grid: true},
+  marks: [
+    Plot.line(coverCurve, {x: "U", y: "W", stroke: "currentColor", strokeWidth: 2}),
+    Plot.dot(coverMarks, {x: "U", y: "W", r: 4, fill: "#f59e0b"}),
+    Plot.text(coverMarks, {x: "U", y: "W", text: "lbl", dx: 8, dy: -8, textAnchor: "start", fill: "currentColor"})
+  ]
+})
+```
+
+**Figure 1.** Whitecap cover $W$ (%) against wind speed $U$ (m/s), from the fit above, on a logarithmic vertical axis. Orange dots mark 5, 10, 15 and 20 m/s, with values labeled. The curve starts at 2 m/s, where the cover is about 0.004%, because the formula gives zero at zero wind and a log axis cannot show zero. The fit is empirical, so treat its upper end with care.
+
+Whitecap cover is not the same as emission. Emission is the amount of spray that reaches the air each second. Emission equals the whitecap cover times the spray produced per unit whitecap area[^deleeuw2011]. de Leeuw and colleagues report that estimates of that per-area production still differ by about an order of magnitude[^deleeuw2011].
+
+Grythe and colleagues compared 21 published source functions, which are formulas that predict emission, with a large global set of sea salt measurements[^grythe2014]. Their best fit makes production scale with wind speed to the power 3.5. They call wind the main driver of sea spray production[^grythe2014]. That exponent is close to the 3.41 for cover, but the two are different quantities.
+
+Sea surface temperature (SST) also matters. Grythe and colleagues found that higher temperatures give higher production, though the mechanism is unclear[^grythe2014]. Relative to the earlier Gong source function, a version that uses both wind and temperature changes the modeled sea salt burden, the mass of sea salt the atmosphere holds. The burden rises 50% in the tropics and falls 40% at mid and high latitudes[^jaegle2011].
+
+That shift matters for the Southern Ocean. With Gong's function, a model overestimated cruise measurements of coarse sea salt mass over cold waters, including the Southern Ocean, by factors of 2 to 3 at high wind speeds[^jaegle2011]. The temperature-dependent function shifts that burden toward the tropics[^jaegle2011]. How much sea salt the Southern Ocean holds in a model therefore depends on which function the model uses.
+
+The spread among source functions is also large. Grythe and colleagues report global annual sea spray mass for dry particles under 10 µm of roughly 3 to 70 petagrams per year (Pg/yr, 10¹⁵ g). Their own function gives 9 Pg/yr[^grythe2014].
+
+::: {.callout-note collapse="true"}
+## Two fits and the supply ratio
+
+Monahan and O'Muircheartaigh also give a least-squares fit to the same combined data, $W = 2.95 \times 10^{-6}\,U^{3.52}$[^monahan1980]. At 10 m/s it gives 0.98% against 0.99% for the fit used above. At 20 m/s it gives 11.2% against 10.5%. The two fits agree near 10 m/s and diverge at the ends of the range. The authors state that both expressions fit the combined data better than any earlier published equation[^monahan1980].
+
+The widget below assumes the spray produced per unit whitecap area stays fixed, so emission is proportional to whitecap cover. Then the supply at wind speed $U$ relative to the supply at 7 m/s is
+
+$$R(U) = \left(\frac{U}{7}\right)^{3.41}$$
+
+At 15 m/s this gives $R = 13.4$, and at 2 m/s $R = 0.014$. If emission instead followed the exponent 3.5 from Grythe and colleagues, $R$ at 15 m/s would be 14.4.
+:::
+
+## Turn up the wind
+
+The widget applies the same fit and the supply ratio. Move the slider to see how quickly the supply grows with wind.
+
+::: {.sim-card}
+#### Figure 2. Turn up the wind
+
+```{ojs}
+//| echo: false
+viewof windSim = Inputs.range([2, 25], {value: 7, step: 0.5, label: "Wind speed at 10 m (m/s)"})
+
+readoutCard = (label, value, color) => html`<div class="sim-readout"><div class="sim-readout-label">${label}</div><div class="sim-readout-value" style="color:${color}">${value}</div></div>`
+
+simCover = coverPct(windSim)
+simRatio = Math.pow(windSim / 7, 3.41)
+ratioCurve = d3.range(2, 25.01, 0.25).map(U => ({U, R: Math.pow(U / 7, 3.41)}))
+
+html`<div class="sim-readouts">
+  ${readoutCard("Whitecap cover", fmtPct(simCover) + "%", "#f59e0b")}
+  ${readoutCard("Supply vs 7 m/s", simRatio.toPrecision(2) + "×", "#38bdf8")}
+</div>`
+```
+
+```{ojs}
+//| echo: false
+Plot.plot({
+  width: Math.min(width, 720),
+  height: 320,
+  marginLeft: 64,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {label: "Wind speed at 10 m, U (m/s) →", domain: [0, 25], grid: true},
+  y: {type: "log", label: "↑ Relative supply (× the 7 m/s supply)", domain: [0.01, 100], ticks: [0.01, 0.1, 1, 10, 100], tickFormat: d => `${d}×`, grid: true},
+  marks: [
+    Plot.ruleY([1], {stroke: "#cbd5e1", strokeDasharray: "4 3", strokeOpacity: 0.6}),
+    Plot.line(ratioCurve, {x: "U", y: "R", stroke: "#38bdf8", strokeWidth: 2.5}),
+    Plot.text([{U: 7, R: 1, lbl: "7 m/s = 1×"}], {x: "U", y: "R", text: "lbl", dy: -10, textAnchor: "start", fill: "#cbd5e1"}),
+    Plot.text([{U: 25, R: Math.pow(25 / 7, 3.41), lbl: "relative supply"}], {x: "U", y: "R", text: "lbl", dy: -10, textAnchor: "end", fill: "#38bdf8"}),
+    Plot.dot([{U: windSim, R: simRatio}], {x: "U", y: "R", r: 6, fill: "#f59e0b"})
+  ]
+})
+```
+
+**Figure 2.** Relative sea spray supply $R$ (log scale) and whitecap cover at the wind speed you choose. The orange dot is the current setting. $R = (U/7)^{3.41}$ is the supply relative to 7 m/s. Assumptions: the spray produced per unit whitecap area stays fixed, so emission is proportional to whitecap cover; no effect of water temperature, no transport, no removal, and one wind speed over the whole sea. The fit is empirical.
+:::
+
+## What is in a sea spray particle
+
+Many airborne sea spray particles are sea salt aerosol (SSA). Organic matter is also part of their composition. de Leeuw and colleagues report that water-insoluble organic matter, which does not dissolve in water, contributes substantially to particles whose radius is below 0.25 µm at 80% relative humidity[^deleeuw2011]. Relative humidity is the water vapor in the air compared with the most it could hold at that temperature. The radius at 80% humidity is written $r_{80}$.
+
+In places with high biological activity, that organic matter can be the dominant part of these small particles[^deleeuw2011]. Laboratory work also finds that production depends on water temperature, salinity and organic matter[^deleeuw2011]. The composition of a particle therefore depends on the water it came from.
+
+## Mass versus number
+
+Clouds form when water vapor condenses on tiny particles called cloud condensation nuclei (CCN). Droplets form only when the air is supersaturated, meaning more humid than 100% relative humidity. Quinn and colleagues analyzed size measurements from the Pacific, Southern, Arctic and Atlantic oceans[^quinn2017]. Their key result is that, outside the high southern latitudes and in air supersaturated by 0.1 to 1.0%, sea spray makes up less than 30% of CCN[^quinn2017].
+
+Between 70°S and 80°N, the CCN population is mostly sulfate that is not sea salt. Quinn and colleagues link this to large-scale weather that pulls particles down from the free troposphere, the air above the layer that the ground stirs[^quinn2017]. The sources read here measure how many CCN come from sea spray, not how much aerosol mass it makes.
+
+Quinn and colleagues tie this sulfate to air brought down from above, not to a specific marine gas. The [post on DMS oxidation](dms-oxidation-climate.qmd) covers one marine sulfur pathway, but this source does not show that pathway makes the sulfate.
+
+Large particles still matter for rain. Feingold and colleagues modeled stratocumulus, which are low, flat cloud layers[^feingold1999]. Giant CCN, with a radius above 5 µm, are the particles that matter here. At typical CCN counts of 50 to 250 per cubic centimeter, giant CCN were enough to move a cloud that did not rain into one that did[^feingold1999]. At lower CCN counts, drizzle is often active anyway, and giant CCN add little[^feingold1999].
+
+A particle must reach a critical size before it grows into a droplet, which the [Köhler theory post](kohler-theory.qmd) explains. Once drops form, the [warm rain post](warm-rain.qmd) describes how they grow.
+
+## What this means for you
+
+Wind is the main dial. Under the proportional assumption in Figure 2, a 15 m/s wind gives about 13 times the sea spray supply of a 7 m/s wind. Treat that ratio as a rough guide, because the emission exponent is uncertain.
+
+When a source says sea spray makes the cloud seeds in a region, ask which region. Outside the high southern latitudes, and for supersaturations of 0.1 to 1.0%, the analysis by Quinn and colleagues puts sea spray below 30% of CCN.
+
+Treat sea spray totals as ranges. Source functions give global annual mass for dry particles under 10 µm from roughly 3 to 70 Pg/yr[^grythe2014]. A single number from one function hides that spread.
+
+## Key takeaways
+
+- Sea spray comes from bubbles bursting at the sea surface. Film drops come from the cap and jet drops from the base, and jet drops can supply up to 43% of particles below 1 µm by number.
+- Whitecap cover rises with wind speed to about the 3.41 power in the Monahan and O'Muircheartaigh fit. Emission rises roughly as the 3.5 power in Grythe and colleagues' best fit.
+- Organic matter contributes substantially to sea spray particles with a radius below 0.25 µm at 80% humidity. It can dominate those particles where biological activity is high.
+- Outside the high southern latitudes, and for supersaturations of 0.1 to 1.0%, sea spray supplies less than 30% of CCN. Large salt particles can start rain in stratocumulus at typical CCN counts, but add little when CCN counts are low.
+
+## References
+
+[^wang2017]: Wang, X. et al. The role of jet and film drops in controlling the mixing state of submicron sea spray aerosol particles. *Proc. Natl Acad. Sci. USA* **114**, 6978–6983 (2017). https://doi.org/10.1073/pnas.1702420114
+[^monahan1980]: Monahan, E. C. & O'Muircheartaigh, I. G. Optimal power-law description of oceanic whitecap coverage dependence on wind speed. *J. Phys. Oceanogr.* **10**, 2094–2099 (1980). https://doi.org/10.1175/1520-0485(1980)010<2094:OPLDOO>2.0.CO;2
+[^deleeuw2011]: de Leeuw, G. et al. Production flux of sea spray aerosol. *Rev. Geophys.* **49**, 2010RG000349 (2011). https://doi.org/10.1029/2010RG000349
+[^grythe2014]: Grythe, H. et al. A review of sea-spray aerosol source functions using a large global set of sea salt aerosol concentration measurements. *Atmos. Chem. Phys.* **14**, 1277–1297 (2014). https://doi.org/10.5194/acp-14-1277-2014
+[^jaegle2011]: Jaeglé, L., Quinn, P. K., Bates, T. S., Alexander, B. & Lin, J.-T. Global distribution of sea salt aerosols: new constraints from in situ and remote sensing observations. *Atmos. Chem. Phys.* **11**, 3137–3157 (2011). https://doi.org/10.5194/acp-11-3137-2011
+[^quinn2017]: Quinn, P. K., Coffman, D. J., Johnson, J. E., Upchurch, L. M. & Bates, T. S. Small fraction of marine cloud condensation nuclei made up of sea spray aerosol. *Nat. Geosci.* **10**, 674–679 (2017). https://doi.org/10.1038/ngeo3003
+[^feingold1999]: Feingold, G., Cotton, W. R., Kreidenweis, S. M. & Davis, J. T. The impact of giant cloud condensation nuclei on drizzle formation in stratocumulus: implications for cloud radiative properties. *J. Atmos. Sci.* **56**, 4100–4117 (1999). https://doi.org/10.1175/1520-0469(1999)056<4100:TIOGCC>2.0.CO;2
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-up" href="/series/aerosols-climate/index.html"><span>Series</span>Aerosols and climate</a><a class="mf-next" href="/blogs/dms-oxidation-climate.html"><span>Next</span>DMS oxidation and marine clouds</a></div>
+<!-- CURRICULUM_FOOTER_END -->

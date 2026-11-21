@@ -12,7 +12,7 @@ categories:
 ---
 
 <!-- CURRICULUM_HEADER_START -->
-<div class="mh"><p class="mh-crumb"><a href="/series/air-land-climate/index.html">Air, Land and Climate</a><span class="sep">·</span>Part 2 · Where aerosols come from</p><p class="mh-facts"><span class="lvl lvl-advanced">Advanced</span></p><p class="mh-assumes">Assumes <a href="/blogs/primary-and-secondary-aerosols.html">Primary and secondary aerosols</a> and <span class="unwritten" title="not written yet">Exposure–response curves</span>.</p></div>
+<div class="mh"><p class="mh-crumb"><a href="/series/air-land-climate/index.html">Air, Land and Climate</a><span class="sep">·</span>Part 2 · Where aerosols come from</p><p class="mh-facts"><span class="lvl lvl-advanced">Advanced</span></p><p class="mh-assumes">Assumes <a href="/blogs/primary-and-secondary-aerosols.html">Primary and secondary aerosols</a> and <a href="/blogs/exposure-response-curves.html">Exposure–response curves</a>.</p></div>
 <!-- CURRICULUM_HEADER_END -->
 
 ::: {.callout-note appearance="simple" icon=false}

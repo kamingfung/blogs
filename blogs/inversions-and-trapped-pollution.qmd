@@ -183,3 +183,4 @@ Other lids last longer. In the same basin, winter inversions built up over one o
 <!-- CURRICULUM_FOOTER_START -->
 <div class="mf"><a class="mf-prev" href="/blogs/lapse-rates-and-stability.html"><span>Previous</span>Lapse rates and stability</a><a class="mf-up" href="/series/cloud-formation/index.html"><span>Series</span>How clouds form</a><a class="mf-next" href="/blogs/parcel-lifter.html"><span>Next</span>Lift a parcel yourself</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+

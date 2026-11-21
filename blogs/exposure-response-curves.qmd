@@ -1,0 +1,220 @@
+---
+title: "Exposure–response curves"
+description: "After this post you can read a curve of relative risk against long-term PM2.5, say which part of the curve the evidence supports, and work out what one microgram of cleaner air is worth at a given baseline."
+date: 2026-11-20
+categories:
+- air quality
+- aerosols
+- public health
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/air-land-climate/index.html">Air, Land and Climate</a><span class="sep">·</span>Part 11 · Air pollution and health</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">School chemistry. Parts 1 and 5 of Clouds and Aerosols help but are not required.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+An exposure–response curve gives the relative risk (RR) of death at a long-term concentration of fine particulate matter (PM2.5), compared with a low reference. Large cohort studies supply its points, so each part of the curve is only as good as the cohorts behind it. Cohorts from Europe and North America reached lower concentrations, and direct evidence at the high end is thin. The Global Exposure Mortality Model (GEMM) is steepest at low concentrations, so each microgram removed there buys more risk reduction than one removed at high concentrations. The curve also moves the answer a lot: the GEMM gives 8.9 million deaths worldwide in 2015, against 4.0 million from the older integrated model.
+:::
+
+## What the curve says
+
+A curve answers one question: how much does a long-term exposure raise the chance of dying? It divides the risk at concentration $C$ by the risk at a low reference, so the reference itself has an RR of 1:
+
+$$\text{RR}(C) = \frac{\text{risk at } C}{\text{risk at the reference}}$$
+
+Here $C$ is the long-term average PM2.5 concentration, in micrograms per cubic meter (µg m⁻³). An RR of 1.25 means the risk is 25 percent higher than at the reference. The [units post](units-standards-and-aqi.qmd), *Units, standards, and what "unhealthy" means*, explains why averaging time matters for a concentration like this. [What PM2.5 is](what-pm2-5-is.qmd) explains the particle size that defines it.
+
+Relative risks come from cohort studies. A cohort study follows a large group of people for years and compares death rates across exposure levels. A US Medicare study followed 60,925,443 beneficiaries from 2000 to 2012. It found that all-cause mortality rose 7.3 percent for each 10 µg m⁻³ of PM2.5 (95 percent confidence interval (CI) 7.1 to 7.5 percent).[^di2017] That is an RR of 1.073 per 10 µg m⁻³.
+
+The GEMM was built the same way. It used 41 cohorts from 16 countries, all studies of outdoor air pollution.[^burnett2018] Its reference is 2.4 µg m⁻³, the lowest concentration observed in any of those cohorts. Below that value the authors assumed no change in risk.[^burnett2018] The flat part of the curve is therefore a modeling choice. It is not evidence of a safe threshold.
+
+## Where the evidence comes from
+
+The curve is only as reliable as the data at each concentration. Burnett and colleagues wrote that direct evidence on the shape of the risk at the high concentrations seen in many places is lacking.[^burnett2014]
+
+Cohorts from Europe and North America did not reach far up the scale. The GEMM team added a Chinese male cohort with outdoor PM2.5 up to 84 µg m⁻³. The authors wrote that this cohort greatly extended the range observed in high-income countries in Europe and North America.[^burnett2018] A US Medicare study found significant evidence of adverse effects at concentrations below current national standards.[^di2017]
+
+Older curves filled the high end with other evidence. The integrated exposure–response (IER) function, used for Global Burden of Disease (GBD) estimates, combined ambient air studies with studies of second-hand smoke, household solid-fuel cooking and active smoking. Smoking doses were converted to equivalent PM2.5 exposures using inhaled particle mass.[^burnett2014] The GEMM dropped that borrowing. The authors noted that the older approach required assumptions about equivalent exposure and toxicity.[^burnett2014]^,^[^burnett2018]
+
+## Shapes in use
+
+The GEMM paper lists linear, log-linear, supralinear, sublinear and S-shaped families.[^burnett2018] Three of them matter here.
+
+A **log-linear** curve rises at a constant percent per microgram. In the notation of the GEMM paper it is
+
+$$\text{LL}(z) = \exp\{\beta z\}, \qquad z = \max(0, C - 2.4)$$
+
+where $\beta$ is the slope per µg m⁻³ and $z$ is the concentration above the reference. The Medicare all-cause result gives $\beta = \ln(1.073)/10 = 0.007046$ per µg m⁻³.
+
+A **supralinear** curve is steeper at low concentrations than at high ones. The GEMM authors describe their curve as a "supralinear association over lower exposures and then a near-linear association at higher concentrations."[^burnett2018] Its formula, with $\log$ the natural logarithm, is
+
+$$\text{GEMM}(c) = \exp\left\{ \theta \cdot \frac{\log(1 + z/\alpha)}{1 + \exp\{-(z - \mu)/\nu\}} \right\}, \qquad z = \max(0, c - 2.4)$$
+
+with $c$ in µg m⁻³. The parameters for non-accidental mortality (non-communicable disease plus lower respiratory infection, NCD + LRI, for adults aged 25 and up) are $\theta = 0.1430$, $\alpha = 1.6$, $\mu = 15.5$ and $\nu = 36.8$.[^burnett2018] The article's main text does not print them, so they come from the authors' public workbook. The paper's own figure uses the 60 to 64 age group, which has a different $\theta$.
+
+The third shape is the **integrated** (IER) curve. Its form is
+
+$$\text{RR}_\text{IER}(z) = \begin{cases} 1, & z < z_\text{cf} \\ 1 + \alpha\{1 - \exp[-\gamma(z - z_\text{cf})^\delta]\}, & z \ge z_\text{cf} \end{cases}$$
+
+where $z$ is the concentration in µg m⁻³ and $z_\text{cf}$ is the counterfactual, the value below which no extra risk is assumed.[^burnett2014] This post does not quote its fitted values, so it does not plot the IER.
+
+::: {.callout-note collapse="true"}
+## Where the GEMM numbers come from
+
+Each value below comes from the GEMM formula above with $\theta = 0.1430$, $\alpha = 1.6$, $\mu = 15.5$ and $\nu = 36.8$. They are my calculations from the published formula. The paper's own confidence band is not reproduced.
+
+- At 5 µg m⁻³, $z = 2.6$. Then $\log(1 + 2.6/1.6) = 0.965$, and $1 + \exp\{-(2.6 - 15.5)/36.8\} = 2.420$, so $\text{RR} = \exp(0.1430 \times 0.965 / 2.420) = 1.059$.
+- At 100 µg m⁻³, $z = 97.6$. Then $\log(1 + 97.6/1.6) = 4.127$, and $1 + \exp\{-(97.6 - 15.5)/36.8\} = 1.107$, so $\text{RR} = \exp(0.1430 \times 4.127 / 1.107) = 1.704$.
+
+The log-linear curve at 100 µg m⁻³ gives $\exp(0.007046 \times 97.6) = 1.989$.
+:::
+
+Table 1 lists both curves at five concentrations.
+
+| Concentration (µg m⁻³) | GEMM RR | Log-linear RR |
+|---|---|---|
+| 5 | 1.059 | 1.018 |
+| 10 | 1.118 | 1.055 |
+| 25 | 1.237 | 1.173 |
+| 50 | 1.413 | 1.398 |
+| 100 | 1.704 | 1.989 |
+
+*Table 1.* Values computed from the two formulas above, with the 2.4 µg m⁻³ reference. These are my calculations, not values printed in the paper.
+
+Figure 1 draws both curves. The GEMM rises 5.9 percent between the reference and 5 µg m⁻³, then flattens. The log-linear line keeps rising at the same percent per microgram, so at 100 µg m⁻³ it ends above the GEMM. The GEMM is the newer model, and the log-linear line uses a US all-cause slope, so the two lines describe slightly different outcomes.
+
+```{ojs}
+//| echo: false
+// Shared by Figure 1 and Figure 2. Both curves use the 2.4 µg m⁻³ reference.
+ref = 2.4
+
+// GEMM relative risk, NCD + LRI mortality, ages 25 and up.
+gemmRR = c => {
+  const z = Math.max(0, c - ref);
+  return Math.exp(0.1430 * Math.log(1 + z / 1.6) / (1 + Math.exp(-(z - 15.5) / 36.8)));
+}
+
+// Log-linear relative risk, all-cause slope from Di et al. (2017): +7.3% per 10 µg m⁻³.
+betaLL = Math.log(1.073) / 10
+llRR = c => Math.exp(betaLL * Math.max(0, c - ref))
+
+// Risk fall (%) for a 1 µg m⁻³ cut from baseline c. The cut stops at the reference.
+dropPct = (f, c) => (1 - f(Math.max(ref, c - 1)) / f(c)) * 100
+
+curvePts = d3.range(0, 100.5, 0.5).map(c => ({c, gemm: gemmRR(c), ll: llRR(c)}))
+```
+
+```{ojs}
+//| echo: false
+Plot.plot({
+  width: Math.min(width, 720),
+  height: 360,
+  marginLeft: 55,
+  x: {label: "Long-term PM2.5 (µg m⁻³) →", domain: [0, 100]},
+  y: {label: "↑ Relative risk (RR)", domain: [1, 2.1], grid: true},
+  marks: [
+    Plot.frame({stroke: "currentColor", strokeOpacity: 0.3}),
+    Plot.ruleY([1], {stroke: "currentColor", strokeOpacity: 0.4}),
+    Plot.ruleX([ref], {stroke: "currentColor", strokeDasharray: "2 3", strokeOpacity: 0.6}),
+    Plot.text([{c: 2.8, y: 1.95, t: "reference 2.4"}], {x: "c", y: "y", text: "t", textAnchor: "start", fill: "currentColor"}),
+    Plot.line(curvePts, {x: "c", y: "ll", stroke: "#38bdf8", strokeWidth: 2.5, strokeDasharray: "6 4"}),
+    Plot.line(curvePts, {x: "c", y: "gemm", stroke: "#f59e0b", strokeWidth: 2.5}),
+    Plot.text([{c: 99, y: llRR(99), t: "Log-linear, Medicare all-cause slope"}], {x: "c", y: "y", text: "t", textAnchor: "end", dy: -10, fill: "currentColor"}),
+    Plot.text([{c: 99, y: gemmRR(99), t: "GEMM, NCD + LRI, ages 25+"}], {x: "c", y: "y", text: "t", textAnchor: "end", dy: 16, fill: "currentColor"})
+  ]
+})
+```
+
+**Figure 1.** Relative risk against long-term PM2.5 from 0 to 100 µg m⁻³, relative to the 2.4 µg m⁻³ reference. The dashed blue line is log-linear with the all-cause slope from Di et al. (7.3 percent per 10 µg m⁻³). The solid orange line is the GEMM for NCD + LRI mortality, ages 25 and up. Both curves are flat at RR = 1 below the reference. The chart is computed in the page from the formulas above.
+
+## What is one microgram worth?
+
+The risk fall from a 1 µg m⁻³ cut is the drop in RR, as a share of the RR before the cut:
+
+$$\text{risk fall} = 1 - \frac{\text{RR}(C - 1)}{\text{RR}(C)}$$
+
+Figure 2 uses this formula at the baseline you choose. The cut stops at the 2.4 µg m⁻³ reference, so a baseline near 2.4 gets a smaller cut.
+
+::: {.sim-card}
+#### What is one microgram worth?
+
+```{ojs}
+//| echo: false
+viewof baseC = Inputs.range([2, 100], {value: 10, step: 0.5, label: "Baseline PM2.5 (µg m⁻³)"})
+
+gDrop = dropPct(gemmRR, baseC)
+lDrop = dropPct(llRR, baseC)
+
+dropCurve = d3.range(2, 100.5, 0.5).map(c => ({c, g: dropPct(gemmRR, c), l: dropPct(llRR, c)}))
+
+html`<div class="sim-readouts">
+  <div class="sim-readout">
+    <div class="sim-readout-label">GEMM: risk falls by, per 1 µg m⁻³ cut</div>
+    <div class="sim-readout-value" style="color:#f59e0b">${gDrop.toFixed(2)} %</div>
+  </div>
+  <div class="sim-readout">
+    <div class="sim-readout-label">Log-linear: risk falls by, per 1 µg m⁻³ cut</div>
+    <div class="sim-readout-value" style="color:#38bdf8">${lDrop.toFixed(2)} %</div>
+  </div>
+</div>`
+```
+
+```{ojs}
+//| echo: false
+Plot.plot({
+  width: Math.min(width, 720),
+  height: 300,
+  marginLeft: 55,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {label: "Baseline PM2.5 (µg m⁻³) →", domain: [2, 100], grid: true},
+  y: {label: "↑ Risk fall per 1 µg m⁻³ cut (%)", domain: [0, 3], grid: true},
+  marks: [
+    Plot.line(dropCurve, {x: "c", y: "g", stroke: "#f59e0b", strokeWidth: 2.5}),
+    Plot.line(dropCurve, {x: "c", y: "l", stroke: "#38bdf8", strokeWidth: 2.5, strokeDasharray: "6 4"}),
+    Plot.ruleX([baseC], {stroke: "#cbd5e1", strokeDasharray: "2 3"}),
+    Plot.text([{c: 20, y: 1.0, t: "GEMM"}], {x: "c", y: "y", text: "t", textAnchor: "start", fill: "#f59e0b"}),
+    Plot.text([{c: 70, y: 0.9, t: "Log-linear (Medicare all-cause slope)"}], {x: "c", y: "y", text: "t", textAnchor: "end", fill: "#38bdf8"})
+  ]
+})
+```
+
+**Figure 2.** Percent of risk removed by a 1 µg m⁻³ cut, at each baseline PM2.5 from 2 to 100 µg m⁻³. The vertical line marks the baseline set with the slider. The log-linear line stays at 0.70 percent from 3.4 µg m⁻³ upward, the same percent at every baseline. The GEMM peaks just above the reference, then falls as the baseline rises. The two lines cross near 15 µg m⁻³. Both curves use the 2.4 µg m⁻³ reference. The GEMM uses NCD + LRI parameters and the log-linear line uses the all-cause slope, so they describe different outcomes.
+:::
+
+Below about 15 µg m⁻³ the GEMM removes more risk per microgram than the log-linear line. Above that, the log-linear line removes more. Figure 2 shows this crossing.
+
+## Confounding and composition
+
+A curve describes the people and places that produced its data. The GEMM used cohort studies of outdoor air pollution only, so its curve does not borrow smoking evidence.[^burnett2018] Outside the range of the cohorts, the curve depends on the model's form, not on direct observations.
+
+Composition is the second limit. Risk assessments of outdoor particles have assumed that toxicity depends on mass concentration alone.[^burnett2018] The curve counts a microgram of PM2.5 the same whatever it is made of. Which sources harm health most is covered in [Organic aerosols: health versus climate](organic-aerosols-health-climate.qmd).
+
+## What this means for you
+
+Suppose PM2.5 falls by 1 µg m⁻³. Starting at 5 µg m⁻³, the GEMM says risk falls by about 1.7 percent. The log-linear line says 0.7 percent. Starting at 50 µg m⁻³, the GEMM says 0.5 percent, and the log-linear line still says 0.7 percent. The curve, and where you start on it, decides what a microgram is worth.
+
+For a modeler, the curve is a structural choice. State the reference, name the cohorts behind each range, and say which curve a result uses.
+
+## Key takeaways
+
+- The World Health Organization (WHO) 2021 air quality review says existing evidence generally supports a linear or supralinear, no-threshold relationship for the pollutant and outcome pairs it reviewed.[^who2021]
+- A supralinear curve means each microgram removed at low concentration buys more. WHO cites a meta-analysis with a relative risk of 1.08 per 10 µg m⁻³ for non-accidental mortality, which it calls an indication of a supralinear relationship.[^who2021]
+- The GEMM's flat part below 2.4 µg m⁻³ is an assumption set by the lowest cohort value. It is not a finding of a threshold.[^burnett2018]
+- Older curves for high concentrations borrowed evidence from household smoke and smoking. The GEMM dropped that borrowing.[^burnett2014]^,^[^burnett2018]
+- Curves treat PM2.5 of any composition as equally harmful per unit mass. That is an assumption, not a measurement.[^burnett2018]
+- Curve choice changes the global answer. The GEMM estimates 8.9 million deaths in 2015 (95 percent CI 7.5 to 10.3 million), against 4.0 million for the GBD IER (3.3 to 4.8 million).[^burnett2018]
+
+[^di2017]: Di, Q. et al. Air pollution and mortality in the Medicare population. *N. Engl. J. Med.* **376**, 2513–2522 (2017). https://doi.org/10.1056/NEJMoa1702747
+
+[^burnett2014]: Burnett, R. T. et al. An integrated risk function for estimating the global burden of disease attributable to ambient fine particulate matter exposure. *Environ. Health Perspect.* **122**, 397–403 (2014). https://doi.org/10.1289/ehp.1307049
+
+[^burnett2018]: Burnett, R. et al. Global estimates of mortality associated with long-term exposure to outdoor fine particulate matter. *Proc. Natl Acad. Sci. USA* **115**, 9592–9597 (2018). https://doi.org/10.1073/pnas.1803222115
+
+[^who2021]: WHO. *WHO Global Air Quality Guidelines: Particulate Matter (PM2.5 and PM10), Ozone, Nitrogen Dioxide, Sulfur Dioxide and Carbon Monoxide* (World Health Organization, 2021). https://iris.who.int/handle/10665/345329 (ISBN 9789240034228)
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/the-land-model-clm.html"><span>Previous</span>The land model: CLM</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/monitors-sensors-and-satellites.html"><span>Next</span>Monitors, sensors and satellites</a></div>
+<!-- CURRICULUM_FOOTER_END -->

@@ -237,3 +237,4 @@ Warm rain is a large share of tropical rain, but the share depends on the defini
 <!-- CURRICULUM_FOOTER_START -->
 <div class="mf"><a class="mf-prev" href="/blogs/drop-coalescence.html"><span>Previous</span>How drops merge</a><a class="mf-up" href="/series/cloud-formation/index.html"><span>Series</span>How clouds form</a><a class="mf-next" href="/blogs/cloud-types.html"><span>Next</span>Cloud types</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+

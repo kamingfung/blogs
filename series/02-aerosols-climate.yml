@@ -12,6 +12,7 @@ parts:
   - id: aerosols-climate/sea-spray
     title: Sea spray
     level: introductory
+    path: blogs/sea-spray.md
     requires:
     - cloud-formation/where-ccn-come-from
   - id: aerosols-climate/dms-oxidation-and-marine-clouds
@@ -43,5 +44,6 @@ parts:
   - id: aerosols-climate/ship-tracks
     title: Ship tracks
     level: introductory
+    path: blogs/ship-tracks.md
     requires:
     - aerosols-climate/aerosol-indirect-effects
