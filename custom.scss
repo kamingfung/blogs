@@ -94,6 +94,8 @@ main.content table {
   h4 { color: #38bdf8; margin-top: 0; }
   // Observable Inputs and Plot both read currentColor off the container.
   form, .observablehq--inspect { color: #cbd5e1; }
+  // The number box beside each range slider otherwise takes the page's light background.
+  input[type=number] { background: #1e293b; color: #f8fafc; border: 1px solid #334155; }
   figure { background: transparent; }
 }
 .sim-readouts {
