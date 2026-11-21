@@ -142,6 +142,10 @@ def validate(seminars, moved, by_id, by_path) -> None:
             if req not in by_id:
                 problems.append(f"{mod['id']} requires unknown id {req!r}")
 
+    for key in list(by_path) + [x["path"] for x in seminars]:
+        if source_of(key) and not _meta(key).get("date"):
+            problems.append(f"no date in frontmatter: {source_of(key)}")
+
     claimed = set(by_path) | {x["path"] for x in seminars + moved}
     on_disk = set()
     for pattern in ("blogs/**/*.md", "blogs/**/*.qmd", "blogs/**/*.ipynb"):
@@ -189,15 +193,7 @@ def _meta(key: str) -> dict:
 
 
 def post_date(key: str) -> str:
-    date = _meta(key).get("date")
-    if date:
-        return str(date)[:10]
-    rel = source_of(key)
-    try:
-        stamp = os.path.getmtime(os.path.join(ROOT, rel))
-        return datetime.fromtimestamp(stamp).strftime("%Y-%m-%d")
-    except Exception:
-        return "1970-01-01"
+    return str(_meta(key)["date"])[:10]
 
 
 def description(key: str) -> str:

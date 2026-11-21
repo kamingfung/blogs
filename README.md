@@ -109,10 +109,6 @@ Each of these was measured on this repo, not inferred from documentation.
 - **Wrangler must be v4.** The action's default is 3.90, which predates
   assets-only Workers and fails with `Missing entry-point` on a config that has
   `assets` but no `main`. Hence `wranglerVersion: "4"` in the workflow.
-- **`fetch-depth: 0` is load-bearing.** The curriculum pre-render step falls
-  back to `git log` for any post without an explicit date. With a shallow clone
-  that becomes file mtime — checkout time on a fresh runner — so those posts all
-  get the same date and the homepage ordering collapses.
 
 ## Generated files
 

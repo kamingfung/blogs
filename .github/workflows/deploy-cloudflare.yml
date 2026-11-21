@@ -18,11 +18,6 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-        with:
-          # tools/prerender.py falls back to git history for any post without
-          # an explicit date. A shallow clone would make those collapse to the
-          # checkout mtime and scramble the homepage ordering.
-          fetch-depth: 0
 
       - uses: quarto-dev/quarto-actions/setup@8a96df13519ee81fd526f2dfca5962811136661b # v2
         with:
