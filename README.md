@@ -19,9 +19,7 @@ series/*.yml             # Source of truth for modules, order, levels, prerequis
 tools/
 ├── prerender.py         # Generates the palette stylesheets and the sidebar/series pages
 ├── fallcolor.py         # Copied unchanged from the MkDocs repo
-├── palette.yml          # Copied unchanged
-├── port_from_mkdocs.py  # .md  -> .qmd
-└── port_notebook.py     # .ipynb frontmatter
+└── palette.yml          # Copied unchanged
 index.md                 # Homepage
 blogs/
 ├── <name>.qmd           # Prose modules

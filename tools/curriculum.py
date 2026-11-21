@@ -654,12 +654,9 @@ def run() -> int:
         text = splice(text, name, block, _at_end)
     write_if_changed(home, text)
 
-    touched, skipped = 0, 0
+    touched = 0
     for key, mod in by_path.items():
         rel = source_of(key)
-        if rel.endswith(".md"):  # not ported to .qmd yet; leave the source alone
-            skipped += 1
-            continue
         header, footer = module_header(mod, by_id), module_footer(mod)
         edit = inject_ipynb if rel.endswith(".ipynb") else inject_qmd
         touched += bool(edit(rel, header, footer))
@@ -667,7 +664,6 @@ def run() -> int:
     print(
         f"curriculum: {len(series)} series, {len(by_id)} modules, "
         f"{len(by_path)} written; {touched} page(s) updated"
-        + (f", {skipped} still .md" if skipped else "")
     )
     return 0
 
