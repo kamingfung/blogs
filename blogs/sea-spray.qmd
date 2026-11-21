@@ -12,7 +12,7 @@ categories:
 ::: {.callout-note appearance="simple" icon=false}
 ## TL;DR
 
-Sea spray comes from bubbles that burst at the sea surface. Each bubble throws out film drops from its thin cap and jet drops from its base, and the jet drops can supply up to 43% of the particles smaller than 1 µm by number. Wind speed sets how much of the sea is covered by whitecaps, and that cover rises roughly as the 3.4th power of wind speed. Outside the high southern latitudes, sea spray supplies less than 30% of the cloud condensation nuclei (CCN), the particles clouds form on. Large salt particles still give rain a head start.
+Sea spray comes from bubbles that burst at the sea surface. Each bubble throws out film drops from its thin cap and jet drops from its base, and the jet drops can supply up to 43% of the particles smaller than 1 µm by number. Wind speed sets how much of the sea is covered by whitecaps, and that cover rises roughly as the 3.4th power of wind speed. Outside the high southern latitudes, and for supersaturations of 0.1 to 1.0%, sea spray supplies less than 30% of the cloud condensation nuclei (CCN), the particles clouds form on. Large salt particles still give rain a head start.
 :::
 
 ## Bubbles, not splashes
@@ -57,13 +57,13 @@ Plot.plot({
 
 **Figure 1.** Whitecap cover $W$ (%) against wind speed $U$ (m/s), from the fit above, on a logarithmic vertical axis. Orange dots mark 5, 10, 15 and 20 m/s, with values labeled. The curve starts at 2 m/s, where the cover is about 0.004%, because the formula gives zero at zero wind and a log axis cannot show zero. The fit is empirical, so treat its upper end with care.
 
-Whitecap cover is not the same as emission. Emission is the amount of spray that reaches the air each second. Emission equals the whitecap cover times the spray each patch of foam produces[^deleeuw2011]. de Leeuw and colleagues report that estimates of that per-area production still differ by about an order of magnitude[^deleeuw2011].
+Whitecap cover is not the same as emission. Emission is the amount of spray that reaches the air each second. Emission equals the whitecap cover times the spray produced per unit whitecap area[^deleeuw2011]. de Leeuw and colleagues report that estimates of that per-area production still differ by about an order of magnitude[^deleeuw2011].
 
 Grythe and colleagues compared 21 published source functions, which are formulas that predict emission, with a large global set of sea salt measurements[^grythe2014]. Their best fit makes production scale with wind speed to the power 3.5. They call wind the main driver of sea spray production[^grythe2014]. That exponent is close to the 3.41 for cover, but the two are different quantities.
 
-Sea surface temperature (SST) also matters. Grythe and colleagues found that higher temperatures give higher production, though the mechanism is unclear[^grythe2014]. Relative to the earlier Gong source function, a version that uses both wind and temperature moves emission. It rises 50% in the tropics and falls 40% at mid and high latitudes[^jaegle2011].
+Sea surface temperature (SST) also matters. Grythe and colleagues found that higher temperatures give higher production, though the mechanism is unclear[^grythe2014]. Relative to the earlier Gong source function, a version that uses both wind and temperature changes the modeled sea salt burden, the mass of sea salt the atmosphere holds. The burden rises 50% in the tropics and falls 40% at mid and high latitudes[^jaegle2011].
 
-That shift matters for the Southern Ocean. With Gong's function, a model overestimated cruise measurements of coarse sea salt mass over cold waters, including the Southern Ocean, by factors of 2 to 3 at high wind speeds[^jaegle2011]. The temperature-dependent function shifts that emission toward the tropics[^jaegle2011]. How large the Southern Ocean source is therefore depends on which function a model uses.
+That shift matters for the Southern Ocean. With Gong's function, a model overestimated cruise measurements of coarse sea salt mass over cold waters, including the Southern Ocean, by factors of 2 to 3 at high wind speeds[^jaegle2011]. The temperature-dependent function shifts that burden toward the tropics[^jaegle2011]. How much sea salt the Southern Ocean holds in a model therefore depends on which function the model uses.
 
 The spread among source functions is also large. Grythe and colleagues report global annual sea spray mass for dry particles under 10 µm of roughly 3 to 70 petagrams per year (Pg/yr, 10¹⁵ g). Their own function gives 9 Pg/yr[^grythe2014].
 
@@ -72,7 +72,7 @@ The spread among source functions is also large. Grythe and colleagues report gl
 
 Monahan and O'Muircheartaigh also give a least-squares fit to the same combined data, $W = 2.95 \times 10^{-6}\,U^{3.52}$[^monahan1980]. At 10 m/s it gives 0.98% against 0.99% for the fit used above. At 20 m/s it gives 11.2% against 10.5%. The two fits agree near 10 m/s and diverge at the ends of the range. The authors state that both expressions fit the combined data better than any earlier published equation[^monahan1980].
 
-The widget below assumes emission is proportional to whitecap cover. Then the supply at wind speed $U$ relative to the supply at 7 m/s is
+The widget below assumes the spray produced per unit whitecap area stays fixed, so emission is proportional to whitecap cover. Then the supply at wind speed $U$ relative to the supply at 7 m/s is
 
 $$R(U) = \left(\frac{U}{7}\right)^{3.41}$$
 
@@ -121,7 +121,7 @@ Plot.plot({
 })
 ```
 
-**Figure 2.** Relative sea spray supply $R$ (log scale) and whitecap cover at the wind speed you choose. The orange dot is the current setting. $R = (U/7)^{3.41}$ is the supply relative to 7 m/s. Assumptions: emission is proportional to whitecap cover, with no effect of water temperature, no transport and no removal, and one wind speed over the whole sea. The fit is empirical.
+**Figure 2.** Relative sea spray supply $R$ (log scale) and whitecap cover at the wind speed you choose. The orange dot is the current setting. $R = (U/7)^{3.41}$ is the supply relative to 7 m/s. Assumptions: the spray produced per unit whitecap area stays fixed, so emission is proportional to whitecap cover; no effect of water temperature, no transport, no removal, and one wind speed over the whole sea. The fit is empirical.
 :::
 
 ## What is in a sea spray particle
@@ -132,7 +132,7 @@ In places with high biological activity, that organic matter can be the dominant
 
 ## Mass versus number
 
-Clouds form when water vapor condenses on tiny particles called cloud condensation nuclei (CCN). Droplets form only when the air is supersaturated, meaning more humid than 100% relative humidity. Quinn and colleagues analyzed size measurements from the Pacific, Southern, Arctic and Atlantic oceans[^quinn2017]. Their key result is that, with the exception of the high southern latitudes, sea spray makes up less than 30% of CCN in air supersaturated by 0.1 to 1.0%[^quinn2017].
+Clouds form when water vapor condenses on tiny particles called cloud condensation nuclei (CCN). Droplets form only when the air is supersaturated, meaning more humid than 100% relative humidity. Quinn and colleagues analyzed size measurements from the Pacific, Southern, Arctic and Atlantic oceans[^quinn2017]. Their key result is that, outside the high southern latitudes and in air supersaturated by 0.1 to 1.0%, sea spray makes up less than 30% of CCN[^quinn2017].
 
 Between 70°S and 80°N, the CCN population is mostly sulfate that is not sea salt. Quinn and colleagues link this to large-scale weather that pulls particles down from the free troposphere, the air above the layer that the ground stirs[^quinn2017]. The sources read here measure how many CCN come from sea spray, not how much aerosol mass it makes.
 
@@ -146,7 +146,7 @@ A particle must reach a critical size before it grows into a droplet, which the 
 
 Wind is the main dial. Under the proportional assumption in Figure 2, a 15 m/s wind gives about 13 times the sea spray supply of a 7 m/s wind. Treat that ratio as a rough guide, because the emission exponent is uncertain.
 
-When a source says sea spray makes the cloud seeds in a region, ask which region. Outside the high southern latitudes, the analysis by Quinn and colleagues puts sea spray below 30% of CCN.
+When a source says sea spray makes the cloud seeds in a region, ask which region. Outside the high southern latitudes, and for supersaturations of 0.1 to 1.0%, the analysis by Quinn and colleagues puts sea spray below 30% of CCN.
 
 Treat sea spray totals as ranges. Source functions give global annual mass for dry particles under 10 µm from roughly 3 to 70 Pg/yr[^grythe2014]. A single number from one function hides that spread.
 
@@ -154,8 +154,8 @@ Treat sea spray totals as ranges. Source functions give global annual mass for d
 
 - Sea spray comes from bubbles bursting at the sea surface. Film drops come from the cap and jet drops from the base, and jet drops can supply up to 43% of particles below 1 µm by number.
 - Whitecap cover rises with wind speed to about the 3.41 power in the Monahan and O'Muircheartaigh fit. Emission rises roughly as the 3.5 power in Grythe and colleagues' best fit.
-- Sea spray particles are sea salt aerosol with organic matter, and the organic share can dominate the smallest particles where biological activity is high.
-- Outside the high southern latitudes, sea spray supplies less than 30% of CCN. Large salt particles can start rain in stratocumulus at typical CCN counts, but add little when CCN counts are low.
+- Organic matter contributes substantially to sea spray particles with a radius below 0.25 µm at 80% humidity. It can dominate those particles where biological activity is high.
+- Outside the high southern latitudes, and for supersaturations of 0.1 to 1.0%, sea spray supplies less than 30% of CCN. Large salt particles can start rain in stratocumulus at typical CCN counts, but add little when CCN counts are low.
 
 ## References
 
