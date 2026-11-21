@@ -9,6 +9,10 @@ categories:
 - interactive
 ---
 
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/air-land-climate/index.html">Air, Land and Climate</a><span class="sep">·</span>Part 12 · Measuring air quality</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">School chemistry. Parts 1 and 5 of Clouds and Aerosols help but are not required.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
 ::: {.callout-note appearance="simple" icon=false}
 ## TL;DR
 
@@ -173,3 +177,7 @@ For satellites, ask two things. Is the product a column value, or has it been co
 [^nasa-aqua]: NASA. About Aqua: spacecraft stats. https://aqua.nasa.gov/content/about-aqua (fetched 2026-11-20)
 [^nasa-modis]: NASA. Terra MODIS instrument page. https://terra.nasa.gov/about/terra-instruments/modis (fetched 2026-11-20)
 [^epa2024]: U.S. Environmental Protection Agency. Reconsideration of the national ambient air quality standards for particulate matter. *Fed. Regist.* **89**, 16202-16406 (6 March 2024; final rule effective 6 May 2024). 40 CFR Parts 50, 53 and 58. FR Doc. 2024-02637. https://www.federalregister.gov/d/2024-02637
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/exposure-response-curves.html"><span>Previous</span>Exposure–response curves</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/wildfire-smoke.html"><span>Next</span>Wildfire smoke</a></div>
+<!-- CURRICULUM_FOOTER_END -->

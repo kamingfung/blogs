@@ -177,6 +177,7 @@ parts:
       - id: air-land-climate/exposureresponse-curves
         title: "Exposure–response curves"
         level: intermediate
+        path: blogs/exposure-response-curves.md
       - id: air-land-climate/counting-deaths-from-air-pollution
         title: "Counting deaths from air pollution"
         level: intermediate
@@ -188,6 +189,7 @@ parts:
       - id: air-land-climate/monitors-sensors-and-satellites
         title: "Monitors, sensors and satellites"
         level: introductory
+        path: blogs/monitors-sensors-and-satellites.md
       - id: air-land-climate/reanalysis-and-chemical-transport-models
         title: "Reanalysis and chemical transport models"
         level: intermediate
@@ -196,6 +198,7 @@ parts:
       - id: air-land-climate/wildfire-smoke
         title: "Wildfire smoke"
         level: introductory
+        path: blogs/wildfire-smoke.md
       - id: air-land-climate/crop-residue-burning
         title: "Crop residue burning"
         level: intermediate

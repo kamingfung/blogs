@@ -9,6 +9,10 @@ categories:
 - climate
 ---
 
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/aerosols-climate/index.html">Aerosols and climate</a><span class="sep">·</span>Part 1 · Where aerosols come from</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">Assumes <a href="/blogs/where-ccn-come-from.html">Where CCN come from</a>.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
 ::: {.callout-note appearance="simple" icon=false}
 ## TL;DR
 
@@ -166,3 +170,7 @@ Treat sea spray totals as ranges. Source functions give global annual mass for d
 [^jaegle2011]: Jaeglé, L., Quinn, P. K., Bates, T. S., Alexander, B. & Lin, J.-T. Global distribution of sea salt aerosols: new constraints from in situ and remote sensing observations. *Atmos. Chem. Phys.* **11**, 3137–3157 (2011). https://doi.org/10.5194/acp-11-3137-2011
 [^quinn2017]: Quinn, P. K., Coffman, D. J., Johnson, J. E., Upchurch, L. M. & Bates, T. S. Small fraction of marine cloud condensation nuclei made up of sea spray aerosol. *Nat. Geosci.* **10**, 674–679 (2017). https://doi.org/10.1038/ngeo3003
 [^feingold1999]: Feingold, G., Cotton, W. R., Kreidenweis, S. M. & Davis, J. T. The impact of giant cloud condensation nuclei on drizzle formation in stratocumulus: implications for cloud radiative properties. *J. Atmos. Sci.* **56**, 4100–4117 (1999). https://doi.org/10.1175/1520-0469(1999)056<4100:TIOGCC>2.0.CO;2
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-up" href="/series/aerosols-climate/index.html"><span>Series</span>Aerosols and climate</a><a class="mf-next" href="/blogs/dms-oxidation-climate.html"><span>Next</span>DMS oxidation and marine clouds</a></div>
+<!-- CURRICULUM_FOOTER_END -->

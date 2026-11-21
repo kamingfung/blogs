@@ -6,14 +6,14 @@ description: "What the particles in the air do to cloud brightness, and why that
 <dl class="syl-meta">
 <div><dt>Level</dt><dd>Introductory to advanced</dd></div>
 <div><dt>Parts</dt><dd>3</dd></div>
-<div><dt>Modules</dt><dd>2 of 6 written</dd></div>
+<div><dt>Modules</dt><dd>4 of 6 written</dd></div>
 <div class="wide"><dt>Assumes</dt><dd>How clouds form, parts 3 and 4. Some chemistry.</dd></div>
 </dl>
 
 ## Part 1 · Where aerosols come from
 
 <ul class="syl">
-<li class="g">Sea spray<span class="m">Introductory · not written</span></li>
+<li class="w"><a href="/blogs/sea-spray.html">Sea spray</a><span class="m">Introductory</span></li>
 <li class="w"><a href="/blogs/dms-oxidation-climate.html">DMS oxidation and marine clouds</a><span class="m">Advanced</span></li>
 </ul>
 
@@ -28,5 +28,5 @@ description: "What the particles in the air do to cloud brightness, and why that
 
 <ul class="syl">
 <li class="w"><a href="/blogs/aerosol-indirect-effects.html">Aerosol indirect effects</a><span class="m">Intermediate</span></li>
-<li class="g">Ship tracks<span class="m">Introductory · not written</span></li>
+<li class="w"><a href="/blogs/ship-tracks.html">Ship tracks</a><span class="m">Introductory</span></li>
 </ul>

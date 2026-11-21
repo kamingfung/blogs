@@ -6,7 +6,7 @@ description: "Air pollution, the nitrogen cycle, farming, and how land and atmos
 <dl class="syl-meta">
 <div><dt>Level</dt><dd>Introductory to advanced</dd></div>
 <div><dt>Parts</dt><dd>14</dd></div>
-<div><dt>Modules</dt><dd>25 of 39 written</dd></div>
+<div><dt>Modules</dt><dd>28 of 39 written</dd></div>
 <div class="wide"><dt>Assumes</dt><dd>School chemistry. Parts 1 and 5 of Clouds and Aerosols help but are not required.</dd></div>
 </dl>
 
@@ -93,7 +93,7 @@ description: "Air pollution, the nitrogen cycle, farming, and how land and atmos
 ## Part 11 · Air pollution and health
 
 <ul class="syl">
-<li class="g">Exposure–response curves<span class="m">Intermediate · not written</span></li>
+<li class="w"><a href="/blogs/exposure-response-curves.html">Exposure–response curves</a><span class="m">Intermediate</span></li>
 <li class="g">Counting deaths from air pollution<span class="m">Intermediate · not written</span></li>
 <li class="g">Who is exposed<span class="m">Introductory · not written</span></li>
 </ul>
@@ -101,14 +101,14 @@ description: "Air pollution, the nitrogen cycle, farming, and how land and atmos
 ## Part 12 · Measuring air quality
 
 <ul class="syl">
-<li class="g">Monitors, sensors and satellites<span class="m">Introductory · not written</span></li>
+<li class="w"><a href="/blogs/monitors-sensors-and-satellites.html">Monitors, sensors and satellites</a><span class="m">Introductory</span></li>
 <li class="g">Reanalysis and chemical transport models<span class="m">Intermediate · not written</span></li>
 </ul>
 
 ## Part 13 · Smoke and fire
 
 <ul class="syl">
-<li class="g">Wildfire smoke<span class="m">Introductory · not written</span></li>
+<li class="w"><a href="/blogs/wildfire-smoke.html">Wildfire smoke</a><span class="m">Introductory</span></li>
 <li class="g">Crop residue burning<span class="m">Intermediate · not written</span></li>
 </ul>
 

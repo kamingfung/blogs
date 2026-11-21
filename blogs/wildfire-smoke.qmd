@@ -10,6 +10,10 @@ categories:
 - interactive
 ---
 
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/air-land-climate/index.html">Air, Land and Climate</a><span class="sep">·</span>Part 13 · Smoke and fire</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">School chemistry. Parts 1 and 5 of Clouds and Aerosols help but are not required.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
 ::: {.callout-note appearance="simple" icon=false}
 ## TL;DR
 
@@ -151,3 +155,7 @@ For health, one study suggests smoke PM2.5 may need its own exposure term. Only 
 [^yamasoe2006]: Yamasoe, M. A. et al. Effect of smoke and clouds on the transmissivity of photosynthetically active radiation inside the canopy. *Atmos. Chem. Phys.* **6**, 1645–1656 (2006). https://doi.org/10.5194/acp-6-1645-2006
 [^rastogi2022]: Rastogi, B. et al. Enhanced photosynthesis and transpiration in an old growth forest due to wildfire smoke. *Geophys. Res. Lett.* **49**, e2022GL097959 (2022). https://doi.org/10.1029/2022GL097959
 [^wilkinson2021]: Wilkinson, K. L. et al. Evaluating the potential for smoke from stubble burning to taint grapes and wine. *Molecules* **26**, 7540 (2021). https://doi.org/10.3390/molecules26247540
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/monitors-sensors-and-satellites.html"><span>Previous</span>Monitors, sensors and satellites</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a></div>
+<!-- CURRICULUM_FOOTER_END -->

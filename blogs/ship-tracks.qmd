@@ -10,6 +10,10 @@ categories:
 - interactive
 ---
 
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/aerosols-climate/index.html">Aerosols and climate</a><span class="sep">·</span>Part 3 · How aerosols change clouds</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">Assumes <a href="/blogs/aerosol-indirect-effects.html">Aerosol indirect effects</a>.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
 ::: {.callout-note appearance="simple" icon=false}
 ## TL;DR
 
@@ -148,3 +152,7 @@ A sudden, known change in emissions works like a switch in a lab. Its timing is 
 [^skeie2024]: Skeie, R. B. et al. Multi-model effective radiative forcing of the 2020 sulfur cap for shipping. *Atmos. Chem. Phys.* **24**, 13361–13370 (2024). https://doi.org/10.5194/acp-24-13361-2024
 [^zhang2025]: Zhang, J. et al. Radiative forcing from the 2020 shipping fuel regulation is large but hard to detect. *Commun. Earth Environ.* **6**, 18 (2025). https://doi.org/10.1038/s43247-024-01911-9
 [^watsonparris2025]: Watson-Parris, D. et al. Surface temperature effects of recent reductions in shipping SO2 emissions are within internal variability. *Atmos. Chem. Phys.* **25**, 4443–4454 (2025). https://doi.org/10.5194/acp-25-4443-2025
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/aerosol-indirect-effects.html"><span>Previous</span>Aerosol indirect effects</a><a class="mf-up" href="/series/aerosols-climate/index.html"><span>Series</span>Aerosols and climate</a></div>
+<!-- CURRICULUM_FOOTER_END -->

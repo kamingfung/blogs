@@ -225,3 +225,4 @@ A daily value can also hide a bad hour. The 2024 rule recommends, but does not r
 <!-- CURRICULUM_FOOTER_START -->
 <div class="mf"><a class="mf-prev" href="/blogs/ozone-good-up-high-bad-nearby.html"><span>Previous</span>Ozone: good up high, bad nearby</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/primary-and-secondary-aerosols.html"><span>Next</span>Primary and secondary aerosols</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+
