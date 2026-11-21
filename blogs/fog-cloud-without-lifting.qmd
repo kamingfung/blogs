@@ -1,0 +1,143 @@
+---
+title: "Fog: cloud without lifting"
+description: Explain how fog forms at ground level without rising, which route makes a given night foggy, and why the dew point sets the timing.
+date: 2026-11-20
+categories:
+- meteorology
+- atmospheric science
+- thermodynamics
+- interactive
+---
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Fog is a cloud of tiny droplets that sits at ground level. It forms in place, because the air near the ground reaches saturation without rising. Three routes do this: the ground cools the air above it on a clear, calm night; moist air moves over a colder surface; or water evaporates into cold air. The temperature at which air becomes saturated is its dew point, and a clear, calm, humid night with a small gap to the dew point favors radiation fog. Fog is costly for transport, and its forecasts remain limited.
+:::
+
+## Same droplets, different route
+
+Fog is defined by what it does to sight. The World Meteorological Organization (WMO) defines fog as "a suspension of very small, usually microscopic water droplets in the air, reducing visibility at the Earth's surface."[^wmo-fog] Fog means horizontal visibility below 1 km. Where visibility stays at 1 km or more, the same droplets count as mist, which the WMO calls "synonymous with 'light fog'."[^wmo-mist]
+
+Fog and low cloud are made of the same droplets. The difference is how the air became saturated. Saturation means the air holds all the water vapor it can at its temperature. Any extra vapor then condenses into droplets. The WMO states that fog forms in every case because the air becomes saturated.[^wmo-fogtypes]
+
+Rising is one route to saturation. Air that climbs cools, so a hill can push moist air up until it condenses. Upslope fog is an example. Seen from below, it looks like stratus, a low cloud layer. Climb into it and the same layer looks like fog.[^wmo-fogtypes] That is lifting, covered in [What lifts the air](what-lifts-the-air.qmd). Low clouds in general are in [Cloud types](cloud-types.qmd). The rest of this page covers fog that forms without rising.
+
+## Radiation fog: the ground cools the air
+
+Radiation fog forms when the ground cools the air above it to the dew point. On a clear night the ground gives off heat as radiation. That energy passes up through the sky and leaves. Cloud would send much of it back down, so a clear sky lets the ground cool faster. The WMO describes this route as forming "when the ground surface cools through radiation, usually at night, cooling the air just above the ground to its saturation temperature."[^wmo-fogtypes]
+
+The dew point is the temperature at which the air's vapor reaches saturation if the air cools with no water added or removed. Warm air holds more vapor than cold air. Bolton's formula gives the saturation vapor pressure $e_s$ in hectopascals (hPa), where $T$ is the air temperature in °C:[^bolton1980]
+
+$$e_s(T) = 6.112\exp\left(\frac{17.67\,T}{T + 243.5}\right)$$
+
+Relative humidity (RH) is the actual vapor pressure $e$ as a percentage of that ceiling: $\text{RH} = 100\% \times e / e_s(T)$. Saturation and dew point are covered in [How much water can air hold?](how-much-water-air-holds.qmd). Figure 1 uses the formula to find one night's dew point.
+
+```{ojs}
+//| echo: false
+fogEs = T => 6.112 * Math.exp(17.67 * T / (T + 243.5))
+fogCurve = Array.from({length: 141}, (_, i) => ({T: -5 + i * 0.25, e: fogEs(-5 + i * 0.25)}))
+fogParcelE = 0.8 * fogEs(15)
+fogDewT = {
+  const g = Math.log(fogParcelE / 6.112);
+  return 243.5 * g / (17.67 - g);
+}
+
+Plot.plot({
+  width: Math.min(width, 720),
+  height: 340,
+  style: {background: "transparent", color: "currentColor"},
+  x: {label: "Air temperature, T (°C) →", domain: [-5, 30], grid: true},
+  y: {label: "↑ Vapor pressure (hPa)", domain: [0, 46], grid: true},
+  marks: [
+    Plot.line(fogCurve, {x: "T", y: "e", stroke: "#38bdf8", strokeWidth: 2.5}),
+    Plot.text([{T: 30, e: fogEs(30), t: "saturation e_s(T)"}], {x: "T", y: "e", text: "t", dy: -14, textAnchor: "end", fill: "currentColor"}),
+    Plot.arrow([{x1: 15, y1: fogParcelE, x2: fogDewT, y2: fogParcelE}], {x1: "x1", y1: "y1", x2: "x2", y2: "y2", stroke: "#f59e0b", strokeWidth: 2}),
+    Plot.dot([{T: 15, e: fogParcelE}], {x: "T", y: "e", fill: "#f59e0b", r: 6}),
+    Plot.text([{T: 15, e: fogParcelE, t: "parcel: 15 °C, 80% RH"}], {x: "T", y: "e", text: "t", dx: 10, dy: -12, textAnchor: "start", fill: "currentColor"}),
+    Plot.dot([{T: fogDewT, e: fogParcelE}], {x: "T", y: "e", fill: "#a78bfa", r: 6}),
+    Plot.text([{T: fogDewT, e: fogParcelE, t: "dew point 11.6 °C"}], {x: "T", y: "e", text: "t", dx: -8, dy: -12, textAnchor: "end", fill: "currentColor"})
+  ]
+})
+```
+
+**Figure 1.** Saturation vapor pressure from Bolton's formula, plotted against air temperature from −5 to 30 °C. The amber dot is an illustrative evening parcel at 15 °C and 80% RH, which holds 13.6 hPa of vapor. The arrow keeps vapor pressure fixed while the parcel cools, until it meets the curve at the dew point, 11.6 °C.
+
+The parcel holds 80% of the 17.0 hPa that 15 °C air could hold, which is 13.6 hPa. Cooling does not add or remove vapor, so the parcel moves left along the arrow until it meets the curve at 11.6 °C. Below that temperature, vapor condenses into droplets.
+
+Three conditions make the gap between air temperature and dew point small on a radiation fog night. A clear sky lets the ground cool fast. Calm air lets the cooled layer stay near the ground instead of spreading upward. Moist air starts with a dew point close to the evening temperature. Clear, calm, humid nights therefore favor radiation fog.
+
+Wind works against it. Moving air mixes the cooled layer with the warmer, drier air above it, so strong wind usually prevents radiation fog. This is a physical explanation, not a measured threshold.
+
+When the cooled layer is thin, the fog is shallow, also called ground fog. The WMO defines shallow fog as radiation fog that does not restrict horizontal visibility when seen from about 2 m above land or 10 m above the sea.[^wmo-fogtypes]
+
+## Advection fog: warm air moves over a cold surface
+
+Advection fog forms when warm, moist air moves over a colder surface. Advection means horizontal movement of air. The WMO describes it as forming "when relatively warm, moist air moves (advects) over a cooler surface," which cools the air to saturation by contact.[^wmo-fogtypes] Sea fog is the common coastal case. Air moving over snow or frozen land gives the same kind of fog.
+
+This route does not need a clear sky or calm air. The cooling comes from the surface the air crosses, not from heat escaping to space. Wind carries the moist air in, so moving air is part of the cause.
+
+Sunrise does not remove the cold surface. The sun warms the air above, but the water or snow below stays cold. Advection fog can therefore persist after sunrise. How long it lasts depends on how long the cold surface and the moist air last. This page gives no duration.
+
+## Adding water instead of removing heat
+
+Two routes add water vapor to the air instead of cooling it.
+
+Evaporation fog forms when "cold, stable air moves over a much warmer body of water."[^wmo-fogtypes] Water evaporates into the cold air until the air saturates. The result is steam fog, also called sea smoke.
+
+Frontal fog forms where rain falls from warm air into cold, stable air below.[^wmo-fogtypes] In light wind, the raindrops evaporate and saturate the air near the ground. Frontal fog is the one route on this list that starts from rain, not from a surface.
+
+Upslope fog, covered earlier, is really lifting. It does not add water to the air.
+
+## What this means for you
+
+The dew point and the cooling rate tell you how soon fog can form. The widget below uses Bolton's formula to compute the dew point, then divides the gap between air temperature and dew point by the cooling rate.
+
+::: {.sim-card}
+#### When will the fog form?
+
+```{ojs}
+//| echo: false
+viewof fogT = Inputs.range([0, 30], {value: 15, step: 0.5, label: "Evening air temperature (°C)"})
+viewof fogRH = Inputs.range([40, 100], {value: 80, step: 1, label: "Relative humidity (%)"})
+viewof fogRate = Inputs.range([0.5, 3], {value: 1.5, step: 0.1, label: "Cooling rate (K h⁻¹)"})
+```
+
+```{ojs}
+//| echo: false
+fogReadouts = {
+  const es = T => 6.112 * Math.exp(17.67 * T / (T + 243.5));
+  const g = Math.log((fogRH / 100) * es(fogT) / 6.112);
+  const Td = 243.5 * g / (17.67 - g);
+  const hours = Math.max(0, (fogT - Td) / fogRate);
+  return html`<div class="sim-readouts">
+    <div class="sim-readout"><div class="sim-readout-label">Dew point</div><div class="sim-readout-value" style="color:#a78bfa">${Td.toFixed(1)} °C</div></div>
+    <div class="sim-readout"><div class="sim-readout-label">Hours until the air reaches it</div><div class="sim-readout-value" style="color:#f59e0b">${hours.toFixed(1)} h</div></div>
+  </div>`;
+}
+```
+
+The readouts use Bolton's formula and a constant cooling rate, with no wind and no other heat sources. Real cooling slows near the dew point, because condensing vapor releases heat. So the hours shown understate the time needed near saturation.
+:::
+
+At 15 °C and 80% RH, the dew point is 11.6 °C. The gap is 3.4 K. At 1.5 K h⁻¹, the air needs about 2.3 h to reach its dew point. A gap of zero means fog or dew can form now.
+
+The same clear, calm, humid nights that favor radiation fog also favor frost. [Frost, and the night the crop is lost](frost-and-the-night-the-crop-is-lost.qmd) covers what that means for a crop.
+
+Fog also costs money. Gultepe and colleagues review fog research and report that fog's economic losses to aviation, marine and land transport "can be comparable to those of tornadoes or, in some cases, winter storms and hurricanes."[^gultepe2007] The same review says fog forecasting skill "remains limited", because process understanding is incomplete.[^gultepe2007]
+
+## Key takeaways
+
+- Fog is a cloud of tiny droplets that cuts visibility below 1 km at the surface. It forms where it sits, once air reaches saturation without rising.
+- Radiation fog forms when the ground cools the air overnight. Clear, calm, humid nights favor it, and strong wind usually prevents it.
+- Advection fog forms when warm, moist air moves over a colder surface. It needs neither a clear sky nor calm air, and it can persist after sunrise.
+- Evaporation fog and frontal fog add water vapor to the air instead of removing heat.
+- The dew point sets the target. The gap to it, divided by the cooling rate, sets how soon fog can form.
+
+## References
+
+[^wmo-fog]: World Meteorological Organization. Fog. In *International Cloud Atlas* (2017 edition), section 3.2.1.1.1 (WMO-No. 49, Annex I definition). https://cloudatlas.wmo.int/en/fog.html
+[^wmo-mist]: World Meteorological Organization. Fog compared with mist. In *International Cloud Atlas* (2017 edition), section 3.2.1.1.1. https://cloudatlas.wmo.int/en/fog-compared-with-mist.html
+[^wmo-fogtypes]: World Meteorological Organization. Radiation fog; Advection fog; Evaporation fog; Upslope fog; Frontal fog; Freezing fog. In *International Cloud Atlas* (2017 edition), section 3.2.1.1.1. https://cloudatlas.wmo.int/en/radiation-fog.html (also /advection-fog.html, /evaporation-fog.html, /upslope-fog.html, /frontal-fog.html, /freezing-fog.html)
+[^gultepe2007]: Gultepe, I. et al. Fog research: a review of past achievements and future perspectives. *Pure Appl. Geophys.* **164**, 1121-1159 (2007). https://doi.org/10.1007/s00024-007-0211-x
+[^bolton1980]: Bolton, D. The computation of equivalent potential temperature. *Mon. Weather Rev.* **108**, 1046–1053 (1980). https://doi.org/10.1175/1520-0493(1980)108<1046:TCOEPT>2.0.CO;2
