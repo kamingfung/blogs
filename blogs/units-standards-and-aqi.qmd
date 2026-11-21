@@ -1,0 +1,229 @@
+---
+title: 'Units, standards, and what "unhealthy" means'
+description: After this post you can convert a gas between ppb and µg m⁻³, read a standard's level, averaging time and form, and see how an index turns a concentration into a category.
+date: 2026-11-20
+categories:
+- air quality
+- atmospheric chemistry
+- aerosols
+- interactive
+---
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Air-quality numbers can be compared only when they share a unit, an averaging time and a rule. A gas can be written as mass per volume, in micrograms per cubic meter (µg m⁻³), or as a mixing ratio, in parts per billion (ppb). Converting between them needs the temperature and the pressure. A standard has three parts: a level, an averaging time and a form. An index such as the US Air Quality Index (AQI) turns a concentration into a 0-to-500 value and a category, and two indexes can label the same air differently.
+:::
+
+## Two ways to write the same gas
+
+A gas in air can be counted in two ways. One counts its mass in a volume of air, in µg m⁻³. The other counts its share of the molecules, as a mixing ratio. A mixing ratio of 1 ppb means one molecule of gas for every billion molecules of air. Ozone ($\text{O}_3$) shows the point: good up high, bad nearby. A ppb value cannot be compared with a µg m⁻³ value until you convert it.
+
+The conversion uses the ideal gas law. Take a gas with molar mass $M$ in g mol⁻¹, in air at pressure $p$ in pascals and temperature $T$ in kelvin. Then
+
+$$c\ [\text{µg m}^{-3}] = x\ [\text{ppb}] \times \frac{M\,p}{R\,T} \times \frac{1}{1000}$$
+
+where $x$ is the mixing ratio in ppb, $c$ is the mass per volume, and $R = 8.314462$ J mol⁻¹ K⁻¹ is the gas constant. The factor $M p / (R T)$ tells you how many micrograms one ppb holds.
+
+For ozone (molar mass 48.00 g mol⁻¹) at 25 °C and one standard atmosphere (1013.25 hPa), the factor is $48.00 \times 101325 / (8.314462 \times 298.15) / 1000 = 1.962$ µg m⁻³ per ppb. So 70 ppb, which is 0.070 ppm, is about 137 µg m⁻³ at those conditions.
+
+Pressure changes the factor. At 795 hPa and 10 °C, roughly the air at a site near 2,000 m (illustrative pressure), one ppb of ozone holds 1.62 µg m⁻³. The same ppb holds fewer micrograms on a mountain. Figure 1 lets you set the conditions and watch the factor move.
+
+::: {.sim-card}
+#### ppb ↔ µg m⁻³
+
+```{ojs}
+//| echo: false
+viewof ppbIn = Inputs.range([0, 200], {value: 40, step: 0.5, label: "Mixing ratio (ppb)"})
+viewof gasPick = Inputs.select(["O₃", "NO₂", "SO₂"], {value: "O₃", label: "Gas"})
+viewof tempC = Inputs.range([-10, 40], {value: 25, step: 1, label: "Temperature (°C)"})
+viewof pressHpa = Inputs.range([700, 1050], {value: 1013, step: 1, label: "Pressure (hPa)"})
+
+molarMass = ({"O₃": 48.00, "NO₂": 46.01, "SO₂": 64.07})[gasPick]
+// µg m⁻³ per ppb = M [g mol⁻¹] × p [Pa] / (R × T [K]) / 1000
+factorPerPpb = molarMass * (pressHpa * 100) / (8.314462 * (tempC + 273.15)) / 1000
+massNow = ppbIn * factorPerPpb
+
+readoutBox = (label, value, color) => html`<div class="sim-readout"><div class="sim-readout-label">${label}</div><div class="sim-readout-value" style="color:${color}">${value}</div></div>`
+
+html`<div class="sim-readouts">
+  ${readoutBox("Mass per volume", massNow.toFixed(1) + " µg m⁻³", "#38bdf8")}
+  ${readoutBox("Factor, per ppb", factorPerPpb.toFixed(3) + " µg m⁻³", "#f59e0b")}
+</div>`
+```
+
+**Figure 1.** Mass per volume for a mixing ratio from 0 to 200 ppb, from the ideal gas law. The gas sets the molar mass (ozone 48.00, nitrogen dioxide 46.01, sulfur dioxide 64.07 g mol⁻¹). Temperature runs from −10 to 40 °C and pressure from 700 to 1,050 hPa. The formula assumes ideal-gas behavior, a close approximation for trace gases in ordinary air.
+:::
+
+::: {.callout-note collapse="true"}
+## Where the factor comes from
+
+$p/(RT)$ is the number of moles of air per cubic meter, in mol m⁻³. Multiplying by $M$ gives grams per cubic meter for a mole fraction of 1. One ppb is a mole fraction of $10^{-9}$, and one gram is $10^{6}$ µg, so the product carries a factor of $10^{-3}$, which gives the division by 1000 in the formula.
+
+The WHO gives 1 ppm = 1.9957 mg m⁻³ at 20 °C and 1013 hPa.[^whoaqg2021] The same formula gives 1.995 µg m⁻³ per ppb of ozone at those conditions, a difference of 0.04%.
+:::
+
+## A standard has three parts
+
+A standard is a rule that monitor data must meet. It has three parts. The **level** is the concentration limit. The **averaging time** is the period over which the monitor averages, such as 8 hours or one year. The **form** is the statistic compared with the level, such as the highest value in a year or an average over several years.
+
+The US ozone standard uses all three. It is met when "the 3-year average of the annual fourth-highest daily maximum 8-hour average O₃ concentration is less than or equal to 0.070 ppm".[^cfr5019] The level is 0.070 ppm. The averaging time is 8 hours. The form is the fourth-highest daily value in each year, averaged over three years. Three higher days do not change that value.
+
+The fine particulate standards follow the same pattern. Fine particulate matter (PM2.5, see [What PM2.5 is](what-pm2-5-is.qmd) for the size cut) has an annual level and a 24-hour level. The 2024 rule lowered the annual level from 12.0 to 9.0 µg m⁻³ and kept the 24-hour level at 35 µg m⁻³.[^epa2024] Before the rule, the annual form was "an annual average standard, averaged over three years". The 24-hour standard uses a 98th-percentile form, averaged over three years.
+
+## Guidelines and standards differ
+
+A guideline is advice from a health body. A standard is a legal limit that a government sets. The World Health Organization (WHO) gives an annual PM2.5 guideline of 5 µg m⁻³ and a 24-hour guideline of 15 µg m⁻³. Its 24-hour value uses a 99th-percentile form.[^whoaqg2021]
+
+The US annual standard of 9.0 µg m⁻³ is 1.8 times the WHO annual guideline. The US 24-hour standard of 35 µg m⁻³ is 2.3 times the WHO 24-hour guideline.[^epa2024]^,^[^whoaqg2021] These ratios compare levels only. The US uses a 98th percentile and the WHO a 99th, so the ratio of levels is not a ratio of strictness.
+
+## How an index turns concentration into a color
+
+An index maps a concentration onto a scale and attaches a label. The US AQI runs from 0 to 500. Table 1 gives its categories and colors.
+
+| AQI | Descriptor | Color |
+|---|---|---|
+| 0 to 50 | Good | Green |
+| 51 to 100 | Moderate | Yellow |
+| 101 to 150 | Unhealthy for Sensitive Groups | Orange |
+| 151 to 200 | Unhealthy | Red |
+| 201 to 300 | Very Unhealthy | Purple |
+| 301 and above | Hazardous | Maroon |
+
+**Table 1.** US AQI categories, from the 2024 rule.[^epa2024]
+
+Table 2 gives the concentration at which each category starts, for PM2.5 (24-hour, in µg m⁻³) and ozone (8-hour, in ppm). The full table covers other pollutants, which this post omits. The 2024 rule revised only the PM2.5 column.[^epa2024]
+
+| AQI category | AQI | PM2.5, 24-hour (µg m⁻³) | O₃, 8-hour (ppm) |
+|---|---|---|---|
+| Good | 0–50 | 0.0–9.0 | 0.000–0.054 |
+| Moderate | 51–100 | 9.1–35.4 | 0.055–0.070 |
+| Unhealthy for Sensitive Groups | 101–150 | 35.5–55.4 | 0.071–0.085 |
+| Unhealthy | 151–200 | 55.5–125.4 | 0.086–0.105 |
+| Very Unhealthy | 201–300 | 125.5–225.4 | 0.106–0.200 |
+| Hazardous | 301 and above | 225.5 and above | 0.201 and above (see note) |
+
+**Table 2.** Breakpoints for PM2.5 and ozone, from the rule's Table 2.[^epa2024] The rule notes that 8-hour ozone does not define AQI values above 301; those use 1-hour ozone, which this table omits.
+
+The index is worked out one pollutant at a time. The steps are these:
+
+1. Truncate the concentration: to one decimal place for PM2.5 and to three for ozone.
+2. Find the two rows of Table 2 that contain it.
+3. Apply the linear interpolation
+
+$$I_p = \frac{I_{Hi} - I_{Lo}}{BP_{Hi} - BP_{Lo}}\,(C_p - BP_{Lo}) + I_{Lo}$$
+
+where $C_p$ is the truncated concentration, $BP_{Hi}$ and $BP_{Lo}$ are the breakpoints above and below it, and $I_{Hi}$ and $I_{Lo}$ are their AQI values.
+
+4. Round the result to the nearest integer.
+
+The reported AQI is the largest of the pollutant values. "The reported AQI corresponds to the pollutant with the highest calculated AQI."[^epa2024] A day with a moderate PM2.5 value and a high ozone value is therefore reported as an ozone day.
+
+::: {.callout-note collapse="true"}
+## Worked checks
+
+The rule prints its equation as an image, so the form above is the standard linear interpolation with the rule's own symbol definitions. These checks, computed by the author from Table 2, are:
+
+- PM2.5 of 12.0 µg m⁻³, the old annual level, gives AQI 56 (Moderate).
+- PM2.5 of 40.0 µg m⁻³ gives AQI 112 (Unhealthy for Sensitive Groups).
+- PM2.5 of 100.0 µg m⁻³ gives AQI 182 (Unhealthy).
+- Ozone of 0.080 ppm gives $(150 - 101)/(0.085 - 0.071) \times (0.080 - 0.071) + 101 = 132.5$, which rounds half up to AQI 133.
+- The breakpoints 9.0, 35.4, 55.4, 125.4 and 225.4 µg m⁻³ give AQI 50, 100, 150, 200 and 300 exactly.
+:::
+
+Figure 2 plots the PM2.5 part of the index, with each category shaded.
+
+```{ojs}
+//| echo: false
+aqiLine = [{x: 0, y: 0}, {x: 9.0, y: 50}, {x: 35.4, y: 100}, {x: 55.4, y: 150}, {x: 125.4, y: 200}, {x: 225.4, y: 300}]
+aqiBandRows = [
+  {name: "Good", y1: 0, y2: 50, fill: "#34d399"},
+  {name: "Moderate", y1: 50, y2: 100, fill: "#facc15"},
+  {name: "Unhealthy for Sensitive Groups", y1: 100, y2: 150, fill: "#fb923c"},
+  {name: "Unhealthy", y1: 150, y2: 200, fill: "#f87171"},
+  {name: "Very Unhealthy", y1: 200, y2: 300, fill: "#a78bfa"}
+]
+
+Plot.plot({
+  width: Math.min(width, 720),
+  height: 380,
+  marginLeft: 60,
+  marginRight: 20,
+  x: {label: "24-hour PM2.5 (µg m⁻³)", domain: [0, 250]},
+  y: {label: "US AQI", domain: [0, 300], grid: true},
+  marks: [
+    Plot.rect(aqiBandRows, {x1: 0, x2: 250, y1: "y1", y2: "y2", fill: "fill", fillOpacity: 0.22}),
+    Plot.text(aqiBandRows, {x: 248, y: d => (d.y1 + d.y2) / 2, text: "name", textAnchor: "end", dx: 0, fill: "currentColor", fontWeight: "600"}),
+    Plot.ruleX([9.0], {stroke: "currentColor", strokeDasharray: "5 4"}),
+    Plot.ruleX([35], {stroke: "currentColor", strokeDasharray: "2 3"}),
+    Plot.text([{x: 9.0, y: 292, t: "annual standard 9.0"}], {x: "x", y: "y", text: "t", textAnchor: "start", dx: 4, fill: "currentColor"}),
+    Plot.text([{x: 35, y: 264, t: "24-hour standard 35"}], {x: "x", y: "y", text: "t", textAnchor: "start", dx: 4, fill: "currentColor"}),
+    Plot.line(aqiLine, {x: "x", y: "y", stroke: "currentColor", strokeWidth: 2.5}),
+    Plot.text([{x: 195, y: 230, t: "US AQI"}], {x: "x", y: "y", text: "t", textAnchor: "start", fill: "currentColor", fontWeight: "600"})
+  ]
+})
+```
+
+**Figure 2.** US AQI against 24-hour PM2.5 from 0 to 250 µg m⁻³. The line joins the Table 2 breakpoints with straight segments, which closes the 0.1 µg m⁻³ gaps between categories for display. The shaded bands are the five categories drawn; Hazardous starts above AQI 300 and is not drawn. Dashed rule: the annual standard of 9.0 µg m⁻³. Dotted rule: the 24-hour standard of 35 µg m⁻³. Source: Table 2.[^epa2024]
+
+The same air can get a different label from a different index. The European Air Quality Index (EAQI) says it "reflects the potential impact of air quality on health, driven by the pollutant for which concentrations are poorest", and it "is defined hourly".[^eaqi] Its PM2.5 band from 16 to 50 µg m⁻³ is "Moderate". At 40 µg m⁻³ the US index gives "Unhealthy for Sensitive Groups". The EAQI uses concentration bands, not a 0-to-500 scale. Its page does not state the averaging time of the PM2.5 bands, so the comparison is rough.
+
+Figure 3 applies the US index, the WHO ratio and the EAQI band to one value.
+
+::: {.sim-card}
+#### What does this number mean?
+
+```{ojs}
+//| echo: false
+viewof pm24 = Inputs.range([0, 300], {value: 40, step: 0.1, label: "PM2.5, 24-hour mean (µg m⁻³)"})
+
+aqiBandsPM = [
+  [0.0, 9.0, 0, 50, "Good"],
+  [9.1, 35.4, 51, 100, "Moderate"],
+  [35.5, 55.4, 101, 150, "Unhealthy for Sensitive Groups"],
+  [55.5, 125.4, 151, 200, "Unhealthy"],
+  [125.5, 225.4, 201, 300, "Very Unhealthy"],
+  [225.5, 325.4, 301, 500, "Hazardous"]
+]
+
+// Truncate to 0.1 µg m⁻³, interpolate between the Table 2 breakpoints, round half up.
+usAqi = c => {
+  const t = Math.floor(c * 10 + 1e-9) / 10;
+  const [lo, hi, il, ih, name] = aqiBandsPM.find(([l, h]) => t >= l - 1e-9 && t <= h + 1e-9);
+  return {v: Math.round((ih - il) / (hi - lo) * (t - lo) + il + 1e-9), name};
+}
+
+// EAQI PM2.5 band upper limits, µg m⁻³. Values between listed limits go to the higher band.
+eaqiName = c => c <= 5 ? "Good" : c <= 15 ? "Fair" : c <= 50 ? "Moderate" : c <= 90 ? "Poor" : c <= 140 ? "Very poor" : "Extremely poor"
+
+aqiNow = usAqi(pm24)
+
+html`<div class="sim-readouts">
+  ${readoutBox("US AQI", aqiNow.v + " · " + aqiNow.name, "#38bdf8")}
+  ${readoutBox("WHO 24-hour guideline ratio (value ÷ 15)", (pm24 / 15).toFixed(1) + " ×", "#f59e0b")}
+  ${readoutBox("EAQI band", eaqiName(pm24), "#a78bfa")}
+</div>`
+```
+
+**Figure 3.** Readouts for one 24-hour PM2.5 value from 0 to 300 µg m⁻³. The US AQI truncates the value to 0.1 µg m⁻³, interpolates between Table 2 breakpoints and rounds half up. The WHO ratio divides by the 24-hour guideline of 15 µg m⁻³.[^whoaqg2021] The EAQI is defined hourly, so its band here is read for the value you set, not for an hourly reading.
+:::
+
+## What this means for you
+
+Check three things before you use an air-quality number in a model or a work rule. First, the unit: µg m⁻³ and ppb are not interchangeable, and the conversion depends on temperature and pressure. Second, the averaging time: a 24-hour PM2.5 value and an annual one answer different questions. Third, the index that gave the category, since indexes differ.
+
+A daily value can also hide a bad hour. The 2024 rule recommends, but does not require, that an area also report a sub-daily AQI.[^epa2024] If the hour matters for a decision, look for hourly data. [Why ozone peaks in the afternoon](why-ozone-peaks-in-the-afternoon.qmd) explains why ozone often peaks then.
+
+## Key takeaways
+
+- At 25 °C and 1 atm, 1 ppb of ozone is 1.96 µg m⁻³. The factor falls with pressure, so the same ppb holds fewer micrograms at altitude.
+- A standard is a level, an averaging time and a form. The same level with a different form is a different rule.
+- The US annual PM2.5 standard (9.0 µg m⁻³) is 1.8 times the WHO annual guideline, and the US 24-hour standard (35 µg m⁻³) is 2.3 times the WHO 24-hour guideline. The forms differ, so these ratios compare levels only.
+- The AQI interpolates linearly between breakpoints and reports the pollutant with the highest sub-index. A different index can label the same concentration differently.
+
+## References
+
+[^epa2024]: U.S. Environmental Protection Agency. Reconsideration of the national ambient air quality standards for particulate matter. *Fed. Regist.* **89**, 16202-16406 (6 March 2024; final rule effective 6 May 2024). 40 CFR Parts 50, 53 and 58. FR Doc. 2024-02637. https://www.federalregister.gov/d/2024-02637
+[^whoaqg2021]: World Health Organization. *WHO global air quality guidelines: particulate matter (PM2.5 and PM10), ozone, nitrogen dioxide, sulfur dioxide and carbon monoxide* (WHO, Geneva, 2021). ISBN 9789240034228 (electronic). https://iris.who.int/handle/10665/345329
+[^cfr5019]: U.S. Environmental Protection Agency. National primary and secondary ambient air quality standards for ozone. 40 CFR § 50.19 (80 FR 65452, 26 October 2015). https://www.ecfr.gov/current/title-40/part-50/section-50.19
+[^eaqi]: European Environment Agency. European Air Quality Index. https://airindex.eea.europa.eu/AQI/index.html (accessed 2026-11-20).
