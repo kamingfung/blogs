@@ -118,8 +118,8 @@ Plot.plot({
     Plot.text([{c: 2.8, y: 1.95, t: "reference 2.4"}], {x: "c", y: "y", text: "t", textAnchor: "start", fill: "currentColor"}),
     Plot.line(curvePts, {x: "c", y: "ll", stroke: "#38bdf8", strokeWidth: 2.5, strokeDasharray: "6 4"}),
     Plot.line(curvePts, {x: "c", y: "gemm", stroke: "#f59e0b", strokeWidth: 2.5}),
-    Plot.text([{c: 99, y: llRR(99), t: "Log-linear, Medicare all-cause slope"}], {x: "c", y: "y", text: "t", textAnchor: "end", dy: -10, fill: "#38bdf8"}),
-    Plot.text([{c: 99, y: gemmRR(99), t: "GEMM, NCD + LRI, ages 25+"}], {x: "c", y: "y", text: "t", textAnchor: "end", dy: 16, fill: "#f59e0b"})
+    Plot.text([{c: 99, y: llRR(99), t: "Log-linear, Medicare all-cause slope"}], {x: "c", y: "y", text: "t", textAnchor: "end", dy: -10, fill: "currentColor"}),
+    Plot.text([{c: 99, y: gemmRR(99), t: "GEMM, NCD + LRI, ages 25+"}], {x: "c", y: "y", text: "t", textAnchor: "end", dy: 16, fill: "currentColor"})
   ]
 })
 ```
@@ -172,7 +172,7 @@ Plot.plot({
     Plot.line(dropCurve, {x: "c", y: "l", stroke: "#38bdf8", strokeWidth: 2.5, strokeDasharray: "6 4"}),
     Plot.ruleX([baseC], {stroke: "#cbd5e1", strokeDasharray: "2 3"}),
     Plot.text([{c: 20, y: 1.0, t: "GEMM"}], {x: "c", y: "y", text: "t", textAnchor: "start", fill: "#f59e0b"}),
-    Plot.text([{c: 55, y: 0.9, t: "Log-linear (Medicare all-cause slope)"}], {x: "c", y: "y", text: "t", textAnchor: "start", fill: "#38bdf8"})
+    Plot.text([{c: 70, y: 0.9, t: "Log-linear (Medicare all-cause slope)"}], {x: "c", y: "y", text: "t", textAnchor: "end", fill: "#38bdf8"})
   ]
 })
 ```
