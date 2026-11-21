@@ -12,16 +12,16 @@ categories:
 ::: {.callout-note appearance="simple" icon=false}
 ## TL;DR
 
-Three kinds of instrument measure fine particulate matter (PM2.5), and each answers a different question. Reference monitors weigh a filter, which makes them the benchmark, but they sit at few sites. Low-cost sensors infer mass from scattered light and read high in humid air, so they need a humidity correction and a check against a reference monitor. Satellites measure how much the whole air column dims sunlight, which is not the surface concentration, and they see the ground only in clear skies and at a set time of day. Choose the source for your question first, then check its bias.
+Three kinds of data describe fine particulate matter (PM2.5), and each answers a different question. A filter-based reference method weighs conditioned filters, which makes it the benchmark, but few sites run one. Low-cost sensors infer mass from scattered light and read high in humid air, so they need a humidity correction and a check against a reference monitor. Satellites measure aerosol optical depth (AOD), how much the whole air column dims sunlight, so a model must convert that to a surface estimate, and clouds block the view.[^vandonkelaar2010] Choose the source for your question first, then check its bias.
 :::
 
-## Reference monitors weigh a filter
+## Filter-based reference methods weigh a filter
 
 A reference monitor draws air through a filter for a set period and catches the fine particles on it. The filter is held at a controlled temperature and humidity before sampling and weighed before and after. The weight gained is the PM2.5 mass. Dividing that mass by the air volume that passed through gives a concentration in micrograms per cubic meter (µg m⁻³).[^epa-appl]
 
 The US Environmental Protection Agency (EPA) calls this a reference method, so other instruments are judged against it. The filter specification cites 35 and 40 percent relative humidity (RH), where RH is the share of the most water vapor that air at a given temperature can hold.[^epa-appl] The mass is therefore measured at a fixed, controlled humidity, not at the humidity outdoors.
 
-The weakness is coverage. Monitors are few, and their locations are not random. A 2021 global study found that monitored locations "tend to be in cleaner regions than global mean PM2.5 exposure, with large measurement gaps in the Global South."[^vandonkelaar2021] A monitor's reading describes its own site.
+The weakness is coverage. Monitors are few. A 2021 global study found that monitored locations "tend to be in cleaner regions than global mean PM2.5 exposure, with large measurement gaps in the Global South."[^vandonkelaar2021] A monitor's reading describes its own site.
 
 ## Low-cost sensors read scattered light
 
@@ -45,8 +45,8 @@ The humidity term helps. Adding it "further reduces the bias and improves consis
 viewof rawPM = Inputs.range([0, 150], {value: 100, step: 0.5, label: "Raw sensor PM2.5 (µg m⁻³)"})
 viewof rhPct = Inputs.range([10, 100], {value: 60, step: 1, label: "Relative humidity from the sensor (%)"})
 
-// Barkjohn et al. (2021) Eq. 10. Clamped at 0 because the equation can go negative.
-corrected = (raw, rh) => Math.max(0, 0.524 * raw - 0.0862 * rh + 5.75)
+// Barkjohn et al. (2021) Eq. 10, as published. Not clamped: a negative result is reported as out of range.
+corrected = (raw, rh) => 0.524 * raw - 0.0862 * rh + 5.75
 
 // US AQI breakpoints for PM2.5, 2024 rule (same table as the units post).
 aqiBands = [
@@ -70,33 +70,34 @@ aqiOf = c => {
 //| echo: false
 corrPM = corrected(rawPM, rhPct)
 pmDiff = corrPM - rawPM
-aqiNow = aqiOf(corrPM)
+below = corrPM < 0
+aqiNow = below ? null : aqiOf(corrPM)
 fmtSigned = v => (v > 0 ? "+" : v < 0 ? "−" : "±") + Math.abs(v).toFixed(1)
 
 html`<div class="sim-readouts">
   <div class="sim-readout">
     <div class="sim-readout-label">Corrected PM2.5</div>
-    <div class="sim-readout-value" style="color:#38bdf8">${corrPM.toFixed(1)} µg m⁻³</div>
+    <div class="sim-readout-value" style="color:#38bdf8">${below ? "below the range of this fit" : corrPM.toFixed(1) + " µg m⁻³"}</div>
   </div>
   <div class="sim-readout">
     <div class="sim-readout-label">Corrected minus raw</div>
-    <div class="sim-readout-value" style="color:#f59e0b">${fmtSigned(pmDiff)} µg m⁻³</div>
+    <div class="sim-readout-value" style="color:#f59e0b">${below ? "below the range of this fit" : fmtSigned(pmDiff) + " µg m⁻³"}</div>
   </div>
   <div class="sim-readout">
     <div class="sim-readout-label">US AQI category</div>
-    <div class="sim-readout-value" style="color:#a78bfa">${aqiNow.v} · ${aqiNow.name}</div>
+    <div class="sim-readout-value" style="color:#a78bfa">${below ? "—" : aqiNow.v + " · " + aqiNow.name}</div>
   </div>
 </div>`
 ```
 
-The readouts apply the correction equation exactly. The equation is fit to 24-hour averages, so read the result as a daily value. Corrected values below 0 are shown as 0 µg m⁻³; below about 67% RH the equation never goes negative. The AQI category uses the 2024 breakpoints from the [units post](units-standards-and-aqi.qmd), applied to the corrected value truncated to 0.1 µg m⁻³.
+The readouts apply the published equation without clamping. The equation is fit to 24-hour averages, so read the result as a daily value. When the result is below 0, the readout says "below the range of this fit" and shows no AQI category. The equation can go negative only when RH is above about 67% and the raw reading is below about 5.5 µg m⁻³. The AQI category uses the 2024 breakpoints from the [units post](units-standards-and-aqi.qmd),[^epa2024] applied to the corrected value truncated to 0.1 µg m⁻³.
 :::
 
-Humidity moves the answer less than the raw reading does. Each percentage point of RH changes the corrected value by 0.0862 µg m⁻³, so moving from 30% to 90% RH shifts the result by $0.0862 \times 60 = 5.2$ µg m⁻³. The slope, 0.524, sets most of the result.
+Humidity moves the answer less than the raw reading does. The equation's slope on RH is −0.0862 µg m⁻³ per percentage point, so moving from 30% to 90% RH lowers the result by $0.0862 \times 60 = 5.2$ µg m⁻³. The slope on the raw reading, 0.524, sets most of the result.
 
 ```{ojs}
 //| echo: false
-lineFor = rh => Array.from({length: 151}, (_, r) => ({raw: r, pm: corrected(r, rh)}))
+lineFor = rh => Array.from({length: 151}, (_, r) => ({raw: r, pm: corrected(r, rh)})).filter(d => d.pm >= 0)
 oneToOne = [{raw: 0, pm: 0}, {raw: 150, pm: 150}]
 endLabel = (rh, t) => [{raw: 150, pm: corrected(150, rh), t}]
 
@@ -120,11 +121,11 @@ Plot.plot({
 })
 ```
 
-**Figure 1.** Corrected PM2.5 against the raw sensor reading (0 to 150 µg m⁻³) at 30% (solid blue), 60% (long-dash amber) and 90% (dotted violet) relative humidity, from the correction equation. The dashed line is 1:1, no correction. Assumes 24-hour averages. Values below 0 are drawn at 0, which happens only at 90% RH and raw readings below about 3.8 µg m⁻³.
+**Figure 1.** Corrected PM2.5 against the raw sensor reading (0 to 150 µg m⁻³) at 30% (solid blue), 60% (long-dash amber) and 90% (dotted violet) relative humidity, from the correction equation. The dashed line is 1:1, no correction. Assumes 24-hour averages. Each line stops where the equation gives a negative value, which happens at 90% RH below a raw reading of about 3.8 µg m⁻³ and never at 30% or 60% RH.
 
 ## Satellites measure the whole column
 
-A satellite does not see the air near the ground. Its instrument looks down through the whole column of air and measures how much the column dims sunlight. That dimming is aerosol optical depth (AOD). An AOD near zero means clear air, and a larger value means more particles in the column. A 2010 study used "total column aerosol optical depth (AOD) from the MODIS ... and MISR ... satellite instruments," where MODIS is the Moderate Resolution Imaging Spectroradiometer and MISR is the Multi-angle Imaging SpectroRadiometer.[^vandonkelaar2010]
+A satellite does not measure near-surface PM2.5 separately. It looks down through the whole column of air and measures how much the column dims sunlight. That dimming is aerosol optical depth (AOD). An AOD near zero means clear air, and a larger value means more particles in the column. A 2010 study used "total column aerosol optical depth (AOD) from the MODIS ... and MISR ... satellite instruments," where MODIS is the Moderate Resolution Imaging Spectroradiometer and MISR is the Multi-angle Imaging SpectroRadiometer.[^vandonkelaar2010]
 
 A column value is not a surface value. Turning AOD into surface PM2.5 needs a conversion factor, and the study says that factor "is a function of the factors that relates 24-hr dry aerosol mass to satellite observations of ambient AOD: aerosol size, aerosol type, diurnal variation, relative humidity, and the vertical structure of aerosol extinction."[^vandonkelaar2010] In that study the factor came from a global chemical transport model, GEOS-Chem, so the surface number depends partly on a model. The surface value is also scaled to 35% RH, the standard used for gravimetric analysis in the US and Canada, while the satellite sees air at its ambient humidity.[^vandonkelaar2010]
 
@@ -132,7 +133,7 @@ Clouds block the view. The same study says, "Neither instrument can retrieve AOD
 
 Satellites also pass a given spot at a set time of day. NASA lists Terra's equator crossing at 10:30 a.m., in descending mode, and Aqua's at 1:30 p.m., on the ascending node.[^nasa-terra]^,^[^nasa-aqua] Both orbits have drifted since. Terra has drifted since February 2020, and Aqua, after its last drag-makeup maneuver in December 2021, drifts toward later crossing times.[^nasa-terra]^,^[^nasa-aqua] So 10:30 and 1:30 are nominal times, not fixed ones. The 2010 study averaged AOD from 10:00 to 12:00 local solar time, which matched the Terra overpass period.[^vandonkelaar2010]
 
-NASA says the MODIS swath, 2,330 km wide, "sees every point on our world every 1-2 days."[^nasa-modis] Clouds remove some of those passes. A satellite value is therefore one sample taken at one overpass under clear sky. It is not a daily mean.
+NASA says the MODIS swath, 2,330 km wide, "sees every point on our world every 1-2 days."[^nasa-modis] Clouds remove some of those passes. A single MODIS overpass gives at most one clear-sky observation of a spot, not a daily mean. Gridded or blended products combine observations and models, so check how a product defines its time window.
 
 The 2010 satellite estimates had an uncertainty of 25% (one standard deviation) and agreed with North American monitors at r = 0.77, where r is the correlation coefficient.[^vandonkelaar2010] Finished products therefore blend instruments. A 2016 study combined satellite AOD from several products with a chemical model and monitors, and reported a cross-validated R² of 0.81 against monitors.[^vandonkelaar2016] A 2021 study describes its monthly estimates as combining "satellite retrievals of aerosol optical depth, chemical transport modeling, and ground-based measurements."[^vandonkelaar2021]
 
@@ -142,7 +143,7 @@ Match the instrument to the question before you trust its number.
 
 | Question | Best source | Main bias |
 |---|---|---|
-| Did this area meet the annual PM2.5 standard? | Reference monitor (filter) | Few sites, and often in cleaner areas |
+| Did this area meet the annual PM2.5 standard? | The method the regulator requires (here, the filter reference method) | Few sites, and often in cleaner areas |
 | How does PM2.5 differ between two streets this week? | Low-cost sensor, corrected and checked beside a monitor | Raw readings about 40% high in most US conditions |
 | Where is haze across a region, or where are there no monitors? | Satellite AOD, or a blended product | Column, not ground level; one overpass; no value under clouds |
 
@@ -150,13 +151,13 @@ Compliance questions need reference data. Local variation needs sensors, once co
 
 ## What this means for you
 
-Start with the question, then pick the instrument. For a compliance check, the filter result is the one that counts. For differences between nearby places, a sensor works after the humidity correction and a check against a nearby reference monitor. A sensor on a farm during smoke needs that humidity correction before its PM2.5 can serve as an input to a model. Keep in mind that the equation was fit to 24-hour averages.
+Start with the question, then pick the instrument. For a compliance check, use the method the regulator requires. This post describes the filter reference method. For differences between nearby places, a sensor works after the humidity correction and a check against a nearby reference monitor. A sensor on a farm during smoke needs that humidity correction before its PM2.5 can serve as an input to a model. Keep in mind that the equation was fit to 24-hour averages.
 
-For satellites, ask two things. Is the product a column value, or has it been converted to the surface with a model? And at what time of day did the satellite look? A value from one overpass tells you about that hour, under clear sky, not about the day.
+For satellites, ask two things. Is the product a column value, or has it been converted to the surface with a model? And at what time of day did the satellite look? A single overpass tells you about that hour, under clear sky, and says little about the rest of the day.
 
 ## Key takeaways
 
-- Reference monitors weigh a filter conditioned at a set humidity. They are the benchmark, but there are few of them, and they are not spread evenly.
+- A filter-based reference method weighs a filter conditioned at a set humidity. It is the benchmark, but there are few of them, and they are not spread evenly.
 - A low-cost sensor needs a correction. Barkjohn and colleagues' equation adds a humidity term, uses the sensor's own RH, and is fit to 24-hour averages.
 - A satellite measures the whole column. A surface PM2.5 value needs a model of the vertical profile and of humidity.
 - Terra and Aqua pass at a nominal time of day that has drifted, and clouds block the retrieval. One overpass is one sample, not a daily mean.
@@ -171,3 +172,4 @@ For satellites, ask two things. Is the product a column value, or has it been co
 [^nasa-terra]: NASA. Terra: About (orbit quick facts). https://terra.nasa.gov/about (fetched 2026-11-20)
 [^nasa-aqua]: NASA. About Aqua: spacecraft stats. https://aqua.nasa.gov/content/about-aqua (fetched 2026-11-20)
 [^nasa-modis]: NASA. Terra MODIS instrument page. https://terra.nasa.gov/about/terra-instruments/modis (fetched 2026-11-20)
+[^epa2024]: U.S. Environmental Protection Agency. Reconsideration of the national ambient air quality standards for particulate matter. *Fed. Regist.* **89**, 16202-16406 (6 March 2024; final rule effective 6 May 2024). 40 CFR Parts 50, 53 and 58. FR Doc. 2024-02637. https://www.federalregister.gov/d/2024-02637
