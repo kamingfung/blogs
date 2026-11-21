@@ -1,0 +1,210 @@
+---
+title: "The Kelvin effect: why small drops evaporate"
+description: A curved water surface needs more vapor than a flat one to stay in balance, so a small drop can evaporate at 100% relative humidity; the Kelvin equation gives the size of the effect for any drop radius.
+date: 2026-11-20
+categories:
+- atmospheric science
+- cloud physics
+- thermodynamics
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/cloud-formation/index.html">How clouds form</a><span class="sep">·</span>Part 3 · Droplets</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Assumes <a href="/blogs/drop-shape-in-orbit.html">Why are drops round?</a>.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+A flat water surface stops evaporating at 100% relative humidity, but a small drop does not. Its curved surface lets molecules escape more easily, so it needs more vapor to stay in balance. The Kelvin equation gives that extra vapor: a 1 nm drop needs about 330% relative humidity (a rough figure, since the formula is only approximate for clusters this small), and a 1 mm raindrop needs barely more than 100%. In air at 100.5% relative humidity, an example supersaturation of 0.5% (humidity above 100%), a pure drop smaller than about 0.24 µm evaporates and a larger one grows. After reading, you should be able to compute the Kelvin excess for any radius and explain why pure vapor cannot start a cloud drop on its own.
+:::
+
+## Saturation was defined over a flat surface
+
+Relative humidity (RH) compares the water vapor pressure in the air with the saturation vapor pressure over pure water. At 100% RH, the air holds as much vapor as that water allows, and there is no net exchange between the water and the air.
+
+That rule has a hidden assumption: the water surface is flat. The saturation vapor pressure, written $e_\text{s}(\infty)$, is measured over such a flat surface. A drop is not flat.
+
+Here is the surprise. Put a small drop in air at exactly 100% RH and it still shrinks. The drop has not broken the rule. It has left the case the rule describes.
+
+## Curvature pushes molecules out
+
+A water molecule on a flat surface has neighbors on its sides and below that hold it in place. A molecule on a sharply curved surface has fewer neighbors, so it escapes more easily.
+
+Surface tension pulls the liquid surface tight, so the liquid inside a drop is squeezed and sits at a higher pressure than the air outside. For a sphere, the Young-Laplace relation gives the pressure jump as $\Delta p = 2\sigma / r$, where $\sigma$ is the surface tension in N m⁻¹ and $r$ is the radius in m. The extra pressure raises the energy of each molecule in the liquid. The vapor must match that energy, so it must be more concentrated.
+
+The result is the Kelvin equation:
+
+$$S_\text{eq} = \frac{e_\text{s}(r)}{e_\text{s}(\infty)} = \exp\left(\frac{2\sigma M_\text{w}}{\rho_\text{w} R T\, r}\right) = \exp\left(\frac{A}{r}\right), \qquad A = \frac{2\sigma M_\text{w}}{\rho_\text{w} R T}$$
+
+Each symbol has one meaning on this page:
+
+- $S_\text{eq}$ is the equilibrium saturation ratio. It is the vapor pressure over the drop divided by the flat-surface value, so $S_\text{eq} = 1$ means 100% RH.
+- $e_\text{s}(r)$ is the saturation vapor pressure over a drop of radius $r$.
+- $\sigma$ is the surface tension of water. I use 0.0756 N m⁻¹ at 273.15 K from the International Tables of the surface tension of water[^vargaftik].
+- $M_\text{w} = 0.018015$ kg mol⁻¹ is the molar mass of water.
+- $\rho_\text{w} = 999.8$ kg m⁻³ is the density of liquid water.
+- $R = 8.314$ J mol⁻¹ K⁻¹ is the gas constant.
+- $T = 273.15$ K is the temperature.
+- $A$ is the Kelvin constant. It depends on the water and the temperature, not on the drop.
+
+The sign matters. The exponent is positive, so $S_\text{eq}$ is always above 1. Vapor over any curved water surface is above the flat-surface value.
+
+::: {.callout-note collapse="true"}
+## Derivation from Young-Laplace and chemical potential
+
+Let $\mu_\text{l}(r)$ be the chemical potential of liquid water in a drop, and $\mu_\text{l}(\infty)$ the value for a flat surface at the same temperature. A liquid can change its chemical potential with pressure: $d\mu = V_\text{m}\,dp$, with molar volume $V_\text{m} = M_\text{w}/\rho_\text{w}$. Integrating over the Young-Laplace pressure jump gives
+
+$$\mu_\text{l}(r) - \mu_\text{l}(\infty) = V_\text{m}\,\frac{2\sigma}{r}.$$
+
+At equilibrium, the vapor has the same chemical potential as the liquid. For an ideal gas, $\mu_\text{v} - \mu_\text{v}(\infty) = RT\ln(e/e_\text{s}(\infty))$, so the vapor pressure ratio is
+
+$$RT \ln S_\text{eq} = \frac{2\sigma M_\text{w}}{\rho_\text{w} r},$$
+
+which rearranges to the Kelvin equation. The cloud physics texts derive it this way[^pruppacher]^,^[^rogers].
+:::
+
+## How big is the effect
+
+The term $A/r$ shrinks as the radius grows. With the constants above, $A = 1.20 \times 10^{-9}$ m. The table gives the equilibrium RH for four drops.
+
+| Radius | What it is | Equilibrium RH | Excess over 100% |
+|---|---|---|---|
+| 1 nm | molecular cluster | about 330% | 232% |
+| 0.1 µm | haze droplet | about 101.2% | 1.21% |
+| 10 µm | cloud droplet | about 100.01% | 0.012% |
+| 1 mm | raindrop | about 100.0001% | 0.00012% |
+
+The 1 nm row is an illustration. Bulk surface tension is only an approximation for drops a few nanometers across, so the true value at that size may differ.
+
+When the excess is small, $e^{A/r} - 1 \approx A/r$. The excess therefore scales as one over the radius: halving a 10 µm drop doubles its excess from 0.012% to about 0.024%. Figure 1 shows the whole range on log axes.
+
+```{ojs}
+//| echo: false
+// Kelvin constant at 273.15 K, shared with the widget below.
+kelvinA = (2 * 0.0756 * 0.018015) / (999.8 * 8.314 * 273.15)
+
+kelvinCurve = d3.range(0, 200).map(i => {
+  const r = Math.pow(10, -9 + 6 * i / 199);
+  return {r, excess: 100 * (Math.exp(kelvinA / r) - 1)};
+})
+
+kelvinPoints = [1e-9, 1e-7, 1e-5, 1e-3].map((r, i) => {
+  const excess = 100 * (Math.exp(kelvinA / r) - 1);
+  return {r, excess, label: ["1 nm: 232%", "0.1 µm: 1.21%", "10 µm: 0.012%", "1 mm: 0.00012%"][i]};
+})
+
+Plot.plot({
+  width: Math.min(width, 720),
+  height: 340,
+  marginLeft: 70,
+  marginRight: 60,
+  style: {background: "transparent", color: "currentColor"},
+  x: {
+    type: "log", label: "Drop radius →", domain: [1e-9, 1e-3],
+    ticks: [1e-9, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3],
+    tickFormat: r => ["1 nm", "10 nm", "100 nm", "1 µm", "10 µm", "100 µm", "1 mm"][Math.round(Math.log10(r)) + 9]
+  },
+  y: {
+    type: "log", label: "↑ Excess over 100% RH (%)", domain: [1e-4, 1e3],
+    ticks: [1e-4, 1e-3, 1e-2, 1e-1, 1, 10, 100, 1000], tickFormat: v => String(v) + "%"
+  },
+  marks: [
+    Plot.gridY({stroke: "currentColor", strokeOpacity: 0.12}),
+    Plot.line(kelvinCurve, {x: "r", y: "excess", stroke: "#38bdf8", strokeWidth: 3}),
+    Plot.ruleY([0.5], {stroke: "#f59e0b", strokeWidth: 2, strokeDasharray: "7 5"}),
+    Plot.text([{r: 1.2e-9, excess: 0.5, label: "example supersaturation 0.5%"}], {
+      x: "r", y: "excess", text: "label", dy: -9, textAnchor: "start", fill: "#f59e0b", fontWeight: 600
+    }),
+    Plot.dot(kelvinPoints, {x: "r", y: "excess", r: 5, fill: "#38bdf8", stroke: "currentColor"}),
+    Plot.text(kelvinPoints, {x: "r", y: "excess", text: "label", dx: 9, dy: -9, textAnchor: "start", fill: "currentColor"})
+  ]
+})
+```
+
+**Figure 1.** Excess of the equilibrium relative humidity over 100% for a pure water drop, against drop radius, on log axes. Computed from the Kelvin equation at 273.15 K with σ = 0.0756 N m⁻¹ and no solute. Dots mark the four radii in the table. The dashed line marks an example supersaturation of 0.5%. Below about 10 nm the bulk-surface-tension form is approximate.
+
+## Below a critical size, a drop shrinks
+
+Air at a fixed ambient saturation ratio $S$ (the RH divided by 100) decides whether a pure drop grows or shrinks. A drop grows when $S$ is above its own $S_\text{eq}$, because the air holds more vapor than the drop needs. A drop shrinks when $S$ is below $S_\text{eq}$.
+
+The boundary between the two cases is the critical radius $r^*$, where $S = S_\text{eq}$. It is an unstable balance point: a drop a little smaller than $r^*$ shrinks, and a drop a little larger grows. Solving $\exp(A/r^*) = S$ gives
+
+$$r^* = \frac{A}{\ln S}$$
+
+Drops smaller than $r^*$ have a higher $S_\text{eq}$ than the air and evaporate. Drops larger than $r^*$ have a lower $S_\text{eq}$ and grow, and as they grow their $S_\text{eq}$ falls further, so they keep growing.
+
+Take $S = 1.005$, an example supersaturation of 0.5%. Then $\ln 1.005 = 0.00499$, and
+
+$$r^* = \frac{1.20 \times 10^{-9}\ \text{m}}{0.00499} = 2.4 \times 10^{-7}\ \text{m} = 0.24\ \mu\text{m}.$$
+
+A drop of 0.1 µm evaporates in that air, and a drop of 1 µm grows. Try the same arithmetic yourself in the widget below.
+
+::: {.sim-card}
+#### Will this drop grow?
+
+```{ojs}
+//| echo: false
+viewof logr = Inputs.range([-9, -4], {value: -6, step: 0.01, label: "Radius (log scale; value in the readout below)"})
+viewof sPct = Inputs.range([0, 2], {value: 0.5, step: 0.05, label: "Ambient supersaturation (%)"})
+
+wRadius = Math.pow(10, logr)
+wSbar = 1 + sPct / 100
+wSeq = Math.exp(kelvinA / wRadius)
+wCrit = sPct > 0 ? kelvinA / Math.log(wSbar) : null
+wGrows = wSbar > wSeq
+
+fmtRadius = r => r < 1e-6 ? String(Number((r * 1e9).toPrecision(3))) + " nm"
+  : r < 1e-3 ? String(Number((r * 1e6).toPrecision(3))) + " µm"
+  : String(Number((r * 1e3).toPrecision(3))) + " mm"
+
+rhText = wSeq >= 1.01 ? (100 * wSeq).toFixed(1) + "%" : (100 * wSeq).toFixed(4) + "%"
+critText = wCrit === null ? "none: every pure drop evaporates" : fmtRadius(wCrit)
+verdict = wGrows ? "Grows" : "Evaporates"
+
+html`<div class="sim-readouts">
+  <div class="sim-readout">
+    <div class="sim-readout-label">Drop radius</div>
+    <div class="sim-readout-value">${fmtRadius(wRadius)}</div>
+  </div>
+  <div class="sim-readout">
+    <div class="sim-readout-label">Equilibrium RH over this drop</div>
+    <div class="sim-readout-value">${rhText}</div>
+  </div>
+  <div class="sim-readout">
+    <div class="sim-readout-label">Critical radius at ${sPct}% supersaturation</div>
+    <div class="sim-readout-value">${critText}</div>
+  </div>
+  <div class="sim-readout">
+    <div class="sim-readout-label">Verdict</div>
+    <div class="sim-readout-value">${verdict}</div>
+  </div>
+</div>`
+```
+
+Pure water at 273.15 K, with σ = 0.0756 N m⁻¹ held fixed; the temperature is not a slider, because σ changes with temperature. Drops above the critical radius grow. At 0% supersaturation no pure drop grows. Bulk surface tension is approximate for drops a few nanometers across.
+:::
+
+Pure vapor cannot make a drop from nothing for a related reason. A new drop starts far smaller than $r^*$. For how drops really start, see [Why clean air makes no cloud](why-clean-air-makes-no-cloud.qmd); this post does not repeat it.
+
+## What this means for you
+
+The Kelvin term is the curvature part of the calculation. Köhler-based activation schemes in cloud models include it. The next step is [Köhler theory](kohler-theory.qmd), where dissolved salt lowers the vapor pressure over the drop and offsets this curvature term. Read the two together: the Kelvin term sets how much vapor a small drop needs, and the solute sets how much it gets for free.
+
+## Key takeaways
+
+- A curved water surface needs more vapor than a flat one. The excess is about $A/r$, with $A = 1.20 \times 10^{-9}$ m at 273.15 K.
+- The excess is 232% at 1 nm, 1.21% at 0.1 µm, 0.012% at 10 µm and 0.00012% at 1 mm.
+- In air with saturation ratio $S$, a pure drop larger than $r^* = A/\ln S$ grows and a smaller one evaporates. At an example supersaturation of 0.5%, $r^* \approx 0.24$ µm.
+- At 100% RH every pure drop evaporates, so the Kelvin effect alone cannot start a drop from vapor.
+
+[^vargaftik]: Vargaftik, N. B., Volkov, B. N. and Voljak, L. D. International tables of the surface tension of water. *Journal of Physical and Chemical Reference Data* **12**, 817–820 (1983). https://doi.org/10.1063/1.555688
+
+[^pruppacher]: Pruppacher, H. R. and Klett, J. D. *Microphysics of Clouds and Precipitation*, 2nd ed. Springer, 2010 (reprint of the Kluwer edition, 1997). https://doi.org/10.1007/978-0-306-48100-0
+
+[^rogers]: Rogers, R. R. and Yau, M. K. *A Short Course in Cloud Physics*, 3rd ed. Pergamon Press, 1989.
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/drop-shape-in-air.html"><span>Previous</span>How a drop deforms in air</a><a class="mf-up" href="/series/cloud-formation/index.html"><span>Series</span>How clouds form</a><a class="mf-next" href="/blogs/what-is-an-aerosol.html"><span>Next</span>What is an aerosol?</a></div>
+<!-- CURRICULUM_FOOTER_END -->
+

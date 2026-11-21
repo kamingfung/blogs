@@ -33,6 +33,7 @@ parts:
   - id: cloud-formation/lapse-rates-and-stability
     title: Lapse rates and stability
     level: intermediate
+    path: blogs/lapse-rates-and-stability.md
     requires:
     - cloud-formation/why-does-rising-air-cool
   - id: cloud-formation/inversions-and-trapped-pollution
@@ -61,6 +62,7 @@ parts:
   - id: cloud-formation/the-kelvin-effect
     title: 'The Kelvin effect: why small drops evaporate'
     level: intermediate
+    path: blogs/the-kelvin-effect.md
     requires:
     - cloud-formation/why-are-drops-round
 - title: What clouds form on
@@ -92,6 +94,7 @@ parts:
   - id: cloud-formation/why-cloud-droplets-dont-fall
     title: Why cloud droplets don't fall
     level: introductory
+    path: blogs/why-cloud-droplets-dont-fall.md
     requires:
     - cloud-formation/how-a-drop-deforms-in-air
   - id: cloud-formation/how-drops-merge

@@ -1,0 +1,258 @@
+---
+title: Lapse rates and stability
+description: A lifted parcel sinks back, keeps rising, or rises only once it saturates, depending on how its cooling with height compares with the surrounding air's, and a sounding turns that comparison into three levels and one area.
+date: 2026-11-20
+categories:
+- meteorology
+- atmospheric science
+- thermodynamics
+- simulation
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/cloud-formation/index.html">How clouds form</a><span class="sep">·</span>Part 2 · Stability</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Assumes <a href="/blogs/why-rising-air-cools.html">Why does rising air cool?</a>.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Stability compares the lapse rate of a rising parcel with the lapse rate of the air around it. The lapse rate is the drop in temperature per kilometer of height. A parcel warmer than its surroundings keeps rising; a colder one sinks back. Air that is stable when dry can be unstable once saturated. Afternoon heating deepens the warm layer until it reaches cloud base, which removes the lid on the air below and lets the buoyant energy, CAPE, grow.
+:::
+
+## Two lapse rates, not one
+
+The lapse rate is the drop in temperature per kilometer of height:
+
+$$\Gamma = -\frac{dT}{dz}$$
+
+where $T$ is temperature and $z$ is height. Its unit is kelvin per kilometer (K/km), which equals °C per km. The word "lapse rate" hides two different rates, and stability needs both.
+
+**The parcel's rate.** A parcel is a bundle of air that exchanges no heat with the air around it. Physicists call this process adiabatic. Lifted while dry, the parcel cools at the dry adiabatic rate:
+
+$$\Gamma_d = \frac{g}{c_p} \approx 9.8\ \text{K/km}$$
+
+Here $g = 9.81\ \text{m s}^{-2}$ is gravity and $c_p = 1004\ \text{J kg}^{-1}\,\text{K}^{-1}$ is the specific heat of air at constant pressure. Once the parcel saturates, water vapor condenses and releases latent heat, which is heat stored in the vapor. That heat slows the cooling, so the parcel cools at the moist adiabatic rate, $\Gamma_m$, which is smaller. The [earlier module](why-rising-air-cools.qmd) derives both rates. The moist rate is not one number: the widget below computes it, and it gives 4.2 K/km for air at 20 °C at the ground and 9.1 K/km for air at −40 °C and 9 km.
+
+**The environment's rate.** The environment is the air next to the parcel. A weather balloon measures its temperature at each height, and its lapse rate, $\Gamma_e$, changes from day to day. Physics does not set it.
+
+Most confusion comes from mixing the two. The parcel's rate is computed from physics. The environment's rate is measured.
+
+## Buoyancy decides
+
+Buoyancy is the upward push on air that is lighter than its surroundings. Warm air is lighter, so a parcel warmer than its surroundings keeps rising. A colder parcel sinks back.
+
+Stability asks what happens after a small upward nudge.[^wallace] A parcel lifted by a height $\Delta z$ cools by $\Gamma_p\,\Delta z$, and the environment at the same new height cools by $\Gamma_e\,\Delta z$. The parcel's temperature minus the environment's is therefore:
+
+$$T_p - T_e = (\Gamma_e - \Gamma_p)\,\Delta z$$
+
+Here $\Gamma_p$ is the parcel's rate, dry or moist. One comparison gives three outcomes:
+
+| Comparison | Outcome after a nudge up |
+|---|---|
+| $\Gamma_e < \Gamma_p$ | Stable: the parcel is colder and sinks back |
+| $\Gamma_e = \Gamma_p$ | Neutral: no push either way |
+| $\Gamma_e > \Gamma_p$ | Unstable: the parcel is warmer and keeps rising |
+
+## Conditional instability
+
+Dry and saturated parcels cool at different rates, so one profile can give two answers. A layer is **conditionally unstable** when its environment lapse rate falls between the two parcel rates:
+
+$$\Gamma_m < \Gamma_e < \Gamma_d$$
+
+A dry parcel in that layer cools faster than the layer, so it is stable and sinks back. A saturated parcel cools more slowly than the layer, so it is unstable and keeps rising. Figure 1 shows a 7.5 K/km environment between the dry and moist parcel paths.
+
+```{ojs}
+//| echo: false
+lineFig1 = {
+  const line = lr => d3.range(0, 3.001, 0.1).map(z => ({z, T: 20 - lr * z}));
+  // Moist parcel from 20 °C at the ground, stepped in 10 m with the moist rate.
+  const moist = [];
+  let Tm = 20;
+  for (let k = 0; k <= 300; k++) {
+    const z = k * 0.01;
+    moist.push({z, T: Tm});
+    Tm = Tm - lapse.gammaM(Tm, z) * 0.01;
+  }
+  const labels = [
+    {x: 29, y: 3.0, t: "stable environment, 4 K/km", c: "#38bdf8"},
+    {x: 29, y: 2.7, t: "moist parcel path (dashed)", c: "#f59e0b"},
+    {x: 29, y: 2.4, t: "conditional environment, 7.5 K/km", c: "#34d399"},
+    {x: 29, y: 2.1, t: "dry parcel path (dotted), 9.8 K/km", c: "#f59e0b"},
+    {x: 29, y: 1.8, t: "unstable environment, 12 K/km", c: "#a78bfa"}
+  ];
+  return Plot.plot({
+    width: Math.min(width, 720),
+    height: 360,
+    x: {label: "Temperature (°C)", domain: [-30, 30]},
+    y: {label: "Height (km)", domain: [0, 3]},
+    marks: [
+      Plot.ruleX([0], {stroke: "currentColor", strokeOpacity: 0.3}),
+      Plot.line(line(4), {x: "T", y: "z", stroke: "#38bdf8", strokeWidth: 2.5}),
+      Plot.line(line(7.5), {x: "T", y: "z", stroke: "#34d399", strokeWidth: 2.5}),
+      Plot.line(line(12), {x: "T", y: "z", stroke: "#a78bfa", strokeWidth: 2.5}),
+      Plot.line(line(9.8), {x: "T", y: "z", stroke: "#f59e0b", strokeWidth: 2.5, strokeDasharray: "2 3"}),
+      Plot.line(moist.filter(d => d.z <= 3.0001), {x: "T", y: "z", stroke: "#f59e0b", strokeWidth: 2.5, strokeDasharray: "8 4"}),
+      Plot.text(labels, {x: "x", y: "y", text: "t", fill: "c", textAnchor: "end", fontWeight: 600})
+    ]
+  });
+}
+```
+
+**Figure 1.** Temperature against height for three toy environments that start at 20 °C at the ground and cool at 4, 7.5 and 12 K/km (solid lines). Two parcel paths start from the same point: the dry parcel at 9.8 K/km (dotted) and the moist parcel, which cools at the moist rate computed from the formula in the widget (dashed). Each line has a text label at the right edge, matched by color and dash. The 7.5 K/km environment cools faster than the moist parcel and slower than the dry one, so it is conditionally unstable. Compare the slopes. Toy profiles, not measured soundings.
+
+## Reading a sounding
+
+A sounding is a vertical profile of temperature and humidity. A radiosonde, the instrument package a weather balloon carries up through the air, makes it. Reading one means lifting a parcel from the ground and comparing it with the profile. Three levels and one area follow from that comparison.
+
+1. **Lifting condensation level (LCL).** Lift a surface parcel dry. The height where its temperature falls to its dew point, the temperature at which it would saturate, is the LCL. Cloud base sits there. The gap between the air temperature and the dew point is the dew-point depression. As a rule of thumb, the LCL lies about 125 m above the ground for each degree Celsius of dew-point depression: $z_{\text{LCL}} \approx 0.125\ \text{km K}^{-1}\,(T_0 - T_{d0})$.
+2. **Level of free convection (LFC).** Keep lifting. The lowest level where the parcel becomes warmer than the environment is the LFC. Above it, the parcel rises without an extra push.
+3. **Equilibrium level (EL).** The highest level where the parcel is still warmer than the environment. Above it, the parcel is colder and stops rising.
+4. **Convective available potential energy (CAPE).** The area between the parcel and environment curves, from the LFC to the EL, weighted by how much warmer the parcel is in relative terms:
+
+$$\text{CAPE} = g \int_{LFC}^{EL} \frac{T_p - T_e}{T_e}\,dz$$
+
+Here $T$ is temperature in kelvin, $z$ is height in meters, and CAPE is in J/kg. A larger area lets the parcel gain more speed from buoyancy. CAPE for a parcel is an upper bound: the parcel model assumes no mixing with drier surrounding air, and real rising air loses buoyancy that way.
+
+Saturation vapor pressure in the widget follows the formula Bolton gave in 1980.[^bolton]
+
+## The lid and the mixed layer
+
+Between the ground and the LFC, the parcel is often colder than the air around it. The energy needed to push it through that cold layer is convective inhibition (CIN), which we call the lid. It is reported as a positive number in J/kg:
+
+$$\text{CIN} = g \int_{0}^{LFC} \frac{\max(T_e - T_p,\,0)}{T_e}\,dz$$
+
+The widget's environment is a mixed-layer toy. The morning profile cools at 6.5 K/km. Heating the ground adds a layer that cools at the dry rate, 9.8 K/km, from the warmed surface up to where it meets the morning profile, at about $\Delta T/3.3$ km. Convection mixes that layer, so the dry rate applies there.
+
+::: {.sim-card}
+#### Warm the ground, watch the cloud tower
+
+```{ojs}
+//| echo: false
+viewof dT = Inputs.range([0, 8], {value: 0, step: 0.5, label: "Afternoon surface heating ΔT (°C)"})
+```
+
+```{ojs}
+//| echo: false
+// Toy profile. Environment: T_e(z) = max(20 - 6.5 min(z, 11), 20 + dT - 9.8 z) °C (mixed layer over the morning profile).
+// Parcel: from 20 + dT °C with dew point 14 °C; dry adiabat to the LCL, then pseudo-adiabat; 10 m steps.
+lapse = {
+  const G = 9.81, CP = 1004, RD = 287, LV = 2.5e6, EPS = 0.622, DZ = 0.01, TD0 = 14;
+  const es = Tc => 6.112 * Math.exp(17.67 * Tc / (Tc + 243.5));   // hPa, Bolton (1980)
+  const pres = z => 1013.25 * Math.exp(-z / 8);                  // hPa
+  const gammaM = (Tc, z) => {                                    // K/km, moist adiabatic rate
+    const T = Tc + 273.15, p = pres(z), e = es(Tc), rs = EPS * e / (p - e);
+    return 1000 * G * (1 + LV * rs / (RD * T)) / (CP + LV * LV * rs * EPS / (RD * T * T));
+  };
+  const envT = (z, dT) => Math.max(20 - 6.5 * Math.min(z, 11), 20 + dT - 9.8 * z);
+  function parcel(dT, zmax = 12) {
+    const T0 = 20 + dT, zl = 0.125 * (T0 - TD0), zs = [], Ts = [];
+    let zprev = 0, Tprev = T0;
+    for (let k = 0; k * DZ <= zmax + 1e-9; k++) {
+      const z = k * DZ;
+      let T;
+      if (z <= zl) T = T0 - 9.8 * z;
+      else {
+        const zb = zprev <= zl ? zl : zprev;
+        const Tb = zprev <= zl ? T0 - 9.8 * zl : Tprev;
+        T = Tb - gammaM(Tb, zb) * (z - zb);
+      }
+      zs.push(z); Ts.push(T); zprev = z; Tprev = T;
+    }
+    return {zl, zs, Ts};
+  }
+  function analyze(dT) {
+    const {zl, zs, Ts} = parcel(dT);
+    const B = Ts.map((t, i) => t - envT(zs[i], dT));
+    const pos = B.map((b, i) => (b > 1e-9 ? i : -1)).filter(i => i >= 0);
+    if (pos.length === 0) return {lcl: zl, lfc: null, el: null, cape: 0, cin: null};
+    const lfc = pos[0], el = pos[pos.length - 1];
+    const layer = (i, f) => G * 0.5 * (f(i) + f(i + 1)) * DZ * 1000;
+    let cape = 0, cin = 0;
+    for (let i = lfc; i < el; i++) cape += layer(i, j => Math.max(B[j], 0) / (envT(zs[j], dT) + 273.15));
+    for (let i = 0; i < lfc; i++) cin += layer(i, j => Math.max(-B[j], 0) / (envT(zs[j], dT) + 273.15));
+    return {lcl: zl, lfc: zs[lfc], el: zs[el], cape, cin};
+  }
+  return {gammaM, envT, parcel, analyze};
+}
+```
+
+```{ojs}
+//| echo: false
+res = lapse.analyze(dT)
+prof = {
+  const p = lapse.parcel(dT);
+  return p.zs.map((z, i) => {
+    const te = lapse.envT(z, dT);
+    return {z, te, tp: p.Ts[i], tmax: Math.max(te, p.Ts[i])};
+  });
+}
+```
+
+```{ojs}
+//| echo: false
+Plot.plot({
+  width: Math.min(width, 720),
+  height: 380,
+  x: {label: "Temperature (°C)", domain: [-75, 30]},
+  y: {label: "Height (km)", domain: [0, 12]},
+  marks: [
+    Plot.ruleX([0], {stroke: "currentColor", strokeOpacity: 0.3}),
+    Plot.ruleY([res.lcl], {stroke: "currentColor", strokeDasharray: "2 3"}),
+    Plot.areaX(prof, {y: "z", x1: "te", x2: "tmax", fill: "#f59e0b", fillOpacity: 0.3}),
+    Plot.line(prof, {x: "te", y: "z", stroke: "#38bdf8", strokeWidth: 2.5}),
+    Plot.line(prof, {x: "tp", y: "z", stroke: "#f59e0b", strokeWidth: 2.5, strokeDasharray: "6 4"}),
+    Plot.text([{x: 28, y: 11.2, t: "solid: environment"}, {x: 28, y: 10.5, t: "dashed: parcel"}, {x: 28, y: 9.8, t: "shaded: parcel warmer"}],
+      {x: "x", y: "y", text: "t", textAnchor: "end", fill: "currentColor"})
+  ]
+})
+```
+
+```{ojs}
+//| echo: false
+html`<div class="sim-readouts">
+  <div class="sim-readout"><div class="sim-readout-label">LCL, cloud base</div><div class="sim-readout-value">${Math.round(res.lcl * 1000)} m</div></div>
+  <div class="sim-readout"><div class="sim-readout-label">LFC</div><div class="sim-readout-value">${res.lfc === null ? "none" : res.lfc < 0.1 ? "surface" : Math.round(res.lfc * 1000) + " m"}</div></div>
+  <div class="sim-readout"><div class="sim-readout-label">EL</div><div class="sim-readout-value">${res.el === null ? "none" : Math.round(res.el * 1000) + " m"}</div></div>
+  <div class="sim-readout"><div class="sim-readout-label">CAPE</div><div class="sim-readout-value">${Math.round(res.cape)} J/kg</div></div>
+  <div class="sim-readout"><div class="sim-readout-label">CIN, the lid</div><div class="sim-readout-value">${Math.round(res.cin)} J/kg</div></div>
+</div>`
+```
+
+**Figure 2.** Toy sounding for the widget. Solid line: environment, $T_e(z) = \max\big(20 - 6.5\,\min(z, 11),\; 20 + \Delta T - 9.8 z\big)$ °C, a dry-adiabatic mixed layer over the morning profile. Dashed line: parcel from $20 + \Delta T$ °C at the ground with a surface dew point of 14 °C, following the dry adiabat (9.8 K/km) to the LCL and the moist adiabat above it, stepped in 10 m. Constants: $g = 9.81\ \text{m s}^{-2}$, $c_p = 1004\ \text{J kg}^{-1}\,\text{K}^{-1}$, $R_d = 287\ \text{J kg}^{-1}\,\text{K}^{-1}$, $L = 2.5 \times 10^6\ \text{J kg}^{-1}$, $\varepsilon = 0.622$, $p = 1013.25\,e^{-z/8\,\text{km}}$ hPa, and Bolton's saturation vapor pressure. Shading marks where the parcel is warmer. This is a toy profile, not a real sounding.
+:::
+
+Table 1 shows the readouts at four surface heatings. Heating deepens the mixed layer. Until that layer reaches cloud base, the lid stays on the parcel and CAPE stays small. At about $\Delta T = 4$ °C the mixed layer reaches the LCL, the lid is gone, and CAPE grows with heating.
+
+| Surface heating ΔT | LCL | LFC | EL | CAPE | CIN (lid) |
+|---|---|---|---|---|---|
+| 0 °C | 750 m | 2.5 km | 6.5 km | 121 J/kg | 101 J/kg |
+| 2 °C | 1,000 m | 1.82 km | 7.5 km | 341 J/kg | 27 J/kg |
+| 4 °C | 1,250 m | 1.33 km | 8.3 km | 630 J/kg | 0 |
+| 8 °C | 1,750 m | 1.76 km | 9.8 km | 1,305 J/kg | 0 |
+
+What lifts the parcel at $\Delta T = 0$? The lid holds 101 J/kg, and the parcel stays colder than its surroundings until 2.5 km. Something must lift the air that far first, such as a front, a hill or convergence. [What lifts the air](what-lifts-the-air.qmd) covers that first push.
+
+## What this means for you
+
+Afternoon sun warms the ground and deepens the mixed layer. Dai (2024) finds, from surface observations, that warm-season precipitation over most land peaks around 14 to 18 local solar time.[^dai] A forecast that quotes instability or CAPE is making the comparison in this post. Read the number as the area between the parcel and environment curves. It measures the energy a parcel can gain, and it is an upper bound. It does not, by itself, say how severe a storm will be.
+
+To test the comparison yourself, try [Lift a parcel yourself](parcel-lifter.qmd).
+
+## Key takeaways
+
+- The lapse rate is the drop in temperature per kilometer of height. Stability compares the parcel's rate with the environment's rate.
+- The dry rate is $g/c_p \approx 9.8$ K/km. The moist rate is smaller, and it grows with height as the air cools.
+- A layer is stable when $\Gamma_e < \Gamma_p$ and unstable when $\Gamma_e > \Gamma_p$. A layer between the moist and dry rates is stable for dry air and unstable once saturated.
+- The lid (CIN) is the energy a parcel needs before it reaches its LFC. Heating removes the lid once the mixed layer reaches cloud base, which in the toy happens near 4 °C, and then CAPE grows.
+
+[^wallace]: Wallace, J. M. and Hobbs, P. V. *Atmospheric Science: An Introductory Survey*, 2nd edn. Academic Press (2006). Source for the lapse rates, the stability criteria and the moist adiabatic formula.
+
+[^bolton]: Bolton, D. The computation of equivalent potential temperature. *Monthly Weather Review* **108**, 1046–1053 (1980). https://doi.org/10.1175/1520-0493(1980)108<1046:TCOEPT>2.0.CO;2
+
+[^dai]: Dai, A. The diurnal cycle from observations and ERA5 in precipitation, clouds, boundary layer height, buoyancy, and surface fluxes. *Climate Dynamics* (2024). https://doi.org/10.1007/s00382-024-07182-6
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/what-lifts-the-air.html"><span>Previous</span>What lifts the air</a><a class="mf-up" href="/series/cloud-formation/index.html"><span>Series</span>How clouds form</a><a class="mf-next" href="/blogs/parcel-lifter.html"><span>Next</span>Lift a parcel yourself</a></div>
+<!-- CURRICULUM_FOOTER_END -->
+

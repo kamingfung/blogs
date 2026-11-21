@@ -180,6 +180,6 @@ As fluid drains into the bulk, capillary waves propagate upward along the drople
 4. **Villermaux, E., & Bossa, B.** (2009). *Single-drop fragmentation determines size distribution of raindrops*. Nature Physics, 5(9), 697–702. [doi:10.1038/nphys1340](https://doi.org/10.1038/nphys1340)
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/where-ccn-come-from.html"><span>Previous</span>Where CCN come from</a><a class="mf-up" href="/series/cloud-formation/index.html"><span>Series</span>How clouds form</a><a class="mf-next" href="/blogs/cloud-types.html"><span>Next</span>Cloud types</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/why-cloud-droplets-dont-fall.html"><span>Previous</span>Why cloud droplets don&#x27;t fall</a><a class="mf-up" href="/series/cloud-formation/index.html"><span>Series</span>How clouds form</a><a class="mf-next" href="/blogs/cloud-types.html"><span>Next</span>Cloud types</a></div>
 <!-- CURRICULUM_FOOTER_END -->
 

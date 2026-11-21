@@ -387,6 +387,6 @@ return {pingPong: CELLS[6]};
 ```
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/nox-vocs-and-sunlight.html"><span>Previous</span>NOx, VOCs and sunlight</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/fixed-nitrogen.html"><span>Next</span>Fixed nitrogen</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/nox-vocs-and-sunlight.html"><span>Previous</span>NOx, VOCs and sunlight</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/ozone-titration-in-cities.html"><span>Next</span>Ozone titration in cities</a></div>
 <!-- CURRICULUM_FOOTER_END -->
 

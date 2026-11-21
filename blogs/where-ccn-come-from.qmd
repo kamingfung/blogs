@@ -58,6 +58,6 @@ graph LR
 - Which source dominates depends on location: sea spray in clean maritime air, sulfate and nitrate in industrial and agricultural plumes.
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/kohler-theory.html"><span>Previous</span>Köhler theory</a><a class="mf-up" href="/series/cloud-formation/index.html"><span>Series</span>How clouds form</a><a class="mf-next" href="/blogs/drop-coalescence.html"><span>Next</span>How drops merge</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/kohler-theory.html"><span>Previous</span>Köhler theory</a><a class="mf-up" href="/series/cloud-formation/index.html"><span>Series</span>How clouds form</a><a class="mf-next" href="/blogs/why-cloud-droplets-dont-fall.html"><span>Next</span>Why cloud droplets don&#x27;t fall</a></div>
 <!-- CURRICULUM_FOOTER_END -->
 

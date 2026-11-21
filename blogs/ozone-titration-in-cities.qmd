@@ -1,0 +1,202 @@
+---
+title: Ozone titration in cities
+description: After reading this, you can explain why a city-center monitor can read lower ozone than the air over farms downwind, and why lockdown data show ozone rising as traffic fell.
+date: 2026-11-20
+categories:
+- atmospheric chemistry
+- air quality
+- ozone
+- interactive
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/air-land-climate/index.html">Air, Land and Climate</a><span class="sep">·</span>Part 3 · Ozone chemistry</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Assumes <a href="/blogs/nox-vocs-and-sunlight.html">NOx, VOCs and sunlight</a>.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Nitric oxide (NO) from traffic reacts with ozone ($\text{O}_3$) within minutes and turns it into nitrogen dioxide ($\text{NO}_2$). Ozone falls near fresh emissions, but the oxygen is not lost: the sum $\text{O}_x = \text{O}_3 + \text{NO}_2$ stays nearly level. Sunlight and the amount of NO set how that sum splits between the two gases, so ozone is low in a city core and higher downwind. During the 2020 lockdowns, urban ozone rose as traffic fell, and the authors attribute most of that rise to less NO removing ozone. For crops downwind, a city-center monitor can read lower than the ozone they receive.
+:::
+
+## Fresh NO eats ozone
+
+Near a busy road, ozone can drop within minutes. Exhaust carries nitric oxide, which reacts with ozone:
+
+$$\text{NO} + \text{O}_3 \rightarrow \text{NO}_2 + \text{O}_2$$
+
+Each reaction removes one ozone molecule and makes one nitrogen dioxide molecule. Chemists call this titration: fresh NO uses up ozone one molecule for one, like adding a base to an acid until the acid is spent. The reaction is fast. Mixing ratios are in ppb, parts per billion by volume. The rate constant $k$ is $4.43\times10^{-4}$ ppb$^{-1}$ s$^{-1}$ at 298 K (derived in the next section). At 40 ppb of NO, an ozone molecule lasts about $1/(k[\text{NO}]) = 1/(4.43\times10^{-4} \times 40)\ \text{s} \approx 56\ \text{s}$ before NO takes it.
+
+This loss is local. Sunlight is needed to turn $\text{NO}_2$ back into ozone, so at night nothing replaces the ozone that NO removes. The loss continues until air mixes in from outside. Near roads and at night, the result is a pocket of low ozone.
+
+## Ozone is moved, not destroyed
+
+Titration does not delete oxygen atoms. The oxygen from ozone ends up in $\text{NO}_2$. So the total oxidant $\text{O}_x = \text{O}_3 + \text{NO}_2$ stays the same through the reaction. Ozone alone drops because $\text{NO}_2$ takes its share.
+
+In sunlight the reaction runs backward too. Sunlight splits $\text{NO}_2$ into NO and an oxygen atom, and that atom makes ozone again. Within about a minute the two gases settle into a balance, the photostationary state:
+
+$$j\,[\text{NO}_2] = k\,[\text{NO}]\,[\text{O}_3]$$
+
+In sunlit city air, peroxy radicals (short-lived products of VOC oxidation) also turn NO into $\text{NO}_2$ without using ozone. Real $\text{NO}_2$/NO ratios therefore depart from this balance; the calculation here is the titration-only limit.
+
+Here $j$ is the photolysis frequency of $\text{NO}_2$ (the rate at which sunlight splits it, in s$^{-1}$), and $[\cdot]$ is a mixing ratio in ppb. The rate constant $k$ is the recommended value of the International Union of Pure and Applied Chemistry (IUPAC) at 298 K: $k = 1.8\times10^{-14}$ cm$^3$ molecule$^{-1}$ s$^{-1}$ [^atkinson]. Air at 298 K and 1 atm holds $2.463\times10^{19}$ molecules cm$^{-3}$, so $1$ ppb is $2.463\times10^{10}$ molecules cm$^{-3}$. Converting gives $k = 4.43\times10^{-4}$ ppb$^{-1}$ s$^{-1}$. IUPAC's temperature fit gives a lower $1.73\times10^{-14}$ at 298 K; this post uses the table value.
+
+Midday $j$ near the ground is about $8\times10^{-3}$ s$^{-1}$. The Trebs fit to global irradiance gives this value at about 710 W m$^{-2}$ [^trebs]. The ratio $j/k$ is then about 18 ppb. This ratio sets the split. Call total oxidant $\text{O}_x$ and the NO total $\text{NO}_x$, the sum of NO and $\text{NO}_2$, both in ppb.
+
+::: {.callout-note collapse="true"}
+## Solving the balance for ozone
+
+Let $x = [\text{O}_3]$ and $r = j/k$. Then $[\text{NO}_2] = \text{O}_x - x$ and $[\text{NO}] = \text{NO}_x - (\text{O}_x - x)$. Substituting into the balance gives a quadratic in $x$:
+
+$$x^2 + (\text{NO}_x - \text{O}_x + r)\,x - r\,\text{O}_x = 0$$
+
+Its positive root is
+
+$$[\text{O}_3] = \frac{-b + \sqrt{b^2 + 4 r \text{O}_x}}{2}, \qquad b = \text{NO}_x - \text{O}_x + r$$
+
+When $j = 0$, $r = 0$ and the root reduces to pure titration: $[\text{O}_3] = \max(\text{O}_x - \text{NO}_x, 0)$.
+:::
+
+The table holds total oxidant at 50 ppb and changes only the NO total. Each row sums to 50 ppb.
+
+| $\text{NO}_x$ (ppb) | $\text{O}_3$ (ppb) | $\text{NO}_2$ (ppb) | NO (ppb) |
+|:---:|:---:|:---:|:---:|
+| 40 | 26.3 | 23.7 | 16.3 |
+| 10 | 43.0 | 7.0 | 3.0 |
+| 1 | 49.3 | 0.7 | 0.3 |
+
+Ozone rises by about 23 ppb as NO falls from 40 ppb to 1 ppb, while total oxidant does not change. The air at the curb holds the same oxygen, but it sits mostly in $\text{NO}_2$.
+
+## The urban dip and the downwind bulge
+
+Traffic emits NO near the center of a city, and the chemistry plays out as air moves away. Figure 1 shows a toy transect with illustrative inputs. Ozone is about 19 ppb at the center and about 57 ppb 80 km downwind. The toy assumes total oxidant $\text{O}_x$ rises from 45 ppb at the center to 59 ppb at 80 km. That rise is an input to the formula, not a modeled result.
+
+```{ojs}
+//| echo: false
+rateK = 1.8e-14 * 2.463e19 * 1e-9
+```
+
+```{ojs}
+//| echo: false
+function splitOxidant(nox, ox, j) {
+  const r = j / rateK;
+  const b = nox - ox + r;
+  const o3 = (-b + Math.sqrt(b * b + 4 * r * ox)) / 2;
+  const no2 = ox - o3;
+  return {o3, no2, no: nox - no2};
+}
+```
+
+```{ojs}
+//| echo: false
+transect = {
+  const j = 8e-3, rows = [];
+  for (let x = 0; x <= 80; x += 1) {
+    const nox = 2 + 50 * Math.exp(-x / 8);
+    const ox = 45 + 15 * (1 - Math.exp(-x / 30));
+    const s = splitOxidant(nox, ox, j);
+    rows.push({x, series: "O₃", ppb: s.o3}, {x, series: "NO₂", ppb: s.no2}, {x, series: "Ox", ppb: ox});
+  }
+  return rows;
+}
+```
+
+```{ojs}
+//| echo: false
+Plot.plot({
+  width: Math.min(width, 720),
+  height: 340,
+  marginRight: 60,
+  x: {label: "distance downwind from city center (km)", domain: [0, 80]},
+  y: {label: "mixing ratio (ppb)", grid: true},
+  color: {domain: ["O₃", "NO₂", "Ox"], range: ["#38bdf8", "#f59e0b", "currentColor"]},
+  marks: [
+    Plot.line(transect.filter(d => d.series !== "Ox"), {x: "x", y: "ppb", stroke: "series", strokeWidth: 2.5}),
+    Plot.line(transect.filter(d => d.series === "Ox"), {x: "x", y: "ppb", stroke: "currentColor", strokeDasharray: "6 4", strokeWidth: 2}),
+    Plot.text(transect.filter(d => d.x === 80 && d.series === "Ox"), {x: "x", y: "ppb", text: "series", dx: 8, dy: -10, textAnchor: "start", fill: "currentColor"}),
+    Plot.text(transect.filter(d => d.x === 80 && d.series === "O₃"), {x: "x", y: "ppb", text: "series", dx: 8, dy: 10, textAnchor: "start", fill: "currentColor"}),
+    Plot.text(transect.filter(d => d.x === 80 && d.series === "NO₂"), {x: "x", y: "ppb", text: "series", dx: 8, textAnchor: "start", fill: "currentColor"})
+  ]
+})
+```
+
+**Figure 1.** Illustrative toy profile, not measurements. Distance from a city center, 0 to 80 km downwind, against mixing ratio in ppb. $\text{O}_3$ and $\text{NO}_2$ follow the photostationary balance with $j/k$ about 18 ppb. Inputs: $\text{NO}_x(x) = 2 + 50e^{-x/8}$ ppb and $\text{O}_x(x) = 45 + 15(1 - e^{-x/30})$ ppb, so the toy assumes $\text{O}_x$ rises from 45 to 59 ppb. The dashed line is total oxidant $\text{O}_x$, equal to the sum of $\text{O}_3$ and $\text{NO}_2$. Sunlight is fixed at $j = 8\times10^{-3}$ s$^{-1}$.
+
+Urban and rural air differ in this chemistry, and Sillman's study of ozone, $\text{NO}_x$ and hydrocarbons in urban and polluted rural environments lays out the reasons [^sillman]. Use the widget to see how the split responds when you change traffic and sunlight. Its totals are held fixed, so it shows titration only.
+
+::: {.sim-card}
+#### Cut the traffic
+
+```{ojs}
+//| echo: false
+viewof noxPpb = Inputs.range([0, 80], {value: 40, step: 1, label: "NOx, NO plus NO₂ (ppb)"})
+viewof oxPpb = Inputs.range([20, 80], {value: 50, step: 1, label: "Total oxidant Ox (ppb)"})
+viewof jScaled = Inputs.range([0, 10], {value: 8, step: 0.1, label: "j(NO₂) (×10⁻³ s⁻¹)"})
+```
+
+```{ojs}
+//| echo: false
+bars = {
+  const s = splitOxidant(noxPpb, oxPpb, jScaled * 1e-3);
+  return [
+    {species: "O₃", ppb: Math.max(0, s.o3)},
+    {species: "NO₂", ppb: Math.max(0, s.no2)},
+    {species: "NO", ppb: Math.max(0, s.no)}
+  ];
+}
+```
+
+```{ojs}
+//| echo: false
+Plot.plot({
+  width: Math.min(width, 720),
+  height: 240,
+  marginLeft: 60,
+  marginRight: 60,
+  x: {label: "mixing ratio (ppb)", domain: [0, 80]},
+  y: {label: null},
+  marks: [
+    Plot.barX(bars, {x: "ppb", y: "species", fill: "currentColor", fillOpacity: 0.45}),
+    Plot.text(bars, {x: "ppb", y: "species", text: d => d.ppb.toFixed(1) + " ppb", dx: 6, textAnchor: "start", fill: "currentColor"})
+  ]
+})
+```
+
+```{ojs}
+//| echo: false
+html`<div class="sim-readout"><span class="sim-readout-label">O₃</span> <span class="sim-readout-value">${bars[0].ppb.toFixed(1)} ppb</span> <span class="sim-readout-label">NO₂</span> <span class="sim-readout-value">${bars[1].ppb.toFixed(1)} ppb</span> <span class="sim-readout-label">NO</span> <span class="sim-readout-value">${bars[2].ppb.toFixed(1)} ppb</span></div>`
+```
+
+Holding $\text{O}_x$ fixed ignores downwind production. That is the point of the next section.
+:::
+
+## Natural experiments
+
+Traffic fell sharply during the 2020 lockdowns, so NO fell too. Sicard and colleagues compare the lockdown with the same period in 2017–2019. Daily mean ozone at urban stations rose 24% in Nice, 14% in Rome, 27% in Turin, 2.4% in Valencia and 36% in Wuhan. Over the same lockdown, $\text{NO}_2$ fell about 53% at European urban stations and 57% in Wuhan [^sicard]. So in these cities, cutting traffic raised ozone at the monitors. The authors attribute most of that rise to less titration by NO after the cut in $\text{NO}_x$; that is their claim, and this post reports it without checking the underlying data.
+
+Weekend ozone differences have also been quantified at several sites in Phoenix [^phoenix].
+
+A second route also exists. Where the chemistry is limited by volatile organic compounds (VOCs), the gases that make peroxy radicals, cutting $\text{NO}_x$ can speed ozone formation. This post does not assign that route a share of the lockdown rise.
+
+## What this means for you
+
+A city-center monitor can read lower than the ozone over farms and orchards downwind, because titration removes ozone where traffic is heaviest. For crop exposure, look at rural ozone monitors near the field. [How ozone damages crops](how-ozone-damages-crops.qmd) shows how to turn ozone exposure into yield loss.
+
+## Key takeaways
+
+- Fresh NO removes ozone near the source in about a minute, and it does so without any sunlight.
+- Titration moves oxygen into $\text{NO}_2$: total oxidant $\text{O}_x = \text{O}_3 + \text{NO}_2$ stays nearly level, so the drop in ozone is a shift into $\text{NO}_2$.
+- The split between ozone and $\text{NO}_2$ follows $j/k$, about 18 ppb at midday with the constants used here.
+- In the 2020 lockdowns, urban ozone rose as traffic fell; the authors attribute most of that rise to less titration.
+- For crop exposure, use rural ozone monitors, not a city-center monitor alone.
+
+[^atkinson]: Atkinson, R. et al. Evaluated kinetic and photochemical data for atmospheric chemistry: Volume I – gas phase reactions of O~x~, HO~x~, NO~x~ and SO~x~ species. *Atmos. Chem. Phys.* **4**, 1461–1738 (2004). https://doi.org/10.5194/acp-4-1461-2004
+[^trebs]: Trebs, I. et al. Relationship between the NO~2~ photolysis frequency and the solar global irradiance. *Atmos. Meas. Tech.* **2**, 725–739 (2009). https://doi.org/10.5194/amt-2-725-2009
+[^sillman]: Sillman, S. The relation between ozone, NO~x~ and hydrocarbons in urban and polluted rural environments. *Atmos. Environ.* **33**, 1821–1845 (1999). https://doi.org/10.1016/S1352-2310(98)00345-8
+[^phoenix]: Atkinson-Palombo, C. et al. Quantifying the ozone "weekend effect" at various locations in Phoenix, Arizona. *Atmos. Environ.* **40**, 7644–7658 (2006). https://doi.org/10.1016/j.atmosenv.2006.05.023
+[^sicard]: Sicard, P. et al. Amplified ozone pollution in cities during the COVID-19 lockdown. *Sci. Total Environ.* **735**, 139542 (2020). https://doi.org/10.1016/j.scitotenv.2020.139542
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/why-ozone-peaks-in-the-afternoon.html"><span>Previous</span>Why ozone peaks in the afternoon</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/fixed-nitrogen.html"><span>Next</span>Fixed nitrogen</a></div>
+<!-- CURRICULUM_FOOTER_END -->
+

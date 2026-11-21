@@ -76,6 +76,6 @@ When supersaturation slightly exceeds the critical threshold $S^* \approx 100.1\
 - Once ambient supersaturation exceeds the critical value, about $100.1\%$ RH, the droplet passes its critical radius and grows without limit into a $10$ to $30\ \mu\text{m}$ cloud droplet.
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/drop-shape-in-air.html"><span>Previous</span>How a drop deforms in air</a><a class="mf-up" href="/series/cloud-formation/index.html"><span>Series</span>How clouds form</a><a class="mf-next" href="/blogs/why-clean-air-makes-no-cloud.html"><span>Next</span>Why clean air doesn&#x27;t make clouds</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/the-kelvin-effect.html"><span>Previous</span>The Kelvin effect: why small drops evaporate</a><a class="mf-up" href="/series/cloud-formation/index.html"><span>Series</span>How clouds form</a><a class="mf-next" href="/blogs/why-clean-air-makes-no-cloud.html"><span>Next</span>Why clean air doesn&#x27;t make clouds</a></div>
 <!-- CURRICULUM_FOOTER_END -->
 
