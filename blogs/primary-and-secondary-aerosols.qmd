@@ -256,6 +256,6 @@ The following are my inferences from the sources above and the linked modules, n
 [^8]: Pozzer, A., Tsimpidi, A. P., Karydis, V. A., de Meij, A. & Lelieveld, J. Impact of agricultural emission reductions on fine-particulate matter and public health. *Atmos. Chem. Phys.* **17**, 12813–12826 (2017). https://doi.org/10.5194/acp-17-12813-2017
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/what-pm2-5-is.html"><span>Previous</span>What PM2.5 is, and why 2.5</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/organic-aerosols-health-climate.html"><span>Next</span>Organic aerosols: health versus climate</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/units-standards-and-aqi.html"><span>Previous</span>Units, standards, and what &quot;unhealthy&quot; means</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/organic-aerosols-health-climate.html"><span>Next</span>Organic aerosols: health versus climate</a></div>
 <!-- CURRICULUM_FOOTER_END -->
 

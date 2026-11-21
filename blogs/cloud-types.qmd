@@ -105,6 +105,6 @@ Clouds are categorized by their **altitude** and **morphology** (Latin roots: *S
 - The name tells you whether the air rose in a lump (cumuliform) or a sheet (stratiform), and how high it got.
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/drop-coalescence.html"><span>Previous</span>How drops merge</a><a class="mf-up" href="/series/cloud-formation/index.html"><span>Series</span>How clouds form</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/warm-rain.html"><span>Previous</span>Warm rain</a><a class="mf-up" href="/series/cloud-formation/index.html"><span>Series</span>How clouds form</a></div>
 <!-- CURRICULUM_FOOTER_END -->
 

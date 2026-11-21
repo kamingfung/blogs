@@ -9,6 +9,10 @@ categories:
 - interactive
 ---
 
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/air-land-climate/index.html">Air, Land and Climate</a><span class="sep">·</span>Part 1 · What is in the air</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">School chemistry. Parts 1 and 5 of Clouds and Aerosols help but are not required.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
 ::: {.callout-note appearance="simple" icon=false}
 ## TL;DR
 
@@ -217,3 +221,7 @@ A daily value can also hide a bad hour. The 2024 rule recommends, but does not r
 [^whoaqg2021]: World Health Organization. *WHO global air quality guidelines: particulate matter (PM2.5 and PM10), ozone, nitrogen dioxide, sulfur dioxide and carbon monoxide* (WHO, Geneva, 2021). ISBN 9789240034228 (electronic). https://iris.who.int/handle/10665/345329
 [^cfr5019]: U.S. Environmental Protection Agency. National primary and secondary ambient air quality standards for ozone. 40 CFR § 50.19 (80 FR 65452, 26 October 2015). https://www.ecfr.gov/current/title-40/part-50/section-50.19
 [^eaqi]: European Environment Agency. European Air Quality Index. https://airindex.eea.europa.eu/AQI/index.html (accessed 2026-11-20).
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/ozone-good-up-high-bad-nearby.html"><span>Previous</span>Ozone: good up high, bad nearby</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/primary-and-secondary-aerosols.html"><span>Next</span>Primary and secondary aerosols</a></div>
+<!-- CURRICULUM_FOOTER_END -->

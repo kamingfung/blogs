@@ -9,6 +9,10 @@ categories:
 - interactive
 ---
 
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/cloud-formation/index.html">How clouds form</a><span class="sep">·</span>Part 5 · From droplet to rain</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Assumes <a href="/blogs/why-cloud-droplets-dont-fall.html">Why cloud droplets don&#x27;t fall</a> and <a href="/blogs/drop-coalescence.html">How drops merge</a>.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
 ::: {.callout-note appearance="simple" icon=false}
 ## TL;DR
 
@@ -229,3 +233,7 @@ Warm rain is a large share of tropical rain, but the share depends on the defini
 [^wood2012]: Wood, R. Stratocumulus clouds. *Mon. Weather Rev.* **140**, 2373-2423 (2012). https://doi.org/10.1175/MWR-D-11-00121.1
 [^lau2003]: Lau, K. M. & Wu, H. T. Warm rain processes over tropical oceans and climate implications. *Geophys. Res. Lett.* **30**(24), 2003GL018567 (2003). https://doi.org/10.1029/2003GL018567
 [^liu2009]: Liu, C. & Zipser, E. J. "Warm rain" in the tropics: seasonal and regional distributions based on 9 yr of TRMM data. *J. Clim.* **22**, 767-779 (2009). https://doi.org/10.1175/2008JCLI2641.1
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/drop-coalescence.html"><span>Previous</span>How drops merge</a><a class="mf-up" href="/series/cloud-formation/index.html"><span>Series</span>How clouds form</a><a class="mf-next" href="/blogs/cloud-types.html"><span>Next</span>Cloud types</a></div>
+<!-- CURRICULUM_FOOTER_END -->

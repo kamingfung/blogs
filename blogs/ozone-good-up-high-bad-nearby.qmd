@@ -9,6 +9,10 @@ categories:
 - climate
 ---
 
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/air-land-climate/index.html">Air, Land and Climate</a><span class="sep">·</span>Part 1 · What is in the air</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">School chemistry. Parts 1 and 5 of Clouds and Aerosols help but are not required.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
 ::: {.callout-note appearance="simple" icon=false}
 ## TL;DR
 
@@ -138,3 +142,7 @@ If you farm, garden or work outdoors, the surface number matters most. [How ozon
 ## References
 
 [^salawitch2023]: Salawitch, R. J. (lead author), McBride, L. A., Thompson, C. R., Fleming, E. L., McKenzie, R. L., Rosenlof, K. H., Doherty, S. J. & Fahey, D. W. *Twenty Questions and Answers About the Ozone Layer: 2022 Update*. In *Scientific Assessment of Ozone Depletion: 2022*, 75 pp. (World Meteorological Organization, Geneva, 2023). https://csl.noaa.gov/assessments/ozone/2022/twentyquestions/ (also https://ozone.unep.org/science/assessment/sap). ISBN 978-9914-733-98-3.
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/what-pm2-5-is.html"><span>Previous</span>What PM2.5 is, and why 2.5</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/units-standards-and-aqi.html"><span>Next</span>Units, standards, and what &quot;unhealthy&quot; means</a></div>
+<!-- CURRICULUM_FOOTER_END -->

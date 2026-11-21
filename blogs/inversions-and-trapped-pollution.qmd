@@ -9,6 +9,10 @@ categories:
 - interactive
 ---
 
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/cloud-formation/index.html">How clouds form</a><span class="sep">·</span>Part 2 · Stability</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Assumes <a href="/blogs/lapse-rates-and-stability.html">Lapse rates and stability</a>.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
 ::: {.callout-note appearance="simple" icon=false}
 ## TL;DR
 
@@ -175,3 +179,7 @@ Other lids last longer. In the same basin, winter inversions built up over one o
 [^geiss2017]: Geiss, A. et al. Mixing layer height as an indicator for urban air quality? *Atmos. Meas. Tech.* **10**, 2969-2988 (2017). https://doi.org/10.5194/amt-10-2969-2017
 
 [^bish2020]: Bish, M., Oseland, E. & Bradley, K. Off-target pesticide movement: a review of our current understanding of drift due to inversions and secondary movement. *Weed Technol.* **35**, 345-356 (2021; online 2020). https://doi.org/10.1017/wet.2020.138
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/lapse-rates-and-stability.html"><span>Previous</span>Lapse rates and stability</a><a class="mf-up" href="/series/cloud-formation/index.html"><span>Series</span>How clouds form</a><a class="mf-next" href="/blogs/parcel-lifter.html"><span>Next</span>Lift a parcel yourself</a></div>
+<!-- CURRICULUM_FOOTER_END -->
