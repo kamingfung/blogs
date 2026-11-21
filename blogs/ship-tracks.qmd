@@ -1,0 +1,149 @@
+---
+title: Ship tracks
+description: Satellite images of ship tracks work as a natural experiment. They show that ship particles brighten low cloud, and they leave open whether the cloud's liquid water rises or falls.
+date: 2026-11-20
+categories:
+- atmospheric science
+- aerosols
+- cloud physics
+- climate
+- interactive
+---
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Ship exhaust adds particles to the low cloud a ship passes through, and the cloud shows a bright line that follows the ship's path. The line is a natural experiment: the cloud beside it is the same weather without the ship. Inside the line the cloud has more and smaller droplets, so it reflects more sunlight, as the theory predicts. The tracks do not settle the climate question, because the cloud's liquid water can rise or fall, and only some ships leave tracks at all. The 2020 cut in ship fuel sulfur is a much larger test, and its warming effect is still debated.
+:::
+
+## Lines in the clouds
+
+Look down on a flat sheet of low cloud over the ocean and you may see a thin, bright line crossing it. The line often bends where the ship turned. This is a **ship track**: a narrow strip where exhaust changed the cloud below it.
+
+In 1987, Coakley and colleagues reported that ship exhaust changed cloud reflectivity under stable weather[^coakley1987]. Their explanation is simple. Exhaust contains particles that act as cloud condensation nuclei (CCN), the seeds that water vapor condenses onto to form droplets. More seeds mean more droplets, and each droplet is smaller. The same water is then spread across more, smaller drops. The theory behind this is in the [aerosol indirect effects](aerosol-indirect-effects.qmd) post. The [cloud types](cloud-types.qmd) post covers stratocumulus, the layer these studies examined.
+
+## A natural experiment
+
+A researcher cannot easily seed a cloud to test a theory, but a ship track comes close. The ship adds particles to one narrow strip. The air on either side has the same weather and no ship. The strip is the treated group, and its neighbors are the control group.
+
+Christensen and colleagues call this kind of case an opportunistic experiment, or natural experiment. They note that causality "may be more confidently inferred" from it, and they list tracks from individual ships among the examples[^christensen2022]. Their review also warns that cloud responses are "strongly sensitive to background meteorological conditions". So a careful study compares each track with nearby cloud under similar weather, not with cloud from a different day.
+
+## What the tracks confirm
+
+Light bounces off the surfaces of droplets. Cloud reflects more sunlight when it has more total surface, and the surface area depends on how the water is divided. The same water in more droplets has more surface.
+
+The argument has three steps. Let $N$ be the number of droplets per cubic meter of cloud, and let $\text{LWP}$ (liquid water path) be the mass of liquid water in a column of cloud, per square meter of ground. For a fixed LWP, each droplet holds less water when there are more droplets, so its radius $r$ falls:
+
+$$r \propto \left(\frac{\text{LWP}}{N}\right)^{1/3}$$
+
+The cloud's optical thickness $\tau$ measures how much light the cloud blocks. It grows with the water in the column and shrinks as the droplets grow. Combining the two steps gives
+
+$$\tau \propto \frac{\text{LWP}}{r} \quad\Rightarrow\quad \tau \propto N^{1/3}\,\text{LWP}^{2/3}.$$
+
+At fixed water, doubling the droplets multiplies $\tau$ by $2^{1/3} \approx 1.26$, and shrinks each droplet to $2^{-1/3} \approx 0.79$ of its former radius. The sliders below apply these scalings to a track.
+
+::: {.sim-card}
+#### Brighten a cloud
+
+```{ojs}
+//| echo: false
+viewof nMult = Inputs.range([1, 5], {value: 2, step: 0.1, label: "Droplets in track (× outside)"})
+viewof dWater = Inputs.range([-50, 50], {value: 0, step: 1, label: "Cloud water in track (% change)"})
+
+tauOutside = 10
+tauRel = nMult ** (1/3) * (1 + dWater / 100) ** (2/3)
+radiusRel = nMult ** (-1/3) * (1 + dWater / 100) ** (1/3)
+
+html`<div class="sim-readouts">
+  <div class="sim-readout">
+    <div class="sim-readout-label">Optical thickness, relative to outside</div>
+    <div class="sim-readout-value" style="color:#38bdf8">× ${tauRel.toFixed(2)}</div>
+  </div>
+  <div class="sim-readout">
+    <div class="sim-readout-label">Optical thickness inside (outside = 10)</div>
+    <div class="sim-readout-value" style="color:#f59e0b">${(tauOutside * tauRel).toFixed(1)}</div>
+  </div>
+  <div class="sim-readout">
+    <div class="sim-readout-label">Droplet radius, relative to outside</div>
+    <div class="sim-readout-value" style="color:#a78bfa">× ${radiusRel.toFixed(2)}</div>
+  </div>
+</div>`
+```
+
+Bulk scaling only: $\tau \propto N^{1/3}\,\text{LWP}^{2/3}$ with one droplet size for the whole track and the same cloud depth inside and outside. The page stops at optical thickness and does not convert it to albedo, the fraction of sunlight the cloud reflects. Illustrative, not measured.
+:::
+
+## What they do not settle
+
+Brightness depends on more than droplet count. It also depends on how much water the cloud holds, and that water can move in either direction. This is the part the tracks leave open. The [warm rain](warm-rain.qmd) post explains how drops grow into drizzle without ice, the process that added particles can slow.
+
+Chen and colleagues analyzed 589 individual ship tracks[^chen2012]. They found that the change in albedo depends on the cloud's mesoscale structure, the humidity of the air above the cloud, and the height of the cloud top. In one cloud structure, closed cells, nearly 30% of tracks showed a decrease in albedo. Some tracks thicken and others thin.
+
+Toll and colleagues looked at polluted cloud across the globe, not only at tracks. They found a weak average decrease in liquid water[^toll2019]^,^[^toll2019corr]. Two processes work against each other. Particles can suppress rain, which leaves more water in the cloud. They can also make cloud evaporate faster, which removes water. The decrease offsets 29% of the cooling that comes from the extra droplets.
+
+Manshausen and colleagues added a complication. Only a small fraction of polluted clouds show a visible track[^manshausen2022]. Clouds without a visible track still gained more droplets and a more positive liquid water response. Earlier track studies, they note, suffered from selection biases. Visible tracks may therefore understate how much water the cloud gains.
+
+Figure 1 shows how the water change alters the brightening. It holds the cloud depth and droplet-size spread fixed and changes only the droplet count and the water.
+
+```{ojs}
+//| echo: false
+tauCurve = w => d3.range(1, 5.001, 0.1).map(n => ({n, tau: Math.cbrt(n) * Math.pow(1 + w, 2 / 3)}))
+tauLabels = [
+  {n: 5, tau: Math.cbrt(5) * Math.pow(0.8, 2 / 3), t: "Water −20%"},
+  {n: 5, tau: Math.cbrt(5), t: "Water unchanged"},
+  {n: 5, tau: Math.cbrt(5) * Math.pow(1.2, 2 / 3), t: "Water +20%"}
+]
+
+Plot.plot({
+  width: Math.min(width, 720),
+  height: 340,
+  marginRight: 130,
+  style: {color: "currentColor"},
+  x: {label: "Droplets in track, relative to outside (×) →", domain: [1, 5], grid: true},
+  y: {label: "↑ Optical thickness, relative to outside", grid: true},
+  marks: [
+    Plot.ruleY([1], {stroke: "currentColor", strokeOpacity: 0.4}),
+    Plot.line(tauCurve(-0.2), {x: "n", y: "tau", stroke: "#38bdf8", strokeWidth: 2.5, strokeDasharray: "6 4"}),
+    Plot.line(tauCurve(0), {x: "n", y: "tau", stroke: "#f59e0b", strokeWidth: 2.5}),
+    Plot.line(tauCurve(0.2), {x: "n", y: "tau", stroke: "#a78bfa", strokeWidth: 2.5}),
+    Plot.text(tauLabels, {x: "n", y: "tau", text: "t", textAnchor: "start", dx: 8, fill: "currentColor"})
+  ]
+})
+```
+
+**Figure 1.** Relative optical thickness of a track against its droplet multiplier, for three cloud-water changes: 20% less (dashed blue), unchanged (solid amber) and 20% more (solid violet). Each curve is $N^{1/3}(1 + \Delta)^{2/3}$, the bulk scaling above, where $\Delta$ is the fractional change in cloud water. Illustrative, not measured. At 5 times the droplets, the track is 1.47, 1.71 or 1.93 times as thick as the outside cloud. At 2 times the droplets with 20% less water, the thickening drops from 1.26 to 1.09.
+
+Two-thirds of the brightening at 2 times the droplets disappears once the cloud loses 20% of its water. The water response can cancel most of the droplet effect.
+
+The second open question is which ships leave tracks. Durkee and colleagues tested this in the Monterey Area Ship Track experiment, off California in June 1994[^durkee2000]. Diesel ships that emitted many accumulation-mode particles, a standard size class of aerosol, made tracks. Nuclear ships, which emitted few particles, did not. Gas-turbine and some steam ships, whose particles were too small to activate as droplets in typical stratocumulus, did not either. A track needs a cloud layer that can respond, and stable air that mixes the particles through the boundary layer, the lowest stirred part of the atmosphere.
+
+The 2020 cut in ship fuel sulfur is the largest recent test. The International Maritime Organization (IMO) limited the sulfur content of fuel oil on board ships from 1 January 2020. Outside designated emission control areas, the limit fell to 0.50% by mass, from 3.5%. Inside those areas the limit was already 0.10%[^imo2020]. The change cut sulfur dioxide (SO₂) emissions from international shipping by about 80%[^yuan2024].
+
+Estimates of the resulting warming disagree. Radiative forcing is the extra energy the planet takes in, measured in watts per square meter (W m⁻²). Yuan and colleagues, using satellite data, estimate +0.2 ± 0.11 W m⁻² over the global ocean. They suggest it could lead to a doubling, or more, of the warming rate in the 2020s. A model study by Quaglia and Visioni finds +0.14 ± 0.07 W m⁻² and says the cut is a major contributor to the 2023 surface temperature anomaly[^quaglia2024]. Skeie and colleagues compare four global climate models and one chemical transport model. They give 0.06 to 0.09 W m⁻² for an 80% cut in shipping SO₂ relative to 2019[^skeie2024]. A machine learning estimate for three low-cloud regions gives +0.074 ± 0.005 W m⁻², but the authors note that natural cloud variability makes the effect hard to detect[^zhang2025]. An 18-member climate model ensemble finds a 2020–2040 mean warming of +0.03 °C, with a 5% to 95% range of −0.09 to 0.19 °C. Its authors conclude that the IMO rules have likely had very limited influence on observed warming so far[^watsonparris2025]. The debate is still open.
+
+## What this means for you
+
+A sudden, known change in emissions works like a switch in a lab. Its timing is clear, and you can compare before and after, and near and far. The lesson is to match the comparison to the weather, and to test whether a signal in the visible clouds holds for the average cloud.
+
+## Key takeaways
+
+- Ship tracks show directly that particles added to marine low cloud raise droplet number and shrink droplets.
+- Brightness follows from the droplets only if the water stays fixed. Tracks can thicken or thin, and nearly 30% of tracks in closed-cell cloud darken.
+- Visible tracks are a biased sample, and the average water response is still contested.
+- Central estimates of the 2020 sulfur cut's warming run from 0.06 to 0.2 W m⁻², and one study finds the global temperature effect within natural variability.
+
+## References
+
+[^coakley1987]: Coakley, J. A., Bernstein, R. L. & Durkee, P. A. Effect of ship-stack effluents on cloud reflectivity. *Science* **237**, 1020–1022 (1987). https://doi.org/10.1126/science.237.4818.1020
+[^christensen2022]: Christensen, M. W. et al. Opportunistic experiments to constrain aerosol effective radiative forcing. *Atmos. Chem. Phys.* **22**, 641–674 (2022). https://doi.org/10.5194/acp-22-641-2022
+[^chen2012]: Chen, Y.-C. et al. Occurrence of lower cloud albedo in ship tracks. *Atmos. Chem. Phys.* **12**, 8223–8235 (2012). https://doi.org/10.5194/acp-12-8223-2012
+[^toll2019]: Toll, V., Christensen, M., Quaas, J. & Bellouin, N. Weak average liquid-cloud-water response to anthropogenic aerosols. *Nature* **572**, 51–55 (2019). https://doi.org/10.1038/s41586-019-1423-9
+[^toll2019corr]: Author Correction to Toll, V. et al. Weak average liquid-cloud-water response to anthropogenic aerosols (2019). *Nature* **577**, E3–E5 (2020). https://doi.org/10.1038/s41586-019-1838-3
+[^manshausen2022]: Manshausen, P., Watson-Parris, D., Christensen, M. W., Jalkanen, J.-P. & Stier, P. Invisible ship tracks show large cloud sensitivity to aerosol. *Nature* **610**, 101–106 (2022). https://doi.org/10.1038/s41586-022-05122-0
+[^durkee2000]: Durkee, P. A. et al. The impact of ship-produced aerosols on the microstructure and albedo of warm marine stratocumulus clouds: a test of MAST hypotheses 1i and 1ii. *J. Atmos. Sci.* **57**, 2554–2569 (2000). https://doi.org/10.1175/1520-0469(2000)057<2554:TIOSPA>2.0.CO;2
+[^imo2020]: International Maritime Organization. IMO 2020 – cutting sulphur oxide emissions. https://www.imo.org/en/MediaCentre/HotTopics/Pages/Sulphur-2020.aspx
+[^yuan2024]: Yuan, T. et al. Abrupt reduction in shipping emission as an inadvertent geoengineering termination shock produces substantial radiative warming. *Commun. Earth Environ.* **5**, 281 (2024). https://doi.org/10.1038/s43247-024-01442-3
+[^quaglia2024]: Quaglia, I. & Visioni, D. Modeling 2020 regulatory changes in international shipping emissions helps explain anomalous 2023 warming. *Earth Syst. Dyn.* **15**, 1527–1541 (2024). https://doi.org/10.5194/esd-15-1527-2024
+[^skeie2024]: Skeie, R. B. et al. Multi-model effective radiative forcing of the 2020 sulfur cap for shipping. *Atmos. Chem. Phys.* **24**, 13361–13370 (2024). https://doi.org/10.5194/acp-24-13361-2024
+[^zhang2025]: Zhang, J. et al. Radiative forcing from the 2020 shipping fuel regulation is large but hard to detect. *Commun. Earth Environ.* **6**, 18 (2025). https://doi.org/10.1038/s43247-024-01911-9
+[^watsonparris2025]: Watson-Parris, D. et al. Surface temperature effects of recent reductions in shipping SO2 emissions are within internal variability. *Atmos. Chem. Phys.* **25**, 4443–4454 (2025). https://doi.org/10.5194/acp-25-4443-2025
