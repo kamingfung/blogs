@@ -13,18 +13,18 @@ categories:
 ::: {.callout-note appearance="simple" icon=false}
 ## TL;DR
 
-Ship exhaust adds particles to the low cloud a ship passes through, and the cloud shows a bright line that follows the ship's path. The line is a natural experiment: the cloud beside it is the same weather without the ship. Inside the line the cloud has more and smaller droplets, so it reflects more sunlight, as the theory predicts. The tracks do not settle the climate question, because the cloud's liquid water can rise or fall, and only some ships leave tracks at all. The 2020 cut in ship fuel sulfur is a much larger test, and its warming effect is still debated.
+Ship exhaust adds particles to the low cloud a ship passes through, and the cloud shows a bright line that follows the ship's path. The line is a natural experiment: the cloud beside it serves as a comparison under similar weather, though not an identical untreated control. If the liquid water stays fixed, the cloud inside the line has more and smaller droplets, so it reflects more sunlight, as the theory predicts. The tracks do not settle the climate question, because the cloud's liquid water can rise or fall, and only some ships leave tracks at all. The 2020 cut in ship fuel sulfur is a much larger test, and its warming effect is still debated.
 :::
 
 ## Lines in the clouds
 
 Look down on a flat sheet of low cloud over the ocean and you may see a thin, bright line crossing it. The line often bends where the ship turned. This is a **ship track**: a narrow strip where exhaust changed the cloud below it.
 
-In 1987, Coakley and colleagues reported that ship exhaust changed cloud reflectivity under stable weather[^coakley1987]. Their explanation is simple. Exhaust contains particles that act as cloud condensation nuclei (CCN), the seeds that water vapor condenses onto to form droplets. More seeds mean more droplets, and each droplet is smaller. The same water is then spread across more, smaller drops. The theory behind this is in the [aerosol indirect effects](aerosol-indirect-effects.qmd) post. The [cloud types](cloud-types.qmd) post covers stratocumulus, the layer these studies examined.
+In 1987, Coakley and colleagues reported that ship exhaust changed cloud reflectivity under stable weather[^coakley1987]. Their explanation is simple. Exhaust contains particles that act as cloud condensation nuclei (CCN), the seeds that water vapor condenses onto to form droplets. More seeds mean more droplets, and each droplet is smaller. If the liquid water stays fixed, the same water is spread across more, smaller drops. The theory behind this is in the [aerosol indirect effects](aerosol-indirect-effects.qmd) post. The [cloud types](cloud-types.qmd) post covers stratocumulus, the layer these studies examined.
 
 ## A natural experiment
 
-A researcher cannot easily seed a cloud to test a theory, but a ship track comes close. The ship adds particles to one narrow strip. The air on either side has the same weather and no ship. The strip is the treated group, and its neighbors are the control group.
+A researcher cannot easily seed a cloud to test a theory, but a ship track comes close. The ship adds particles to one narrow strip. The air on either side is a comparison under similar weather, though not an identical untreated control. The strip is the treated group, and its neighbors are the comparison group.
 
 Christensen and colleagues call this kind of case an opportunistic experiment, or natural experiment. They note that causality "may be more confidently inferred" from it, and they list tracks from individual ships among the examples[^christensen2022]. Their review also warns that cloud responses are "strongly sensitive to background meteorological conditions". So a careful study compares each track with nearby cloud under similar weather, not with cloud from a different day.
 
@@ -32,7 +32,7 @@ Christensen and colleagues call this kind of case an opportunistic experiment, o
 
 Light bounces off the surfaces of droplets. Cloud reflects more sunlight when it has more total surface, and the surface area depends on how the water is divided. The same water in more droplets has more surface.
 
-The argument has three steps. Let $N$ be the number of droplets per cubic meter of cloud, and let $\text{LWP}$ (liquid water path) be the mass of liquid water in a column of cloud, per square meter of ground. For a fixed LWP, each droplet holds less water when there are more droplets, so its radius $r$ falls:
+The argument has three steps, and it assumes a fixed cloud depth, so only the droplet count and the water change. Let $N$ be the number of droplets per cubic meter of cloud, and let $\text{LWP}$ (liquid water path) be the mass of liquid water in a column of cloud, per square meter of ground. For a fixed LWP, each droplet holds less water when there are more droplets, so its radius $r$ falls:
 
 $$r \propto \left(\frac{\text{LWP}}{N}\right)^{1/3}$$
 
@@ -77,11 +77,11 @@ Bulk scaling only: $\tau \propto N^{1/3}\,\text{LWP}^{2/3}$ with one droplet siz
 
 Brightness depends on more than droplet count. It also depends on how much water the cloud holds, and that water can move in either direction. This is the part the tracks leave open. The [warm rain](warm-rain.qmd) post explains how drops grow into drizzle without ice, the process that added particles can slow.
 
-Chen and colleagues analyzed 589 individual ship tracks[^chen2012]. They found that the change in albedo depends on the cloud's mesoscale structure, the humidity of the air above the cloud, and the height of the cloud top. In one cloud structure, closed cells, nearly 30% of tracks showed a decrease in albedo. Some tracks thicken and others thin.
+Chen and colleagues analyzed 589 individual ship tracks[^chen2012]. They found that the change in albedo depends on the cloud's mesoscale structure (the pattern of cloud cells, tens of kilometers across), the humidity of the air above the cloud, and the height of the cloud top. In one structure, closed cells (cloud arranged like a honeycomb, with cloud in the middle of each cell), nearly 30% of tracks showed a decrease in albedo. Some tracks thicken and others thin.
 
 Toll and colleagues looked at polluted cloud across the globe, not only at tracks. They found a weak average decrease in liquid water[^toll2019]^,^[^toll2019corr]. Two processes work against each other. Particles can suppress rain, which leaves more water in the cloud. They can also make cloud evaporate faster, which removes water. The decrease offsets 29% of the cooling that comes from the extra droplets.
 
-Manshausen and colleagues added a complication. Only a small fraction of polluted clouds show a visible track[^manshausen2022]. Clouds without a visible track still gained more droplets and a more positive liquid water response. Earlier track studies, they note, suffered from selection biases. Visible tracks may therefore understate how much water the cloud gains.
+Manshausen and colleagues added a complication. Only a small fraction of the clouds polluted by shipping show visible tracks[^manshausen2022]. Clouds without a visible track still gained more droplets and a more positive liquid water response. Earlier track studies, they note, suffered from selection biases. Visible tracks may therefore understate how much water the cloud gains.
 
 Figure 1 shows how the water change alters the brightening. It holds the cloud depth and droplet-size spread fixed and changes only the droplet count and the water.
 
@@ -101,6 +101,7 @@ Plot.plot({
   style: {color: "currentColor"},
   x: {label: "Droplets in track, relative to outside (×) →", domain: [1, 5], grid: true},
   y: {label: "↑ Optical thickness, relative to outside", grid: true},
+  ariaLabel: "Line chart of relative optical thickness against the droplet multiplier from 1 to 5 times, for three cloud-water changes: 20% less, unchanged and 20% more. All three curves rise, and more water gives a thicker track.",
   marks: [
     Plot.ruleY([1], {stroke: "currentColor", strokeOpacity: 0.4}),
     Plot.line(tauCurve(-0.2), {x: "n", y: "tau", stroke: "#38bdf8", strokeWidth: 2.5, strokeDasharray: "6 4"}),
@@ -117,9 +118,9 @@ Two-thirds of the brightening at 2 times the droplets disappears once the cloud 
 
 The second open question is which ships leave tracks. Durkee and colleagues tested this in the Monterey Area Ship Track experiment, off California in June 1994[^durkee2000]. Diesel ships that emitted many accumulation-mode particles, a standard size class of aerosol, made tracks. Nuclear ships, which emitted few particles, did not. Gas-turbine and some steam ships, whose particles were too small to activate as droplets in typical stratocumulus, did not either. A track needs a cloud layer that can respond, and stable air that mixes the particles through the boundary layer, the lowest stirred part of the atmosphere.
 
-The 2020 cut in ship fuel sulfur is the largest recent test. The International Maritime Organization (IMO) limited the sulfur content of fuel oil on board ships from 1 January 2020. Outside designated emission control areas, the limit fell to 0.50% by mass, from 3.5%. Inside those areas the limit was already 0.10%[^imo2020]. The change cut sulfur dioxide (SO₂) emissions from international shipping by about 80%[^yuan2024].
+The 2020 cut in ship fuel sulfur is a regulatory natural experiment. The International Maritime Organization (IMO) limited the sulfur content of fuel oil on board ships from 1 January 2020. Outside designated emission control areas, the limit fell to 0.50% by mass, from 3.5%. Inside those areas the limit was already 0.10%[^imo2020]. The change cut sulfur dioxide (SO₂) emissions from international shipping by about 80%[^yuan2024].
 
-Estimates of the resulting warming disagree. Radiative forcing is the extra energy the planet takes in, measured in watts per square meter (W m⁻²). Yuan and colleagues, using satellite data, estimate +0.2 ± 0.11 W m⁻² over the global ocean. They suggest it could lead to a doubling, or more, of the warming rate in the 2020s. A model study by Quaglia and Visioni finds +0.14 ± 0.07 W m⁻² and says the cut is a major contributor to the 2023 surface temperature anomaly[^quaglia2024]. Skeie and colleagues compare four global climate models and one chemical transport model. They give 0.06 to 0.09 W m⁻² for an 80% cut in shipping SO₂ relative to 2019[^skeie2024]. A machine learning estimate for three low-cloud regions gives +0.074 ± 0.005 W m⁻², but the authors note that natural cloud variability makes the effect hard to detect[^zhang2025]. An 18-member climate model ensemble finds a 2020–2040 mean warming of +0.03 °C, with a 5% to 95% range of −0.09 to 0.19 °C. Its authors conclude that the IMO rules have likely had very limited influence on observed warming so far[^watsonparris2025]. The debate is still open.
+Estimates of the resulting warming disagree. Radiative forcing is the extra energy the planet takes in, measured in watts per square meter (W m⁻²). Yuan and colleagues, using satellite data, estimate +0.2 ± 0.11 W m⁻² over the global ocean. They suggest it could lead to a doubling, or more, of the warming rate in the 2020s. A model study by Quaglia and Visioni finds +0.14 ± 0.07 W m⁻² and calls it a major contributing factor to the monthly surface temperature anomalies during the last year[^quaglia2024]. Skeie and colleagues compare four global climate models and one chemical transport model. They give 0.06 to 0.09 W m⁻² for an 80% cut in shipping SO₂ relative to 2019[^skeie2024]. A machine learning estimate for three low-cloud regions gives +0.074 ± 0.005 W m⁻², but the authors note that natural cloud variability makes the effect hard to detect[^zhang2025]. An 18-member climate model ensemble finds a 2020–2040 mean warming of +0.03 °C, with a 5% to 95% range of −0.09 to 0.19 °C. Its authors conclude that the IMO rules have likely had very limited influence on observed warming so far[^watsonparris2025]. The debate is still open.
 
 ## What this means for you
 
