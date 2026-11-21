@@ -50,10 +50,12 @@ jobs:
           uv pip install playwright
           .venv/bin/python tools/check_widgets.py _site
 
+      - name: Fail on any asset over 25 MiB
+        run: "! find _site -type f -size +25M | grep ."
+
       - name: Deploy to Cloudflare
-        # Cloudflare rejects the whole deploy with `Asset too large.` if any
-        # single file in _site exceeds 25 MiB. That is a per-file cap, not a
-        # total, and the error names no file — check the largest outputs first.
+        # Cloudflare rejects the whole deploy with `Asset too large.` for any
+        # single file over 25 MiB and names no file; the step above does.
         uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd # v3
         with:
           # The action's default pins wrangler 3.90, which predates
