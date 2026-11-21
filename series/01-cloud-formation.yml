@@ -26,6 +26,7 @@ parts:
   - id: cloud-formation/fog-cloud-without-lifting
     title: 'Fog: cloud without lifting'
     level: introductory
+    path: blogs/fog-cloud-without-lifting.md
     requires:
     - cloud-formation/how-much-water-can-air-hold
 - title: Stability
@@ -39,6 +40,7 @@ parts:
   - id: cloud-formation/inversions-and-trapped-pollution
     title: Inversions and trapped pollution
     level: intermediate
+    path: blogs/inversions-and-trapped-pollution.md
     requires:
     - cloud-formation/lapse-rates-and-stability
   - id: cloud-formation/lift-a-parcel-yourself
@@ -106,6 +108,7 @@ parts:
   - id: cloud-formation/warm-rain
     title: Warm rain
     level: intermediate
+    path: blogs/warm-rain.md
     requires:
     - cloud-formation/why-cloud-droplets-dont-fall
     - cloud-formation/how-drops-merge

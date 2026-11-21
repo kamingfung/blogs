@@ -17,9 +17,11 @@ parts:
       - id: air-land-climate/ozone-good-up-high-bad-nearby
         title: "Ozone: good up high, bad nearby"
         level: introductory
+        path: blogs/ozone-good-up-high-bad-nearby.md
       - id: air-land-climate/units-standards-and-what-unhealthy-means
         title: "Units, standards, and what \"unhealthy\" means"
         level: introductory
+        path: blogs/units-standards-and-aqi.md
   - title: "Where aerosols come from"
     modules:
       - id: air-land-climate/primary-and-secondary-aerosols
