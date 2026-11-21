@@ -37,6 +37,9 @@ jobs:
           uv venv .venv
           uv pip install -r requirements.txt
 
+      - name: Self-test the curriculum tool
+        run: .venv/bin/python tools/curriculum.py --selftest
+
       - name: Render site
         run: quarto render
 
