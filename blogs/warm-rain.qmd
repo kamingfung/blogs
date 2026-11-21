@@ -1,0 +1,241 @@
+---
+title: Warm rain
+description: How a cloud with no ice makes raindrops, why condensation alone is too slow, and how collection takes over once a few drops grow large enough to sweep up their neighbors.
+date: 2026-11-20
+categories:
+- cloud physics
+- precipitation
+- fluid mechanics
+- interactive
+---
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Condensation grows cloud droplets, but a bigger drop grows more slowly by condensation. At 0.5% supersaturation, a 10 µm radius droplet needs about 4.2 days to reach 0.6 mm radius. Collection works the other way. A bigger drop falls faster, sweeps up smaller drops and grows faster. In a toy model, collection takes a 20 µm radius drop to 0.6 mm in about 37 minutes. Real clouds need a head start, and rain becomes likely once the average droplet passes about 13 µm radius.
+:::
+
+## The size gap
+
+Here, sizes are radii. A cloud droplet has a radius of about 10 µm. A raindrop has a radius of about 1 mm. The volume of a sphere grows with the cube of its radius, so the volume ratio is
+
+$$\frac{V_\text{rain}}{V_\text{drop}} = \left(\frac{1000\ \mu\text{m}}{10\ \mu\text{m}}\right)^3 = 10^6.$$
+
+The 1 mm value is illustrative, not sourced.
+
+Growing a drop across this gap is hard to explain. Xue and colleagues wrote in 2008 that growth across the 10 to 50 µm radius range had not been fully explained.[^xue2008] This post follows two steps, condensation and collection, from 10 µm to 0.6 mm radius, a small raindrop where the fall-speed law used later ends.
+
+## Condensation narrows the spread of sizes
+
+Condensation makes big drops grow more slowly than small ones. The drops in a cloud therefore become more alike in size over time.
+
+Rogers and Yau give the growth law for a drop in air that is supersaturated, meaning the vapor pressure exceeds the saturation value:[^rogers]
+
+$$r\,\frac{dr}{dt} = G\,s$$
+
+Here $r$ is the drop radius, $t$ is time, and $s$ is the supersaturation as a fraction, so 0.5% means $s = 0.005$. The constant $G \approx 1 \times 10^{-10}$ m² s⁻¹ holds near room temperature. Integrating from a starting radius $r_0$ gives
+
+$$r^2 = r_0^2 + 2Gst.$$
+
+The term $r^2$ grows at the same rate, $2Gs$, for every drop. A drop's radius is the square root of $r^2$, so a larger drop's radius grows more slowly. The difference between two radii shrinks as both grow.
+
+At $s = 0.5\%$, $2Gs = 1 \times 10^{-12}$ m² s⁻¹. Two growth times follow:
+
+- 10 µm to 20 µm: $t = (4 - 1) \times 10^{-10} / 10^{-12} = 300$ s, or 5.0 min.
+- 10 µm to 0.6 mm: $t \approx 3.6 \times 10^{-7} / 10^{-12} = 3.6 \times 10^{5}$ s, or 4.2 days.
+
+Growing the drop 60-fold in radius takes 4.2 days, about 300 times the 20 minutes that Sardina and colleagues name as comparable to the time of rain formation.[^sardina2015]
+
+Turbulence can keep the spread wide. In a simulation, condensation in turbulent clouds keeps widening the spread of droplet sizes.[^sardina2015]
+
+## Collection takes over
+
+A drop that falls faster also runs into smaller drops and collects them. [How drops merge](drop-coalescence.qmd) covers what happens at a single contact. The collection rate is
+
+$$\frac{dR}{dt} = \frac{E\,L\,v(R)}{4\rho_w}$$
+
+where $R$ is the collector's radius, $L$ is the liquid water content (the mass of cloud water per volume of air, in kg m⁻³), $E$ is the collection efficiency (the share of drops in its path that the collector catches), $v$ is its fall speed, and $\rho_w = 1000$ kg m⁻³ is the density of water. One g m⁻³ equals $10^{-3}$ kg m⁻³.
+
+::: {.callout-note collapse="true"}
+## Derivation: the collection law
+
+A collector of radius $R$ sweeps out an area $\pi R^2$ each second as it falls at speed $v$. It catches the fraction $E$ of the cloud water it sweeps, so it gains mass at the rate $\pi R^2 E L v$. A drop's mass is $\frac{4}{3}\pi R^3 \rho_w$, so $4\pi R^2 \rho_w \, dR/dt = \pi R^2 E L v$. Dividing both sides by $4\pi R^2 \rho_w$ gives the law above. The factor $R^2$ cancels.
+:::
+
+The fall speed depends on size in two ranges, according to Rogers and Yau.[^rogers] [Why cloud droplets don't fall](why-cloud-droplets-dont-fall.qmd) covers the same Stokes law for small drops. Below 40 µm radius, drag follows Stokes law and
+
+$$v = k_1 R^2, \qquad k_1 = 1.19 \times 10^{8}\ \text{m}^{-1}\,\text{s}^{-1}.$$
+
+From 40 µm to 0.6 mm, the speed is linear in radius:
+
+$$v = k_3 R, \qquad k_3 = 8 \times 10^{3}\ \text{s}^{-1}.$$
+
+At 40 µm, the two fits give 0.19 m/s and 0.32 m/s. They do not meet, so the speed jumps at that size. This post keeps the jump instead of smoothing it. By the linear fit, a 0.6 mm drop falls at 4.8 m/s.
+
+Collection speeds up as a drop grows, the reverse of condensation. Each fall-speed law turns the collection rate into a simple integral. With $a = E L k_1 / (4\rho_w)$ below 40 µm,
+
+$$t = \frac{1}{a}\left(\frac{1}{R_0} - \frac{1}{R_1}\right),$$
+
+and with $b = E L k_3 / (4\rho_w)$ above 40 µm,
+
+$$t = \frac{1}{b}\ln\frac{R_1}{R_0}.$$
+
+Starting at 20 µm, with $L = 1$ g m⁻³ and $E = 1$, the drop needs 14 min to reach 40 µm and 23 min more to reach 0.6 mm. The total is 37 min. Both $a$ and $b$ scale with $EL$, so the time scales as $1/(EL)$.
+
+| Liquid water content $L$ | Time with $E = 1$ | Time with $E = 0.5$ |
+|---|---|---|
+| 0.5 g m⁻³ | 73 min | 146 min |
+| 1 g m⁻³ | 37 min | 73 min |
+| 2 g m⁻³ | 18 min | 37 min |
+
+**Table 1.** Time from 20 µm to 0.6 mm radius by collection, from the closed forms above.
+
+The calculation starts at 20 µm, so it leaves out growth from the 13 µm threshold discussed below. Starting at 13 µm would add about 15 min at $L = 1$ g m⁻³ and $E = 1$, using the same Stokes formula.
+
+Beard and Ochs wrote that collection efficiencies for the sizes that start coalescence were poorly known in 1993 and needed laboratory work.[^beard1993] So $E$ is a setting in this post, not a measured value.
+
+```{ojs}
+//| echo: false
+fig1 = {
+  // Toy model from the closed forms in the text. Radii in µm, time in minutes.
+  const G = 1e-10, s = 0.005;
+  const rhoW = 1000, k1 = 1.19e8, k3 = 8e3, L1 = 1e-3;   // L = 1 g m⁻³ in kg m⁻³, E = 1
+  const a = L1 * k1 / (4 * rhoW), b = L1 * k3 / (4 * rhoW);
+  const logspace = (lo, hi, n) => Array.from({length: n}, (_, i) => 10 ** (Math.log10(lo) + i * (Math.log10(hi) - Math.log10(lo)) / (n - 1)));
+
+  // Condensation: r = sqrt(r0^2 + 2 G s t), t converted from minutes to seconds.
+  const cond = logspace(1, 5990, 300)
+    .map(tm => ({t: tm, r: Math.sqrt((10e-6) ** 2 + 2 * G * s * tm * 60) * 1e6}))
+    .filter(d => d.r <= 600);
+
+  // Collection from 20 µm: time in minutes to reach radius R (µm).
+  const tOf = Rum => {
+    const R = Rum * 1e-6;
+    const sec = R <= 40e-6
+      ? (1 / a) * (1 / 20e-6 - 1 / R)
+      : (1 / a) * (1 / 20e-6 - 1 / 40e-6) + (1 / b) * Math.log(R / 40e-6);
+    return sec / 60;
+  };
+  const coll = logspace(20, 600, 300).map(r => ({t: tOf(r), r}));
+
+  const rCond = Math.sqrt((10e-6) ** 2 + 2 * G * s * 3000 * 60) * 1e6;
+  const timeTick = d => d < 60 ? `${d} min` : d < 1440 ? `${d / 60} h` : `${+(d / 1440).toPrecision(2)} d`;
+
+  return Plot.plot({
+    width: Math.min(width, 720),
+    height: 380,
+    marginLeft: 70,
+    style: {background: "transparent", color: "currentColor"},
+    x: {type: "log", label: "Time (min) →", domain: [1, 20000], tickFormat: timeTick, grid: true},
+    y: {type: "log", label: "↑ Drop radius", domain: [10, 600], tickFormat: d => d + " µm", grid: true},
+    marks: [
+      Plot.line(cond, {x: "t", y: "r", stroke: "#f59e0b", strokeWidth: 2.5, strokeDasharray: "7 4"}),
+      Plot.line(coll, {x: "t", y: "r", stroke: "#38bdf8", strokeWidth: 2.5}),
+      Plot.text([{t: 3000, r: rCond, txt: "Condensation only (dashed)"}],
+        {x: "t", y: "r", text: "txt", textAnchor: "end", dy: -10, fill: "currentColor"}),
+      Plot.text([{t: 37, r: 600, txt: "Collection from 20 µm (solid)"}],
+        {x: "t", y: "r", text: "txt", textAnchor: "end", dx: -8, dy: 4, fill: "currentColor"})
+    ]
+  });
+}
+```
+
+**Figure 1.** Toy model of drop radius (µm, log scale) against time (min, log scale). The dashed orange curve grows by condensation from 10 µm at $s = 0.5\%$, with $G = 1 \times 10^{-10}$ m² s⁻¹. The solid blue curve grows by collection from 20 µm with $L = 1$ g m⁻³ and $E = 1$, using Stokes law below 40 µm and the linear law above. Collection ignores the small drops' own fall speed. Both curves come from the closed forms in the text.
+
+::: {.sim-card}
+#### How long to make a raindrop?
+
+```{ojs}
+//| echo: false
+viewof Lw = Inputs.range([0.2, 3], {value: 1, step: 0.1, label: "Liquid water content L (g m⁻³)"})
+viewof Ew = Inputs.range([0.1, 1], {value: 1, step: 0.05, label: "Collection efficiency E"})
+
+// Closed forms from the text. Radii in µm; times in seconds until converted to minutes.
+collRates = {
+  const L = Lw * 1e-3;   // kg m⁻³
+  return {a: Ew * L * 1.19e8 / 4000, b: Ew * L * 8e3 / 4000};
+}
+tColl = R => {
+  const Rm = R * 1e-6;
+  const {a, b} = collRates;
+  return Rm <= 40e-6
+    ? (1 / a) * (1 / 20e-6 - 1 / Rm)
+    : (1 / a) * (1 / 20e-6 - 1 / 40e-6) + (1 / b) * Math.log(Rm / 40e-6);
+}
+collMin = tColl(600) / 60
+condDays = ((600e-6) ** 2 - (10e-6) ** 2) / (2 * 1e-10 * 0.005) / 86400
+fmtMin = m => m < 120 ? m.toFixed(0) + " min" : (m / 60).toFixed(1) + " h"
+curveW = d3.range(0, 201).map(i => {
+  const R = 20 * (600 / 20) ** (i / 200);
+  return {t: tColl(R) / 60, R};
+})
+html`<div class="sim-readouts">
+  <div class="sim-readout"><div class="sim-readout-label">Collection, 20 µm to 0.6 mm</div><div class="sim-readout-value" style="color:#38bdf8">${fmtMin(collMin)}</div></div>
+  <div class="sim-readout"><div class="sim-readout-label">Condensation, 10 µm to 0.6 mm, s = 0.5%</div><div class="sim-readout-value" style="color:#f59e0b">${condDays.toFixed(1)} days</div></div>
+</div>`
+```
+
+```{ojs}
+//| echo: false
+Plot.plot({
+  width: Math.min(width, 720),
+  height: 300,
+  marginLeft: 60,
+  style: {background: "transparent", color: "#cbd5e1"},
+  x: {label: "Time from 20 µm (min) →", grid: true},
+  y: {label: "↑ Drop radius (µm)", domain: [0, 640], grid: true},
+  marks: [
+    Plot.ruleY([40], {stroke: "#cbd5e1", strokeOpacity: 0.5, strokeDasharray: "2 3"}),
+    Plot.line(curveW, {x: "t", y: "R", stroke: "#38bdf8", strokeWidth: 2.5}),
+    Plot.text([{t: 0, R: 40, txt: "40 µm: fall-speed law changes"}],
+      {x: "t", y: "R", text: "txt", textAnchor: "start", dy: -8, fill: "#cbd5e1"}),
+    Plot.text([{t: collMin, R: 600, txt: "Collection (solid)"}],
+      {x: "t", y: "R", text: "txt", textAnchor: "end", dy: -10, fill: "#38bdf8"})
+  ]
+})
+```
+
+**Figure 2.** Collection from 20 µm radius for the $L$ and $E$ you choose, with radius (µm) against time (min). Stokes law applies below 40 µm and the linear law from 40 µm to 0.6 mm, so the speed jumps at 40 µm. Collection ignores the small drops' own fall speed. Times scale with $1/(EL)$. The condensation readout is fixed at $s = 0.5\%$ and $G = 1 \times 10^{-10}$ m² s⁻¹.
+:::
+
+## Where the head start comes from
+
+Collection needs some larger drops to start. [Köhler theory](kohler-theory.qmd) covers which particles become droplets at all. The sources name several candidates and leave some questions open.
+
+Freud and Rosenfeld found that rain becomes likely once the mean volume radius of the droplets exceeds about 13 µm, or an effective radius of about 14 µm.[^freud2012] This is an average over the population, not the single largest drop. The threshold sits below the 20 µm start used in the collection calculation.
+
+Once a population passes that size, growth speeds up sharply. Freud and Rosenfeld give a coalescence rate that scales as about the fifth power of the mean volume radius. Doubling that radius from 13 µm to 26 µm therefore multiplies the rate by about $2^5 = 32$.[^freud2012]
+
+Pollution delays the head start. Freud and Rosenfeld found that the cloud depth needed for rain rises by about 280 m for every 100 cm⁻³ of extra droplets at cloud base.[^freud2012] In very polluted clouds, the cloud must grow well above the freezing level before rain forms.
+
+Marine clouds follow the same logic. Albrecht proposed that more aerosol can keep low clouds in place by reducing drizzle. That is a hypothesis, not a measured result.[^albrecht1989] Van Zanten and colleagues found that the mean drizzle rate at cloud base scales with $H^3/N$, where $H$ is cloud depth and $N$ is the droplet number concentration. Thicker, cleaner clouds drizzle more.[^vanzanten2005] Wood reached the same conclusion for stratocumulus, the low, flat layer that covers more of Earth's surface than any other cloud type. Thicker stratocumulus drizzles more readily.[^wood2012]
+
+Turbulence also helps. In their model, turbulence shortened drizzle formation by about 40%.[^xue2008]
+
+Large particles may also start the process. In 1993, Beard and Ochs asked under what conditions giant particles trigger rain by acting as coalescence nuclei. That question was still open.[^beard1993]
+
+## What this means for you
+
+Warm rain makes up a large share of tropical rain. The figure depends on the definition. Lau and Wu used satellite data from the Tropical Rainfall Measuring Mission (TRMM). They defined warm rain by the radar echo top and found that it gives 31% of tropical rain amount and 72% of tropical rain area.[^lau2003] Liu and Zipser defined warm rain by cloud-top temperature above 0 °C. Those rainy pixels supply 20% of rainfall over tropical oceans and 7.5% over tropical land.[^liu2009] About half of the ocean pixels and two-thirds of the land pixels sit at the edges of cold systems that contain ice. So the share that forms with no ice at all is smaller than those figures.
+
+Forecast models describe the collection step with simple rate formulas. Khairoutdinov and Kogan fit such rates to results from a detailed drop-size model.[^khairoutdinov2000] These formulas replace the drop-by-drop calculation in this post. The timing of rain from a warm cloud depends on droplet numbers and cloud depth.
+
+## Key takeaways
+
+- Sizes here are radii. A 1 mm radius drop holds about a million times the water of a 10 µm droplet.
+- Condensation alone is slow. Its law, $r^2 = r_0^2 + 2Gst$, means a 10 µm drop needs about 4.2 days to reach 0.6 mm at $s = 0.5\%$.
+- Collection speeds up as drops grow. In the toy model, a drop starting at 13 µm radius needs about 52 min to reach 0.6 mm with $L = 1$ g m⁻³ and $E = 1$.
+- Rain becomes likely once the mean volume radius passes about 13 µm. Each extra 100 cm⁻³ of droplets needs about 280 m more cloud depth before rain forms.
+- Warm rain gives 31% of tropical rain amount under the Lau and Wu radar-echo definition. The share changes with the definition.
+
+[^xue2008]: Xue, Y., Wang, L.-P. & Grabowski, W. W. Growth of cloud droplets by turbulent collision-coalescence. *J. Atmos. Sci.* **65**, 331-356 (2008). https://doi.org/10.1175/2007JAS2406.1
+[^rogers]: Rogers, R. R. & Yau, M. K. *A Short Course in Cloud Physics*. 3rd ed. Pergamon Press (1989).
+[^sardina2015]: Sardina, G., Picano, F., Brandt, L. & Caballero, R. Continuous growth of droplet size variance due to condensation in turbulent clouds. *Phys. Rev. Lett.* **115**, 184501 (2015). https://doi.org/10.1103/PhysRevLett.115.184501
+[^beard1993]: Beard, K. V. & Ochs, H. T. Warm-rain initiation: an overview of microphysical mechanisms. *J. Appl. Meteorol.* **32**, 608-625 (1993). https://doi.org/10.1175/1520-0450(1993)032<0608:WRIAOO>2.0.CO;2
+[^freud2012]: Freud, E. & Rosenfeld, D. Linear relation between convective cloud drop number concentration and depth for rain initiation. *J. Geophys. Res. Atmos.* **117**(D2), 2011JD016457 (2012). https://doi.org/10.1029/2011JD016457
+[^albrecht1989]: Albrecht, B. A. Aerosols, cloud microphysics, and fractional cloudiness. *Science* **245**, 1227-1230 (1989). https://doi.org/10.1126/science.245.4923.1227
+[^vanzanten2005]: vanZanten, M. C., Stevens, B., Vali, G. & Lenschow, D. H. Observations of drizzle in nocturnal marine stratocumulus. *J. Atmos. Sci.* **62**, 88-106 (2005). https://doi.org/10.1175/JAS-3355.1
+[^wood2012]: Wood, R. Stratocumulus clouds. *Mon. Weather Rev.* **140**, 2373-2423 (2012). https://doi.org/10.1175/MWR-D-11-00121.1
+[^lau2003]: Lau, K. M. & Wu, H. T. Warm rain processes over tropical oceans and climate implications. *Geophys. Res. Lett.* **30**(24), 2003GL018567 (2003). https://doi.org/10.1029/2003GL018567
+[^liu2009]: Liu, C. & Zipser, E. J. "Warm rain" in the tropics: seasonal and regional distributions based on 9 yr of TRMM data. *J. Clim.* **22**, 767-779 (2009). https://doi.org/10.1175/2008JCLI2641.1
+[^khairoutdinov2000]: Khairoutdinov, M. & Kogan, Y. A new cloud physics parameterization in a large-eddy simulation model of marine stratocumulus. *Mon. Weather Rev.* **128**, 229-243 (2000). https://doi.org/10.1175/1520-0493(2000)128<0229:ANCPPI>2.0.CO;2
