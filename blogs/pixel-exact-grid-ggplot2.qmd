@@ -1,0 +1,86 @@
+---
+title: Pixel-exact square grids in ggplot2
+description: Tile any screen resolution with exact square cells in R by computing the greatest common divisor of width and height, stripping plot margins, and exporting at exact DPI.
+date: 2026-11-26
+categories:
+- R
+- ggplot2
+- visualization
+---
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Generating a phone or monitor grid wallpaper in `ggplot2` usually fails in two ways: non-square tiles when the grid counts don't divide the pixel dimensions evenly, and white padding around the edges. Computing the **greatest common divisor (GCD)** of the target pixel width $W$ and height $H$ gives the largest exact square tile size $s = \gcd(W, H)$, and pairing `coord_equal(expand = FALSE)` with zeroed `plot.margin` exports a pixel-exact PNG via `ggsave()`.
+:::
+
+## Exact tiling with the greatest common divisor
+
+Given a target height $H$ in pixels (for example, $H = 1080$) and an aspect ratio $r$ (such as $20:9$ for a modern phone display), the pixel width is $W = H \cdot r = 2400$. To cover the canvas with integer columns $n_x$ and integer rows $n_y$ of perfect squares of side $s$ pixels:
+
+$$s = \gcd(W, H), \qquad n_x = \frac{W}{s}, \qquad n_y = \frac{H}{s}$$
+
+For $2400 \times 1080$, $\gcd(2400, 1080) = 120\text{ px}$, yielding an exact $20 \times 9$ grid of $120 \times 120\text{ px}$ squares with zero remainder.
+
+## Removing margins and matching `ggsave()` DPI
+
+Two `ggplot2` defaults break pixel alignment unless overridden:
+
+1. **Axis expansion:** `ggplot2` pads categorical/continuous scales by 5% by default. Set `coord_equal(expand = FALSE)` so tiles sit flush against the image border and maintain a 1:1 aspect ratio.
+2. **Plot margins & DPI:** Set `theme_void()` plus `theme(plot.margin = grid::unit(c(0, 0, 0, 0), "mm"))`, and pass `width = W / dpi`, `height = H / dpi`, `dpi = dpi`, `units = "in"` to `ggsave()`.
+
+::: {.callout-note collapse="true"}
+## View R code: generating a `2400x1080` square grid PNG
+
+```r
+library(tidyverse)
+
+height <- 1080
+aspect_ratio <- 20 / 9
+dpi <- 300
+width <- as.integer(height * aspect_ratio)
+
+# Greatest common divisor (Euclid's algorithm)
+gcd <- function(a, b) {
+  while (b != 0) {
+    t <- b
+    b <- a %% b
+    a <- t
+  }
+  a
+}
+
+square_side <- gcd(width, height)
+ncol_y <- height / square_side
+nrow_x <- width / square_side
+
+df <- expand_grid(x = 1:nrow_x, y = 1:ncol_y) %>%
+  mutate(major = (x %% 5 == 0) | (y %% 5 == 0))
+
+g <- ggplot(df, aes(x = x, y = y)) +
+  geom_tile(aes(fill = major), color = "black", linewidth = 1.5, show.legend = FALSE) +
+  geom_point(shape = 4, size = 4) +
+  geom_hline(yintercept = (ncol_y + 1) / 2, color = "darkred", linewidth = 1) +
+  geom_vline(xintercept = (nrow_x + 1) / 2, color = "darkred", linewidth = 1) +
+  scale_fill_manual(values = c("FALSE" = "white", "TRUE" = "grey50")) +
+  scale_y_reverse() +
+  coord_equal(expand = FALSE) +
+  theme_void() +
+  theme(plot.margin = grid::unit(c(0, 0, 0, 0), "mm"))
+
+ggsave(
+  plot = g,
+  filename = paste0("grid.", width, "x", height, ".png"),
+  dpi = dpi,
+  width = width / dpi,
+  height = height / dpi,
+  units = "in"
+)
+```
+:::
+
+## Key takeaways
+
+- Use $s = \gcd(W, H)$ to guarantee exact integer square tiles for any rational aspect ratio.
+- Combine `coord_equal(expand = FALSE)` with zero `plot.margin` to eliminate outer whitespace.
+- Convert pixel dimensions to inches (`width / dpi`, `height / dpi`) when calling `ggsave()`.

@@ -182,6 +182,6 @@ buildings_in_aoi_gdf.plot()
 - Check the result with `.plot()` or `.explore()` before using it downstream.
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/geopandas-basics/geopandas_basics.html"><span>Previous</span>GeoPandas basics</a><a class="mf-up" href="/series/earth-data/index.html"><span>Series</span>Earth Data in Python and R</a><a class="mf-next" href="/blogs/pm25/plot_pm25_usa_by_county.html"><span>Next</span>Mapping PM2.5 by county</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/geopandas-basics/geopandas_basics.html"><span>Previous</span>GeoPandas basics</a><a class="mf-up" href="/series/earth-data/index.html"><span>Series</span>Earth Data in Python and R</a><a class="mf-next" href="/blogs/choropleth-pitfalls.html"><span>Next</span>Choropleth pitfalls</a></div>
 <!-- CURRICULUM_FOOTER_END -->
 

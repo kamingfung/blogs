@@ -84,6 +84,7 @@ parts:
       - id: earth-data/choropleth-pitfalls
         title: "Choropleth pitfalls"
         level: introductory
+        path: blogs/choropleth-pitfalls.md
       - id: earth-data/mapping-pm2-5-by-county
         title: "Mapping PM2.5 by county"
         level: introductory

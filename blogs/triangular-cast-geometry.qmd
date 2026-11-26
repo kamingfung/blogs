@@ -567,6 +567,6 @@ def solve_2d_truss(nodes: np.ndarray, elements: np.ndarray, E: float = 2000.0, A
 [^11]: Chen, Y., Lin, H., Yu, Q., Zhang, X., Wang, D., Shi, L., Huang, W., Zhong, S. Application of 3D-Printed Orthopedic Cast for the Treatment of Forearm Fractures: Finite Element Analysis and Comparative Clinical Assessment. *BioMed Res. Int.* **2020**, 9569530 (2020). https://doi.org/10.1155/2020/9569530
 
 <!-- CURRICULUM_FOOTER_START -->
-<div class="mf"><a class="mf-prev" href="/blogs/investment-comparator.html"><span>Previous</span>Total return and reinvested dividends</a><a class="mf-up" href="/series/engineering/index.html"><span>Series</span>Engineering in Action</a></div>
+<div class="mf"><a class="mf-prev" href="/blogs/mlflow-tracking-and-registry.html"><span>Previous</span>Tracking experiments and registering models with MLflow</a><a class="mf-up" href="/series/engineering/index.html"><span>Series</span>Engineering in Action</a></div>
 <!-- CURRICULUM_FOOTER_END -->
 

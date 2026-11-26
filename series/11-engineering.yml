@@ -66,6 +66,10 @@ parts:
         level: intermediate
         requires:
           - engineering/notebooks-vs-scripts
+      - id: engineering/mlflow-tracking-and-registry
+        title: "Tracking experiments and registering models with MLflow"
+        level: introductory
+        path: blogs/mlflow-tracking-and-registry.md
   - title: "Version control for scientists"
     modules:
       - id: engineering/git-for-one-person

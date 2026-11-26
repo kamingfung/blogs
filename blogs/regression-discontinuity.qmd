@@ -1,0 +1,87 @@
+---
+title: Regression discontinuity design
+description: Estimate causal jumps at a sharp assignment threshold using local linear regression on either side of the cutoff, and check how sensitive the estimate is to the cutoff choice.
+date: 2026-11-26
+categories:
+- statistics
+- causal inference
+- R
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/statistics/index.html">Statistics</a><span class="sep">·</span>Part 8 · Experimental design</p><p class="mh-facts"><span class="lvl lvl-intermediate">Intermediate</span></p><p class="mh-assumes">Assumes <a href="/blogs/controls-and-randomisation.html">Controls and randomisation</a>.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+When treatment is assigned by whether a continuous score $X$ crosses a threshold $c$ (a passing grade, an income cutoff, or a spatial boundary), units just below and just above $c$ are nearly identical except for treatment. **Sharp regression discontinuity design (RDD)** estimates the causal effect $\tau$ as the vertical jump between two local regressions fitted on either side of $c$. Always check sensitivity to bandwidth and cutoff placement—a true threshold effect peaks sharply at $c$ rather than appearing everywhere along $X$.
+:::
+
+## The intuition: comparing just above and just below
+
+Suppose units receive an intervention whenever a running variable $X_i \ge c$. Because units cannot precisely manipulate their score right around $c$, comparing $X_i = c - \epsilon$ with $X_i = c + \epsilon$ approximates a local randomized experiment.
+
+We fit separate linear models to the left ($X_i < c$) and right ($X_i \ge c$) of the cutoff:
+
+$$Y_i = \alpha + \tau D_i + \beta_1 (X_i - c) + \beta_2 D_i (X_i - c) + \varepsilon_i$$
+
+where $D_i = \mathbb{1}(X_i \ge c)$ is the treatment indicator, $\alpha$ is the left-hand intercept at the cutoff, and $\tau$ is the estimated **discontinuity jump** at $X = c$:
+
+$$\hat{\tau} = \lim_{x \downarrow c} \hat{\mathbb{E}}[Y \mid X = x] - \lim_{x \uparrow c} \hat{\mathbb{E}}[Y \mid X = x]$$
+
+## Sweeping cutoffs as a diagnostic check
+
+In exploratory data, you may want to verify whether a discontinuity appears at a known threshold $c$ rather than at arbitrary points along $X$. Sweeping candidate cutoffs $c \in [c_{\min}, c_{\max}]$ and computing the predicted jump at each $c$ reveals whether the jump is localized or just curvature in the underlying relationship.
+
+::: {.callout-note collapse="true"}
+## View R code: fitting left/right linear models and sweeping cutoffs
+
+```r
+library(tidyverse)
+
+df <- readRDS("respRatio.RDS")
+
+# Sweep candidate cutoffs across environments
+results <- map_dfr(1:20, function(e) {
+  sub_df <- df %>% filter(resp == 1, env == e)
+
+  map_dfr(seq(5.5, 25.5, by = 1), function(cutoff) {
+    right <- lm(respRatio.byEnv ~ pos.raw, data = filter(sub_df, pos.raw > cutoff))
+    left  <- lm(respRatio.byEnv ~ pos.raw, data = filter(sub_df, pos.raw < cutoff))
+
+    jump <- predict(right, newdata = data.frame(pos.raw = cutoff)) -
+            predict(left,  newdata = data.frame(pos.raw = cutoff))
+
+    tibble(env = e, cutoff = cutoff, jump = unname(jump))
+  })
+})
+
+# Plot raw points, split linear fits at c = 12.5, and |jump| curve
+df %>%
+  filter(resp == 1) %>%
+  mutate(group = cut(pos.raw, breaks = c(1, 12.5, 30), include.lowest = TRUE)) %>%
+  ggplot(aes(x = pos.raw, y = respRatio.byEnv, color = group)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "lm", se = FALSE) +
+  geom_line(data = results, aes(x = cutoff, y = abs(jump)), inherit.aes = FALSE, color = "black") +
+  facet_wrap(~env)
+```
+:::
+
+## Key assumptions and pitfalls
+
+1. **No manipulation of $X$:** Units must not be able to sort themselves just above $c$ (check for bunching in the histogram of $X$ around $c$).
+2. **Functional form:** Fitting a straight line across a wide range can mistake a smooth curve for a jump at $c$; restrict to a local bandwidth around $c$ or use local polynomial regression (`rdrobust`).
+3. **Placebo cutoffs:** If candidate cutoffs far from $c$ produce jumps of similar magnitude, the apparent discontinuity is likely model misspecification rather than a causal effect.
+
+## Key takeaways
+
+- Sharp RDD identifies the **local average treatment effect at the cutoff $c$**, not across the entire range of $X$.
+- Center the running variable at $(X_i - c)$ and allow different slopes on each side of the threshold.
+- Validate any claimed jump with **bandwidth sensitivity** and **placebo cutoff** checks.
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/power-and-how-many-samples.html"><span>Previous</span>Power, and how many samples</a><a class="mf-up" href="/series/statistics/index.html"><span>Series</span>Statistics</a><a class="mf-next" href="/blogs/climate-regression-and-slp.html"><span>Next</span>Linear regression and sea-level pressure teleconnections</a></div>
+<!-- CURRICULUM_FOOTER_END -->
+

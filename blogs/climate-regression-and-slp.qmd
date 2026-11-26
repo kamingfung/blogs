@@ -1,0 +1,83 @@
+---
+title: Linear regression and sea-level pressure teleconnections
+description: Connect ordinary least squares temperature-pressure regression at a single station to spatial sea-level pressure fields and Southern Oscillation correlation maps.
+date: 2026-11-26
+categories:
+- statistics
+- climate
+- atmospheric science
+- R
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/statistics/index.html">Statistics</a><span class="sep">·</span>Part 9 · Climate &amp; spatial regression</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">School maths. Python or R for the notebooks.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Pointwise linear regression and spatial teleconnection maps share the exact same math: **standardized covariance**. Whether you regress June station temperature $T$ onto June surface pressure $P$ at one location or correlate every grid cell of global sea-level pressure (SLP) against a Darwin reference series, both measure how tightly two anomalies co-vary relative to their spread. Mapping that correlation across a longitude-latitude grid turns a 1D regression into the classic **Southern Oscillation** dipole.
+:::
+
+## 1. From station regression to correlation
+
+At a single weather station, ordinary least squares (OLS) models temperature $T_i$ as a linear function of pressure $P_i$:
+
+$$\hat{T}_i = \hat{\beta}_0 + \hat{\beta}_1 P_i, \qquad \hat{\beta}_1 = \frac{\sum_i (P_i - \bar{P})(T_i - \bar{T})}{\sum_i (P_i - \bar{P})^2} = r_{PT} \frac{s_T}{s_P}$$
+
+where $r_{PT}$ is the Pearson correlation coefficient and $s_T, s_P$ are the sample standard deviations. Thus, $r^2$ gives the fraction of temperature variance explained linearly by pressure, while $\hat{\beta}_1$ rescales $r_{PT}$ into physical units ($^\circ\text{C hPa}^{-1}$).
+
+::: {.callout-note collapse="true"}
+## View R code: fitting and diagnosing station temperature vs. pressure
+
+```r
+# Fit OLS: June temperature (t) vs. June pressure (p)
+fit <- lm(t ~ p, data = df)
+summary(fit)
+
+# Residual diagnostics and 95% confidence interval for a new pressure reading
+par(mfrow = c(2, 2))
+plot(fit)
+
+predict(fit, newdata = data.frame(p = 1012), interval = "confidence")
+```
+:::
+
+## 2. Scaling up to spatial SLP teleconnection maps
+
+Instead of correlating two scalar time series at one station, take a reference index $I(t)$—such as monthly SLP anomalies near **Darwin, Australia** ($12.4^\circ\text{S}, 130.9^\circ\text{E}$)—and compute the Pearson correlation $r(\lambda, \phi)$ at every grid point $(\lambda, \phi)$ of a global SLP field $\text{SLP}(\lambda, \phi, t)$:
+
+$$r(\lambda, \phi) = \frac{\sum_t \big(\text{SLP}(\lambda, \phi, t) - \overline{\text{SLP}}(\lambda, \phi)\big)\big(I(t) - \bar{I}\big)}{\sqrt{\sum_t \big(\text{SLP}(\lambda, \phi, t) - \overline{\text{SLP}}(\lambda, \phi)\big)^2 \sum_t \big(I(t) - \bar{I}\big)^2}}$$
+
+Positive correlations over the western Pacific / Indian Ocean and negative correlations over the eastern tropical Pacific (Tahiti) reveal the **Southern Oscillation** seesaw—the atmospheric half of El Niño–Southern Oscillation (ENSO).
+
+::: {.callout-note collapse="true"}
+## View Python (`xarray`) code: computing a Darwin SLP correlation map
+
+```python
+import xarray as xr
+
+ds = xr.open_dataset("slp_1948-2014.nc")
+slp = ds["slp"]  # dims: (time, lat, lon)
+
+# Climatological mean SLP
+slp_mean = slp.mean(dim="time")
+
+# Darwin reference series (approx 12.5S, 130E)
+darwin = slp.sel(lat=-12.5, lon=130.0, method="nearest")
+
+# Grid-point correlation map
+corr_map = xr.corr(slp, darwin, dim="time")
+```
+:::
+
+## Key takeaways
+
+- OLS slope $\hat{\beta}_1 = r (s_y / s_x)$ is correlation scaled by the ratio of standard deviations.
+- A spatial teleconnection map applies that same pointwise correlation across every $(\lambda, \phi)$ cell against a reference index like Darwin SLP.
+- Always check residual plots (linearity, homoscedasticity, autocorrelation) when interpreting climate regressions over multi-decade time series.
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/regression-discontinuity.html"><span>Previous</span>Regression discontinuity design</a><a class="mf-up" href="/series/statistics/index.html"><span>Series</span>Statistics</a></div>
+<!-- CURRICULUM_FOOTER_END -->
+
