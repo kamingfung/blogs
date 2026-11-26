@@ -40,6 +40,8 @@ In exploratory data, you may want to verify whether a discontinuity appears at a
 ```r
 library(tidyverse)
 
+# respRatio.RDS is not included. Any data frame with columns env, resp, pos.raw
+# and respRatio.byEnv works.
 df <- readRDS("respRatio.RDS")
 
 # Sweep candidate cutoffs across environments

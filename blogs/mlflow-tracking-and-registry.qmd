@@ -16,7 +16,7 @@ categories:
 ::: {.callout-note appearance="simple" icon=false}
 ## TL;DR
 
-Ad-hoc model training scripts leave you guessing which hyperparameters, data splits, and library versions produced a saved `.pkl` or `.pt` file. **MLflow** solves this with two primitives: **Tracking** (logging parameters, metrics, and model artifacts per run) and the **Model Registry** (versioning and promoting validated models from `Staging` to `Production`). Using a consistent `mlflow.start_run()` pattern works identically across scikit-learn, PyTorch, and TensorFlow.
+Ad-hoc model training scripts leave you guessing which hyperparameters, data splits, and library versions produced a saved `.pkl` or `.pt` file. **MLflow** solves this with two primitives: **Tracking** (logging parameters, metrics, and model artifacts per run) and the **Model Registry** (versioning validated models and promoting one with an alias such as `champion`). Using a consistent `mlflow.start_run()` pattern works identically across scikit-learn, PyTorch, and TensorFlow.
 :::
 
 ## The reproducibility gap
@@ -31,7 +31,7 @@ When iterating across preprocessing choices, feature sets, and model families, s
 flowchart LR
     A[Training Script<br/>sklearn / PyTorch / TF] -->|log_param, log_metric| B[MLflow Tracking<br/>Runs & Artifacts]
     B -->|register_model| C[Model Registry<br/>v1, v2, v3]
-    C -->|alias / stage| D[Serving & Inference<br/>models:/name/Production]
+    C -->|alias| D[Serving & Inference<br/>models:/name@champion]
 ```
 
 ## 1. Experiment tracking with scikit-learn
@@ -106,8 +106,10 @@ import mlflow.pyfunc
 model_uri = f"runs:/{best_run_id}/model"
 mlflow.register_model(model_uri=model_uri, name="diabetes-rf")
 
-# Load registered version for inference
-prod_model = mlflow.pyfunc.load_model("models:/diabetes-rf/1")
+# Point an alias at a version, then load by alias
+client = mlflow.MlflowClient()
+client.set_registered_model_alias("diabetes-rf", "champion", version=1)
+prod_model = mlflow.pyfunc.load_model("models:/diabetes-rf@champion")
 predictions = prod_model.predict(X_test)
 ```
 
@@ -115,7 +117,7 @@ predictions = prod_model.predict(X_test)
 
 - Always log **parameters**, **evaluation metrics**, and an **input/output signature** inside `mlflow.start_run()`.
 - Use `step=epoch` for iterative training so learning curves are comparable across runs.
-- Reference promoted models via `models:/<name>/<version-or-alias>` in inference pipelines instead of raw file paths.
+- Reference promoted models via `models:/<name>/<version>` or `models:/<name>@<alias>` in inference pipelines instead of raw file paths.
 
 <!-- CURRICULUM_FOOTER_START -->
 <div class="mf"><a class="mf-prev" href="/blogs/investment-comparator.html"><span>Previous</span>Total return and reinvested dividends</a><a class="mf-up" href="/series/engineering/index.html"><span>Series</span>Engineering in Action</a><a class="mf-next" href="/blogs/triangular-cast-geometry.html"><span>Next</span>Why triangles? 3D-printed cast geometry</a></div>

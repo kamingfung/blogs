@@ -31,6 +31,7 @@ where $r_{PT}$ is the Pearson correlation coefficient and $s_T, s_P$ are the sam
 ## View R code: fitting and diagnosing station temperature vs. pressure
 
 ```r
+# df is not included: one row per year, with June temperature `t` and June pressure `p`
 # Fit OLS: June temperature (t) vs. June pressure (p)
 fit <- lm(t ~ p, data = df)
 summary(fit)
@@ -57,17 +58,18 @@ Positive correlations over the western Pacific / Indian Ocean and negative corre
 ```python
 import xarray as xr
 
-ds = xr.open_dataset("slp_1948-2014.nc")
+ds = xr.open_dataset("slp_1948-2014.nc")  # not included: any monthly SLP NetCDF with dims (time, lat, lon), such as NCEP/NCAR Reanalysis
 slp = ds["slp"]  # dims: (time, lat, lon)
 
-# Climatological mean SLP
-slp_mean = slp.mean(dim="time")
+# Remove the seasonal cycle: subtract each calendar month's mean.
+# Without this, the correlation mostly measures the shared annual cycle.
+slp_anom = slp.groupby("time.month") - slp.groupby("time.month").mean("time")
 
 # Darwin reference series (approx 12.5S, 130E)
-darwin = slp.sel(lat=-12.5, lon=130.0, method="nearest")
+darwin = slp_anom.sel(lat=-12.5, lon=130.0, method="nearest")
 
 # Grid-point correlation map
-corr_map = xr.corr(slp, darwin, dim="time")
+corr_map = xr.corr(slp_anom, darwin, dim="time")
 ```
 :::
 

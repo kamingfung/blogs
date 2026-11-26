@@ -51,17 +51,17 @@ gcd <- function(a, b) {
 }
 
 square_side <- gcd(width, height)
-ncol_y <- height / square_side
-nrow_x <- width / square_side
+n_col <- width / square_side
+n_row <- height / square_side
 
-df <- expand_grid(x = 1:nrow_x, y = 1:ncol_y) %>%
+df <- expand_grid(x = 1:n_col, y = 1:n_row) %>%
   mutate(major = (x %% 5 == 0) | (y %% 5 == 0))
 
 g <- ggplot(df, aes(x = x, y = y)) +
   geom_tile(aes(fill = major), color = "black", linewidth = 1.5, show.legend = FALSE) +
   geom_point(shape = 4, size = 4) +
-  geom_hline(yintercept = (ncol_y + 1) / 2, color = "darkred", linewidth = 1) +
-  geom_vline(xintercept = (nrow_x + 1) / 2, color = "darkred", linewidth = 1) +
+  geom_hline(yintercept = (n_row + 1) / 2, color = "darkred", linewidth = 1) +
+  geom_vline(xintercept = (n_col + 1) / 2, color = "darkred", linewidth = 1) +
   scale_fill_manual(values = c("FALSE" = "white", "TRUE" = "grey50")) +
   scale_y_reverse() +
   coord_equal(expand = FALSE) +
