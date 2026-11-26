@@ -112,3 +112,15 @@ parts:
         title: "Power, and how many samples"
         level: intermediate
         path: blogs/power-and-how-many-samples.md
+      - id: statistics/regression-discontinuity
+        title: "Regression discontinuity design"
+        level: intermediate
+        path: blogs/regression-discontinuity.md
+        requires:
+          - statistics/controls-and-randomisation
+  - title: "Climate & spatial regression"
+    modules:
+      - id: statistics/climate-regression-and-slp
+        title: "Linear regression and sea-level pressure teleconnections"
+        level: introductory
+        path: blogs/climate-regression-and-slp.md

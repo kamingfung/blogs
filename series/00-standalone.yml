@@ -4,6 +4,9 @@ seminars:
     path: blogs/dna-and-rna.md
     level: introductory
     note: "Would seed a molecular biology series once two more exist."
+  - title: "Pixel-exact square grids in ggplot2"
+    path: blogs/pixel-exact-grid-ggplot2.md
+    level: introductory
 
 # Listed on What’s next as leaving the blog; not in the nav.
 move_to_academic:

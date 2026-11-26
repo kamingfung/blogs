@@ -1,0 +1,108 @@
+---
+title: Choropleth pitfalls
+description: Four ways a shaded-region map misleads—ink follows area, raw counts mirror population, small numbers make loud rates, and binning writes the story—and how to fix each one.
+date: 2026-11-26
+categories:
+- earth data
+- visualization
+- cartography
+- R
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/earth-data/index.html">Earth Data in Python and R</a><span class="sep">·</span>Part 6 · Maps</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">Some programming in any language.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+A choropleth shades geographic units by value, but the human eye reads ink by **area**, not by population or intensity. Mapping raw totals mostly redraws population or country size, small denominators produce the wildest extreme rates, and switching between equal-interval, quantile, and natural-breaks classes changes which regions look alarming. Before publishing any shaded map, normalize to a rate or density, check small-denominator noise, and state the unit, denominator, and classification scheme in the caption.
+:::
+
+## 1. Ink follows area, not people
+
+On a world or county map, a large rural unit takes up far more pixels than a dense city or small nation. Even when both carry the same color, the large polygon dominates visual attention.
+
+- **Fix:** When geographic area is not the denominator of interest, pair the choropleth with a cartogram (scaling area by population) or a dot-density / proportional-symbol layer so visual weight matches the quantity being compared.
+
+## 2. Counts versus rates
+
+Consider mapping national fertilizer use in tonnes (`Fert.tonnes` from FAO-style country tables joined to `rworldmap::getMap()`). Plotting raw tonnes highlights large agricultural producers (China, India, the United States) simply because they have more farmland—not necessarily because application intensity is highest.
+
+```{mermaid}
+flowchart LR
+    A[Raw Counts<br/>Total tonnes] --> B{Normalize by<br/>area or population?}
+    B -- No --> C[Redraws country size<br/>or population]
+    B -- Yes --> D[Rate / Intensity<br/>kg per hectare or per capita]
+```
+
+::: {.callout-note collapse="true"}
+## View R code: joining country totals to `rworldmap` polygons
+
+```r
+library(tidyverse)
+library(rworldmap)
+library(RColorBrewer)
+
+raw_data <- read.csv("sample_data.csv")
+colnames(raw_data)[4] <- "Fert.tonnes"
+
+world_map <- ggplot2::fortify(rworldmap::getMap(resolution = "low"))
+map_1996 <- world_map %>%
+  dplyr::left_join(raw_data, by = c("id" = "Entity")) %>%
+  dplyr::filter(Year == 1996)
+
+ggplot(map_1996, aes(x = long, y = lat, group = group)) +
+  geom_polygon(aes(fill = Fert.tonnes), color = "white", linewidth = 0.05) +
+  scale_fill_gradientn(
+    colors = rev(RColorBrewer::brewer.pal(11, "Spectral")),
+    guide = guide_colorbar(title = "tonnes", nbin = 15, raster = FALSE)
+  ) +
+  coord_equal() +
+  theme_void()
+```
+:::
+
+- **Fix:** Divide counts by cropland area (`kg/ha`) or population (`kg/person`) before shading, and state the denominator explicitly in the legend title.
+
+## 3. Small numbers make loud rates
+
+Once you convert counts to rates ($\text{rate}_i = y_i / n_i$), variance scales inversely with the denominator $n_i$:
+
+$$\text{Var}(\hat{p}_i) \approx \frac{p(1 - p)}{n_i}$$
+
+A small island nation or low-population county with $n_i = 20$ fluctuates wildly by chance, so the highest and lowest rates on a map almost always belong to the smallest units.
+
+- **Fix:** Show the underlying count alongside the rate in tooltips or labels, apply empirical Bayes smoothing for noisy small-area rates, or mask units below a minimum sample threshold.
+
+## 4. Binning writes the story
+
+The same numeric vector produces completely different maps depending on how continuous values are binned into color classes:
+
+| Classification Scheme | How Breakpoints Are Chosen | Visual Effect |
+| :--- | :--- | :--- |
+| **Equal interval** (`EqualInterval`) | Divides $[\min, \max]$ into $k$ equal-width steps | Highlights extreme outliers; most units collapse into the bottom bin |
+| **Quantile** (`Quantiles`) | Places an equal number of units in each bin | Maximizes contrast across the map, but can group very different values together |
+| **Natural breaks** (`FisherJenks`) | Minimizes within-class variance | Preserves data clusters, but breakpoints are dataset-specific and hard to compare across years |
+
+- **Fix:** Choose the scheme that matches your question (use consistent breakpoints across time-series panels) and name the scheme in the figure caption.
+
+## What this means for you
+
+Before putting any county, state, or country choropleth into a report:
+
+1. Check whether raw totals are just acting as a proxy for area or population.
+2. Verify that extreme rates aren't artifacts of tiny denominators.
+3. State the **geographic unit**, **denominator**, and **classification scheme** in the caption.
+
+## Key takeaways
+
+- A choropleth of raw counts is close to a population or area map for most human and agricultural variables.
+- Equal-interval, quantile, and Fisher-Jenks binning on the exact same data can assign the same region to opposite ends of the color scale.
+- In a rate map, the smallest units have the highest sampling variance and are the most likely to show extreme rates.
+- Changing aggregation boundaries changes the apparent spatial pattern (the **modifiable areal unit problem**).
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/ms-buildings/index.html"><span>Previous</span>Downloading building footprints</a><a class="mf-up" href="/series/earth-data/index.html"><span>Series</span>Earth Data in Python and R</a><a class="mf-next" href="/blogs/pm25/plot_pm25_usa_by_county.html"><span>Next</span>Mapping PM2.5 by county</a></div>
+<!-- CURRICULUM_FOOTER_END -->
+

@@ -218,3 +218,4 @@ For a modeler, the curve is a structural choice. State the reference, name the c
 <!-- CURRICULUM_FOOTER_START -->
 <div class="mf"><a class="mf-prev" href="/blogs/the-land-model-clm.html"><span>Previous</span>The land model: CLM</a><a class="mf-up" href="/series/air-land-climate/index.html"><span>Series</span>Air, Land and Climate</a><a class="mf-next" href="/blogs/monitors-sensors-and-satellites.html"><span>Next</span>Monitors, sensors and satellites</a></div>
 <!-- CURRICULUM_FOOTER_END -->
+

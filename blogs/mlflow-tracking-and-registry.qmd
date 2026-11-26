@@ -1,0 +1,123 @@
+---
+title: Tracking experiments and registering models with MLflow
+description: Log parameters, metrics, and artifacts across scikit-learn, PyTorch, and TensorFlow, then promote winning runs through the MLflow Model Registry.
+date: 2026-11-26
+categories:
+- engineering
+- mlops
+- mlflow
+- python
+---
+
+<!-- CURRICULUM_HEADER_START -->
+<div class="mh"><p class="mh-crumb"><a href="/series/engineering/index.html">Engineering in Action</a><span class="sep">·</span>Part 4 · Reproducible analysis</p><p class="mh-facts"><span class="lvl lvl-introductory">Introductory</span></p><p class="mh-assumes">Some programming.</p></div>
+<!-- CURRICULUM_HEADER_END -->
+
+::: {.callout-note appearance="simple" icon=false}
+## TL;DR
+
+Ad-hoc model training scripts leave you guessing which hyperparameters, data splits, and library versions produced a saved `.pkl` or `.pt` file. **MLflow** solves this with two primitives: **Tracking** (logging parameters, metrics, and model artifacts per run) and the **Model Registry** (versioning and promoting validated models from `Staging` to `Production`). Using a consistent `mlflow.start_run()` pattern works identically across scikit-learn, PyTorch, and TensorFlow.
+:::
+
+## The reproducibility gap
+
+When iterating across preprocessing choices, feature sets, and model families, storing metrics in terminal logs or filenames (`model_v3_final2.pkl`) breaks down quickly. MLflow organizes work into **Experiments** (a logical project) containing **Runs** (individual executions), each capturing:
+
+- **Parameters:** immutable inputs (`learning_rate`, `max_depth`, `epochs`)
+- **Metrics:** scalar measurements over steps or at completion (`rmse`, `val_loss`, `accuracy`)
+- **Artifacts:** files, plots, and serialized model packages with input/output signatures
+
+```{mermaid}
+flowchart LR
+    A[Training Script<br/>sklearn / PyTorch / TF] -->|log_param, log_metric| B[MLflow Tracking<br/>Runs & Artifacts]
+    B -->|register_model| C[Model Registry<br/>v1, v2, v3]
+    C -->|alias / stage| D[Serving & Inference<br/>models:/name/Production]
+```
+
+## 1. Experiment tracking with scikit-learn
+
+Wrap training in `with mlflow.start_run():` and attach a model signature (`infer_signature`) so downstream consumers know the exact expected schema.
+
+::: {.callout-note collapse="true"}
+## View Python code: logging a scikit-learn pipeline with signature
+
+```python
+import mlflow
+import mlflow.sklearn
+from mlflow.models import infer_signature
+from sklearn.datasets import load_diabetes
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import root_mean_squared_error
+from sklearn.model_selection import train_test_split
+
+mlflow.set_experiment("diabetes-regression")
+
+X, y = load_diabetes(return_X_y=True, as_frame=True)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+params = {"n_estimators": 200, "max_depth": 6, "random_state": 42}
+
+with mlflow.start_run(run_name="rf-baseline"):
+    mlflow.log_params(params)
+
+    model = RandomForestRegressor(**params)
+    model.fit(X_train, y_train)
+    preds = model.predict(X_test)
+
+    rmse = root_mean_squared_error(y_test, preds)
+    mlflow.log_metric("rmse", rmse)
+
+    signature = infer_signature(X_train, model.predict(X_train))
+    mlflow.sklearn.log_model(model, artifact_path="model", signature=signature)
+```
+:::
+
+## 2. PyTorch and TensorFlow integration
+
+Deep learning loops log metrics per epoch using the `step=` argument so MLflow renders training and validation curves directly in the UI.
+
+::: {.callout-note collapse="true"}
+## View Python code: epoch-level logging in PyTorch and TensorFlow
+
+```python
+# PyTorch loop
+with mlflow.start_run(run_name="pytorch-mlp"):
+    mlflow.log_params({"lr": 1e-3, "epochs": 20})
+    for epoch in range(20):
+        train_loss = ...  # training step
+        val_loss = ...    # validation step
+        mlflow.log_metrics({"train_loss": train_loss, "val_loss": val_loss}, step=epoch)
+    mlflow.pytorch.log_model(net, artifact_path="model")
+
+# TensorFlow / Keras autologging
+mlflow.tensorflow.autolog()
+with mlflow.start_run(run_name="tf-keras"):
+    keras_model.fit(X_train, y_train, validation_split=0.2, epochs=15)
+```
+:::
+
+## 3. Model Registry and serving
+
+Once a run beats your baseline, register its model artifact to create an immutable version (`v1`, `v2`, ...) and load it anywhere by URI rather than hardcoding local file paths:
+
+```python
+import mlflow.pyfunc
+
+model_uri = f"runs:/{best_run_id}/model"
+mlflow.register_model(model_uri=model_uri, name="diabetes-rf")
+
+# Load registered version for inference
+prod_model = mlflow.pyfunc.load_model("models:/diabetes-rf/1")
+predictions = prod_model.predict(X_test)
+```
+
+## Key takeaways
+
+- Always log **parameters**, **evaluation metrics**, and an **input/output signature** inside `mlflow.start_run()`.
+- Use `step=epoch` for iterative training so learning curves are comparable across runs.
+- Reference promoted models via `models:/<name>/<version-or-alias>` in inference pipelines instead of raw file paths.
+
+<!-- CURRICULUM_FOOTER_START -->
+<div class="mf"><a class="mf-prev" href="/blogs/investment-comparator.html"><span>Previous</span>Total return and reinvested dividends</a><a class="mf-up" href="/series/engineering/index.html"><span>Series</span>Engineering in Action</a><a class="mf-next" href="/blogs/triangular-cast-geometry.html"><span>Next</span>Why triangles? 3D-printed cast geometry</a></div>
+<!-- CURRICULUM_FOOTER_END -->
+
