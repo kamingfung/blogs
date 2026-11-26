@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "blog-preview",
+      "runtimeExecutable": "just",
+      "runtimeArgs": ["preview"],
+      "port": 4871
+    }
+  ]
+}
